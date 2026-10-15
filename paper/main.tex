@@ -1,0 +1,495 @@
+\documentclass[11pt]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage{amsmath,amssymb,amsthm,mathtools}
+\usepackage{booktabs,multirow,array}
+\usepackage{graphicx}
+\usepackage{xcolor}
+\usepackage[numbers,sort&compress]{natbib}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta,positioning,calc}
+\usepackage{enumitem}
+\usepackage[hidelinks]{hyperref}
+\usepackage{cleveref}
+
+\newtheorem{proposition}{Proposition}
+\newtheorem{assumption}{Assumption}
+\newtheorem{definition}{Definition}
+\newtheorem{remark}{Remark}
+\newtheorem{hypothesis}{Hypothesis}
+
+\newcommand{\pa}{\pi}
+\newcommand{\dotot}[1]{y^{\mathrm{tot}}_{#1}}
+\newcommand{\donai}[1]{y^{\mathrm{nai}}_{#1}}
+\newcommand{\Rel}{\mathcal{R}}
+\newcommand{\hgcd}{\textsc{HGCD}}
+% Directory with tables produced by the notebook (copy the Kaggle results folder here).
+\newcommand{\resultsdir}{../results/kaggle_main}
+\newcommand{\pilotdir}{../results/pilot_cpu}
+\newcommand{\pending}{\fbox{\parbox{0.9\linewidth}{\centering\small Pending: run \texttt{notebooks/hgcd\_kaggle.ipynb} and copy its output folder to \texttt{results/kaggle\_main}.}}}
+\newcommand{\maybeinput}[1]{\IfFileExists{#1}{\input{#1}}{\pending}}
+
+\title{Contrasting a Model Against Its Own Interventions:\\
+Hop-Graph Contrastive Decoding for Causally Grounded Multi-Hop Reasoning}
+\author{Anonymous Authors}
+\date{}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+Language models often reach the right answer without using the reasoning chain they write, and
+fail when spurious context or parametric shortcuts dominate. Context-aware decoding (CAD) and its
+variants counter this by contrasting the next-token distribution with and without the context.
+We give a causal reading of CAD: its contrast estimates the \emph{total} effect of the \emph{whole}
+context, including paths through distractors that have no causal edge to the answer. We propose
+\hgcd{} (Hop-Graph Contrastive Decoding), a training-free decoding rule that contrasts the model
+against \emph{interventions on its own reasoning graph}. \hgcd{} (i) parses the model's chain into a
+directed reasoning graph (DRG), (ii) intervenes on each answer-relevant hop together with its graph
+descendants, and (iii) re-weights answers by their probability plus $\alpha$ times the average
+\emph{total effect} of the chain on them, computed in probability space. We prove that
+(a) the common ``mask one step'' estimator measures a controlled direct effect that vanishes on
+bridge-entity chains, (b) probability-space contrast cancels shortcut and distractor components of
+a mixture reader exactly, whereas CAD amplifies distractor components, and (c) in the
+$\alpha\to\infty$ limit \hgcd{} selects the answer with maximal hop-level probability of necessity
+and sufficiency (PNS). We pair the method with an evaluation protocol in which every intervention is
+a binary, programmatic manipulation with a \emph{known} ground-truth effect (renaming, reordering,
+distractor injection, placebo insertion: true effect $0$; inserted redundant hops: true necessity
+$0$), on CLUTRR (controlled kinship graphs, ID $k{\le}4$ / OOD $k{\ge}5$) and MuSiQue (real text,
+bridge-entity chains). All code runs end to end on a free Kaggle GPU.
+\end{abstract}
+
+% ===================================================================================
+\section{Introduction}
+
+Chain-of-thought prompting~\citep{wei2022cot} makes models write intermediate steps, but writing a
+step is not the same as \emph{using} it. Causal tests show that models frequently ignore or
+post-rationalise their own chains~\citep{lanham2023faithfulness,turpin2023unfaithful,paul2024frodo,
+tutek2025fur}, answer multi-hop questions through single-hop shortcuts~\citep{min2019compositional,
+yang2024latent,biran2024hopping}, and are easily derailed by irrelevant
+context~\citep{shi2023distracted}. Two families of remedies exist. \emph{Training} remedies
+(counterfactual preference objectives~\citep{paul2024frodo,huyuk2025counterfactual}, PNS-filtered
+supervision~\citep{yu2025pns}, causality-aware post-training~\citep{gui2025capt}) are effective but
+costly. \emph{Decoding} remedies are training-free: contrastive decoding~\citep{li2023contrastive,
+obrien2023cdreasoning}, classifier-free guidance~\citep{sanchez2024cfg}, and context-aware decoding
+(CAD)~\citep{shi2024cad} with its adaptive and gated successors~\citep{wang2025adacad,tao2026nwcad}.
+
+CAD scores tokens by $(1{+}\alpha)\log\pa(\cdot\mid c,x)-\alpha\log\pa(\cdot\mid x)$. Read
+causally, the log-ratio is the effect of $\mathrm{do}(C{=}c)$ versus $\mathrm{do}(C{=}\varnothing)$:
+the total effect of the \emph{entire} context. In multi-hop QA the context contains supporting
+paragraphs on the causal path to the answer and distractors that are not; CAD amplifies both. This
+explains, mechanistically, the empirical failures of CAD on uninformative or distracting context
+that motivated AdaCAD and NWCAD~\citep{wang2025adacad,tao2026nwcad}.
+
+\paragraph{Idea.} Instead of contrasting \emph{with versus without context}, contrast the model's
+answer distribution \emph{given its own chain} against the distribution under \emph{interventions on
+the hops of that chain}, keeping the context fixed. Because the context is held fixed in both terms,
+distractor and parametric components cancel; because interventions follow the chain's own graph,
+the contrast measures the \emph{path-specific} contribution of the reasoning steps.
+
+\paragraph{Contributions.}
+\begin{enumerate}[leftmargin=*,itemsep=1pt]
+\item \textbf{A causal account of contrastive decoding} for multi-hop reasoning: CAD estimates a
+total context effect that includes non-causal distractor paths (\cref{prop:cad}).
+\item \textbf{\hgcd{}}, a training-free rule that contrasts the model against graph-aware
+interventions on its own reasoning chain, with an optional evidence-level variant (L1) that uses a
+\emph{type-matched counterfactual context} instead of an empty one (\cref{sec:method}).
+\item \textbf{Theory}: naive step masking measures a controlled direct effect that is zero on bridge
+chains (\cref{prop:direct}); probability-space contrast cancels shortcut and distractor mixture
+components exactly (\cref{prop:mixture}); \hgcd{} converges to a hop-level PNS rule
+(\cref{prop:pns}), connecting decoding to the identifiability results of \citet{yu2025pns}.
+\item \textbf{A verifiable evaluation protocol}: binary, programmatic interventions with known
+ground-truth effects, an estimator-validation benchmark with known necessity labels, placebo
+controls, and paired statistics; everything reproducible on one free T4 GPU.
+\end{enumerate}
+
+% ===================================================================================
+\section{Related Work}
+
+\paragraph{Faithfulness of reasoning chains.}
+\citet{lanham2023faithfulness} intervene on model-written chains (truncation, inserted mistakes,
+paraphrases); \citet{turpin2023unfaithful} show biased features steer answers without being
+verbalised; FRODO~\citep{paul2024frodo} uses causal mediation~\citep{vig2020mediation} and trains
+small models with counterfactual preferences; FUR~\citep{tutek2025fur} measures faithfulness by
+unlearning steps; Thought Anchors~\citep{bogdan2025anchors} measures step importance by
+counterfactual resampling. We use interventions not only to \emph{measure} but to \emph{decode}.
+
+\paragraph{Necessity and sufficiency.} \citet{yu2025pns} define step-level probabilities of
+necessity and sufficiency for chain-of-thought, prove identifiability under exogeneity and
+monotonicity (building on \citet{tian2000probabilities,pearl2009causality}), and use PNS to prune
+chains for in-context learning and fine-tuning. We show the same quantity arises as the limit of a
+decoding rule, and we separate direct from total effects~\citep{pearl2001direct}.
+
+\paragraph{Contrastive and guided decoding.} Contrastive decoding~\citep{li2023contrastive,
+obrien2023cdreasoning}, DoLa~\citep{chuang2024dola}, CFG~\citep{sanchez2024cfg}, CAD and its
+adaptive/gated variants~\citep{shi2024cad,wang2025adacad,tao2026nwcad} contrast distributions under
+different models, layers or contexts. Visual contrastive decoding~\citep{leng2024vcd} uses a
+\emph{distorted} rather than empty input; our L1 variant is the textual analogue with a
+type-matched counterfactual. Pced~\citep{corallo2026pced} treats each retrieved document as an
+expert contrasted with a no-context baseline; RED~\citep{yamaguchi2026red} multiplies
+image- and rationale-conditional distributions in vision-language models. None of these intervene on
+the hops of the model's own reasoning graph, distinguish direct from total effects, or relate the
+contrast to PNS.
+
+\paragraph{Causal analyses of reasoning.} \citet{stolfo2023causal} quantify robustness of
+mathematical reasoning through interventions on a causal graph of the input;
+\citet{zecevic2023parrots} argue models ``talk'' causality without being causal; text-intervention
+effect estimation~\citep{guo2024causaldann} uses LLM rewrites as treatments. Our interventions are
+programmatic, so their ground-truth effects are known exactly.
+
+% ===================================================================================
+\section{Setup: a Structural Causal Model of Multi-Hop Reasoning}
+\label{sec:setup}
+
+\paragraph{Variables.} A question $Q$, a context $P=(P_{\mathrm{sup}},P_{\mathrm{dist}})$ of
+supporting and distractor passages, a chain of hops $H_1,\dots,H_k$, and an answer $A$. Each hop
+is rendered as \texttt{Hop $i$: $\langle$body$\rangle$ => $\langle$result$\rangle$}. The model acts
+as a \emph{reader} mechanism $\pa(a\mid Q,P,h_{1:k})$ over a finite candidate set $\mathcal{A}$.
+
+\paragraph{Two task graphs.} In \emph{bridge} chains (MuSiQue), hop $j$ resolves an entity that
+the next hop consumes and the answer is the result of the last hop:
+$Q\to H_1\to\cdots\to H_k\to A$, with $P_{\mathrm{sup},j}\to H_j$. In \emph{compositional} chains
+(CLUTRR), every hop contributes a relation that is composed into the answer:
+$H_j\to A$ for all $j$ and $H_j\to H_{j+1}$ through the shared entity. Distractors have no edge to
+$A$ in either task graph (\cref{fig:scm}).
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[node distance=1.1cm and 1.25cm, every node/.style={font=\small},
+  v/.style={draw,circle,minimum size=7mm,inner sep=0pt}, ar/.style={-{Stealth[length=2mm]}}]
+\node[v] (q) {$Q$};
+\node[v,right=of q] (h1) {$H_1$};
+\node[v,right=of h1] (h2) {$H_2$};
+\node[v,right=of h2] (h3) {$H_3$};
+\node[v,right=of h3] (a) {$A$};
+\node[v,above=of h1] (p1) {$P_1$};
+\node[v,above=of h2] (p2) {$P_2$};
+\node[v,above=of h3] (p3) {$P_3$};
+\node[v,above=of a,draw=red!70,text=red!70] (pd) {$P_{\!d}$};
+\draw[ar] (q)--(h1); \draw[ar] (h1)--(h2); \draw[ar] (h2)--(h3); \draw[ar] (h3)--(a);
+\draw[ar] (p1)--(h1); \draw[ar] (p2)--(h2); \draw[ar] (p3)--(h3);
+\draw[ar,dashed,blue!70] (h1) to[bend right=30] (a);
+\draw[ar,dashed,blue!70] (h2) to[bend right=22] (a);
+\draw[ar,dotted,red!70] (pd)--(a);
+\draw[ar,dotted,gray] (q) to[bend right=40] node[below,font=\scriptsize]{shortcut} (a);
+\end{tikzpicture}
+\caption{Task SCM. Solid: bridge chain. Dashed blue: extra edges of compositional chains. Red
+dotted: spurious distractor path that the \emph{reader} may use but the task graph forbids. Gray:
+parametric shortcut. CAD's contrast includes the red path; \hgcd{} holds $P$ fixed and contrasts
+interventions on $H_j$ only.}
+\label{fig:scm}
+\end{figure}
+
+\paragraph{Directed reasoning graph (DRG).} Given a generated chain $y=(h_1,\dots,h_k)$ we add an
+edge $i\to j$ ($i<j$) if the result of $h_i$ is mentioned in the body of $h_j$. Terminal hops are
+those whose result is the query target (CLUTRR) or the last hop (MuSiQue); the \emph{relevant set}
+$\Rel(y)$ contains the terminal hops and their DRG ancestors. Hops outside $\Rel(y)$ have no
+directed path to the answer.
+
+\paragraph{Interventions on hops.}
+\begin{definition}[Naive and graph-aware interventions]
+$\donai{j}$ replaces hop $j$ by a mask token and leaves all other hops unchanged.
+$\dotot{j}$ masks hop $j$ and, in every DRG descendant $d$ of $j$, masks every mention of the
+results of $j$ and of $d$. The latter is a deterministic, rollout-free approximation of
+$\mathrm{do}(H_j{=}\bot)$: descendant values are functions of $h_j$, hence unknown under the
+intervention. A \emph{placebo} rewrites hop $j$ without changing its entities or relation.
+\end{definition}
+For an answer $a$ we write $\Delta^{\mathrm{nai}}_j(a)=\pa(a\mid y)-\pa(a\mid\donai{j})$ and
+$\Delta^{\mathrm{tot}}_j(a)=\pa(a\mid y)-\pa(a\mid\dotot{j})$, suppressing $Q,P$.
+
+\paragraph{What is (and is not) causal here.} We do not assume the language model \emph{is} an SCM
+of the task. The reader $\pa$ is a deterministic function of its input, so editing hops in the
+prompt is an exact intervention on the reader's input, and $\Delta_j$ is an exact (not estimated)
+effect \emph{on the reader}. The task SCM only supplies ground truth: which hops are necessary,
+and which input changes should have no effect on the answer.
+
+\paragraph{Mask-token artifacts.} Replacing text by \texttt{[MASKED]} is itself out of
+distribution. Our estimator benchmark controls for this: the inserted redundant hop is masked in
+exactly the same way, so any effect caused by the mask token alone appears as a non-zero
+$\Delta$ on redundant hops and lowers the AUC. In addition, a \emph{mask-marker} control inserts
+\texttt{[MASKED]} into hop $j$ while keeping all of its content; its effect
+$\Delta^{\mathrm{marker}}_j$ measures the mask-token artifact directly and should be $\approx0$.
+
+% ===================================================================================
+\section{Method: Hop-Graph Contrastive Decoding}
+\label{sec:method}
+
+\paragraph{Answer-level rule (L2).} With uniform weights $w_j=1/|\Rel(y)|$ on relevant hops and a
+plausibility set $\mathcal{V}_\beta=\{a:\pa(a\mid y)\ge\beta\max_{a'}\pa(a'\mid y)\}$
+\citep{li2023contrastive},
+\begin{equation}
+\begin{aligned}
+\hat a&=\arg\max_{a\in\mathcal{V}_\beta}\; s_\alpha(a),\\
+s_\alpha(a)&=(1+\alpha)\,\pa(a\mid y)-\alpha\!\!\sum_{j\in\Rel(y)}\!\!w_j\,\pa(a\mid\dotot{j})
+=\pa(a\mid y)+\alpha\!\!\sum_{j\in\Rel(y)}\!\!w_j\,\Delta^{\mathrm{tot}}_j(a).
+\end{aligned}
+\label{eq:hgcd}
+\end{equation}
+The score is the answer probability plus $\alpha$ times the average total effect of the
+answer-relevant hops on that answer. Redundant hops ($j\notin\Rel(y)$) are never contrasted.
+
+\paragraph{Evidence-level rule (L1).} While emitting the \emph{result} tokens of a hop, we contrast
+the real context $P$ with a type-matched counterfactual $\tilde P$ of identical length and entity
+types in which the relational content differs (CLUTRR: names permuted within gender; MuSiQue:
+supporting passages swapped for distractors):
+$t^\star=\arg\max_{t\in\mathcal V_\beta}(1{+}\alpha)\pa(t\mid P,\cdot)-\alpha\pa(t\mid\tilde P,\cdot)$.
+Unlike an empty context, $\tilde P$ is in-distribution and controls for length and type cues.
+
+\begin{algorithm}[t]
+\caption{\hgcd{} (L2) for one question}
+\label{alg:hgcd}
+\begin{algorithmic}[1]
+\State $y\gets$ greedy chain from the model (optionally with L1 contrast on result tokens)
+\State Parse hops; build DRG; compute relevant set $\Rel(y)$
+\State $p\gets\pa(\cdot\mid Q,P,y)$ over $\mathcal{A}$ \Comment{one forward + KV-cached candidates}
+\For{$j\in\Rel(y)$} \State $p_j\gets\pa(\cdot\mid Q,P,\dotot{j})$ \EndFor
+\State \Return $\arg\max_{a\in\mathcal{V}_\beta}(1+\alpha)p(a)-\alpha\,\mathrm{mean}_j\,p_j(a)$
+\end{algorithmic}
+\end{algorithm}
+
+\paragraph{Cost.} L2 needs $1+|\Rel(y)|$ prefix forwards and a KV-cached pass over the candidate
+tokens; no extra generation. L1 doubles the forward cost of result tokens only.
+\paragraph{Choice of $\alpha$.} $\alpha$ is selected on the CLUTRR validation split and frozen; an
+adaptive variant sets $\alpha\cdot\mathrm{JSD}(p,\bar p_j)$ as in AdaCAD~\citep{wang2025adacad}.
+
+% ===================================================================================
+\section{Theory}
+\label{sec:theory}
+
+All proofs are short and given in \cref{app:proofs}; the propositions make predictions that our
+protocol tests directly.
+
+\begin{assumption}[Markov reader on bridge chains]\label{as:markov}
+For bridge chains, $\pa(a\mid h_{1:k})$ depends on $h_{1:j}$ only through $h_{j+1:k}$ whenever
+$h_{j+1}$ restates the result of $h_j$ ($j<k$).
+\end{assumption}
+
+\begin{proposition}[Naive masking is a direct effect]\label{prop:direct}
+$\Delta^{\mathrm{nai}}_j(a)$ equals the controlled direct effect of $H_j$ on $A$ with
+$H_{j+1:k}$ held at their observed values. Under \cref{as:markov}, $\Delta^{\mathrm{nai}}_j(a)=0$
+for every $j<k$ on bridge chains, whereas $\Delta^{\mathrm{tot}}_j(a)$ is not constrained to zero.
+On compositional chains, where $A$ reads each hop's relation, the direct effect is generally
+non-zero.
+\end{proposition}
+\emph{Prediction.} Naive masking separates necessary from redundant hops on CLUTRR but not on
+non-final MuSiQue hops; graph-aware masking works on both (\cref{tab:est}).
+
+\begin{assumption}[Mixture reader]\label{as:mixture}
+$\pa(a\mid Q,P,y)=\lambda_c\pa_c(a\mid y,P_{\mathrm{sup}})+\lambda_s\pa_s(a\mid Q)+
+\lambda_d\pa_d(a\mid P_{\mathrm{dist}})$, with $\lambda$'s non-negative, summing to one, and
+invariant to interventions on hops.
+\end{assumption}
+
+\begin{proposition}[Exact cancellation in probability space]\label{prop:mixture}
+Under \cref{as:mixture}, $s_\alpha(a)=\pa(a\mid y)+\alpha\lambda_c\sum_j w_j
+\big[\pa_c(a\mid y)-\pa_c(a\mid\dotot{j})\big]$: the shortcut $\pa_s$ and distractor $\pa_d$
+components cancel in the contrast for every $\alpha$. The log-space analogue does not cancel them.
+\end{proposition}
+
+\begin{proposition}[CAD amplifies distractor paths]\label{prop:cad}
+Under \cref{as:mixture} applied to direct answering, with no-context distribution $\pa_s(a\mid Q)$,
+CAD's score is $(1{+}\alpha)\log\big[\lambda_c\pa_c+\lambda_s\pa_s+\lambda_d\pa_d\big](a)-
+\alpha\log\pa_s(a\mid Q)$. For any $\alpha>0$ and any gold answer $g$, a distractor answer $a_d$ with
+$\pa_d(a_d)=1$ is preferred by CAD whenever $\pa_s(a_d\mid Q)$ is small enough, even if
+$\pa(g\mid Q,P)>\pa(a_d\mid Q,P)$. Adding or removing $P_{\mathrm{dist}}$ changes CAD's decision but
+leaves \hgcd{}'s contrast term unchanged.
+\end{proposition}
+\emph{Prediction.} Under distractor injection, CAD's accuracy degrades more than \hgcd{}'s, i.e.\
+$|\mathrm{ATE}_{\mathrm{distract}}|$ is larger for CAD.
+
+\begin{proposition}[PNS limit]\label{prop:pns}
+Interpret $\pa(a\mid\dotot{j})$ as $P(A{=}a\mid\mathrm{do}(H_j{=}\bot))$ and assume exogeneity and
+monotonicity as in \citet{yu2025pns}. Then $\Delta^{\mathrm{tot}}_j(a)=\mathrm{PNS}_j(a)$ and
+$\lim_{\alpha\to\infty}s_\alpha(a)/\alpha=\sum_{j\in\Rel(y)}w_j\,\mathrm{PNS}_j(a)$. Hence, within
+$\mathcal{V}_\beta$, \hgcd{} interpolates between the most probable answer ($\alpha{=}0$) and the
+answer for which the relevant hops are, on average, most necessary and sufficient.
+\end{proposition}
+
+% ===================================================================================
+\section{Experimental Protocol}
+\label{sec:protocol}
+
+\paragraph{Data.} \textbf{CLUTRR}~\citep{sinha2019clutrr} (\texttt{gen\_train234\_test2to10}),
+restricted to clean simple-path stories (the filter is reported), gives exact gold paths; ID
+$k\in\{2,3,4\}$, OOD $k\ge 5$; answers are scored over the 20 kinship relations.
+\textbf{MuSiQue-Ans}~\citep{trivedi2022musique} gives real text with gold decompositions; the
+context holds the supporting paragraphs plus 4 distractors. MuSiQue was built to resist
+single-hop shortcuts~\citep{min2019compositional}, which is why we prefer it to HotpotQA.
+Candidates for MuSiQue are the model's own answer, its hop results and the paragraph titles
+(never the gold answer); we report candidate recall.
+
+\paragraph{Binary interventions with known effects.}
+\begin{center}\small
+\begin{tabular}{lll}
+\toprule
+Intervention & Definition (programmatic, seeded) & True effect on $A$ \\
+\midrule
+\texttt{rename} & all names $\to$ fresh fictional names (gender-preserving) & 0 \\
+\texttt{order} & shuffle story sentences / paragraphs & 0 \\
+\texttt{distract} / \texttt{dist8} & insert a disconnected family / 4 extra distractor paragraphs & 0 \\
+\texttt{placebo\_input} & insert two neutral sentences without entities & 0 \\
+redundant hop & insert a true but off-path fact as a hop of a gold chain & necessity 0 \\
+\bottomrule
+\end{tabular}
+\end{center}
+For each method we report the paired ATE $\mathbb{E}[Y(1)-Y(0)]$ on accuracy with bootstrap 95\%
+CIs; a robust method has ATE $\approx0$. \texttt{placebo\_input} controls for ``any change hurts''.
+
+\paragraph{Estimator validation.} Gold chains with one inserted redundant hop give hop-level labels
+(necessary $=1$, redundant $=0$). We report AUC of $\Delta^{\mathrm{tot}}$, $\Delta^{\mathrm{nai}}$,
+the placebo and mask-marker $\Delta$, rollout PNS~\citep{yu2025pns} and the DRG path indicator, overall and on
+chains the model answers correctly ($\mathrm{PS}=1$), and mean effects by hop position.
+
+\paragraph{Methods.} Direct answering; CoT; self-consistency~\citep{wang2023selfconsistency}
+with 5 sampled chains (strictly more compute than \hgcd{}, which generates nothing extra);
+CAD~\citep{shi2024cad}; AdaCAD~\citep{wang2025adacad};
+CAD-chain (contrast with vs.\ without the chain, a text analogue of rationale-conditioned
+decoding); \hgcd{} and ablations: naive masking, no graph (all hops), log space, adaptive $\alpha$,
+placebo contrast (must equal CoT); L1 chains decoded with CoT or \hgcd{}.
+
+\paragraph{Pre-registered hypotheses.}
+\begin{hypothesis}[Estimator]\label{h:est} AUC$(\Delta^{\mathrm{tot}})\ge0.75$ on both datasets;
+$\Delta^{\mathrm{nai}}$ near zero on MuSiQue non-final gold hops; placebo and mask-marker
+$\Delta\approx0$ on all hops.
+\end{hypothesis}
+\begin{hypothesis}[Accuracy] \hgcd{} $>$ CoT and $>$ CAD-chain on OOD CLUTRR ($k\ge5$) and on
+MuSiQue, with paired bootstrap CIs excluding zero.\end{hypothesis}
+\begin{hypothesis}[Robustness] $|\mathrm{ATE}_{\mathrm{distract}}|$ of \hgcd{} $<$ that of CAD
+(\cref{prop:cad}); ATE of \texttt{placebo\_input} $\approx 0$ for all methods.\end{hypothesis}
+\begin{hypothesis}[Ablations] \hgcd{} $\ge$ naive-mask and no-graph variants; probability space
+$\ge$ log space; placebo contrast $=$ CoT.\end{hypothesis}
+
+\paragraph{Models and compute.} Qwen2.5-1.5B-Instruct~\citep{qwen2025qwen25} (main) and
+SmolLM2-1.7B-Instruct~\citep{allal2025smollm2} (second family) on two Kaggle T4 GPUs in fp16;
+Qwen2.5-7B-Instruct on one A100 for the scale point. Greedy decoding; $\beta=0.1$;
+$\alpha\in\{0,0.25,0.5,1,2,4\}$ chosen on the validation split.
+
+\paragraph{Statistics.} Bootstrap CIs (2{,}000 resamples), paired bootstrap differences and exact
+McNemar tests on the same questions. The two \emph{primary} comparisons are \hgcd{} vs.\ CoT and
+\hgcd{} vs.\ CAD-chain on OOD CLUTRR and on MuSiQue; all other contrasts are exploratory and are
+reported without multiplicity claims. With $n$ questions per split, the half-width of a 95\% CI on
+accuracy is about $1/\sqrt{n}$; paired tests are considerably tighter.
+
+% ===================================================================================
+\section{Results}
+\label{sec:results}
+
+\emph{All tables in this section are generated by the notebook; nothing is typed by hand.}
+
+\begin{table}[h]
+\centering\small
+\caption{Estimator validation (AUC for separating necessary from inserted redundant hops).}
+\label{tab:est}
+\maybeinput{\resultsdir/tab_estimators_auc.tex}\\[4pt]
+\maybeinput{\resultsdir/tab_estimators_pos.tex}
+\end{table}
+
+\begin{table}[h]
+\centering\small
+\caption{CLUTRR accuracy (\%) with bootstrap 95\% CIs. ID: $k\le4$; OOD: $k\ge5$.}
+\label{tab:clutrr}
+\maybeinput{\resultsdir/tab_clutrr_main.tex}
+\end{table}
+
+\begin{table}[h]
+\centering\small
+\caption{CLUTRR paired ATE (accuracy points) of binary interventions whose true effect is 0.}
+\label{tab:ate}
+\maybeinput{\resultsdir/tab_clutrr_ate.tex}
+\end{table}
+
+\begin{table}[h]
+\centering\small
+\caption{MuSiQue exact match (\%) and paired ATE.}
+\label{tab:musique}
+\maybeinput{\resultsdir/tab_musique_main.tex}\\[4pt]
+\maybeinput{\resultsdir/tab_musique_ate.tex}
+\end{table}
+
+\IfFileExists{\resultsdir/clutrr_acc_vs_k.pdf}{%
+\begin{figure}[h]\centering
+\includegraphics[width=0.45\linewidth]{\resultsdir/clutrr_acc_vs_k.pdf}\hfill
+\includegraphics[width=0.45\linewidth]{\resultsdir/clutrr_alpha_sweep.pdf}
+\caption{Left: accuracy vs.\ number of hops. Right: validation accuracy vs.\ $\alpha$.}
+\end{figure}}{}
+
+% ===================================================================================
+\section{Limitations}
+\textbf{Assumptions.} \cref{as:markov,as:mixture} idealise the reader; we treat the propositions as
+testable predictions rather than guarantees, and the protocol is designed to falsify them.
+\textbf{Rollout-free interventions.} $\dotot{j}$ approximates $\mathrm{do}(H_j)$ by masking rather
+than re-generating descendants; we validate it against rollout PNS where compute allows.
+\textbf{Format dependence.} The DRG requires hop-structured chains linked by explicit mentions;
+pronouns break links and shrink $\Rel(y)$ to the terminal hop. We report format success, hop
+fidelity against the gold path and the fraction of fully connected DRGs, and fall back to CoT
+when parsing fails. \textbf{Closed-set scoring.} All CLUTRR methods, including CoT, are scored
+over the same 20 relations, so differences are not due to answer extraction. \textbf{Candidate sets.} Answer-level contrast needs a finite
+candidate set; it is exact on CLUTRR and approximate on MuSiQue (we report candidate recall).
+\textbf{Scale.} Main experiments use 1.5--7B models; larger models may rely less on shortcuts.
+\textbf{Data filter.} We use CLUTRR stories whose gold graph is a simple path; stories with
+back-edges contain known label ambiguities.
+
+\section{Conclusion}
+Contrasting a model against interventions on its own reasoning graph turns step-level causal
+measurement into a training-free decoding rule. The rule is cheap, comes with falsifiable
+predictions, and is evaluated with interventions whose true effects are known.
+
+\bibliographystyle{plainnat}
+\bibliography{refs}
+
+\appendix
+\section{Proofs}
+\label{app:proofs}
+
+\paragraph{\Cref{prop:direct}.} $\donai{j}$ changes only $h_j$ and keeps $h_{j+1:k}$ at their
+observed values, so $\Delta^{\mathrm{nai}}_j$ is by definition the controlled direct effect
+$\pa(a\mid h_j,h_{-j})-\pa(a\mid\bot,h_{-j})$~\citep{pearl2001direct}. Under \cref{as:markov},
+$\pa(a\mid h_{1:k})=g(a\mid h_{j+1:k})$ for $j<k$, so both terms equal $g(a\mid h_{j+1:k})$ and the
+difference is zero. $\dotot{j}$ additionally changes $h_{j+1:k}$ (their results are masked), so
+$g$ is evaluated at a different argument and the difference is unconstrained. On compositional
+chains $\pa$ reads the relation of every hop, so removing $h_j$ alone changes the composed relation.
+$\square$
+
+\paragraph{\Cref{prop:mixture}.} Substituting \cref{as:mixture} into \cref{eq:hgcd}, with
+$\sum_j w_j=1$ and $\pa_s,\pa_d$ unaffected by interventions on hops:
+$s_\alpha(a)=(1{+}\alpha)[\lambda_c\pa_c(a\mid y)+\lambda_s\pa_s+\lambda_d\pa_d]-
+\alpha\sum_j w_j[\lambda_c\pa_c(a\mid\dotot{j})+\lambda_s\pa_s+\lambda_d\pa_d]
+=\pa(a\mid y)+\alpha\lambda_c\sum_jw_j[\pa_c(a\mid y)-\pa_c(a\mid\dotot{j})]$.
+In log space, $\log(\lambda_c u+r)-\log(\lambda_c v+r)$ depends on $r=\lambda_s\pa_s+\lambda_d\pa_d$
+unless $u=v$, so the shortcut terms do not cancel. $\square$
+
+\paragraph{\Cref{prop:cad}.} Let $m(a)=\pa(a\mid Q,P)$. CAD prefers $a_d$ over $g$ iff
+$(1{+}\alpha)\log\frac{m(a_d)}{m(g)}>\alpha\log\frac{\pa_s(a_d)}{\pa_s(g)}$. The left side is
+bounded below by $(1{+}\alpha)\log\frac{\lambda_d}{m(g)}$ since $m(a_d)\ge\lambda_d$, while the right
+side tends to $-\infty$ as $\pa_s(a_d)\to0$. For \hgcd{}, both terms of \cref{eq:hgcd} condition
+on the same $P$, so $\lambda_d\pa_d$ enters both and cancels (\cref{prop:mixture}). $\square$
+
+\paragraph{\Cref{prop:pns}.} Under exogeneity and monotonicity, Lemma 2 of \citet{yu2025pns}
+gives $\mathrm{PNS}=P(A{=}a\mid\mathrm{do}(S))-P(A{=}a\mid\mathrm{do}(S'))$. With $S=y$ and $S'=\dotot{j}$
+this is $\Delta^{\mathrm{tot}}_j(a)$. Dividing \cref{eq:hgcd} by $\alpha$ and letting
+$\alpha\to\infty$ removes the $\pa(a\mid y)/\alpha$ term. $\square$
+
+\section{Implementation and Reproducibility}
+\label{app:impl}
+Candidate log-probabilities are computed with one prefix forward and a KV-cached pass over the
+candidate tokens (verified against full recomputation to $2\times10^{-5}$). Prompts are two-shot,
+hop-structured; the second CLUTRR shot uses a relation outside the label set to avoid leaking label
+statistics. All interventions are seeded functions of the example id. The Kaggle notebook embeds
+the full package and writes every table in this paper.
+
+\section{Pilot run (pipeline sanity check)}
+\label{app:pilot}
+The following tables come from a CPU smoke run with Qwen2.5-0.5B-Instruct on a handful of
+examples. They verify that the pipeline runs end to end and are \textbf{not} evidence for or against
+any hypothesis.
+
+\begin{center}\small
+\maybeinput{\pilotdir/tab_estimators_auc.tex}\\[4pt]
+\maybeinput{\pilotdir/tab_clutrr_main.tex}
+\end{center}
+
+\end{document}
