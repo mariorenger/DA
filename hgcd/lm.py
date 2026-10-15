@@ -34,6 +34,21 @@ class LM:
         self.model.eval()
         self.device = next(self.model.parameters()).device
         self.n_boundary_fallback = 0
+        cfg = self.model.config
+        heads = getattr(cfg, "num_attention_heads", 16)
+        kvh = getattr(cfg, "num_key_value_heads", None) or heads
+        hd = getattr(cfg, "head_dim", None) or cfg.hidden_size // heads
+        bytes_el = torch.finfo(dtype).bits // 8
+        # KV-cache bytes per token: models without GQA (e.g. SmolLM2) need ~10x more than Qwen2.5
+        self.kv_bytes_per_token = 2 * cfg.num_hidden_layers * kvh * hd * bytes_el
+        self.vocab = getattr(cfg, "vocab_size", 150000)
+        import os
+        self.mem_budget = float(os.environ.get("HGCD_MEM_BUDGET_GB", "1.5")) * 2 ** 30
+
+    def _safe_chunk(self, chunk: int, prefix_len: int, cand_len: int) -> int:
+        kv = self.kv_bytes_per_token * (prefix_len + cand_len)
+        logits = 4 * cand_len * self.vocab
+        return max(1, min(chunk, int(self.mem_budget // max(1, kv + logits))))
 
     # ------------------------------------------------------------------ prompts
     def prompt(self, messages: List[dict], assistant_prefix: str = "") -> str:
@@ -49,6 +64,16 @@ class LM:
     def generate(self, prompts: List[str], max_new_tokens: int = 160, do_sample: bool = False,
                  temperature: float = 0.7, n: int = 1, batch_size: int = 8,
                  stop: str = "Answer:") -> List[str]:
+        try:
+            return self._generate(prompts, max_new_tokens, do_sample, temperature, n, batch_size, stop)
+        except torch.cuda.OutOfMemoryError:
+            if batch_size == 1:
+                raise
+            torch.cuda.empty_cache()
+            return self.generate(prompts, max_new_tokens, do_sample, temperature, n,
+                                 max(1, batch_size // 2), stop)
+
+    def _generate(self, prompts, max_new_tokens, do_sample, temperature, n, batch_size, stop):
         outs = []
         for i in range(0, len(prompts), batch_size):
             enc = self._enc(prompts[i:i + batch_size])
@@ -93,6 +118,7 @@ class LM:
         first = F.log_softmax(out.logits[0, -1].float(), -1)
         res = np.array([first[c[0]].item() for c in cids], dtype=np.float64)
         P = len(p_ids)
+        chunk = self._safe_chunk(chunk, P, max(len(c) for c in cids))
         for s0 in range(0, len(cids), chunk):
             sub = cids[s0:s0 + chunk]
             L = max(len(c) for c in sub)

@@ -30,11 +30,12 @@
 % Directory with tables produced by the notebook (copy the Kaggle results folder here).
 \newcommand{\resultsdir}{../results/kaggle_main}
 \newcommand{\pilotdir}{../results/pilot_cpu}
+\newcommand{\reliancedir}{../results/reliance}
 \newcommand{\pending}{\fbox{\parbox{0.9\linewidth}{\centering\small Pending: run \texttt{notebooks/hgcd\_kaggle.ipynb} and copy its output folder to \texttt{results/kaggle\_main}.}}}
 \newcommand{\maybeinput}[1]{\IfFileExists{#1}{\input{#1}}{\pending}}
 
-\title{Contrasting a Model Against Its Own Interventions:\\
-Hop-Graph Contrastive Decoding for Causally Grounded Multi-Hop Reasoning}
+\title{Do Language Models Use the Hops They Write?\\
+Graph-Aware Interventions on Reasoning Chains and the Limits of Contrastive Decoding}
 \author{Anonymous Authors}
 \date{}
 
@@ -42,25 +43,26 @@ Hop-Graph Contrastive Decoding for Causally Grounded Multi-Hop Reasoning}
 \maketitle
 
 \begin{abstract}
-Language models often reach the right answer without using the reasoning chain they write, and
-fail when spurious context or parametric shortcuts dominate. Context-aware decoding (CAD) and its
-variants counter this by contrasting the next-token distribution with and without the context.
-We give a causal reading of CAD: its contrast estimates the \emph{total} effect of the \emph{whole}
-context, including paths through distractors that have no causal edge to the answer. We propose
-\hgcd{} (Hop-Graph Contrastive Decoding), a training-free decoding rule that contrasts the model
-against \emph{interventions on its own reasoning graph}. \hgcd{} (i) parses the model's chain into a
-directed reasoning graph (DRG), (ii) intervenes on each answer-relevant hop together with its graph
-descendants, and (iii) re-weights answers by their probability plus $\alpha$ times the average
-\emph{total effect} of the chain on them, computed in probability space. Under explicit and testable assumptions we show that
-(a) the common ``mask one step'' estimator measures a controlled direct effect that vanishes on
-bridge-entity chains, (b) probability-space contrast cancels shortcut and distractor components of
-a mixture reader exactly, whereas CAD amplifies distractor components, and (c) in the
-$\alpha\to\infty$ limit \hgcd{} selects the answer with maximal hop-level probability of necessity
-and sufficiency (PNS). We pair the method with an evaluation protocol in which every intervention is
-a binary, programmatic manipulation with a \emph{known} ground-truth effect (renaming, reordering,
-distractor injection, placebo insertion: true effect $0$; inserted redundant hops: true necessity
-$0$), on CLUTRR (controlled kinship graphs, ID $k{\le}4$ / OOD $k{\ge}5$) and MuSiQue (real text,
-bridge-entity chains). All code runs end to end on a free Kaggle GPU.
+Chain-of-thought helps only if the answer actually depends on the steps a model writes. We study
+this dependence causally for multi-hop reasoning, using interventions on the model's own reasoning
+chain whose ground truth is known by construction. We show that the common ``mask one step''
+test measures a controlled \emph{direct} effect, which is provably zero for intermediate hops of
+bridge-entity chains, and we propose a graph-aware intervention that masks a hop together with its
+descendants in the chain's directed reasoning graph (DRG) and measures the \emph{total} effect. On
+MuSiQue with Qwen2.5-1.5B, the graph-aware estimator separates necessary hops from inserted
+redundant ones with AUC $0.97$ versus $0.79$ for naive masking: naive masking leaves the answer
+probability of non-final bridge hops unchanged ($\Delta{=}0.004$), whereas graph-aware masking
+lowers it by $0.64$, exactly as predicted. Placebo rewrites and a mask-marker control produce no
+effect (AUC $0.50$), ruling out artifacts. On CLUTRR the same model is \emph{causally decoupled}
+from its chain: even masking the final gold hop leaves its answer distribution unchanged.
+We then turn the measurement into a training-free decoding rule (\hgcd{}) that contrasts the model
+against interventions on its own hops, and we characterise when such contrastive decoding can help
+at all. At 1.5B it does not: \hgcd{} matches chain-of-thought on both datasets, and the predicted
+robustness advantage over context-aware decoding under distractor injection is \emph{not}
+observed. We report these negative results with their causal explanation: readout-level decoding
+can only amplify a dependence that exists, and cannot repair chains that fail upstream. All
+interventions are binary and programmatic, all code runs on a free Kaggle GPU, and the hypotheses
+for each round were fixed before the GPU runs.
 \end{abstract}
 
 % ===================================================================================
@@ -105,6 +107,10 @@ components exactly (\cref{prop:mixture}); \hgcd{} converges to a hop-level PNS r
 \item \textbf{A verifiable evaluation protocol}: binary, programmatic interventions with known
 ground-truth effects, an estimator-validation benchmark with known necessity labels, placebo
 controls, and paired statistics; everything reproducible on one free T4 GPU.
+\item \textbf{Empirical findings at 1.5B} (\cref{sec:results}): the graph-aware estimator is valid
+where the naive one fails (MuSiQue); the model is causally decoupled from its chain on CLUTRR;
+and readout-level contrastive decoding, including ours, does not improve accuracy or robustness,
+for reasons the causal analysis makes explicit.
 \end{enumerate}
 
 % ===================================================================================
@@ -116,7 +122,17 @@ paraphrases); \citet{turpin2023unfaithful} show biased features steer answers wi
 verbalised; FRODO~\citep{paul2024frodo} uses causal mediation~\citep{vig2020mediation} and trains
 small models with counterfactual preferences; FUR~\citep{tutek2025fur} measures faithfulness by
 unlearning steps; Thought Anchors~\citep{bogdan2025anchors} measures step importance by
-counterfactual resampling. We use interventions not only to \emph{measure} but to \emph{decode}.
+counterfactual resampling, and Thought Branches~\citep{macar2026branches} argues that step
+effects must be measured by resampling the continuation (a total effect), noting that removing a
+sentence while preventing its content from reappearing changes conclusions. FRODO already treats
+the rationale as a mediator and finds weak indirect effects for models under 20B, and
+\citet{somov2026breaking} find that models often fail to update after edits to intermediate
+structures. Our contribution relative to these is narrower and specific: (i) necessity labels and
+null effects that are \emph{known by construction}, so step-importance estimators can be
+\emph{validated} rather than compared with each other; (ii) a deterministic, rollout-free
+total-effect intervention for hop-structured chains, validated against resampling; (iii) the
+bridge-versus-compositional distinction, which predicts exactly where direct-effect estimators
+fail; and (iv) an exact mediation of distractor effects (chain vs.\ readout).
 
 \paragraph{Necessity and sufficiency.} \citet{yu2025pns} define step-level probabilities of
 necessity and sufficiency for chain-of-thought, prove identifiability under exogeneity and
@@ -140,6 +156,28 @@ mathematical reasoning through interventions on a causal graph of the input;
 \citet{zecevic2023parrots} argue models ``talk'' causality without being causal; text-intervention
 effect estimation~\citep{guo2024causaldann} uses LLM rewrites as treatments. Our interventions are
 programmatic, so their ground-truth effects are known exactly.
+
+\begin{table}[t]
+\centering\scriptsize
+\caption{Positioning against closely related work. ``GT'' = the true value of the measured effect
+is known by construction.}
+\label{tab:positioning}
+\begin{tabular}{p{2.3cm}p{2.2cm}p{2.6cm}cp{1.9cm}p{2.1cm}}
+\toprule
+Work & What is intervened on & Effect measured & GT? & Training & Controls \\
+\midrule
+\citet{lanham2023faithfulness} & model's CoT (truncate, add mistake, paraphrase) & answer change & no & none & paraphrase, filler tokens \\
+\citet{stolfo2023causal} (ACL) & input factors of math problems & total / direct causal effect & partly & none & -- \\
+\citet{paul2024frodo} (EMNLP-F) & rationale & mediation (indirect effect) & no & preference training & -- \\
+\citet{yu2025pns} (NeurIPS) & CoT step, replaced + rolled out & PNS & no (LLM judge) & SFT / ICL & -- \\
+\citet{macar2026branches} (ICLR) & sentence, resampled continuation & total effect, resilience & no & none & on- vs.\ off-policy \\
+\citet{somov2026breaking} & intermediate structure (rubric) & decision update rate & yes (deterministic map) & none & -- \\
+\citet{tutek2025fur} (EMNLP) & step information in weights & prediction change & no & unlearning & -- \\
+\citet{shi2024cad,wang2025adacad} & whole context & (implicit) total context effect & no & none (decoding) & -- \\
+\textbf{Ours} & hop + DRG descendants; binary input interventions & direct vs.\ total effect; NDE/NIE & \textbf{yes} & none & placebo, mask-marker, redundant hop, content-free \\
+\bottomrule
+\end{tabular}
+\end{table}
 
 % ===================================================================================
 \section{Setup: a Structural Causal Model of Multi-Hop Reasoning}
@@ -401,7 +439,92 @@ accuracy is about $1/\sqrt{n}$; paired tests are considerably tighter.
 \section{Results}
 \label{sec:results}
 
-\emph{All tables in this section are generated by the notebook; nothing is typed by hand.}
+\emph{All tables in this section are generated by the notebook; nothing is typed by hand.
+Model: Qwen2.5-1.5B-Instruct, fp16, one Kaggle T4; 238 CLUTRR test questions (118 ID, 120 OOD) and
+120 MuSiQue questions; 90 CLUTRR and 80 MuSiQue gold chains for estimator validation (360 and
+297 hops). Run time: 195 minutes.}
+
+\begin{table}[h]
+\centering\small
+\caption{Hypothesis scorecard for round 1 (Qwen2.5-1.5B). \checkmark: supported; $\times$:
+not supported; --: not evaluable from this run.}
+\label{tab:scorecard}
+\begin{tabular}{p{0.21\linewidth}p{0.47\linewidth}c}
+\toprule
+Hypothesis & Evidence & Verdict \\
+\midrule
+H1 Estimator (MuSiQue) & AUC$(\Delta^{\text{tot}})=0.971$ vs.\ $0.789$ naive; non-final gold hops:
+$\Delta^{\text{tot}}=0.639$, $\Delta^{\text{nai}}=0.004$; placebo and marker AUC $0.50$, $|\Delta|\le0.003$ & \checkmark \\
+H1 Estimator (CLUTRR) & all AUCs $0.47$--$0.54$; $|\Delta|\le0.017$ even for the final gold hop;
+model correct with the gold chain on only 67/360 hops & $\times$ (reader decoupled) \\
+H2 Accuracy & CLUTRR: \hgcd{} $=$ CoT ($18.1\%$, selected $\alpha{=}0.25$ leaves decisions
+unchanged); MuSiQue: $22.5$ vs.\ $20.8$ EM, CIs overlap & $\times$ \\
+H3 Robustness & MuSiQue \texttt{dist8}: CAD ATE $-0.8$, \hgcd{} $-7.5$, CoT $-9.2$ [$-16.7$,$-2.5$];
+CLUTRR: all ATE CIs contain 0; \texttt{placebo\_input} ATE $\approx0$ for every method & $\times$ \\
+H4 Readout & table not printed in this run's log & -- \\
+H5 Ablations & \hgcd{} $<$ naive-mask ($-5.0$, $p{=}0.004$) and $<$ log-space ($-4.6$, $p{=}0.04$)
+on CLUTRR, both at the dev-selected $\alpha{=}4$, in a regime where H1 fails & $\times$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\paragraph{The estimator is valid where the reader uses its chain (H1, MuSiQue).}
+Graph-aware masking identifies necessary hops almost perfectly, and the position breakdown
+(\cref{tab:est}) reproduces the qualitative prediction of \cref{prop:direct} with $297$ hops:
+naive masking measures a direct effect that is essentially zero on non-final bridge hops
+($0.004$), while the total effect is $0.639$, close to that of the final hop ($0.679$). The
+placebo and mask-marker controls are flat, so the effects are not produced by the
+\texttt{[MASKED]} token or by rewording.
+
+\paragraph{On CLUTRR the reader is causally decoupled from its chain (H1, CLUTRR).}
+Masking \emph{any} hop of a gold chain, including the final one, changes the probability of the
+gold relation by less than $0.02$ on average, and the model answers correctly from the gold chain
+for only about $19\%$ of chains (67 of 360 hop rows). The estimator cannot separate necessary from redundant hops because
+\emph{no} hop has an effect: the chain is decorative for this reader. This is a finding about the
+model, not a failure of the estimator (the DRG indicator, which uses only the chain's structure,
+has AUC $1.0$). Accuracy of every method ($15.5$--$23.1\%$) is close to always predicting the most frequent
+relation in this sample ($15.1\%$), and
+model-written chains form a connected DRG in only $25\%$ of cases.
+
+\paragraph{Contrastive decoding cannot amplify a dependence that does not exist (H2, H5).}
+On CLUTRR the dev-selected $\alpha$ for \hgcd{} is $0.25$, which leaves every decision unchanged.
+The naive-mask and log-space variants, selected at $\alpha{=}4$, gain $4$--$5$ points over CoT;
+because their contrast terms compare two nearly identical distributions (H1 fails here), we treat
+these gains as a re-weighting of the label prior rather than causal amplification, and test this
+explicitly in round 2 with a content-free calibration baseline (H8).
+
+\paragraph{Distractors act through the chain, not the readout (H3).}
+On MuSiQue, adding four distractor paragraphs lowers CoT's exact match by $9.2$ points, while CAD,
+which answers without a chain, is unaffected ($-0.8$). \cref{prop:cad} concerns the readout with
+the chain held fixed, but this ATE also lets the chain be regenerated under distractors. The
+pattern is what one expects if distractors mainly corrupt \emph{chain generation}, which no
+readout-level rule can undo (\cref{rem:scope}). Round 2 separates the two paths with an exact
+mediation analysis (H6).
+
+\subsection{Round-2 hypotheses (fixed before the next run)}
+\label{sec:round2}
+Each hypothesis below is computed by the updated notebook; the mediator (the chain) is set
+exactly by feeding the original chain under the intervened input, so the natural direct effect
+$\mathrm{NDE}=\mathbb E[Y(1,M(0))-Y(0,M(0))]$ is observed per question without cross-world
+assumptions, and $\mathrm{NIE}=\mathrm{TE}-\mathrm{NDE}$~\citep{pearl2001direct}.
+\begin{hypothesis}[Mediation]\label{h:med} Under \texttt{dist8}, most of CoT's total effect is
+indirect: $|\mathrm{NIE}|>|\mathrm{NDE}|$; with the chain fixed, \hgcd{}'s NDE is no larger in
+magnitude than CAD-chain's (the proper test of \cref{prop:cad}).\end{hypothesis}
+\begin{hypothesis}[Reliance grows with scale]\label{h:scale} Mean $\Delta^{\text{tot}}$ of gold
+hops on CLUTRR increases from 0.5B to 7B (Qwen2.5 0.5/1.5/3/7B), and AUC$(\Delta^{\text{tot}})$
+on CLUTRR exceeds $0.75$ at 7B.\end{hypothesis}
+\begin{hypothesis}[Calibration]\label{h:calib} The $\alpha{=}4$ gains of naive/log variants on
+CLUTRR are matched by content-free calibration~\citep{zhao2021calibrate} (contrast against the
+no-story, no-chain distribution).\end{hypothesis}
+\begin{hypothesis}[Estimator validity]\label{h:validity} On bridge chains, total-effect
+estimators (mask+descendants, counterfactual replacement with propagation, rollout PNS) all reach
+AUC $\ge0.9$ and agree with each other, while direct-effect estimators (mask hop only, replacement
+without propagation) stay near $0$ on non-final hops; on compositional chains direct and total
+estimators coincide. The deterministic mask+descendants estimator matches rollout PNS at a
+fraction ($\approx1/K$) of its cost.\end{hypothesis}
+\begin{hypothesis}[Where decoding can help]\label{h:niche} The gain of \hgcd{} over CoT is
+positive only for models with intermediate reliance (gold-hop $\Delta^{\text{tot}}$ neither
+$\approx0$ nor $\approx$ saturated).\end{hypothesis}
 
 \begin{table}[h]
 \centering\small
@@ -441,6 +564,22 @@ accuracy is about $1/\sqrt{n}$; paired tests are considerably tighter.
 \maybeinput{\resultsdir/tab_musique_ate.tex}
 \end{table}
 
+\begin{table}[h]\centering\scriptsize
+\caption{Round 2: reliance and estimator validity across model scales (estimator benchmark).
+PS: fraction of gold chains answered correctly; Rel.: mean total effect of gold hops on
+$p(\text{gold})$; remaining columns: AUC of each estimator for necessary vs.\ redundant hops.}
+\label{tab:reliance}
+\maybeinput{\reliancedir/tab_reliance.tex}
+\end{table}
+
+\IfFileExists{\resultsdir/tab_musique_mediation.tex}{%
+\begin{table}[h]\centering\small
+\caption{Mediation of intervention effects (EM points): total, natural direct (chain held at the
+original) and natural indirect (through the regenerated chain).}
+\label{tab:mediation}
+\input{\resultsdir/tab_musique_mediation.tex}
+\end{table}}{}
+
 \IfFileExists{\resultsdir/clutrr_acc_vs_k.pdf}{%
 \begin{figure}[h]\centering
 \includegraphics[width=0.45\linewidth]{\resultsdir/clutrr_acc_vs_k.pdf}\hfill
@@ -465,9 +604,13 @@ candidate set; it is exact on CLUTRR and approximate on MuSiQue (we report candi
 back-edges contain known label ambiguities.
 
 \section{Conclusion}
-Contrasting a model against interventions on its own reasoning graph turns step-level causal
-measurement into a training-free decoding rule. The rule is cheap, comes with falsifiable
-predictions, and is evaluated with interventions whose true effects are known.
+Measuring whether a model uses its reasoning steps requires interventions that respect the
+chain's graph: naive step masking measures a direct effect and misses intermediate bridge hops
+entirely. With the graph-aware estimator, we find that a 1.5B model relies heavily on its chain
+for real multi-hop QA but not at all on CLUTRR. Turning the measurement into a contrastive
+decoding rule does not improve accuracy at this scale, and our causal analysis says why: decoding
+at the readout can amplify only dependence that exists, and distractors harm reasoning mainly
+through the chain. The round-2 hypotheses test these explanations directly.
 
 \bibliographystyle{plainnat}
 \bibliography{refs}

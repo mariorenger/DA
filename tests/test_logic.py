@@ -101,3 +101,23 @@ def test_stage_cache(tmp_path):
     p = str(tmp_path / "stage.pkl")
     assert _cached(p, f) == [1, 2, 3] and _cached(p, f) == [1, 2, 3]
     assert len(calls) == 1
+
+
+def test_replace_result_direct_vs_total():
+    d = C.replace_result(BRIDGE, 0, "Robert Fripp", propagate=False)
+    t = C.replace_result(BRIDGE, 0, "Robert Fripp", propagate=True)
+    assert d[0].result == "Robert Fripp" and "Steve Hillage" in d[1].body
+    assert t[0].result == "Robert Fripp" and "Robert Fripp" in t[1].body
+
+
+def test_estimator_latex_runs(tmp_path):
+    import pandas as pd
+    from hgcd import report as R
+    from hgcd.metrics import estimator_table
+    rows = [dict(dataset="musique", uid="u", k=2, hop=j, n_hops=3, label=int(j != 1),
+                 is_final=int(j == 2), drg_relevant=int(j != 1), p_full_gold=.9, full_correct=1,
+                 d_total=.5 * (j != 1), d_naive=.1, d_placebo=0., d_maskmark=0., d_cf_direct=.1,
+                 d_cf_total=.4 * (j != 1), pns_rollout=float("nan")) for j in range(3)] * 2
+    aucs, pos = estimator_table(rows)
+    R.estimator_latex(aucs, pos, str(tmp_path / "a.tex"), str(tmp_path / "b.tex"))
+    assert "mask-tot" in (tmp_path / "b.tex").read_text()

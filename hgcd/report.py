@@ -12,12 +12,12 @@ from .metrics import accuracy_summary, ate_table
 
 NAMES = {
     "direct": "Direct (no CoT)", "cot": "CoT", "sc": "Self-consistency", "cad": "CAD", "adacad": "AdaCAD",
-    "cad_chain": "CAD-chain", "hgcd": "\\textbf{HGCD}", "hgcd_log": "HGCD (log-space)",
+    "cad_chain": "CAD-chain", "calib": "Calibration (content-free)", "hgcd": "\\textbf{HGCD}", "hgcd_log": "HGCD (log-space)",
     "hgcd_naive": "HGCD (naive mask)", "hgcd_uniform": "HGCD (no graph)",
     "hgcd_placebo": "HGCD (placebo)", "hgcd_ada": "HGCD (adaptive $\\alpha$)",
     "l1+cot": "L1 + CoT", "l1+hgcd": "\\textbf{L1 + HGCD}", "free": "Free generation",
 }
-ORDER = ["direct", "cot", "sc", "cad", "adacad", "cad_chain", "hgcd_naive", "hgcd_uniform",
+ORDER = ["direct", "cot", "sc", "cad", "adacad", "cad_chain", "calib", "hgcd_naive", "hgcd_uniform",
          "hgcd_log", "hgcd_ada", "hgcd_placebo", "hgcd", "l1+cot", "l1+hgcd", "free"]
 
 
@@ -71,33 +71,42 @@ def ate_latex(df: pd.DataFrame, out: str, col: str = "correct") -> pd.DataFrame:
     return a
 
 
+EST_NAMES = {
+    "d_naive": "Mask hop only (direct)",
+    "d_total": "Mask hop + DRG descendants (total)",
+    "d_cf_direct": "Replace result, keep downstream (direct)",
+    "d_cf_total": "Replace result, propagate (total)",
+    "pns_rollout": "Corrupt + resample downstream (rollout PNS)",
+    "drg_relevant": "DRG path indicator (structure only)",
+    "d_placebo": "Placebo rewrite (control)",
+    "d_maskmark": "Mask token, content kept (control)",
+}
+EST_SHORT = {"d_total": "mask-tot", "d_naive": "mask-dir", "d_cf_total": "cf-tot",
+             "d_cf_direct": "cf-dir", "pns_rollout": "rollout", "d_placebo": "placebo",
+             "d_maskmark": "marker"}
+
+
 def estimator_latex(aucs: pd.DataFrame, pos: pd.DataFrame, out_auc: str, out_pos: str):
-    en = {"d_total": "$\\Delta^{\\text{total}}$ (graph-aware mask)",
-          "d_naive": "$\\Delta^{\\text{naive}}$ (mask hop only)",
-          "d_placebo": "$\\Delta^{\\text{placebo}}$ (content-preserving)",
-          "d_maskmark": "$\\Delta^{\\text{marker}}$ (mask token, content kept)",
-          "pns_rollout": "PNS (rollout)", "drg_relevant": "DRG path indicator"}
     ds = sorted(set(aucs.dataset))
     lines = ["\\begin{tabular}{l" + "cc" * len(ds) + "}", "\\toprule",
              "Estimator & " + " & ".join(f"\\multicolumn{{2}}{{c}}{{{d}}}" for d in ds) + " \\\\",
              " & " + " & ".join(["all", "PS$=$1"] * len(ds)) + " \\\\", "\\midrule"]
-    for e in ["d_naive", "d_total", "pns_rollout", "drg_relevant", "d_placebo", "d_maskmark"]:
+    for e in EST_NAMES:
         if e not in set(aucs.estimator):
             continue
         cells = []
         for d in ds:
             r = aucs[(aucs.dataset == d) & (aucs.estimator == e)]
-            cells += ([f"{r.auc_all.values[0]:.3f}", f"{r.auc_ps1.values[0]:.3f}"]
-                      if len(r) else ["--", "--"])
-        lines.append(f"{en[e]} & " + " & ".join(cells) + " \\\\")
+            ok = len(r) and not np.isnan(r.auc_all.values[0])
+            cells += ([f"{r.auc_all.values[0]:.3f}", f"{r.auc_ps1.values[0]:.3f}"] if ok else ["--", "--"])
+        lines.append(f"{EST_NAMES[e]} & " + " & ".join(cells) + " \\\\")
     lines += ["\\bottomrule", "\\end{tabular}"]
     _write(out_auc, "\n".join(lines) + "\n")
-    lines = ["\\begin{tabular}{llcccc}", "\\toprule",
-             "Dataset & Hop type & $\\Delta^{\\text{total}}$ & $\\Delta^{\\text{naive}}$ & "
-             "$\\Delta^{\\text{placebo}}$ & $\\Delta^{\\text{marker}}$ \\\\", "\\midrule"]
+    cols = [c for c in EST_SHORT if c in pos.columns and not pos[c].isna().all()]
+    lines = ["\\begin{tabular}{ll" + "c" * len(cols) + "}", "\\toprule",
+             "Dataset & Hop type & " + " & ".join(EST_SHORT[c] for c in cols) + " \\\\", "\\midrule"]
     for _, r in pos.iterrows():
-        lines.append(f"{r.dataset} & {r.position} & {r.d_total:.3f} & {r.d_naive:.3f} & "
-                     f"{r.d_placebo:.3f} & {r.d_maskmark:.3f} \\\\")
+        lines.append(f"{r.dataset} & {r.position} & " + " & ".join(f"{r[c]:.3f}" for c in cols) + " \\\\")
     lines += ["\\bottomrule", "\\end{tabular}"]
     _write(out_pos, "\n".join(lines) + "\n")
 
@@ -154,3 +163,70 @@ def readout_latex(df: pd.DataFrame, out: str, methods=("cot", "sc", "cad_chain",
     lines += ["\\bottomrule", "\\end{tabular}"]
     _write(out, "\n".join(lines) + "\n")
     return s
+
+
+def mediation_latex(med: pd.DataFrame, out: str):
+    lines = ["\\begin{tabular}{llccc}", "\\toprule",
+             "Intervention & Method & TE & NDE (chain fixed) & NIE (via chain) \\\\", "\\midrule"]
+    for cond in sorted(set(med.cond)):
+        for m in [m for m in ORDER if m in set(med[med.cond == cond].method)]:
+            r = med[(med.cond == cond) & (med.method == m)].iloc[0]
+            lines.append(f"{cond.replace('_', chr(92) + '_')} & {NAMES.get(m, m)} & "
+                         f"{_fmt(r.te, r.te_lo, r.te_hi)} & {_fmt(r.nde, r.nde_lo, r.nde_hi)} & "
+                         f"{_fmt(r.nie, r.nie_lo, r.nie_hi)} \\\\")
+        lines.append("\\midrule")
+    lines[-1] = "\\bottomrule"
+    lines.append("\\end{tabular}")
+    _write(out, "\n".join(lines) + "\n")
+
+
+def reliance_table(run_dirs: Dict[str, str], out_tex: str, out_pdf: str = None) -> pd.DataFrame:
+    """Aggregate estimator runs across models: reliance (mean total effect of gold hops) and
+    AUC of each estimator, per dataset and model."""
+    from .metrics import estimator_table
+    rows = []
+    for label, d in run_dirs.items():
+        p = os.path.join(d, "estimators.csv")
+        if not os.path.exists(p):
+            continue
+        est = pd.read_csv(p)
+        aucs, pos = estimator_table(est.to_dict("records"))
+        for ds, g in est.groupby("dataset"):
+            gold = g[g.label == 1]
+            row = dict(model=label, dataset=ds, reliance_final=gold[gold.is_final == 1].d_total.mean(),
+                       reliance_nonfinal=gold[gold.is_final == 0].d_total.mean(),
+                       ps1=g.drop_duplicates("uid").full_correct.mean())
+            for _, a in aucs[aucs.dataset == ds].iterrows():
+                row["auc_" + a.estimator] = a.auc_all
+            rows.append(row)
+    df = pd.DataFrame(rows)
+    if df.empty:
+        return df
+    cols = [c for c in ["auc_d_naive", "auc_d_total", "auc_d_cf_direct", "auc_d_cf_total",
+                        "auc_pns_rollout", "auc_d_placebo"] if c in df]
+    head = ["Model", "Data", "PS", "Rel.(final)", "Rel.(non-final)"] + \
+           [EST_SHORT.get(c[4:], c[4:]) for c in cols]
+    lines = ["\\begin{tabular}{ll" + "c" * (3 + len(cols)) + "}", "\\toprule",
+             " & ".join(head) + " \\\\", "\\midrule"]
+    for _, r in df.iterrows():
+        cells = [r.model, r.dataset, f"{r.ps1:.2f}", f"{r.reliance_final:.3f}",
+                 f"{r.reliance_nonfinal:.3f}"] + \
+                ["--" if pd.isna(r[c]) else f"{r[c]:.3f}" for c in cols]
+        lines.append(" & ".join(cells) + " \\\\")
+    lines += ["\\bottomrule", "\\end{tabular}"]
+    _write(out_tex, "\n".join(lines) + "\n")
+    if out_pdf:
+        import matplotlib
+        matplotlib.use("Agg")
+        import matplotlib.pyplot as plt
+        fig, ax = plt.subplots(figsize=(4.2, 3.0))
+        for ds, g in df.groupby("dataset"):
+            ax.plot(g.model, g.reliance_final, marker="o", label=f"{ds} final hop")
+            ax.plot(g.model, g.reliance_nonfinal, marker="s", ls="--", label=f"{ds} non-final")
+        ax.set_ylabel("mean total effect on p(gold)")
+        ax.legend(fontsize=7, frameon=False)
+        plt.xticks(rotation=30, fontsize=7)
+        fig.tight_layout()
+        fig.savefig(out_pdf)
+        plt.close(fig)
+    return df

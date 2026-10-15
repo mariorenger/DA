@@ -13,7 +13,7 @@ import pandas as pd
 
 from .decoding import decide
 
-GREEDY_METHODS = ["direct", "cot", "sc", "cad", "adacad", "cad_chain", "hgcd", "hgcd_log",
+GREEDY_METHODS = ["direct", "cot", "sc", "cad", "adacad", "cad_chain", "calib", "hgcd", "hgcd_log",
                   "hgcd_naive", "hgcd_uniform", "hgcd_placebo", "hgcd_ada"]
 NEEDS_FULL = {"hgcd_naive", "hgcd_placebo"}
 
@@ -163,13 +163,50 @@ def estimator_table(rows: List[Dict]) -> Tuple[pd.DataFrame, pd.DataFrame]:
     aucs = []
     for ds, g in df.groupby("dataset"):
         g2 = g[g.full_correct == 1]  # PS = 1 condition (as in PNS identifiability)
-        for est in ["d_total", "d_naive", "d_placebo", "d_maskmark", "pns_rollout", "drg_relevant"]:
+        for est in ["d_total", "d_naive", "d_cf_direct", "d_cf_total", "pns_rollout", "d_placebo",
+                    "d_maskmark", "drg_relevant"]:
             if est not in g or g[est].isna().all():
                 continue
             aucs.append(dict(dataset=ds, estimator=est, auc_all=auc(g[est], g.label),
                              auc_ps1=auc(g2[est], g2.label), n_hops=len(g), n_ps1=len(g2)))
     df["position"] = np.where(df.label == 0, "redundant",
                               np.where(df.is_final == 1, "gold-final", "gold-nonfinal"))
-    pos = df.groupby(["dataset", "position"])[["d_total", "d_naive", "d_placebo",
-                                               "d_maskmark"]].mean().reset_index()
+    cols = [c for c in ["d_total", "d_naive", "d_cf_total", "d_cf_direct", "pns_rollout",
+                         "d_placebo", "d_maskmark"] if c in df]
+    pos = df.groupby(["dataset", "position"])[cols].mean().reset_index()
     return pd.DataFrame(aucs), pos
+
+
+def fixed_records(recs: List[Dict]) -> List[Dict]:
+    """Records whose chain is the ORIGINAL chain M(0) read under the intervened input."""
+    out = []
+    for r in recs:
+        if r.get("fixed") is None or r.get("chain_src", "greedy") != "greedy":
+            continue
+        d = dict(r)
+        d.update(r["fixed"])
+        d["p_nai"] = d["p_pla"] = None
+        d["sc_votes"] = None
+        out.append(d)
+    return out
+
+
+def mediation_table(df: pd.DataFrame, df_fixed: pd.DataFrame, col: str = "correct",
+                    base_cond: str = "orig") -> pd.DataFrame:
+    """Decompose each intervention's total effect into a direct effect on the readout (NDE,
+    chain held at M(0)) and an indirect effect through the regenerated chain (NIE = TE - NDE).
+    Because the mediator is set exactly, Y(1, M(0)) is observed for every unit."""
+    y0 = df[df.cond == base_cond].set_index(["uid", "method"])[col].rename("y0")
+    out = []
+    for cond in sorted(set(df_fixed.cond)):
+        y1 = df[df.cond == cond].set_index(["uid", "method"])[col].rename("y1")
+        yf = df_fixed[df_fixed.cond == cond].set_index(["uid", "method"])[col].rename("yf")
+        j = pd.concat([y0, y1, yf], axis=1, join="inner").reset_index()
+        for m, g in j.groupby("method"):
+            te, te_lo, te_hi = boot_ci((g.y1 - g.y0).values)
+            nde, nde_lo, nde_hi = boot_ci((g.yf - g.y0).values)
+            nie, nie_lo, nie_hi = boot_ci((g.y1 - g.yf).values)
+            out.append(dict(cond=cond, method=m, te=te, te_lo=te_lo, te_hi=te_hi, nde=nde,
+                            nde_lo=nde_lo, nde_hi=nde_hi, nie=nie, nie_lo=nie_lo, nie_hi=nie_hi,
+                            n=len(g)))
+    return pd.DataFrame(out)

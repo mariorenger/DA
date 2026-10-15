@@ -136,3 +136,56 @@ relations correctly: hop fidelity 0.56, DRG connected 61%).
 1. If AUC(Δ^total) < 0.75 on Qwen2.5-1.5B, stop (go/no-go) and write an analysis paper.
 2. If HGCD ≈ placebo-contrast, the decoding gains are not causal; report that honestly.
 3. DRG connectivity on CLUTRR (61% at 0.5B) may limit HGCD; check at 1.5B and 7B.
+
+## Round 4: after the first GPU run (Kaggle T4, Qwen2.5-1.5B, 195 min) and a new literature check
+
+### What the data says (`results/kaggle_main/`)
+| Hypothesis | Result | Verdict |
+|---|---|---|
+| H1 estimator, MuSiQue | AUC 0.971 (mask+descendants) vs 0.789 (mask only). Non-final gold hops: Δtot 0.639 vs Δnaive 0.004. Placebo/marker AUC 0.50, |Δ| ≤ 0.003 | supported, strongly |
+| H1 estimator, CLUTRR | all AUC 0.47–0.54. Even the final gold hop has Δ ≈ 0.004. Correct with the gold chain on only ~19% of chains | fails: the model ignores its chain on CLUTRR |
+| H2 accuracy | HGCD = CoT on CLUTRR (α=0.25 changes nothing); MuSiQue 22.5 vs 20.8, CIs overlap | not supported |
+| H3 robustness | MuSiQue dist8: CAD −0.8, HGCD −7.5, CoT −9.2 [−16.7, −2.5] | not supported (prediction failed) |
+| H5 ablations | naive/log variants at α=4 beat HGCD by 4–5 points on CLUTRR, in a regime with no causal signal | likely label-prior calibration (tested next as H8) |
+
+### Literature check: novelty must be narrowed
+- **FRODO (EMNLP-F 2024)** already treats the rationale as a mediator and finds weak indirect
+  effects under 20B parameters. "Small models don't use their chains" is **not new**.
+- **Thought Branches (ICLR 2026)** already argues that step effects must be measured by
+  resampling (a total effect) and notes that removing a sentence while blocking its reappearance
+  changes conclusions. The **direct-vs-total distinction is not new** in spirit.
+- **Breaking the Chain (arXiv 2026)** shows models often fail to update after edits to
+  intermediate structures.
+- What remains specific to this project: (i) **known-by-construction ground truth** for necessity
+  and for null effects, so estimators can be *validated* rather than compared with each other;
+  (ii) a deterministic, rollout-free total-effect intervention for hop chains, validated against
+  resampling; (iii) the bridge-vs-compositional prediction of *where* direct estimators fail
+  (confirmed: Δnaive 0.004 vs Δtot 0.639); (iv) an exact NDE/NIE mediation of distractor effects.
+
+### Decision: continue, but pivot
+- **Drop** "HGCD improves accuracy" as the headline. Keep HGCD as a probe and report the negative
+  result with its causal explanation: readout decoding can only amplify dependence that exists.
+- **New headline:** a ground-truth benchmark for step-importance estimators across model scale and
+  task-graph type, plus mediation of robustness failures. This is an analysis paper, the same
+  kind as Stolfo (ACL 2023), FUR (EMNLP 2025) and Thought Branches (ICLR 2026).
+- **Realistic venue:** ACL/EMNLP Findings, or main only if the scale study shows a clear pattern
+  (e.g. CLUTRR reliance switching on between 3B and 7B while direct estimators keep failing on
+  bridge hops at every scale).
+
+### Changes made in this round
+- Added estimators: counterfactual replacement (direct / propagated) and rollout PNS on MuSiQue.
+  The benchmark now compares 5 estimators and 2 controls against ground truth.
+- Added `reliance` preset and notebook mode: Qwen2.5 0.5/1.5/3/7B + SmolLM2 over 2 GPUs (7B
+  sharded with `device_map=auto`), aggregated into `tab_reliance.tex`.
+- Added exact mediation (NDE with the original chain fed under the intervened input; NIE = TE −
+  NDE) and a content-free calibration baseline (Zhao et al. 2021).
+- **Bug: SmolLM2 ran out of GPU memory at the end of round 1.** It has no grouped-query attention,
+  so its KV cache is about 10× Qwen's per token. Fixed with KV-aware chunk sizes, OOM backoff for
+  generation, and `expandable_segments`.
+
+### Kill criteria for round 2
+- If, at 7B, CLUTRR reliance is still ≈ 0 **and** the total-effect estimators do not beat the
+  direct ones on MuSiQue at every scale, the estimator story is too thin for a main-track paper:
+  write it as a short or Findings paper.
+- If mask+descendants does not track rollout PNS (rank correlation < 0.5), drop the "cheap
+  deterministic total effect" claim.

@@ -353,3 +353,13 @@ def musique_condition(ex: MusiqueExample, cond: str) -> MusiqueExample:
     if cond == "order":
         return replace(ex, condition="order", order_seed=1)
     raise ValueError(cond)
+
+
+def map_names(text: str, src: ClutrrExample, dst: ClutrrExample) -> str:
+    """Rewrite a chain produced for `src` into `dst`'s entity names (identity unless renamed).
+    Entities are aligned by index, which `rename` preserves."""
+    if src.names == dst.names[:len(src.names)]:
+        return text
+    m = {a: b for a, b in zip(src.names, dst.names)}
+    return re.sub(r"\b(" + "|".join(map(re.escape, sorted(m, key=len, reverse=True))) + r")\b",
+                  lambda x: m[x.group(1)], text)

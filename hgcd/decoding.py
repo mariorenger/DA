@@ -63,7 +63,7 @@ def _mix(ps: List[np.ndarray], idx: List[int]) -> Optional[np.ndarray]:
     return np.mean([ps[j] for j in idx], axis=0)
 
 
-METHODS = ["direct", "cot", "cad", "adacad", "cad_chain", "hgcd", "hgcd_log", "hgcd_naive",
+METHODS = ["direct", "cot", "cad", "adacad", "cad_chain", "calib", "hgcd", "hgcd_log", "hgcd_naive",
            "hgcd_uniform", "hgcd_placebo", "hgcd_ada"]
 
 
@@ -85,6 +85,8 @@ def decide(d: Dict, method: str, alpha: float = 1.0, beta: float = 0.1) -> int:
         return log_contrast(p_dir, p_noctx, jsd(p_dir, p_noctx), beta)
     if method == "cad_chain":
         return log_contrast(p_cot, p_dir, alpha, beta)
+    if method == "calib":  # contextual calibration (content-free input), no causal content
+        return log_contrast(p_cot, p_noctx, alpha, beta)
     # ---- HGCD family: contrast the chain against do()-interventions on its own hops
     if n_hops == 0:
         return int(np.argmax(p_cot))

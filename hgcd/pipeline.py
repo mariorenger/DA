@@ -50,6 +50,8 @@ class Config:
     ms_conditions: List[str] = field(default_factory=lambda: ["orig", "dist8", "order"])
     n_est_ms: int = 80
     run_musique: bool = True
+    only_estimators: bool = False        # "reliance" study: estimator stage only
+    device_map: str = ""                 # e.g. "auto" to shard a 7B model over 2 T4s
 
 
 PRESETS = {
@@ -60,6 +62,9 @@ PRESETS = {
     "kaggle": dict(),
     "kaggle_full": dict(n_per_k=80, n_dev=120, n_est_per_k=60, est_rollouts=4, n_ms=300,
                         n_est_ms=200),
+    # Reliance-vs-scale study (cheap): run once per model size, estimator stage only.
+    "reliance": dict(ks_est=[2, 3, 4], n_est_per_k=60, n_est_ms=150, est_rollouts=4,
+                     only_estimators=True),
     "a100": dict(model="Qwen/Qwen2.5-7B-Instruct", ks_test=[2, 3, 4, 5, 6, 7, 8, 9, 10],
                  n_per_k=100, n_dev=150, n_est_per_k=80, est_rollouts=4, n_ms=500,
                  n_est_ms=300, batch_size=16),
@@ -109,7 +114,7 @@ def run(cfg: Config):
     with open(os.path.join(cfg.outdir, "config.json"), "w") as f:
         json.dump(asdict(cfg), f, indent=1)
     t0 = time.time()
-    lm = LM(cfg.model)
+    lm = LM(cfg.model, device_map=cfg.device_map or None)
     _log(f"loaded {cfg.model} on {lm.device}")
     summary = {"model": cfg.model}
 
@@ -135,7 +140,9 @@ def run(cfg: Config):
         ms_est = [ms[i] for i in rng.choice(len(ms), cfg.n_est_ms, replace=False)]
         _log(f"estimator validation on {len(ms_est)} MuSiQue gold chains")
         est_rows = est_rows + _cached(os.path.join(cfg.outdir, "stage_est_musique.pkl"),
-                                      lambda: E.run_estimators_musique(lm, ms_est, seed=cfg.seed))
+                                      lambda: E.run_estimators_musique(lm, ms_est, seed=cfg.seed,
+                                                                       rollouts=cfg.est_rollouts,
+                                                                       batch_size=cfg.batch_size))
     pd.DataFrame(est_rows).to_csv(os.path.join(cfg.outdir, "estimators.csv"), index=False)
     aucs, pos = M.estimator_table(est_rows)
     R.estimator_latex(aucs, pos, os.path.join(cfg.outdir, "tab_estimators_auc.tex"),
@@ -144,6 +151,12 @@ def run(cfg: Config):
     summary["estimator_position"] = pos.to_dict("records")
     _log("\n" + aucs.to_string())
     _log("\n" + pos.to_string())
+    if cfg.only_estimators:
+        summary["minutes"] = (time.time() - t0) / 60
+        with open(os.path.join(cfg.outdir, "summary.json"), "w") as f:
+            json.dump(summary, f, indent=1, default=float)
+        _log(f"done (estimators only) in {summary['minutes']:.1f} min -> {cfg.outdir}")
+        return summary
 
     # ------------------------------------------------------------- 2) alpha selection on dev
     dev_ex = D.sample_by_k(dev, [2, 3, 4], max(1, cfg.n_dev // 3), cfg.seed + 1)
@@ -174,7 +187,15 @@ def run(cfg: Config):
     R.figures(df, sweep, cfg.outdir, "clutrr")
     ro = R.readout_latex(df, os.path.join(cfg.outdir, "tab_clutrr_readout.tex"))
     summary["clutrr_readout"] = ro.to_dict("records")
-    comps = [M.paired_compare(df, "hgcd", b) for b in ["cot", "sc", "cad_chain", "hgcd_placebo",
+    fx = M.fixed_records(recs)
+    if fx:
+        dff = _table_with_alphas(fx, {m: a for m, a in best.items() if not m.startswith("l1+")},
+                                 cfg.beta, M.clutrr_table)
+        med = M.mediation_table(df, dff)
+        R.mediation_latex(med, os.path.join(cfg.outdir, "tab_clutrr_mediation.tex"))
+        summary["clutrr_mediation"] = med.to_dict("records")
+        _log("\n" + med[["cond", "method", "te", "nde", "nie"]].to_string())
+    comps = [M.paired_compare(df, "hgcd", b) for b in ["cot", "sc", "cad_chain", "calib", "hgcd_placebo",
                                                         "hgcd_naive", "hgcd_uniform", "hgcd_log"]]
     if cfg.l1:
         comps.append(M.paired_compare(df, "l1+hgcd", "cot"))
@@ -204,6 +225,13 @@ def run(cfg: Config):
         ms_s = R.main_table(mdf, os.path.join(cfg.outdir, "tab_musique_main.tex"), col="em",
                             by_split=False)
         ms_a = R.ate_latex(mdf, os.path.join(cfg.outdir, "tab_musique_ate.tex"), col="em")
+        mfx = M.fixed_records(mrecs)
+        if mfx:
+            mdff = _table_with_alphas(mfx, mbest, cfg.beta, M.musique_table)
+            mmed = M.mediation_table(mdf, mdff, col="em")
+            R.mediation_latex(mmed, os.path.join(cfg.outdir, "tab_musique_mediation.tex"))
+            summary["musique_mediation"] = mmed.to_dict("records")
+            _log("\n" + mmed[["cond", "method", "te", "nde", "nie"]].to_string())
         summary["musique_em"] = ms_s.to_dict("records")
         summary["musique_ate"] = ms_a.to_dict("records")
         summary["musique_cand_recall"] = float(mdf[mdf.cond == "orig"].cand_recall.mean())
@@ -224,11 +252,13 @@ def main():
     ap.add_argument("--preset", default="smoke", choices=list(PRESETS))
     ap.add_argument("--model", default=None)
     ap.add_argument("--outdir", default=None)
+    ap.add_argument("--device_map", default="")
     args = ap.parse_args()
     cfg = Config(**PRESETS[args.preset])
     if args.model:
         cfg.model = args.model
     cfg.outdir = args.outdir or f"results/{args.preset}"
+    cfg.device_map = args.device_map
     run(cfg)
 
 

@@ -44,8 +44,16 @@ def _score_chain_contexts(lm, base_prompt: str, hops: List[C.Hop], ans_prefix: s
 
 # ============================================================================ CLUTRR
 
+def _fixed_chain(lm, base: str, hops: List[C.Hop], ans_prefix: str, cands: List[str],
+                 target=None) -> Dict:
+    """Readout of a GIVEN chain under the current input: the mediator is held fixed."""
+    r = _score_chain_contexts(lm, base, hops, ans_prefix, cands, full=False)
+    r["rel"] = C.relevant_hops(hops, target=target)
+    return r
+
+
 def clutrr_score(lm, ex: D.ClutrrExample, chain_text: str, rels: List[str],
-                 full: bool = True) -> Dict:
+                 full: bool = True, fixed_chain: Optional[str] = None) -> Dict:
     cands = [" " + r for r in rels]
     hops = C.parse_chain(chain_text)
     base = lm.prompt(clutrr_messages(ex.story_text, ex.source, ex.target))
@@ -55,6 +63,10 @@ def clutrr_score(lm, ex: D.ClutrrExample, chain_text: str, rels: List[str],
                            + ex.answer_prefix(), cands)
     rec["rel"] = C.relevant_hops(hops, target=ex.target)
     rec["drg_connected"] = bool(hops) and len(rec["rel"]) == len(hops)
+    if fixed_chain is not None:
+        # mediation: original chain M(0), with names mapped to this condition's names
+        rec["fixed"] = _fixed_chain(lm, base, C.parse_chain(fixed_chain), ex.answer_prefix(),
+                                    cands, target=ex.target)
     gold_tails = [h.tail for h in ex.gold_hops]
     res = [C.norm(h.result) for h in hops]
     rec.update(uid=ex.uid, k=ex.k, cond=ex.condition, gold=rels.index(ex.answer),
@@ -83,6 +95,7 @@ def run_clutrr(lm, examples: List[D.ClutrrExample], pool: List[D.ClutrrExample],
     on the 'orig' condition. It costs sc_n extra generations per question, i.e. strictly more
     compute than HGCD, which needs no extra generation."""
     recs = []
+    orig_chain: Dict[str, str] = {}
     for cond in conditions:
         exs = [D.apply_condition(e, cond, pool) for e in examples]
         prompts = [lm.prompt(clutrr_messages(e.story_text, e.source, e.target)) for e in exs]
@@ -103,8 +116,13 @@ def run_clutrr(lm, examples: List[D.ClutrrExample], pool: List[D.ClutrrExample],
                         pre = prompts[i] + C.render_chain(C.parse_chain(c)) + exs[i].answer_prefix()
                         vs.append(int(np.argmax(lm.score(pre, cands))))
                     votes[i] = vs
-        for e, g, v in zip(exs, gens, votes):
-            r = clutrr_score(lm, e, g, rels, full=(cond == "orig"))
+        for e0, e, g, v in zip(examples, exs, gens, votes):
+            fixed = None
+            if cond == "orig":
+                orig_chain[e.uid] = g
+            elif e.uid in orig_chain:
+                fixed = D.map_names(orig_chain[e.uid], e0, e)
+            r = clutrr_score(lm, e, g, rels, full=(cond == "orig"), fixed_chain=fixed)
             r["chain_src"] = "greedy"
             r["sc_votes"] = v
             recs.append(r)
@@ -155,6 +173,13 @@ def run_estimators_clutrr(lm, examples: List[D.ClutrrExample], pool: List[D.Clut
         recs = _score_chain_contexts(lm, base, hops, pre, cands, full=True, marker=True)
         p_full = recs["p_cot"]
         rel = C.relevant_hops(hops, target=ex.target)
+        names = [n for n in ex2.names if n not in {h.result for h in hops}] or ex2.names
+        cf_new = [rng.choice(names) for _ in hops]
+        ctx = lambda hs: base + C.render_chain(hs) + pre
+        p_cfd = [_dist(lm, ctx(C.replace_result(hops, j, cf_new[j], False)), cands)
+                 for j in range(len(hops))]
+        p_cft = [_dist(lm, ctx(C.replace_result(hops, j, cf_new[j], True)), cands)
+                 for j in range(len(hops))]
         pns = [np.nan] * len(hops)
         if rollouts > 0:
             parts = [hops[:j] + [_corrupt_clutrr_hop(hops[j], rels, rng)] for j in range(len(hops))]
@@ -179,6 +204,8 @@ def run_estimators_clutrr(lm, examples: List[D.ClutrrExample], pool: List[D.Clut
                 d_naive=float(p_full[g] - recs["p_nai"][j][g]),
                 d_placebo=float(p_full[g] - recs["p_pla"][j][g]),
                 d_maskmark=float(p_full[g] - recs["p_mm"][j][g]),
+                d_cf_direct=float(p_full[g] - p_cfd[j][g]),
+                d_cf_total=float(p_full[g] - p_cft[j][g]),
                 pns_rollout=pns[j]))
         if (n + 1) % 10 == 0:
             _log(f"estimators clutrr {n + 1}/{len(examples)}")
@@ -196,7 +223,8 @@ def _musique_cands(ex: D.MusiqueExample, extra: List[str]) -> List[str]:
     return out
 
 
-def run_estimators_musique(lm, examples: List[D.MusiqueExample], seed: int = 0) -> List[Dict]:
+def run_estimators_musique(lm, examples: List[D.MusiqueExample], seed: int = 0,
+                           rollouts: int = 0, batch_size: int = 4) -> List[Dict]:
     """MuSiQue gold chains (bridge-entity graphs) + an inserted redundant hop."""
     rows = []
     rng = random.Random(seed)
@@ -212,6 +240,23 @@ def run_estimators_musique(lm, examples: List[D.MusiqueExample], seed: int = 0) 
         g = [C.norm(c) for c in cands].index(C.norm(ex.answer))
         p_full = recs["p_cot"]
         rel = C.relevant_hops(hops)
+        dtitles = [t for t in ex.distractor_titles() if C.norm(t) != C.norm(ex.answer)] or ["Unknown"]
+        cf_new = [rng.choice(dtitles) for _ in hops]
+        ctx = lambda hs: base + C.render_chain(hs) + ex.answer_prefix()
+        p_cfd = [_dist(lm, ctx(C.replace_result(hops, j, cf_new[j], False)), cands)
+                 for j in range(len(hops))]
+        p_cft = [_dist(lm, ctx(C.replace_result(hops, j, cf_new[j], True)), cands)
+                 for j in range(len(hops))]
+        pns = [np.nan] * len(hops)
+        if rollouts > 0:
+            parts = [hops[:j] + [C.Hop(hops[j].idx, hops[j].body, cf_new[j])] for j in range(len(hops))]
+            conts = lm.generate([base + C.render_chain(pt) for pt in parts], max_new_tokens=120,
+                                do_sample=True, n=rollouts, batch_size=max(1, batch_size // 2))
+            y_full = float(np.argmax(p_full) == g)
+            for j in range(len(hops)):
+                ys = [float(np.argmax(_dist(lm, ctx(parts[j] + C.parse_chain(c)), cands)) == g)
+                      for c in conts[j * rollouts:(j + 1) * rollouts]]
+                pns[j] = y_full - float(np.mean(ys))
         for j in range(len(hops)):
             rows.append(dict(
                 dataset="musique", uid=ex.uid, k=ex.k, hop=j, n_hops=len(hops),
@@ -222,7 +267,9 @@ def run_estimators_musique(lm, examples: List[D.MusiqueExample], seed: int = 0) 
                 d_naive=float(p_full[g] - recs["p_nai"][j][g]),
                 d_placebo=float(p_full[g] - recs["p_pla"][j][g]),
                 d_maskmark=float(p_full[g] - recs["p_mm"][j][g]),
-                pns_rollout=np.nan))
+                d_cf_direct=float(p_full[g] - p_cfd[j][g]),
+                d_cf_total=float(p_full[g] - p_cft[j][g]),
+                pns_rollout=pns[j]))
         if (n + 1) % 10 == 0:
             _log(f"estimators musique {n + 1}/{len(examples)}")
     return rows
@@ -233,6 +280,7 @@ def run_estimators_musique(lm, examples: List[D.MusiqueExample], seed: int = 0) 
 def run_musique(lm, examples: List[D.MusiqueExample], conditions=("orig", "dist8", "order"),
                 batch_size: int = 4) -> List[Dict]:
     recs = []
+    orig: Dict[str, tuple] = {}
     for cond in conditions:
         exs = [D.musique_condition(e, cond) for e in examples]
         prompts = [lm.prompt(musique_messages(e.context_text(), e.question)) for e in exs]
@@ -252,6 +300,17 @@ def run_musique(lm, examples: List[D.MusiqueExample], conditions=("orig", "dist8
             r["p_noctx"] = _dist(lm, lm.prompt(musique_question_only(e.question))
                                  + e.answer_prefix(), cands)
             r["rel"] = C.relevant_hops(hops)
+            if cond == "orig":
+                orig[e.uid] = (hops, fa)
+            elif e.uid in orig:  # mediation: original chain, intervened context
+                ohops, ofa = orig[e.uid]
+                fc_txt = _musique_cands_model(e, [ofa] + [h.result for h in ohops])
+                fr = _fixed_chain(lm, p, ohops, e.answer_prefix(), [" " + c for c in fc_txt])
+                fr["p_dir"] = _dist(lm, p + e.answer_prefix(), [" " + c for c in fc_txt])
+                fr["p_noctx"] = _dist(lm, lm.prompt(musique_question_only(e.question))
+                                      + e.answer_prefix(), [" " + c for c in fc_txt])
+                fr["cands"] = fc_txt
+                r["fixed"] = fr
             r.update(uid=e.uid, k=e.k, cond=cond, cands=cand_txt, gold_answer=e.answer,
                      aliases=e.aliases, free_answer=fa, n_hops=len(hops),
                      fmt_ok=len(hops) > 0, chain=g, chain_src="greedy")

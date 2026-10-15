@@ -172,3 +172,25 @@ def mask_marker(hops: List[Hop], j: int) -> List[Hop]:
     out = list(hops)
     out[j] = replace(out[j], body=f"{MASK} {hops[j].body}")
     return out
+
+
+def replace_result(hops: List[Hop], j: int, new: str, propagate: bool) -> List[Hop]:
+    """Counterfactual replacement (in-distribution, no mask token): hop j now yields `new`.
+
+    propagate=False keeps downstream hops as written (controlled direct effect);
+    propagate=True rewrites every DRG descendant consistently (a deterministic proxy for the
+    total effect, analogous to removing the content from all downstream positions)."""
+    old = hops[j].result
+    out = list(hops)
+    out[j] = replace(out[j], body=_sub_ent(out[j].body, old, new), result=new)
+    if propagate:
+        for d in descendants(hops, j):
+            out[d] = replace(out[d], body=_sub_ent(out[d].body, old, new),
+                             result=_sub_ent(out[d].result, old, new))
+    return out
+
+
+def _sub_ent(text: str, old: str, new: str) -> str:
+    if not old or len(old) < 2:
+        return text
+    return re.sub(_ent_pattern(old), new, text, flags=re.IGNORECASE)
