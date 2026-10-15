@@ -91,3 +91,48 @@ father labelled "father". We keep simple-path stories only and report the filter
 - (Closed in round 1b) Added a **mask-marker placebo**: `[MASKED]` is inserted into hop j with all
   of its content kept. Δ^marker isolates the cost of the mask token itself and is reported in the
   estimator tables next to Δ^placebo.
+
+## Round 2–3 (after running the full pipeline and the notebook on CPU)
+
+The pipeline ran end to end twice on CPU with Qwen2.5-0.5B: once via the CLI (37 min) and once
+via **Run All on the notebook** with nbclient (41 min, no cell errors). Findings and fixes:
+
+**R13. Placebo contrast moves decisions.** *Major (design).* At α=1 the placebo contrast already
+changed answers in the pilot (CLUTRR n=12: 33% vs CoT 17%). So "contrast against any
+perturbation" is not neutral.
+*Changes:* HGCD vs placebo-contrast is now a **primary** comparison, and the ablation hypothesis
+states that the placebo contrast, not CoT, is the control.
+
+**R14. HGCD cannot fix a wrong chain.** *Major (scope).* L2 makes the answer depend more on the
+chain, so it only repairs readout errors.
+*Changes:* Added Remark "What each level can fix", the Readout hypothesis, and
+`tab_clutrr_readout.tex`, which splits accuracy by whether the chain reaches every gold-path
+entity.
+
+**R15. MuSiQue candidate recall was 17% (pilot), which capped every method.** *Major.*
+*Changes:* Candidates are now model strings + titles + capitalised spans + dates/numbers from the
+context, with sentence-starter stopwords removed, capped at 64. Gold recall measured offline on
+600 dev questions is 56% before the model strings are added (titles alone: 10.5%). Scoring is
+chunked over a copied KV cache (verified against full recomputation, max error 6e-5).
+
+**R16. α ties at small n select α=0, so HGCD = CoT.** *Expected.* Ties are broken toward the
+smaller α (conservative, documented). With the `kaggle` dev size (60) ties are much rarer.
+
+**R17. Kaggle sessions can die mid-run.** *Operational.*
+*Changes:* Stage-level checkpoints (`stage_*.pkl`, `*_records.pkl`); rerunning the notebook
+resumes. Unit-tested.
+
+**R18. `transformers` versions: older ones may ignore `dtype=` and load fp32.**
+*Changes:* The keyword is chosen by version and the dtype is enforced after loading.
+
+**R19. Self-consistency missing from the final tables** (no α entry from the dev run). Fixed.
+
+**Pilot signal (illustration only, n≈20 hops).** On MuSiQue non-final gold hops,
+Δ^naive = −0.04 while Δ^total = 0.42, which is the pattern Prop. 1 predicts. Placebo and
+mask-marker Δ stay within ±0.08. CLUTRR effects at 0.5B are small (the model rarely composes
+relations correctly: hop fidelity 0.56, DRG connected 61%).
+
+## Remaining risks (to check on GPU)
+1. If AUC(Δ^total) < 0.75 on Qwen2.5-1.5B, stop (go/no-go) and write an analysis paper.
+2. If HGCD ≈ placebo-contrast, the decoding gains are not causal; report that honestly.
+3. DRG connectivity on CLUTRR (61% at 0.5B) may limit HGCD; check at 1.5B and 7B.

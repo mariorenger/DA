@@ -45,3 +45,16 @@ python tools/build_notebook.py
 3. **CLUTRR test**: ID k≤4 / OOD k≥5; interventions `rename / order / distract / placebo_input`
    (true effect 0) → accuracy and paired ATE with bootstrap CIs; L1 chains; self-consistency.
 4. **MuSiQue**: real text, bridge chains; `dist8 / order` interventions; EM/F1, candidate recall.
+
+## Hướng dẫn nhanh (tiếng Việt)
+
+1. **Kaggle**: tải `notebooks/hgcd_kaggle.ipynb` lên Kaggle → *Settings*: **GPU T4 x2**, **Internet: On** → **Run All**.
+   - Lần đầu để `PRESET = "kaggle"` (khoảng 2–4 giờ) để kiểm tra trên GPU và đo thời gian chạy.
+   - Số liệu đưa vào paper: dùng `PRESET = "kaggle_full"` (khoảng 8–10 giờ, nằm trong giới hạn 12 giờ của Kaggle).
+   - GPU 0 chạy Qwen2.5-1.5B, GPU 1 chạy SmolLM2-1.7B (họ mô hình thứ hai).
+   - Nếu phiên bị ngắt, chạy lại notebook: các bước đã xong được tự đọc lại từ checkpoint (`stage_*.pkl`, `*_records.pkl`).
+2. **A100 (1 ngày)**: `python -m hgcd.pipeline --preset a100 --outdir results/a100_main` (Qwen2.5-7B).
+3. **Đưa kết quả vào paper**: giải nén `results_<preset>.zip` sao cho có thư mục `results/kaggle_main/` chứa các file `tab_*.tex`,
+   rồi biên dịch `paper/main.tex`. Bảng nào chưa có kết quả sẽ hiện ô "Pending".
+4. **Điểm dừng (go/no-go)** theo giả thuyết H1: AUC(Δ^total) ≥ 0.75 và Δ^placebo, Δ^marker ≈ 0.
+   Nếu không đạt thì không thuê A100; bài khi đó chuyển thành bài phân tích.

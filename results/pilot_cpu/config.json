@@ -1,0 +1,41 @@
+{
+ "model": "Qwen/Qwen2.5-0.5B-Instruct",
+ "outdir": "results/smoke_main",
+ "seed": 0,
+ "batch_size": 4,
+ "ks_test": [
+  2,
+  3,
+  5
+ ],
+ "n_per_k": 4,
+ "n_dev": 6,
+ "conditions": [
+  "orig",
+  "rename",
+  "distract"
+ ],
+ "l1": true,
+ "l1_alpha": 1.0,
+ "sc_n": 3,
+ "alphas": [
+  0.0,
+  0.5,
+  1.0,
+  2.0
+ ],
+ "beta": 0.1,
+ "ks_est": [
+  2,
+  3
+ ],
+ "n_est_per_k": 4,
+ "est_rollouts": 0,
+ "n_ms": 6,
+ "ms_conditions": [
+  "orig",
+  "dist8"
+ ],
+ "n_est_ms": 6,
+ "run_musique": true
+}

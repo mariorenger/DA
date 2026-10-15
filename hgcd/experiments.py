@@ -4,6 +4,7 @@ distributions, so every decoding rule / alpha is evaluated post hoc."""
 from __future__ import annotations
 
 import random
+import re
 import time
 from typing import Dict, List, Optional
 
@@ -258,12 +259,28 @@ def run_musique(lm, examples: List[D.MusiqueExample], conditions=("orig", "dist8
     return recs
 
 
-def _musique_cands_model(ex: D.MusiqueExample, model_strings: List[str]) -> List[str]:
-    """Candidates without access to gold: model answers, hop results, paragraph titles."""
+_CAPS = re.compile(r"[A-Z][\w'\u2019\-\.]*(?:\s+(?:of|the|de|la|and|du|von|van|&)?\s*[A-Z][\w'\u2019\-\.]*)*")
+_NUMS = re.compile(r"\b(?:\d{1,2}\s+)?(?:January|February|March|April|May|June|July|August|September|"
+                   r"October|November|December)?\s*\d{3,4}\b|\b\d+(?:[.,]\d+)?\b")
+
+
+_STOP = set("""a an the in on at for of to by from with as after before during while when where
+which who whom whose what why how it its he she they his her their this that these those there here
+most many some other others also however although though but and or if then thus since because
+both each every all any one first last later early during despite following according""".split())
+
+
+def _musique_cands_model(ex: D.MusiqueExample, model_strings: List[str], cap: int = 64) -> List[str]:
+    """Candidates without access to gold: model answers and hop results first, then paragraph
+    titles, then capitalised spans and numbers/dates from the context (order of appearance)."""
+    pool = list(model_strings) + [p["title"] for p in ex.context()]
+    for p in ex.context():
+        t = p["paragraph_text"]
+        pool += [m.strip() for m in _CAPS.findall(t) + _NUMS.findall(t)]
     seen, out = set(), []
-    for c in model_strings + [p["title"] for p in ex.context()]:
+    for c in pool:
         k = C.norm(c)
-        if k and k not in seen and c != C.MASK:
+        if k and k not in seen and c != C.MASK and k not in _STOP:
             seen.add(k)
             out.append(c)
-    return out[:16]
+    return out[:cap]

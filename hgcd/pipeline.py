@@ -70,6 +70,18 @@ def _log(m):
     print(time.strftime("[%H:%M:%S] "), m, flush=True)
 
 
+def _cached(path: str, fn):
+    """Stage-level checkpoint: reuse a finished stage after a crash or session restart."""
+    if os.path.exists(path):
+        _log(f"reusing cached stage {os.path.basename(path)}")
+        with open(path, "rb") as f:
+            return pickle.load(f)
+    out = fn()
+    with open(path, "wb") as f:
+        pickle.dump(out, f)
+    return out
+
+
 def select_alpha(recs, methods, alphas, beta, table_fn):
     rows = []
     for a in alphas:
@@ -112,15 +124,18 @@ def run(cfg: Config):
     # ------------------------------------------------------------- 1) estimator validation
     est_ex = D.sample_by_k(test, cfg.ks_est, cfg.n_est_per_k, cfg.seed + 7)
     _log(f"estimator validation on {len(est_ex)} CLUTRR gold chains")
-    est_rows = E.run_estimators_clutrr(lm, est_ex, pool, rels, rollouts=cfg.est_rollouts,
-                                       batch_size=cfg.batch_size, seed=cfg.seed)
+    est_rows = _cached(os.path.join(cfg.outdir, "stage_est_clutrr.pkl"),
+                       lambda: E.run_estimators_clutrr(lm, est_ex, pool, rels,
+                                                       rollouts=cfg.est_rollouts,
+                                                       batch_size=cfg.batch_size, seed=cfg.seed))
     ms = None
     if cfg.run_musique:
         ms = D.load_musique("dev")
         rng = np.random.default_rng(cfg.seed)
         ms_est = [ms[i] for i in rng.choice(len(ms), cfg.n_est_ms, replace=False)]
         _log(f"estimator validation on {len(ms_est)} MuSiQue gold chains")
-        est_rows += E.run_estimators_musique(lm, ms_est, seed=cfg.seed)
+        est_rows = est_rows + _cached(os.path.join(cfg.outdir, "stage_est_musique.pkl"),
+                                      lambda: E.run_estimators_musique(lm, ms_est, seed=cfg.seed))
     pd.DataFrame(est_rows).to_csv(os.path.join(cfg.outdir, "estimators.csv"), index=False)
     aucs, pos = M.estimator_table(est_rows)
     R.estimator_latex(aucs, pos, os.path.join(cfg.outdir, "tab_estimators_auc.tex"),
@@ -133,8 +148,9 @@ def run(cfg: Config):
     # ------------------------------------------------------------- 2) alpha selection on dev
     dev_ex = D.sample_by_k(dev, [2, 3, 4], max(1, cfg.n_dev // 3), cfg.seed + 1)
     _log(f"alpha selection on {len(dev_ex)} CLUTRR validation examples")
-    dev_recs = E.run_clutrr(lm, dev_ex, pool, rels, conditions=["orig"],
-                            batch_size=cfg.batch_size, l1=False)
+    dev_recs = _cached(os.path.join(cfg.outdir, "stage_dev.pkl"),
+                       lambda: E.run_clutrr(lm, dev_ex, pool, rels, conditions=["orig"],
+                                            batch_size=cfg.batch_size, l1=False))
     best, sweep = select_alpha(dev_recs, M.GREEDY_METHODS, cfg.alphas, cfg.beta, M.clutrr_table)
     for m in M.GREEDY_METHODS:          # methods absent on dev (e.g. sc) need no alpha
         best.setdefault(m, 0.0)
@@ -146,11 +162,10 @@ def run(cfg: Config):
     # ------------------------------------------------------------- 3) CLUTRR test
     test_ex = D.sample_by_k(test, cfg.ks_test, cfg.n_per_k, cfg.seed)
     _log(f"CLUTRR test: {len(test_ex)} examples x {len(cfg.conditions)} conditions")
-    recs = E.run_clutrr(lm, test_ex, pool, rels, conditions=cfg.conditions,
-                        batch_size=cfg.batch_size, l1=cfg.l1, l1_alpha=cfg.l1_alpha,
-                        sc_n=cfg.sc_n)
-    with open(os.path.join(cfg.outdir, "clutrr_records.pkl"), "wb") as f:
-        pickle.dump(recs, f)
+    recs = _cached(os.path.join(cfg.outdir, "clutrr_records.pkl"),
+                   lambda: E.run_clutrr(lm, test_ex, pool, rels, conditions=cfg.conditions,
+                                        batch_size=cfg.batch_size, l1=cfg.l1,
+                                        l1_alpha=cfg.l1_alpha, sc_n=cfg.sc_n))
     df = _table_with_alphas(recs, best, cfg.beta, M.clutrr_table)
     df.to_csv(os.path.join(cfg.outdir, "clutrr_decisions.csv"), index=False)
     s = R.main_table(df, os.path.join(cfg.outdir, "tab_clutrr_main.tex"))
@@ -178,10 +193,9 @@ def run(cfg: Config):
         rng = np.random.default_rng(cfg.seed + 3)
         ms_ex = [ms[i] for i in rng.choice(len(ms), cfg.n_ms, replace=False)]
         _log(f"MuSiQue: {len(ms_ex)} examples x {len(cfg.ms_conditions)} conditions")
-        mrecs = E.run_musique(lm, ms_ex, conditions=cfg.ms_conditions,
-                              batch_size=max(1, cfg.batch_size // 2))
-        with open(os.path.join(cfg.outdir, "musique_records.pkl"), "wb") as f:
-            pickle.dump(mrecs, f)
+        mrecs = _cached(os.path.join(cfg.outdir, "musique_records.pkl"),
+                        lambda: E.run_musique(lm, ms_ex, conditions=cfg.ms_conditions,
+                                              batch_size=max(1, cfg.batch_size // 2)))
         mbest = {m: best.get(m, 1.0) for m in M.GREEDY_METHODS}
         mdf = _table_with_alphas(mrecs, mbest, cfg.beta, M.musique_table)
         free = M.musique_table(mrecs, methods=["cot"])

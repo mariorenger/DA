@@ -92,3 +92,12 @@ def test_clutrr_interventions_offline():
     assert len(cf.split()) == len(ex.story_text.split()) and cf != ex.story_text
     pi = D.placebo_input(ex)
     assert all(n in pi.story_text for n in ex.names)
+
+
+def test_stage_cache(tmp_path):
+    from hgcd.pipeline import _cached
+    calls = []
+    f = lambda: calls.append(1) or [1, 2, 3]
+    p = str(tmp_path / "stage.pkl")
+    assert _cached(p, f) == [1, 2, 3] and _cached(p, f) == [1, 2, 3]
+    assert len(calls) == 1

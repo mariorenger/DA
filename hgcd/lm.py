@@ -80,39 +80,46 @@ class LM:
         return out
 
     @torch.no_grad()
-    def score(self, prefix: str, cands: Sequence[str]) -> np.ndarray:
-        """Sum of log-probs of each candidate continuation after `prefix` (KV-cached)."""
+    def score(self, prefix: str, cands: Sequence[str], chunk: int = 32) -> np.ndarray:
+        """Sum of log-probs of each candidate continuation after `prefix`.
+
+        One prefix forward; candidates are scored in chunks against a copy of the prefix
+        KV cache (bounded memory for large candidate sets)."""
+        import copy
         p_ids = self.tok(prefix, add_special_tokens=False).input_ids
         cids = self._cand_ids(p_ids, prefix, cands)
         inp = torch.tensor([p_ids], device=self.device)
         out = self.model(input_ids=inp, use_cache=True)
         first = F.log_softmax(out.logits[0, -1].float(), -1)
         res = np.array([first[c[0]].item() for c in cids], dtype=np.float64)
-        L = max(len(c) for c in cids)
-        if L == 1:
-            return res
-        C, P = len(cids), len(p_ids)
-        x = torch.full((C, L - 1), self.tok.pad_token_id, dtype=torch.long, device=self.device)
-        att = torch.zeros((C, P + L - 1), dtype=torch.long, device=self.device)
-        att[:, :P] = 1
-        for i, c in enumerate(cids):
-            if len(c) > 1:
-                x[i, :len(c) - 1] = torch.tensor(c[:-1], device=self.device)
-                att[i, P:P + len(c) - 1] = 1
-        pos = torch.arange(P, P + L - 1, device=self.device).unsqueeze(0).expand(C, -1)
-        try:
-            past = out.past_key_values
-            past.batch_repeat_interleave(C)
-            o2 = self.model(input_ids=x, attention_mask=att, position_ids=pos,
-                            past_key_values=past, use_cache=False)
-            lp = F.log_softmax(o2.logits.float(), -1)
-        except Exception:  # cache API differs across versions: recompute without cache
-            full = torch.cat([inp.expand(C, -1), x], 1)
-            o2 = self.model(input_ids=full, attention_mask=att)
-            lp = F.log_softmax(o2.logits[:, P:].float(), -1)
-        for i, c in enumerate(cids):
-            for t in range(1, len(c)):
-                res[i] += lp[i, t - 1, c[t]].item()
+        P = len(p_ids)
+        for s0 in range(0, len(cids), chunk):
+            sub = cids[s0:s0 + chunk]
+            L = max(len(c) for c in sub)
+            if L == 1:
+                continue
+            C = len(sub)
+            x = torch.full((C, L - 1), self.tok.pad_token_id, dtype=torch.long, device=self.device)
+            att = torch.zeros((C, P + L - 1), dtype=torch.long, device=self.device)
+            att[:, :P] = 1
+            for i, c in enumerate(sub):
+                if len(c) > 1:
+                    x[i, :len(c) - 1] = torch.tensor(c[:-1], device=self.device)
+                    att[i, P:P + len(c) - 1] = 1
+            pos = torch.arange(P, P + L - 1, device=self.device).unsqueeze(0).expand(C, -1)
+            try:
+                past = copy.deepcopy(out.past_key_values)
+                past.batch_repeat_interleave(C)
+                o2 = self.model(input_ids=x, attention_mask=att, position_ids=pos,
+                                past_key_values=past, use_cache=False)
+                lp = F.log_softmax(o2.logits.float(), -1)
+            except Exception:  # cache API differs across versions: recompute without cache
+                full = torch.cat([inp.expand(C, -1), x], 1)
+                o2 = self.model(input_ids=full, attention_mask=att)
+                lp = F.log_softmax(o2.logits[:, P:].float(), -1)
+            for i, c in enumerate(sub):
+                for t in range(1, len(c)):
+                    res[s0 + i] += lp[i, t - 1, c[t]].item()
         return res
 
     # ------------------------------------------------------------------ L1 contrastive decoding

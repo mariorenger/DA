@@ -332,8 +332,11 @@ $k\in\{2,3,4\}$, OOD $k\ge 5$; answers are scored over the 20 kinship relations.
 \textbf{MuSiQue-Ans}~\citep{trivedi2022musique} gives real text with gold decompositions; the
 context holds the supporting paragraphs plus 4 distractors. MuSiQue was built to resist
 single-hop shortcuts~\citep{min2019compositional}, which is why we prefer it to HotpotQA.
-Candidates for MuSiQue are the model's own answer, its hop results and the paragraph titles
-(never the gold answer); we report candidate recall.
+Candidates for MuSiQue are built without the gold answer: the model's own answer and hop results,
+then paragraph titles, capitalised spans and dates/numbers from the context, in order of
+appearance, capped at 64 (recall of the gold answer is 56\% on 600 dev questions before adding
+the model's strings, versus 10.5\% for titles alone). All methods share the same candidate set
+and we report its recall.
 
 \paragraph{Binary interventions with known effects.}
 \begin{center}\small
@@ -385,7 +388,8 @@ the control that isolates the causal content of the intervention.\end{hypothesis
 \paragraph{Models and compute.} Qwen2.5-1.5B-Instruct~\citep{qwen2025qwen25} (main) and
 SmolLM2-1.7B-Instruct~\citep{allal2025smollm2} (second family) on two Kaggle T4 GPUs in fp16;
 Qwen2.5-7B-Instruct on one A100 for the scale point. Greedy decoding; $\beta=0.1$;
-$\alpha\in\{0,0.25,0.5,1,2,4\}$ chosen on the validation split.
+$\alpha\in\{0,0.25,0.5,1,2,4\}$ chosen per method on the CLUTRR validation split and transferred
+unchanged to MuSiQue (no MuSiQue data is used for tuning).
 
 \paragraph{Statistics.} Bootstrap CIs (2{,}000 resamples), paired bootstrap differences and exact
 McNemar tests on the same questions. The three \emph{primary} comparisons are \hgcd{} vs.\ CoT,
@@ -515,8 +519,13 @@ examples. They verify that the pipeline runs end to end and are \textbf{not} evi
 any hypothesis.
 
 \begin{center}\small
-\maybeinput{\pilotdir/tab_estimators_auc.tex}\\[4pt]
+\maybeinput{\pilotdir/tab_estimators_auc.tex}\\[6pt]
+\maybeinput{\pilotdir/tab_estimators_pos.tex}\\[6pt]
 \maybeinput{\pilotdir/tab_clutrr_main.tex}
 \end{center}
+Even at this scale, the position breakdown shows the qualitative pattern predicted by
+\cref{prop:direct} on MuSiQue: naive masking leaves the answer probability of non-final gold
+hops nearly unchanged, whereas graph-aware masking reduces it substantially. With a few dozen
+hops this is an illustration, not a test.
 
 \end{document}

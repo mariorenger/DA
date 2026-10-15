@@ -1,0 +1,20 @@
+\begin{tabular}{lccc}
+\toprule
+Method & ID ($n$=8) & OOD ($n$=4) & All ($n$=12) \\
+\midrule
+Direct (no CoT) & 25.0\,{\scriptsize[0.0,62.5]} & 0.0\,{\scriptsize[0.0,0.0]} & 16.7\,{\scriptsize[0.0,41.7]} \\
+CoT & 25.0\,{\scriptsize[0.0,62.5]} & 0.0\,{\scriptsize[0.0,0.0]} & 16.7\,{\scriptsize[0.0,41.7]} \\
+Self-consistency & 12.5\,{\scriptsize[0.0,37.5]} & 0.0\,{\scriptsize[0.0,0.0]} & 8.3\,{\scriptsize[0.0,25.0]} \\
+CAD & 25.0\,{\scriptsize[0.0,62.5]} & 0.0\,{\scriptsize[0.0,0.0]} & 16.7\,{\scriptsize[0.0,41.7]} \\
+AdaCAD & 37.5\,{\scriptsize[12.5,75.0]} & 0.0\,{\scriptsize[0.0,0.0]} & 25.0\,{\scriptsize[0.0,50.0]} \\
+CAD-chain & 25.0\,{\scriptsize[0.0,62.5]} & 0.0\,{\scriptsize[0.0,0.0]} & 16.7\,{\scriptsize[0.0,41.7]} \\
+HGCD (naive mask) & 25.0\,{\scriptsize[0.0,62.5]} & 0.0\,{\scriptsize[0.0,0.0]} & 16.7\,{\scriptsize[0.0,41.7]} \\
+HGCD (no graph) & 25.0\,{\scriptsize[0.0,62.5]} & 0.0\,{\scriptsize[0.0,0.0]} & 16.7\,{\scriptsize[0.0,41.7]} \\
+HGCD (log-space) & 37.5\,{\scriptsize[12.5,75.0]} & 25.0\,{\scriptsize[0.0,75.0]} & 33.3\,{\scriptsize[8.3,58.3]} \\
+HGCD (adaptive $\alpha$) & 25.0\,{\scriptsize[0.0,62.5]} & 0.0\,{\scriptsize[0.0,0.0]} & 16.7\,{\scriptsize[0.0,41.7]} \\
+HGCD (placebo) & 25.0\,{\scriptsize[0.0,62.5]} & 0.0\,{\scriptsize[0.0,0.0]} & 16.7\,{\scriptsize[0.0,41.7]} \\
+\textbf{HGCD} & 25.0\,{\scriptsize[0.0,62.5]} & 0.0\,{\scriptsize[0.0,0.0]} & 16.7\,{\scriptsize[0.0,41.7]} \\
+L1 + CoT & 25.0\,{\scriptsize[0.0,50.0]} & 0.0\,{\scriptsize[0.0,0.0]} & 16.7\,{\scriptsize[0.0,41.7]} \\
+\textbf{L1 + HGCD} & 25.0\,{\scriptsize[0.0,50.0]} & 0.0\,{\scriptsize[0.0,0.0]} & 16.7\,{\scriptsize[0.0,41.7]} \\
+\bottomrule
+\end{tabular}

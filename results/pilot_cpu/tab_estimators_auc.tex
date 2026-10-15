@@ -1,0 +1,12 @@
+\begin{tabular}{lcccc}
+\toprule
+Estimator & \multicolumn{2}{c}{clutrr} & \multicolumn{2}{c}{musique} \\
+ & all & PS$=$1 & all & PS$=$1 \\
+\midrule
+$\Delta^{\text{naive}}$ (mask hop only) & 0.900 & 1.000 & 0.802 & 0.862 \\
+$\Delta^{\text{total}}$ (graph-aware mask) & 0.881 & 1.000 & 1.000 & 1.000 \\
+DRG path indicator & 1.000 & 1.000 & 1.000 & 1.000 \\
+$\Delta^{\text{placebo}}$ (content-preserving) & 0.469 & 0.300 & 0.521 & 0.538 \\
+$\Delta^{\text{marker}}$ (mask token, content kept) & 0.581 & 0.700 & 0.469 & 0.462 \\
+\bottomrule
+\end{tabular}
