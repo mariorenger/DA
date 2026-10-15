@@ -51,7 +51,7 @@ context, including paths through distractors that have no causal edge to the ans
 against \emph{interventions on its own reasoning graph}. \hgcd{} (i) parses the model's chain into a
 directed reasoning graph (DRG), (ii) intervenes on each answer-relevant hop together with its graph
 descendants, and (iii) re-weights answers by their probability plus $\alpha$ times the average
-\emph{total effect} of the chain on them, computed in probability space. We prove that
+\emph{total effect} of the chain on them, computed in probability space. Under explicit and testable assumptions we show that
 (a) the common ``mask one step'' estimator measures a controlled direct effect that vanishes on
 bridge-entity chains, (b) probability-space contrast cancels shortcut and distractor components of
 a mixture reader exactly, whereas CAD amplifies distractor components, and (c) in the
@@ -82,8 +82,8 @@ CAD scores tokens by $(1{+}\alpha)\log\pa(\cdot\mid c,x)-\alpha\log\pa(\cdot\mid
 causally, the log-ratio is the effect of $\mathrm{do}(C{=}c)$ versus $\mathrm{do}(C{=}\varnothing)$:
 the total effect of the \emph{entire} context. In multi-hop QA the context contains supporting
 paragraphs on the causal path to the answer and distractors that are not; CAD amplifies both. This
-explains, mechanistically, the empirical failures of CAD on uninformative or distracting context
-that motivated AdaCAD and NWCAD~\citep{wang2025adacad,tao2026nwcad}.
+offers a causal explanation for the empirical failures of CAD on uninformative or distracting
+context that motivated AdaCAD and NWCAD~\citep{wang2025adacad,tao2026nwcad}.
 
 \paragraph{Idea.} Instead of contrasting \emph{with versus without context}, contrast the model's
 answer distribution \emph{given its own chain} against the distribution under \emph{interventions on
@@ -234,8 +234,9 @@ answer-relevant hops on that answer. Redundant hops ($j\notin\Rel(y)$) are never
 
 \paragraph{Evidence-level rule (L1).} While emitting the \emph{result} tokens of a hop, we contrast
 the real context $P$ with a type-matched counterfactual $\tilde P$ of identical length and entity
-types in which the relational content differs (CLUTRR: names permuted within gender; MuSiQue:
-supporting passages swapped for distractors):
+types in which the relational content differs (on CLUTRR: names permuted within each gender
+group, so every sentence and entity type is kept but who-is-related-to-whom changes; we evaluate
+L1 on CLUTRR only, where $\tilde P$ is exactly type-matched):
 $t^\star=\arg\max_{t\in\mathcal V_\beta}(1{+}\alpha)\pa(t\mid P,\cdot)-\alpha\pa(t\mid\tilde P,\cdot)$.
 Unlike an empty context, $\tilde P$ is in-distribution and controls for length and type cues.
 
@@ -251,9 +252,17 @@ Unlike an empty context, $\tilde P$ is in-distribution and controls for length a
 \end{algorithmic}
 \end{algorithm}
 
+\begin{remark}[What each level can fix]\label{rem:scope}
+L2 makes the answer depend \emph{more} on the chain; it therefore repairs \emph{readout} errors
+(chain correct, answer wrong because a shortcut or distractor dominates the readout) but cannot
+repair a wrong chain---it may even commit harder to one. Chain errors are the target of L1, which
+acts while the hops are produced. We test this split directly (\cref{h:readout}).
+\end{remark}
+
 \paragraph{Cost.} L2 needs $1+|\Rel(y)|$ prefix forwards and a KV-cached pass over the candidate
 tokens; no extra generation. L1 doubles the forward cost of result tokens only.
-\paragraph{Choice of $\alpha$.} $\alpha$ is selected on the CLUTRR validation split and frozen; an
+\paragraph{Choice of $\alpha$.} $\alpha$ is selected on the CLUTRR validation split and frozen
+(ties broken toward the smaller $\alpha$, so \hgcd{} reduces to CoT absent evidence); an
 adaptive variant sets $\alpha\cdot\mathrm{JSD}(p,\bar p_j)$ as in AdaCAD~\citep{wang2025adacad}.
 
 % ===================================================================================
@@ -275,8 +284,9 @@ for every $j<k$ on bridge chains, whereas $\Delta^{\mathrm{tot}}_j(a)$ is not co
 On compositional chains, where $A$ reads each hop's relation, the direct effect is generally
 non-zero.
 \end{proposition}
-\emph{Prediction.} Naive masking separates necessary from redundant hops on CLUTRR but not on
-non-final MuSiQue hops; graph-aware masking works on both (\cref{tab:est}).
+\emph{Prediction.} On CLUTRR both estimators separate necessary from redundant hops; on MuSiQue,
+$\Delta^{\mathrm{nai}}\approx0$ on non-final gold hops while $\Delta^{\mathrm{tot}}$ remains large,
+so the gap between the two appears in the position breakdown of \cref{tab:est}.
 
 \begin{assumption}[Mixture reader]\label{as:mixture}
 $\pa(a\mid Q,P,y)=\lambda_c\pa_c(a\mid y,P_{\mathrm{sup}})+\lambda_s\pa_s(a\mid Q)+
@@ -285,9 +295,12 @@ invariant to interventions on hops.
 \end{assumption}
 
 \begin{proposition}[Exact cancellation in probability space]\label{prop:mixture}
-Under \cref{as:mixture}, $s_\alpha(a)=\pa(a\mid y)+\alpha\lambda_c\sum_j w_j
-\big[\pa_c(a\mid y)-\pa_c(a\mid\dotot{j})\big]$: the shortcut $\pa_s$ and distractor $\pa_d$
-components cancel in the contrast for every $\alpha$. The log-space analogue does not cancel them.
+Under \cref{as:mixture},
+\[
+s_\alpha(a)=\pa(a\mid y)+\alpha\lambda_c\sum_j w_j\big[\pa_c(a\mid y)-\pa_c(a\mid\dotot{j})\big],
+\]
+i.e.\ the shortcut $\pa_s$ and distractor $\pa_d$ components cancel in the contrast for every
+$\alpha$. The log-space analogue does not cancel them.
 \end{proposition}
 
 \begin{proposition}[CAD amplifies distractor paths]\label{prop:cad}
@@ -295,8 +308,8 @@ Under \cref{as:mixture} applied to direct answering, with no-context distributio
 CAD's score is $(1{+}\alpha)\log\big[\lambda_c\pa_c+\lambda_s\pa_s+\lambda_d\pa_d\big](a)-
 \alpha\log\pa_s(a\mid Q)$. For any $\alpha>0$ and any gold answer $g$, a distractor answer $a_d$ with
 $\pa_d(a_d)=1$ is preferred by CAD whenever $\pa_s(a_d\mid Q)$ is small enough, even if
-$\pa(g\mid Q,P)>\pa(a_d\mid Q,P)$. Adding or removing $P_{\mathrm{dist}}$ changes CAD's decision but
-leaves \hgcd{}'s contrast term unchanged.
+$\pa(g\mid Q,P)>\pa(a_d\mid Q,P)$. In contrast, \hgcd{}'s contrast term does not depend on
+$\pa_d$ at all (\cref{prop:mixture}).
 \end{proposition}
 \emph{Prediction.} Under distractor injection, CAD's accuracy degrades more than \hgcd{}'s, i.e.\
 $|\mathrm{ATE}_{\mathrm{distract}}|$ is larger for CAD.
@@ -349,9 +362,10 @@ with 5 sampled chains (strictly more compute than \hgcd{}, which generates nothi
 CAD~\citep{shi2024cad}; AdaCAD~\citep{wang2025adacad};
 CAD-chain (contrast with vs.\ without the chain, a text analogue of rationale-conditioned
 decoding); \hgcd{} and ablations: naive masking, no graph (all hops), log space, adaptive $\alpha$,
-placebo contrast (must equal CoT); L1 chains decoded with CoT or \hgcd{}.
+placebo contrast (the key control); L1 chains decoded with CoT or \hgcd{}.
 
-\paragraph{Pre-registered hypotheses.}
+\paragraph{Hypotheses.} The following hypotheses and decision criteria were fixed in the
+repository before any GPU experiment was run (verifiable in the commit history).
 \begin{hypothesis}[Estimator]\label{h:est} AUC$(\Delta^{\mathrm{tot}})\ge0.75$ on both datasets;
 $\Delta^{\mathrm{nai}}$ near zero on MuSiQue non-final gold hops; placebo and mask-marker
 $\Delta\approx0$ on all hops.
@@ -360,8 +374,13 @@ $\Delta\approx0$ on all hops.
 MuSiQue, with paired bootstrap CIs excluding zero.\end{hypothesis}
 \begin{hypothesis}[Robustness] $|\mathrm{ATE}_{\mathrm{distract}}|$ of \hgcd{} $<$ that of CAD
 (\cref{prop:cad}); ATE of \texttt{placebo\_input} $\approx 0$ for all methods.\end{hypothesis}
+\begin{hypothesis}[Readout]\label{h:readout} The gain of \hgcd{} over CoT is concentrated on
+questions whose greedy chain reaches every gold-path entity, and is $\approx0$ (or negative) on
+the others (\cref{rem:scope}).\end{hypothesis}
 \begin{hypothesis}[Ablations] \hgcd{} $\ge$ naive-mask and no-graph variants; probability space
-$\ge$ log space; placebo contrast $=$ CoT.\end{hypothesis}
+$\ge$ log space; and, crucially, \hgcd{} $>$ placebo contrast. Contrasting against \emph{any}
+perturbation can move decisions (our CPU pilot shows this), so the placebo contrast, not CoT, is
+the control that isolates the causal content of the intervention.\end{hypothesis}
 
 \paragraph{Models and compute.} Qwen2.5-1.5B-Instruct~\citep{qwen2025qwen25} (main) and
 SmolLM2-1.7B-Instruct~\citep{allal2025smollm2} (second family) on two Kaggle T4 GPUs in fp16;
@@ -369,9 +388,9 @@ Qwen2.5-7B-Instruct on one A100 for the scale point. Greedy decoding; $\beta=0.1
 $\alpha\in\{0,0.25,0.5,1,2,4\}$ chosen on the validation split.
 
 \paragraph{Statistics.} Bootstrap CIs (2{,}000 resamples), paired bootstrap differences and exact
-McNemar tests on the same questions. The two \emph{primary} comparisons are \hgcd{} vs.\ CoT and
-\hgcd{} vs.\ CAD-chain on OOD CLUTRR and on MuSiQue; all other contrasts are exploratory and are
-reported without multiplicity claims. With $n$ questions per split, the half-width of a 95\% CI on
+McNemar tests on the same questions. The three \emph{primary} comparisons are \hgcd{} vs.\ CoT,
+vs.\ CAD-chain and vs.\ the placebo contrast, on OOD CLUTRR and on MuSiQue; all other contrasts
+are exploratory and are reported without multiplicity claims. With $n$ questions per split, the half-width of a 95\% CI on
 accuracy is about $1/\sqrt{n}$; paired tests are considerably tighter.
 
 % ===================================================================================
@@ -400,6 +419,14 @@ accuracy is about $1/\sqrt{n}$; paired tests are considerably tighter.
 \caption{CLUTRR paired ATE (accuracy points) of binary interventions whose true effect is 0.}
 \label{tab:ate}
 \maybeinput{\resultsdir/tab_clutrr_ate.tex}
+\end{table}
+
+\begin{table}[h]
+\centering\small
+\caption{CLUTRR accuracy (\%) split by whether the greedy chain reaches every gold-path entity
+(\cref{h:readout}).}
+\label{tab:readout}
+\maybeinput{\resultsdir/tab_clutrr_readout.tex}
 \end{table}
 
 \begin{table}[h]

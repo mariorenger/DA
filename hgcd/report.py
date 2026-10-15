@@ -129,3 +129,28 @@ def figures(df: pd.DataFrame, sweep: pd.DataFrame, outdir: str, prefix: str = "c
         fig.tight_layout()
         fig.savefig(os.path.join(outdir, f"{prefix}_alpha_sweep.pdf"))
         plt.close(fig)
+
+
+def readout_latex(df: pd.DataFrame, out: str, methods=("cot", "sc", "cad_chain", "hgcd_naive",
+                                                      "hgcd")) -> pd.DataFrame:
+    """Accuracy split by whether the greedy chain reaches every gold-path entity (hop_fid = 1).
+
+    HGCD re-weights answers toward those the chain causally supports, so it can repair *readout*
+    errors (correct chain, wrong answer) but not wrong chains.
+    """
+    d = df[(df.cond == "orig") & df.method.isin(methods)].copy()
+    d["chain"] = np.where(d.hop_fid >= 1.0, "gold-path chain", "other chain")
+    s = accuracy_summary(d, ["method", "chain"])
+    groups = ["gold-path chain", "other chain"]
+    lines = ["\\begin{tabular}{lcc}", "\\toprule",
+             "Method & " + " & ".join(f"{g} ($n$={int(s[s.chain == g].n.max()) if (s.chain == g).any() else 0})"
+                                      for g in groups) + " \\\\", "\\midrule"]
+    for m in [m for m in ORDER if m in set(s.method)]:
+        cells = []
+        for g in groups:
+            r = s[(s.method == m) & (s.chain == g)]
+            cells.append(_fmt(*r[["mean", "lo", "hi"]].values[0]) if len(r) else "--")
+        lines.append(f"{NAMES.get(m, m)} & " + " & ".join(cells) + " \\\\")
+    lines += ["\\bottomrule", "\\end{tabular}"]
+    _write(out, "\n".join(lines) + "\n")
+    return s

@@ -22,11 +22,13 @@ class LM:
             self.tok.pad_token = self.tok.eos_token
         cuda = torch.cuda.is_available()
         dtype = dtype or (torch.float16 if cuda else torch.float32)
+        import transformers
         kw = dict(device_map=device_map) if device_map else {}
-        try:
-            self.model = AutoModelForCausalLM.from_pretrained(name, dtype=dtype, **kw)
-        except TypeError:
-            self.model = AutoModelForCausalLM.from_pretrained(name, torch_dtype=dtype, **kw)
+        major_minor = tuple(int(x) for x in transformers.__version__.split(".")[:2])
+        kw["dtype" if major_minor >= (4, 56) else "torch_dtype"] = dtype
+        self.model = AutoModelForCausalLM.from_pretrained(name, **kw)
+        if next(self.model.parameters()).dtype != dtype:  # never silently fall back to fp32
+            self.model.to(dtype)
         if not device_map:
             self.model.to(device or ("cuda" if cuda else "cpu"))
         self.model.eval()

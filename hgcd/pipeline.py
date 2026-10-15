@@ -136,6 +136,8 @@ def run(cfg: Config):
     dev_recs = E.run_clutrr(lm, dev_ex, pool, rels, conditions=["orig"],
                             batch_size=cfg.batch_size, l1=False)
     best, sweep = select_alpha(dev_recs, M.GREEDY_METHODS, cfg.alphas, cfg.beta, M.clutrr_table)
+    for m in M.GREEDY_METHODS:          # methods absent on dev (e.g. sc) need no alpha
+        best.setdefault(m, 0.0)
     best["l1+cot"], best["l1+hgcd"] = 0.0, best.get("hgcd", 1.0)
     sweep.to_csv(os.path.join(cfg.outdir, "alpha_sweep_dev.csv"), index=False)
     summary["alpha"] = best
@@ -155,8 +157,10 @@ def run(cfg: Config):
     a = R.ate_latex(df[~df.method.str.startswith("l1+")],
                     os.path.join(cfg.outdir, "tab_clutrr_ate.tex"))
     R.figures(df, sweep, cfg.outdir, "clutrr")
-    comps = [M.paired_compare(df, "hgcd", b) for b in ["cot", "sc", "cad_chain", "hgcd_naive",
-                                                        "hgcd_uniform", "hgcd_log"]]
+    ro = R.readout_latex(df, os.path.join(cfg.outdir, "tab_clutrr_readout.tex"))
+    summary["clutrr_readout"] = ro.to_dict("records")
+    comps = [M.paired_compare(df, "hgcd", b) for b in ["cot", "sc", "cad_chain", "hgcd_placebo",
+                                                        "hgcd_naive", "hgcd_uniform", "hgcd_log"]]
     if cfg.l1:
         comps.append(M.paired_compare(df, "l1+hgcd", "cot"))
     summary["clutrr_acc"] = s.to_dict("records")
@@ -190,7 +194,7 @@ def run(cfg: Config):
         summary["musique_ate"] = ms_a.to_dict("records")
         summary["musique_cand_recall"] = float(mdf[mdf.cond == "orig"].cand_recall.mean())
         summary["musique_paired"] = [M.paired_compare(mdf, "hgcd", b, col="em")
-                                     for b in ["cot", "cad", "cad_chain", "hgcd_naive"]]
+                                     for b in ["cot", "cad", "cad_chain", "hgcd_placebo", "hgcd_naive"]]
         _log("\n" + ms_s.to_string())
 
     summary["boundary_fallbacks"] = lm.n_boundary_fallback
