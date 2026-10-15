@@ -189,3 +189,12 @@ relations correctly: hop fidelity 0.56, DRG connected 61%).
   write it as a short or Findings paper.
 - If mask+descendants does not track rollout PNS (rank correlation < 0.5), drop the "cheap
   deterministic total effect" claim.
+
+### Round 4b: a design flaw caught by the micro run
+Counterfactual replacement "with propagation" first only *renamed* the bridge entity in
+descendant hops. On MuSiQue non-final hops it gave Δ = 0.02, the same as the direct version,
+because the last hop still stated the answer. Renaming is not an intervention on downstream
+**values**. Fixed: propagation now also invalidates the descendants' results. After the fix
+(3 questions, CPU, illustration only): cf-total 0.44 vs cf-direct 0.01 on non-final hops,
+matching mask-total 0.35 vs mask-direct 0.001. This lesson goes in the paper: any deterministic
+"total effect" estimator must invalidate descendant values, not just rename mentions.

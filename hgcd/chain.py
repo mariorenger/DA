@@ -175,18 +175,22 @@ def mask_marker(hops: List[Hop], j: int) -> List[Hop]:
 
 
 def replace_result(hops: List[Hop], j: int, new: str, propagate: bool) -> List[Hop]:
-    """Counterfactual replacement (in-distribution, no mask token): hop j now yields `new`.
+    """Counterfactual replacement (in-distribution, no mask token on hop j): hop j yields `new`.
 
-    propagate=False keeps downstream hops as written (controlled direct effect);
-    propagate=True rewrites every DRG descendant consistently (a deterministic proxy for the
-    total effect, analogous to removing the content from all downstream positions)."""
+    propagate=False keeps downstream hops as written (controlled direct effect).
+    propagate=True rewrites mentions of the old value in every DRG descendant AND invalidates the
+    descendants' own results, which are functions of h_j and therefore unknown under the
+    intervention. Renaming alone is not enough: on bridge chains the last hop still states the
+    answer, so a rename-only "total" estimator collapses to the direct effect."""
     old = hops[j].result
     out = list(hops)
     out[j] = replace(out[j], body=_sub_ent(out[j].body, old, new), result=new)
     if propagate:
-        for d in descendants(hops, j):
-            out[d] = replace(out[d], body=_sub_ent(out[d].body, old, new),
-                             result=_sub_ent(out[d].result, old, new))
+        desc = descendants(hops, j)
+        stale = {hops[d].result for d in desc}
+        for d in desc:
+            body = _mask_ents(_sub_ent(out[d].body, old, new), stale)
+            out[d] = replace(out[d], body=body, result=MASK)
     return out
 
 

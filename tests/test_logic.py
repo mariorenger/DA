@@ -108,6 +108,7 @@ def test_replace_result_direct_vs_total():
     t = C.replace_result(BRIDGE, 0, "Robert Fripp", propagate=True)
     assert d[0].result == "Robert Fripp" and "Steve Hillage" in d[1].body
     assert t[0].result == "Robert Fripp" and "Robert Fripp" in t[1].body
+    assert t[1].result == C.MASK            # descendant value is unknown under do(h_0)
 
 
 def test_estimator_latex_runs(tmp_path):
