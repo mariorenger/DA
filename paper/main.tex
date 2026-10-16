@@ -501,6 +501,45 @@ pattern is what one expects if distractors mainly corrupt \emph{chain generation
 readout-level rule can undo (\cref{rem:scope}). Round 2 separates the two paths with an exact
 mediation analysis (H6).
 
+\subsection{What round 1 teaches: four insights}
+\label{sec:insights}
+\paragraph{I1. Step-masking faithfulness tests are blind to bridge reasoning.} On MuSiQue,
+$99.4\%$ of the causal effect of a non-final hop is indirect ($\Delta^{\text{nai}}=0.004$ vs.\
+$\Delta^{\text{tot}}=0.639$), and the total effect of a non-final hop is $94\%$ of that of the
+final hop. Any metric that ablates one step while keeping the rest of the chain (ablation
+accuracy, step perplexity or information gain computed on a fixed continuation) would declare
+every intermediate bridge step \emph{unnecessary} although each is almost as necessary as the
+last. The bias is not noise: it is predicted in closed form by \cref{prop:direct} and appears
+exactly where the theory says it should (bridge, not compositional, graphs).
+
+\paragraph{I2. Small models copy from their chain; they do not compute over it.} The two datasets
+differ in one structural respect: in MuSiQue the answer is a \emph{string written in the last
+hop}; in CLUTRR the answer is a relation that must be \emph{composed} and never appears in the
+chain. The same 1.5B reader depends strongly on the chain in the first case (final-hop effect
+$0.68$) and not at all in the second ($\approx0$, even with a gold chain). This suggests that
+reliance on a chain is a property of the \emph{answer's form} rather than of the task's
+difficulty. A binary intervention isolates it: appending one hop that writes the answer into an
+otherwise identical CLUTRR chain ($T_{\text{copy}}{=}1$). In a CPU sanity check with a 0.5B model
+on four questions (an illustration, not evidence), the content effect of the chain jumps from
+$0.003$ to $0.59$ and CLUTRR switches to the bridge pattern of I1 (non-final hops:
+$\Delta^{\text{tot}}=0.71$, $\Delta^{\text{nai}}=0.06$). Round 2 measures this at scale (H11).
+
+\paragraph{I3. Faithfulness amplifies robustness failures.} Under distractor injection on MuSiQue,
+methods that answer \emph{through} a chain lose on average $7.1$ EM points (CoT $-9.2$), while
+methods that answer without one lose $1.6$ (CAD $-0.8$). At this scale chain-free direct
+answering is also more accurate than CoT ($25.0$ vs.\ $20.8$ EM). When the reader copies from its
+chain (I2), every error the generator makes under distraction is propagated faithfully. Faithful
+reasoning is therefore only as good as the chain generator, and ``making models use their chains''
+is not unconditionally desirable. The mediation analysis (H6) tests whether this loss is indeed
+indirect.
+
+\paragraph{I4. A decoding rule can only amplify dependence that exists.} \hgcd{} adds $\alpha$
+times the total effect of the chain to each answer's score. On CLUTRR this effect is $\approx0$
+(nothing to amplify); on MuSiQue the reader already copies the final hop (effect saturated). Both
+regimes predict a null gain, which is what we observe. The account turns a negative result into a
+falsifiable prediction: gains require \emph{intermediate} reliance (H-niche), which can be
+created by scale or by the answer's form (I2).
+
 \subsection{Round-2 hypotheses (fixed before the next run)}
 \label{sec:round2}
 Each hypothesis below is computed by the updated notebook; the mediator (the chain) is set
@@ -522,6 +561,18 @@ AUC $\ge0.9$ and agree with each other, while direct-effect estimators (mask hop
 without propagation) stay near $0$ on non-final hops; on compositional chains direct and total
 estimators coincide. The deterministic mask+descendants estimator matches rollout PNS at a
 fraction ($\approx1/K$) of its cost.\end{hypothesis}
+\begin{hypothesis}[Copy, not compute]\label{h:copy} On CLUTRR gold chains, appending a hop that
+writes the answer ($T_{\text{copy}}{=}1$) raises the content effect of the chain from $\approx0$
+to $>0.3$ at every scale up to 3B, and makes $\Delta^{\text{nai}}\approx0$ on the relational hops
+while $\Delta^{\text{tot}}$ stays large (the bridge pattern).\end{hypothesis}
+\begin{hypothesis}[Form vs.\ content]\label{h:form} Where CoT beats direct answering although
+hop content has no effect (CLUTRR OOD: $19.2$ vs.\ $11.7$), the gain comes from the chain's form:
+a chain of the same shape with every hop masked shifts $p(\text{gold})$ as much as the real
+chain.\end{hypothesis}
+\begin{hypothesis}[Faithfulness amplifies failures]\label{h:amplify} Across methods, the
+distractor ATE is larger for chain-based than for chain-free readers, and for chain-based readers
+it is mostly indirect ($|\mathrm{NIE}|>|\mathrm{NDE}|$). A product of the direct and chain-based
+readers (PoE) is more robust than CoT at equal accuracy.\end{hypothesis}
 \begin{hypothesis}[Where decoding can help]\label{h:niche} The gain of \hgcd{} over CoT is
 positive only for models with intermediate reliance (gold-hop $\Delta^{\text{tot}}$ neither
 $\approx0$ nor $\approx$ saturated).\end{hypothesis}
@@ -571,6 +622,13 @@ $p(\text{gold})$; remaining columns: AUC of each estimator for necessary vs.\ re
 \label{tab:reliance}
 \maybeinput{\reliancedir/tab_reliance.tex}
 \end{table}
+
+\IfFileExists{\reliancedir/tab_form_content.tex}{%
+\begin{table}[h]\centering\small
+\caption{Form vs.\ content effect of a chain on $p(\text{gold})$ (H11, H-form).}
+\label{tab:formcontent}
+\input{\reliancedir/tab_form_content.tex}
+\end{table}}{}
 
 \IfFileExists{\resultsdir/tab_musique_mediation.tex}{%
 \begin{table}[h]\centering\small

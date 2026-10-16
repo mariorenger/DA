@@ -50,6 +50,7 @@ class Config:
     ms_conditions: List[str] = field(default_factory=lambda: ["orig", "dist8", "order"])
     n_est_ms: int = 80
     run_musique: bool = True
+    est_compose: bool = True             # copy-vs-compute: CLUTRR chains with the answer written in
     only_estimators: bool = False        # "reliance" study: estimator stage only
     device_map: str = ""                 # e.g. "auto" to shard a 7B model over 2 T4s
 
@@ -133,6 +134,12 @@ def run(cfg: Config):
                        lambda: E.run_estimators_clutrr(lm, est_ex, pool, rels,
                                                        rollouts=cfg.est_rollouts,
                                                        batch_size=cfg.batch_size, seed=cfg.seed))
+    if cfg.est_compose:
+        _log("estimator validation on CLUTRR chains + explicit answer hop (copy vs compute)")
+        est_rows = est_rows + _cached(os.path.join(cfg.outdir, "stage_est_clutrr_copy.pkl"),
+                                      lambda: E.run_estimators_clutrr(lm, est_ex, pool, rels,
+                                                                      batch_size=cfg.batch_size,
+                                                                      seed=cfg.seed, compose=True))
     ms = None
     if cfg.run_musique:
         ms = D.load_musique("dev")
@@ -149,6 +156,11 @@ def run(cfg: Config):
                       os.path.join(cfg.outdir, "tab_estimators_pos.tex"))
     summary["estimator_auc"] = aucs.to_dict("records")
     summary["estimator_position"] = pos.to_dict("records")
+    fc = M.form_content_table(est_rows)
+    if len(fc):
+        R.form_content_latex(fc, os.path.join(cfg.outdir, "tab_form_content.tex"))
+        summary["form_content"] = fc.to_dict("records")
+        _log("\n" + fc.to_string())
     _log("\n" + aucs.to_string())
     _log("\n" + pos.to_string())
     if cfg.only_estimators:

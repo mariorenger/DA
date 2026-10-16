@@ -198,3 +198,17 @@ because the last hop still stated the answer. Renaming is not an intervention on
 (3 questions, CPU, illustration only): cf-total 0.44 vs cf-direct 0.01 on non-final hops,
 matching mask-total 0.35 vs mask-direct 0.001. This lesson goes in the paper: any deterministic
 "total effect" estimator must invalidate descendant values, not just rename mentions.
+
+## Round 5: insights mined from round 1 (no new GPU run)
+- **I1:** 99.4% of a non-final bridge hop's effect is indirect (0.004 vs 0.639). Step-ablation
+  faithfulness metrics would call necessary bridge steps unnecessary.
+- **I2 (copy, not compute):** reliance depends on whether the answer is a *string in the chain*
+  (MuSiQue final-hop effect 0.68) rather than a value that must be composed (CLUTRR ≈ 0). New
+  binary intervention T_copy: append a hop that writes the answer. CPU check (0.5B, n=4,
+  illustration only): content effect 0.003 → 0.59, and CLUTRR switches to the bridge pattern.
+- **I3 (faithfulness amplifies failures):** distractors cost chain-based methods 7.1 EM vs 1.6 for
+  chain-free ones; direct beats CoT (25.0 vs 20.8 EM) at 1.5B.
+- **I4:** decoding can only amplify existing dependence. The null gains at both reliance extremes
+  are predicted, not accidental.
+- **New in code:** T_copy estimator variant (`clutrr_copy`), form-vs-content decomposition
+  (masked chain of the same shape vs no chain), and a Direct×CoT product-of-experts reader.

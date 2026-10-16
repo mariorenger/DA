@@ -13,7 +13,7 @@ import pandas as pd
 
 from .decoding import decide
 
-GREEDY_METHODS = ["direct", "cot", "sc", "cad", "adacad", "cad_chain", "calib", "hgcd", "hgcd_log",
+GREEDY_METHODS = ["direct", "cot", "sc", "cad", "adacad", "cad_chain", "calib", "poe", "hgcd", "hgcd_log",
                   "hgcd_naive", "hgcd_uniform", "hgcd_placebo", "hgcd_ada"]
 NEEDS_FULL = {"hgcd_naive", "hgcd_placebo"}
 
@@ -209,4 +209,22 @@ def mediation_table(df: pd.DataFrame, df_fixed: pd.DataFrame, col: str = "correc
             out.append(dict(cond=cond, method=m, te=te, te_lo=te_lo, te_hi=te_hi, nde=nde,
                             nde_lo=nde_lo, nde_hi=nde_hi, nie=nie, nie_lo=nie_lo, nie_hi=nie_hi,
                             n=len(g)))
+    return pd.DataFrame(out)
+
+
+def form_content_table(rows: List[Dict]) -> pd.DataFrame:
+    """Decompose the effect of writing a chain on p(gold):
+    form    = p(gold | chain of the same shape, all hops masked) - p(gold | no chain)
+    content = p(gold | real chain) - p(gold | masked chain of the same shape)."""
+    df = pd.DataFrame(rows).drop_duplicates(["dataset", "uid"])
+    if "p_gold_shape" not in df:
+        return pd.DataFrame()
+    df["form"] = df.p_gold_shape - df.p_gold_nochain
+    df["content"] = df.p_full_gold - df.p_gold_shape
+    out = []
+    for ds, g in df.groupby("dataset"):
+        f, flo, fhi = boot_ci(g.form.values)
+        c, clo, chi = boot_ci(g.content.values)
+        out.append(dict(dataset=ds, form=f, form_lo=flo, form_hi=fhi, content=c, content_lo=clo,
+                        content_hi=chi, n=len(g)))
     return pd.DataFrame(out)

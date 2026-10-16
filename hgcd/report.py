@@ -12,12 +12,12 @@ from .metrics import accuracy_summary, ate_table
 
 NAMES = {
     "direct": "Direct (no CoT)", "cot": "CoT", "sc": "Self-consistency", "cad": "CAD", "adacad": "AdaCAD",
-    "cad_chain": "CAD-chain", "calib": "Calibration (content-free)", "hgcd": "\\textbf{HGCD}", "hgcd_log": "HGCD (log-space)",
+    "cad_chain": "CAD-chain", "calib": "Calibration (content-free)", "poe": "Direct $\\times$ CoT (PoE)", "hgcd": "\\textbf{HGCD}", "hgcd_log": "HGCD (log-space)",
     "hgcd_naive": "HGCD (naive mask)", "hgcd_uniform": "HGCD (no graph)",
     "hgcd_placebo": "HGCD (placebo)", "hgcd_ada": "HGCD (adaptive $\\alpha$)",
     "l1+cot": "L1 + CoT", "l1+hgcd": "\\textbf{L1 + HGCD}", "free": "Free generation",
 }
-ORDER = ["direct", "cot", "sc", "cad", "adacad", "cad_chain", "calib", "hgcd_naive", "hgcd_uniform",
+ORDER = ["direct", "cot", "sc", "cad", "adacad", "cad_chain", "calib", "poe", "hgcd_naive", "hgcd_uniform",
          "hgcd_log", "hgcd_ada", "hgcd_placebo", "hgcd", "l1+cot", "l1+hgcd", "free"]
 
 
@@ -230,3 +230,14 @@ def reliance_table(run_dirs: Dict[str, str], out_tex: str, out_pdf: str = None) 
         fig.savefig(out_pdf)
         plt.close(fig)
     return df
+
+
+def form_content_latex(fc: pd.DataFrame, out: str):
+    lines = ["\\begin{tabular}{lccc}", "\\toprule",
+             "Dataset & Form (masked chain $-$ no chain) & Content (real $-$ masked chain) & $n$ \\\\",
+             "\\midrule"]
+    for _, r in fc.iterrows():
+        lines.append(f"{r.dataset.replace('_', chr(92) + '_')} & {_fmt(r.form, r.form_lo, r.form_hi)} & "
+                     f"{_fmt(r.content, r.content_lo, r.content_hi)} & {int(r.n)} \\\\")
+    lines += ["\\bottomrule", "\\end{tabular}"]
+    _write(out, "\n".join(lines) + "\n")

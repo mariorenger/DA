@@ -157,7 +157,7 @@ def _corrupt_clutrr_hop(h: C.Hop, rels: List[str], rng: random.Random) -> C.Hop:
 
 def run_estimators_clutrr(lm, examples: List[D.ClutrrExample], pool: List[D.ClutrrExample],
                           rels: List[str], rollouts: int = 0, batch_size: int = 8,
-                          seed: int = 0) -> List[Dict]:
+                          seed: int = 0, compose: bool = False) -> List[Dict]:
     """Gold chains + one inserted true-but-redundant hop (true necessity 0)."""
     cands = [" " + r for r in rels]
     rows = []
@@ -167,12 +167,18 @@ def run_estimators_clutrr(lm, examples: List[D.ClutrrExample], pool: List[D.Clut
         hops = [C.Hop(i + 1, h.text(), h.tail) for i, h in enumerate(ex.gold_hops)]
         rpos = rng.randint(0, len(hops) - 1)
         hops.insert(rpos, C.Hop(0, red.text(), red.tail))
+        if compose:  # T_copy = 1: the answer becomes a string the reader can copy from the chain
+            hops.append(C.Hop(len(hops) + 1, f"So {ex.target} is {ex.source}'s relative:", ex.answer))
         base = lm.prompt(clutrr_messages(ex2.story_text, ex2.source, ex2.target))
         pre = ex2.answer_prefix()
         g = rels.index(ex.answer)
         recs = _score_chain_contexts(lm, base, hops, pre, cands, full=True, marker=True)
         p_full = recs["p_cot"]
-        rel = C.relevant_hops(hops, target=ex.target)
+        rel = C.relevant_hops(hops, target=ex.target) if not compose else list(range(len(hops)))
+        # (b) form vs content: no chain at all vs. a chain of the same shape with every hop masked
+        p_none = _dist(lm, base + pre, cands)
+        p_shape = _dist(lm, base + C.render_chain([C.Hop(h.idx, C.MASK, C.MASK) for h in hops]) + pre,
+                        cands)
         names = [n for n in ex2.names if n not in {h.result for h in hops}] or ex2.names
         cf_new = [rng.choice(names) for _ in hops]
         ctx = lambda hs: base + C.render_chain(hs) + pre
@@ -196,7 +202,9 @@ def run_estimators_clutrr(lm, examples: List[D.ClutrrExample], pool: List[D.Clut
                 pns[j] = y_full - float(np.mean(ys))
         for j in range(len(hops)):
             rows.append(dict(
-                dataset="clutrr", uid=ex.uid, k=ex.k, hop=j, n_hops=len(hops),
+                dataset="clutrr_copy" if compose else "clutrr", uid=ex.uid, k=ex.k, hop=j,
+                n_hops=len(hops), p_gold_nochain=float(p_none[g]),
+                p_gold_shape=float(p_shape[g]),
                 label=int(j != rpos), is_final=int(j == len(hops) - 1),
                 drg_relevant=int(j in rel), p_full_gold=float(p_full[g]),
                 full_correct=int(np.argmax(p_full) == g),
@@ -240,6 +248,9 @@ def run_estimators_musique(lm, examples: List[D.MusiqueExample], seed: int = 0,
         g = [C.norm(c) for c in cands].index(C.norm(ex.answer))
         p_full = recs["p_cot"]
         rel = C.relevant_hops(hops)
+        p_none = _dist(lm, base + ex.answer_prefix(), cands)
+        p_shape = _dist(lm, base + C.render_chain([C.Hop(h.idx, C.MASK, C.MASK) for h in hops])
+                        + ex.answer_prefix(), cands)
         dtitles = [t for t in ex.distractor_titles() if C.norm(t) != C.norm(ex.answer)] or ["Unknown"]
         cf_new = [rng.choice(dtitles) for _ in hops]
         ctx = lambda hs: base + C.render_chain(hs) + ex.answer_prefix()
@@ -260,6 +271,7 @@ def run_estimators_musique(lm, examples: List[D.MusiqueExample], seed: int = 0,
         for j in range(len(hops)):
             rows.append(dict(
                 dataset="musique", uid=ex.uid, k=ex.k, hop=j, n_hops=len(hops),
+                p_gold_nochain=float(p_none[g]), p_gold_shape=float(p_shape[g]),
                 label=int(j != rpos), is_final=int(j == len(hops) - 1),
                 drg_relevant=int(j in rel), p_full_gold=float(p_full[g]),
                 full_correct=int(np.argmax(p_full) == g),
