@@ -1,0 +1,53 @@
+{
+ "model": "Qwen/Qwen2.5-1.5B-Instruct",
+ "outdir": "/kaggle/working/results/decoding_qwen-1.5b",
+ "seed": 0,
+ "batch_size": 8,
+ "ks_test": [
+  2,
+  3,
+  4,
+  5,
+  6,
+  7
+ ],
+ "n_per_k": 40,
+ "n_dev": 60,
+ "conditions": [
+  "orig",
+  "rename",
+  "order",
+  "distract",
+  "placebo_input"
+ ],
+ "l1": true,
+ "l1_alpha": 1.0,
+ "sc_n": 5,
+ "alphas": [
+  0.0,
+  0.25,
+  0.5,
+  1.0,
+  2.0,
+  4.0
+ ],
+ "beta": 0.1,
+ "ks_est": [
+  2,
+  3,
+  4
+ ],
+ "n_est_per_k": 30,
+ "est_rollouts": 0,
+ "n_ms": 120,
+ "ms_conditions": [
+  "orig",
+  "dist8",
+  "order"
+ ],
+ "n_est_ms": 80,
+ "run_musique": true,
+ "est_compose": true,
+ "only_estimators": false,
+ "device_map": ""
+}

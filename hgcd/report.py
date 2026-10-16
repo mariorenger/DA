@@ -89,7 +89,8 @@ EST_SHORT = {"d_total": "mask-tot", "d_naive": "mask-dir", "d_cf_total": "cf-tot
 def estimator_latex(aucs: pd.DataFrame, pos: pd.DataFrame, out_auc: str, out_pos: str):
     ds = sorted(set(aucs.dataset))
     lines = ["\\begin{tabular}{l" + "cc" * len(ds) + "}", "\\toprule",
-             "Estimator & " + " & ".join(f"\\multicolumn{{2}}{{c}}{{{d}}}" for d in ds) + " \\\\",
+             "Estimator & " + " & ".join(f"\\multicolumn{{2}}{{c}}{{{d.replace('_', chr(92) + '_')}}}"
+                                         for d in ds) + " \\\\",
              " & " + " & ".join(["all", "PS$=$1"] * len(ds)) + " \\\\", "\\midrule"]
     for e in EST_NAMES:
         if e not in set(aucs.estimator):
@@ -106,7 +107,8 @@ def estimator_latex(aucs: pd.DataFrame, pos: pd.DataFrame, out_auc: str, out_pos
     lines = ["\\begin{tabular}{ll" + "c" * len(cols) + "}", "\\toprule",
              "Dataset & Hop type & " + " & ".join(EST_SHORT[c] for c in cols) + " \\\\", "\\midrule"]
     for _, r in pos.iterrows():
-        lines.append(f"{r.dataset} & {r.position} & " + " & ".join(f"{r[c]:.3f}" for c in cols) + " \\\\")
+        lines.append(f"{r.dataset.replace('_', chr(92) + '_')} & {r.position} & "
+                     + " & ".join(f"{r[c]:.3f}" for c in cols) + " \\\\")
     lines += ["\\bottomrule", "\\end{tabular}"]
     _write(out_pos, "\n".join(lines) + "\n")
 

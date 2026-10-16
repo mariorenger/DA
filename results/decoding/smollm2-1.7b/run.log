@@ -1,0 +1,243 @@
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+Loading weights:   0%|          | 0/218 [00:00<?, ?it/s]Loading weights:   0%|          | 1/218 [00:00<02:00,  1.81it/s]Loading weights:  14%|█▍        | 30/218 [00:00<00:03, 60.82it/s]Loading weights:  22%|██▏       | 48/218 [00:00<00:02, 65.73it/s]Loading weights:  28%|██▊       | 61/218 [00:01<00:02, 73.65it/s]Loading weights:  33%|███▎      | 73/218 [00:01<00:01, 76.16it/s]Loading weights:  39%|███▊      | 84/218 [00:01<00:01, 67.06it/s]Loading weights:  43%|████▎     | 93/218 [00:01<00:01, 70.72it/s]Loading weights:  47%|████▋     | 102/218 [00:01<00:01, 66.82it/s]Loading weights:  51%|█████     | 111/218 [00:01<00:01, 67.86it/s]Loading weights:  55%|█████▌    | 120/218 [00:01<00:01, 66.70it/s]Loading weights:  59%|█████▉    | 129/218 [00:02<00:01, 67.82it/s]Loading weights:  63%|██████▎   | 138/218 [00:02<00:01, 69.31it/s]Loading weights:  67%|██████▋   | 147/218 [00:02<00:01, 70.55it/s]Loading weights:  72%|███████▏  | 156/218 [00:02<00:00, 73.35it/s]Loading weights:  76%|███████▌  | 165/218 [00:02<00:00, 69.09it/s]Loading weights:  80%|███████▉  | 174/218 [00:02<00:00, 73.97it/s]Loading weights:  84%|████████▍ | 183/218 [00:02<00:00, 70.73it/s]Loading weights:  92%|█████████▏| 201/218 [00:02<00:00, 89.20it/s]Loading weights: 100%|██████████| 218/218 [00:03<00:00, 72.13it/s]
+[05:15:27]  loaded HuggingFaceTB/SmolLM2-1.7B-Instruct on cuda:0
+[05:15:29]  estimator validation on 90 CLUTRR gold chains
+[05:16:07]  estimators clutrr 10/90
+[05:16:46]  estimators clutrr 20/90
+[05:17:27]  estimators clutrr 30/90
+[05:18:27]  estimators clutrr 40/90
+[05:19:25]  estimators clutrr 50/90
+[05:20:27]  estimators clutrr 60/90
+[05:21:46]  estimators clutrr 70/90
+[05:23:06]  estimators clutrr 80/90
+[05:24:25]  estimators clutrr 90/90
+[05:24:25]  estimator validation on CLUTRR chains + explicit answer hop (copy vs compute)
+[05:25:20]  estimators clutrr 10/90
+[05:26:17]  estimators clutrr 20/90
+[05:27:13]  estimators clutrr 30/90
+[05:28:30]  estimators clutrr 40/90
+[05:29:47]  estimators clutrr 50/90
+[05:31:04]  estimators clutrr 60/90
+[05:32:41]  estimators clutrr 70/90
+[05:34:18]  estimators clutrr 80/90
+[05:35:54]  estimators clutrr 90/90
+[05:35:54]  estimator validation on 80 MuSiQue gold chains
+[05:38:09]  estimators musique 10/80
+[05:40:02]  estimators musique 20/80
+[05:41:53]  estimators musique 30/80
+[05:43:25]  estimators musique 40/80
+[05:45:17]  estimators musique 50/80
+[05:46:59]  estimators musique 60/80
+[05:48:46]  estimators musique 70/80
+[05:50:41]  estimators musique 80/80
+[05:50:41]  
+       dataset      form   form_lo   form_hi   content  content_lo  content_hi   n
+0       clutrr -0.021038 -0.038616 -0.004366  0.020026   -0.004043    0.044837  90
+1  clutrr_copy -0.020503 -0.039118 -0.002313  0.628350    0.574546    0.678988  90
+2      musique -0.050502 -0.084773 -0.020894  0.718982    0.657229    0.779481  80
+[05:50:41]  
+        dataset     estimator   auc_all   auc_ps1  n_hops  n_ps1
+0        clutrr       d_total  0.558519  0.558575     360     95
+1        clutrr       d_naive  0.539712  0.516304     360     95
+2        clutrr   d_cf_direct  0.503416  0.474034     360     95
+3        clutrr    d_cf_total  0.531646  0.493961     360     95
+4        clutrr     d_placebo  0.548436  0.547705     360     95
+5        clutrr    d_maskmark  0.507572  0.480072     360     95
+6        clutrr  drg_relevant  1.000000  1.000000     360     95
+7   clutrr_copy       d_total  0.990710  0.995671     450    406
+8   clutrr_copy       d_naive  0.643056  0.644949     450    406
+9   clutrr_copy   d_cf_direct  0.651420  0.643180     450    406
+10  clutrr_copy    d_cf_total  0.995586  0.999925     450    406
+11  clutrr_copy     d_placebo  0.388025  0.385577     450    406
+12  clutrr_copy    d_maskmark  0.534815  0.543511     450    406
+13  clutrr_copy  drg_relevant  0.500000  0.500000     450    406
+14      musique       d_total  0.988018  0.992478     297    262
+15      musique       d_naive  0.682373  0.695598     297    262
+16      musique   d_cf_direct  0.657776  0.658359     297    262
+17      musique    d_cf_total  0.987442  0.993068     297    262
+18      musique     d_placebo  0.513076  0.513089     297    262
+19      musique    d_maskmark  0.500173  0.500111     297    262
+20      musique  drg_relevant  0.993750  0.992958     297    262
+[05:50:41]  
+       dataset       position   d_total   d_naive  d_cf_total  d_cf_direct  pns_rollout  d_placebo  d_maskmark
+0       clutrr     gold-final  0.009771  0.009771    0.062900     0.062900          NaN   0.050399    0.005875
+1       clutrr  gold-nonfinal  0.018973  0.007887    0.026732     0.016149          NaN  -0.018805   -0.017120
+2       clutrr      redundant  0.002064  0.002064    0.026416     0.026416          NaN  -0.002510   -0.003772
+3  clutrr_copy     gold-final  0.631550  0.631550    0.686467     0.686467          NaN  -0.038944    0.020541
+4  clutrr_copy  gold-nonfinal  0.685470  0.010682    0.705559    -0.010129          NaN   0.007731    0.015432
+5  clutrr_copy      redundant  0.004287  0.004287   -0.010071    -0.010071          NaN   0.002809    0.011723
+6      musique     gold-final  0.755831  0.755831    0.785573     0.785573          NaN  -0.025944   -0.027360
+7      musique  gold-nonfinal  0.727869 -0.036114    0.746229     0.004887          NaN   0.005051    0.026752
+8      musique      redundant -0.028114 -0.039443    0.030847     0.021299          NaN  -0.007997    0.018454
+[05:50:41]  alpha selection on 60 CLUTRR validation examples
+[05:50:41]  CLUTRR [orig] generating 60 chains
+[05:51:16]  CLUTRR [orig] scoring
+[05:54:22]  selected alphas: {'adacad': 0.0, 'cad': 0.25, 'cad_chain': 0.0, 'calib': 2.0, 'cot': 0.0, 'direct': 0.0, 'hgcd': 0.5, 'hgcd_ada': 0.0, 'hgcd_log': 0.0, 'hgcd_naive': 0.5, 'hgcd_placebo': 0.0, 'hgcd_uniform': 0.5, 'poe': 0.0, 'sc': 0.0, 'l1+cot': 0.0, 'l1+hgcd': 0.5}
+[05:54:22]  CLUTRR test: 238 examples x 5 conditions
+[05:54:22]  CLUTRR [orig] generating 238 chains
+[05:57:24]  CLUTRR [orig] scoring
+[05:57:24]  CLUTRR [sc] sampling 5 chains per question
+[06:29:19]  CLUTRR [L1] contrastive generation (result, a=1.0)
+[06:41:16]  CLUTRR [rename] generating 238 chains
+[06:44:38]  CLUTRR [rename] scoring
+[06:58:22]  CLUTRR [order] generating 238 chains
+[07:01:28]  CLUTRR [order] scoring
+[07:14:41]  CLUTRR [distract] generating 238 chains
+[07:18:14]  CLUTRR [distract] scoring
+[07:34:27]  CLUTRR [placebo_input] generating 238 chains
+[07:37:59]  CLUTRR [placebo_input] scoring
+[07:52:51]  
+             cond        method        te       nde       nie
+0        distract        adacad -0.033613 -0.033613  0.000000
+1        distract           cad -0.025210 -0.025210  0.000000
+2        distract     cad_chain -0.008403 -0.029412  0.021008
+3        distract         calib -0.071429 -0.042017 -0.029412
+4        distract           cot -0.008403 -0.029412  0.021008
+5        distract        direct -0.029412 -0.029412  0.000000
+6        distract          hgcd -0.004202 -0.021008  0.016807
+7        distract      hgcd_ada -0.008403 -0.029412  0.021008
+8        distract      hgcd_log -0.008403 -0.029412  0.021008
+9        distract  hgcd_uniform -0.008403 -0.029412  0.021008
+10       distract           poe -0.029412 -0.042017  0.012605
+11          order        adacad -0.033613 -0.033613  0.000000
+12          order           cad -0.016807 -0.016807  0.000000
+13          order     cad_chain -0.012605  0.000000 -0.012605
+14          order         calib -0.016807 -0.012605 -0.004202
+15          order           cot -0.012605  0.000000 -0.012605
+16          order        direct -0.042017 -0.042017  0.000000
+17          order          hgcd -0.016807  0.021008 -0.037815
+18          order      hgcd_ada -0.012605  0.000000 -0.012605
+19          order      hgcd_log -0.012605  0.000000 -0.012605
+20          order  hgcd_uniform -0.012605  0.021008 -0.033613
+21          order           poe -0.037815 -0.025210 -0.012605
+22  placebo_input        adacad -0.012605 -0.012605  0.000000
+23  placebo_input           cad  0.000000  0.000000  0.000000
+24  placebo_input     cad_chain  0.008403 -0.021008  0.029412
+25  placebo_input         calib -0.050420 -0.063025  0.012605
+26  placebo_input           cot  0.008403 -0.021008  0.029412
+27  placebo_input        direct -0.004202 -0.004202  0.000000
+28  placebo_input          hgcd  0.008403 -0.016807  0.025210
+29  placebo_input      hgcd_ada  0.008403 -0.021008  0.029412
+30  placebo_input      hgcd_log  0.008403 -0.021008  0.029412
+31  placebo_input  hgcd_uniform  0.004202 -0.016807  0.021008
+32  placebo_input           poe  0.004202 -0.016807  0.021008
+33         rename        adacad  0.000000  0.000000  0.000000
+34         rename           cad -0.004202 -0.004202  0.000000
+35         rename     cad_chain  0.000000  0.008403 -0.008403
+36         rename         calib -0.016807  0.025210 -0.042017
+37         rename           cot  0.000000  0.008403 -0.008403
+38         rename        direct -0.016807 -0.016807  0.000000
+39         rename          hgcd  0.000000  0.033613 -0.033613
+40         rename      hgcd_ada  0.000000  0.008403 -0.008403
+41         rename      hgcd_log  0.000000  0.008403 -0.008403
+42         rename  hgcd_uniform  0.000000  0.016807 -0.016807
+43         rename           poe -0.016807  0.029412 -0.046218
+[07:52:52]  
+          method split      mean        lo        hi    n
+0         adacad    ID  0.228814  0.161017  0.305085  118
+1         adacad   OOD  0.250000  0.175000  0.325000  120
+2            cad    ID  0.245763  0.169492  0.330508  118
+3            cad   OOD  0.225000  0.150000  0.300000  120
+4      cad_chain    ID  0.262712  0.186441  0.347458  118
+5      cad_chain   OOD  0.166667  0.108333  0.233333  120
+6          calib    ID  0.305085  0.228602  0.389831  118
+7          calib   OOD  0.191667  0.125000  0.266667  120
+8            cot    ID  0.262712  0.186441  0.347458  118
+9            cot   OOD  0.166667  0.108333  0.233333  120
+10        direct    ID  0.245763  0.169492  0.322034  118
+11        direct   OOD  0.233333  0.158333  0.308333  120
+12          hgcd    ID  0.237288  0.161017  0.313559  118
+13          hgcd   OOD  0.183333  0.116667  0.250000  120
+14      hgcd_ada    ID  0.262712  0.186441  0.347458  118
+15      hgcd_ada   OOD  0.166667  0.108333  0.233333  120
+16      hgcd_log    ID  0.262712  0.186441  0.347458  118
+17      hgcd_log   OOD  0.166667  0.108333  0.233333  120
+18    hgcd_naive    ID  0.245763  0.169492  0.330508  118
+19    hgcd_naive   OOD  0.175000  0.108333  0.241667  120
+20  hgcd_placebo    ID  0.262712  0.186441  0.347458  118
+21  hgcd_placebo   OOD  0.166667  0.108333  0.233333  120
+22  hgcd_uniform    ID  0.245763  0.169492  0.322034  118
+23  hgcd_uniform   OOD  0.183333  0.116667  0.250000  120
+24        l1+cot    ID  0.288136  0.203390  0.372881  118
+25        l1+cot   OOD  0.158333  0.100000  0.225000  120
+26       l1+hgcd    ID  0.245763  0.169492  0.330508  118
+27       l1+hgcd   OOD  0.183333  0.116667  0.258333  120
+28           poe    ID  0.288136  0.203390  0.372881  118
+29           poe   OOD  0.183333  0.116667  0.250000  120
+30            sc    ID  0.330508  0.245763  0.415254  118
+31            sc   OOD  0.200000  0.133333  0.266667  120
+0         adacad   All  0.239496  0.189076  0.294118  238
+1            cad   All  0.235294  0.184874  0.294118  238
+2      cad_chain   All  0.214286  0.163866  0.268908  238
+3          calib   All  0.247899  0.193277  0.302521  238
+4            cot   All  0.214286  0.163866  0.268908  238
+5         direct   All  0.239496  0.184874  0.298319  238
+6           hgcd   All  0.210084  0.159664  0.264706  238
+7       hgcd_ada   All  0.214286  0.163866  0.268908  238
+8       hgcd_log   All  0.214286  0.163866  0.268908  238
+9     hgcd_naive   All  0.210084  0.163761  0.264706  238
+10  hgcd_placebo   All  0.214286  0.163866  0.268908  238
+11  hgcd_uniform   All  0.214286  0.163866  0.268908  238
+12        l1+cot   All  0.222689  0.172269  0.281513  238
+13       l1+hgcd   All  0.214286  0.163866  0.268908  238
+14           poe   All  0.235294  0.180672  0.289916  238
+15            sc   All  0.264706  0.210084  0.323529  238
+[07:52:52]  
+         a             b      diff        lo        hi  p_mcnemar    n
+0     hgcd           cot -0.004202 -0.025210  0.016807   1.000000  238
+1     hgcd            sc -0.054622 -0.092437 -0.016807   0.007197  238
+2     hgcd     cad_chain -0.004202 -0.025210  0.016807   1.000000  238
+3     hgcd         calib -0.037815 -0.079832  0.000000   0.078354  238
+4     hgcd  hgcd_placebo -0.004202 -0.025210  0.016807   1.000000  238
+5     hgcd    hgcd_naive  0.000000 -0.012605  0.012605   1.000000  238
+6     hgcd  hgcd_uniform -0.004202 -0.021008  0.008403   1.000000  238
+7     hgcd      hgcd_log -0.004202 -0.025210  0.016807   1.000000  238
+8  l1+hgcd           cot  0.000000 -0.037815  0.037815   1.000000  238
+[07:52:52]  MuSiQue: 120 examples x 3 conditions
+[07:52:52]  MuSiQue [orig] generating 120 chains
+[07:57:45]  MuSiQue [orig] scoring
+[08:27:42]  MuSiQue [dist8] generating 120 chains
+[08:33:26]  MuSiQue [dist8] scoring
+[09:10:26]  MuSiQue [order] generating 120 chains
+[09:15:15]  MuSiQue [order] scoring
+[09:43:45]  
+     cond        method        te       nde       nie
+0   dist8        adacad -0.033333 -0.050000  0.016667
+1   dist8           cad -0.041667 -0.050000  0.008333
+2   dist8     cad_chain -0.075000  0.016667 -0.091667
+3   dist8         calib -0.108333 -0.016667 -0.091667
+4   dist8           cot -0.075000  0.016667 -0.091667
+5   dist8        direct -0.058333 -0.066667  0.008333
+6   dist8          hgcd -0.083333  0.008333 -0.091667
+7   dist8      hgcd_ada -0.075000  0.016667 -0.091667
+8   dist8      hgcd_log -0.075000  0.016667 -0.091667
+9   dist8  hgcd_uniform -0.083333  0.008333 -0.091667
+10  dist8           poe -0.075000 -0.008333 -0.066667
+11  order        adacad -0.008333 -0.008333  0.000000
+12  order           cad -0.008333  0.000000 -0.008333
+13  order     cad_chain  0.025000  0.008333  0.016667
+14  order         calib  0.000000 -0.008333  0.008333
+15  order           cot  0.025000  0.008333  0.016667
+16  order        direct -0.025000 -0.008333 -0.016667
+17  order          hgcd  0.033333  0.008333  0.025000
+18  order      hgcd_ada  0.025000  0.008333  0.016667
+19  order      hgcd_log  0.025000  0.008333  0.016667
+20  order  hgcd_uniform  0.033333  0.008333  0.025000
+21  order           poe  0.016667 -0.008333  0.025000
+[09:43:45]  
+          method      mean        lo        hi    n split
+0         adacad  0.108333  0.058333  0.166667  120   All
+1            cad  0.116667  0.058333  0.175000  120   All
+2      cad_chain  0.150000  0.091667  0.216667  120   All
+3          calib  0.175000  0.108333  0.241667  120   All
+4            cot  0.150000  0.091667  0.216667  120   All
+5         direct  0.141667  0.083333  0.200000  120   All
+6           free  0.175000  0.108333  0.241667  120   All
+7           hgcd  0.158333  0.100000  0.225000  120   All
+8       hgcd_ada  0.150000  0.091667  0.216667  120   All
+9       hgcd_log  0.150000  0.091667  0.216667  120   All
+10    hgcd_naive  0.150000  0.091667  0.216667  120   All
+11  hgcd_placebo  0.150000  0.091667  0.216667  120   All
+12  hgcd_uniform  0.158333  0.100000  0.225000  120   All
+13           poe  0.158333  0.100000  0.225000  120   All
+[09:43:45]  done in 269.3 min -> /kaggle/working/results/decoding_smollm2-1.7b

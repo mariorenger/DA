@@ -212,3 +212,28 @@ matching mask-total 0.35 vs mask-direct 0.001. This lesson goes in the paper: an
   are predicted, not accidental.
 - **New in code:** T_copy estimator variant (`clutrr_copy`), form-vs-content decomposition
   (masked chain of the same shape vs no chain), and a Direct×CoT product-of-experts reader.
+
+## Round 6: decoding run (Qwen2.5-1.5B + SmolLM2-1.7B, 269 min each, both completed)
+Replicated across two model families (`results/decoding/tab_replication.tex`):
+- **F1, copy not compute (H11 ✔):** chain content effect CLUTRR 0.8 / 2.0 pts → 75.1 / 62.8 with
+  T_copy; MuSiQue 56.4 / 71.9. Chains that reach every gold-path entity do not raise CLUTRR
+  accuracy (17.1 vs 18.3; 15.2 vs 22.4). Form effect ≈ 0 (H-form ✘).
+- **F2, direct-effect blind spot (H1 ✔):** non-final hops Δtot 66–76 vs Δnaive ≤ 1.3 pts; AUC
+  total 0.975–1.000 vs direct 0.64–0.83; two total-effect implementations agree; controls at chance.
+- **F3, mediation (H6 ✔):** dist8 hurts CoT entirely through the regenerated chain (NIE −10.0 /
+  −9.2; NDE +0.8 / +1.7); direct answering is hurt at the readout (NDE −4.2 / −6.7).
+  Prop. 3 (CAD more fragile at readout) ✘.
+- **F4 (H2 ✘, H8 ✔):** HGCD = CoT everywhere. Only content-free calibration beats CoT on CLUTRR
+  (+5.9, McNemar p = 0.009 vs HGCD; +3.4 n.s.) and it is fragile under the neutral placebo
+  (SmolLM2 −5.0 [−10.1, −0.4]).
+
+**Reviewer objection to F1:** "Writing the answer into the chain obviously makes the model use it."
+*Response, added to the code:* the decisive test is a WRONG answer hop that contradicts the
+relational hops (`clutrr_copywrong`). A computing reader would resist it; a copying reader follows
+it. CPU check (0.5B, n=2, illustration only): followed in 2/2, p(gold) → 0.001–0.007. This is H12
+for round 3, together with a copy diagnostic on the model's own chains (does the chosen relation
+appear as a word in the chain?).
+
+**Paper reframed** around F1–F4 ("Read, Not Reasoned"); HGCD kept as the decoding probe whose null
+result is explained by F1 and F3. Remaining open question for A*: does computation over the chain
+emerge with scale (`MODE="reliance"`, 0.5B → 7B)?

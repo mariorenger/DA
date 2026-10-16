@@ -140,6 +140,15 @@ def run(cfg: Config):
                                       lambda: E.run_estimators_clutrr(lm, est_ex, pool, rels,
                                                                       batch_size=cfg.batch_size,
                                                                       seed=cfg.seed, compose=True))
+        est_rows = est_rows + _cached(os.path.join(cfg.outdir, "stage_est_clutrr_copywrong.pkl"),
+                                      lambda: E.run_estimators_clutrr(lm, est_ex, pool, rels,
+                                                                      batch_size=cfg.batch_size,
+                                                                      seed=cfg.seed, compose="wrong"))
+        cw = pd.DataFrame(est_rows)
+        cw = cw[cw.dataset == "clutrr_copywrong"].drop_duplicates("uid")
+        summary["copy_wrong_follow_rate"] = float(cw.follows_wrong.mean())
+        summary["copy_wrong_p_gold"] = float(cw.p_full_gold.mean())
+        _log(f"wrong answer hop: followed in {cw.follows_wrong.mean():.2f} of chains")
     ms = None
     if cfg.run_musique:
         ms = D.load_musique("dev")
@@ -199,6 +208,11 @@ def run(cfg: Config):
     R.figures(df, sweep, cfg.outdir, "clutrr")
     ro = R.readout_latex(df, os.path.join(cfg.outdir, "tab_clutrr_readout.tex"))
     summary["clutrr_readout"] = ro.to_dict("records")
+    cp = M.copy_table(df)
+    if len(cp):
+        cp.to_csv(os.path.join(cfg.outdir, "clutrr_copy_diagnostic.csv"), index=False)
+        summary["clutrr_copy_diagnostic"] = cp.to_dict("records")
+        _log("\n" + cp.to_string())
     fx = M.fixed_records(recs)
     if fx:
         dff = _table_with_alphas(fx, {m: a for m, a in best.items() if not m.startswith("l1+")},

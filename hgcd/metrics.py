@@ -79,6 +79,21 @@ def auc(scores: np.ndarray, labels: np.ndarray) -> float:
 
 # ----------------------------------------------------------------------------- decision tables
 
+def _word_in(word: str, text: str) -> bool:
+    return re.search(r"\b" + re.escape(word.strip().lower()) + r"\b", text.lower()) is not None
+
+
+def copy_table(df: pd.DataFrame) -> pd.DataFrame:
+    """Copy diagnostic on the model's own chains: accuracy when the gold relation is / is not
+    written somewhere in the chain, and how often the chosen answer is a word from the chain."""
+    o = df[(df.cond == "orig") & df.method.isin(["direct", "cot", "hgcd", "calib"])]
+    out = []
+    for (m, g_in), g in o.groupby(["method", "gold_in_chain"]):
+        out.append(dict(method=m, gold_in_chain=int(g_in), acc=g.correct.mean(),
+                        pred_in_chain=g.pred_in_chain.mean(), n=len(g)))
+    return pd.DataFrame(out)
+
+
 def clutrr_table(recs: List[Dict], alpha: float = 1.0, beta: float = 0.1,
                  methods: Optional[List[str]] = None) -> pd.DataFrame:
     methods = methods or GREEDY_METHODS
@@ -93,8 +108,14 @@ def clutrr_table(recs: List[Dict], alpha: float = 1.0, beta: float = 0.1,
                 continue
             i = decide(r, m, alpha, beta)
             name = m if r["chain_src"] == "greedy" else f"l1+{m}"
+            chain = r.get("chain", "") or ""
             rows.append(dict(uid=r["uid"], k=r["k"], cond=r["cond"], method=name,
-                             correct=int(i == r["gold"]), fmt_ok=int(r["fmt_ok"]),
+                             correct=int(i == r["gold"]), pred=r["cands"][i],
+                             gold_label=r["cands"][r["gold"]],
+                             # copy diagnostic: is the chosen relation literally written in the chain?
+                             pred_in_chain=int(_word_in(r["cands"][i], chain)),
+                             gold_in_chain=int(_word_in(r["cands"][r["gold"]], chain)),
+                             fmt_ok=int(r["fmt_ok"]),
                              n_hops=r["n_hops"], hop_fid=r.get("hop_fid", np.nan),
                              drg_connected=int(r.get("drg_connected", False))))
     return pd.DataFrame(rows)

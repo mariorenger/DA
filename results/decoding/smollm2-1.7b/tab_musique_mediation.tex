@@ -1,0 +1,29 @@
+\begin{tabular}{llccc}
+\toprule
+Intervention & Method & TE & NDE (chain fixed) & NIE (via chain) \\
+\midrule
+dist8 & Direct (no CoT) & -5.8\,{\scriptsize[-11.7,0.0]} & -6.7\,{\scriptsize[-11.7,-1.7]} & 0.8\,{\scriptsize[-1.7,4.2]} \\
+dist8 & CoT & -7.5\,{\scriptsize[-14.2,-0.8]} & 1.7\,{\scriptsize[-1.7,5.0]} & -9.2\,{\scriptsize[-15.8,-2.5]} \\
+dist8 & CAD & -4.2\,{\scriptsize[-9.2,0.8]} & -5.0\,{\scriptsize[-9.2,-1.7]} & 0.8\,{\scriptsize[-1.7,4.2]} \\
+dist8 & AdaCAD & -3.3\,{\scriptsize[-8.3,0.8]} & -5.0\,{\scriptsize[-10.0,-0.8]} & 1.7\,{\scriptsize[-1.7,5.0]} \\
+dist8 & CAD-chain & -7.5\,{\scriptsize[-14.2,-0.8]} & 1.7\,{\scriptsize[-1.7,5.0]} & -9.2\,{\scriptsize[-15.8,-2.5]} \\
+dist8 & Calibration (content-free) & -10.8\,{\scriptsize[-17.5,-3.3]} & -1.7\,{\scriptsize[-5.0,1.7]} & -9.2\,{\scriptsize[-15.8,-2.5]} \\
+dist8 & Direct $\times$ CoT (PoE) & -7.5\,{\scriptsize[-14.2,0.0]} & -0.8\,{\scriptsize[-4.2,1.7]} & -6.7\,{\scriptsize[-13.3,0.0]} \\
+dist8 & HGCD (no graph) & -8.3\,{\scriptsize[-15.0,-1.7]} & 0.8\,{\scriptsize[-2.5,4.2]} & -9.2\,{\scriptsize[-15.8,-2.5]} \\
+dist8 & HGCD (log-space) & -7.5\,{\scriptsize[-14.2,-0.8]} & 1.7\,{\scriptsize[-1.7,5.0]} & -9.2\,{\scriptsize[-15.8,-2.5]} \\
+dist8 & HGCD (adaptive $\alpha$) & -7.5\,{\scriptsize[-14.2,-0.8]} & 1.7\,{\scriptsize[-1.7,5.0]} & -9.2\,{\scriptsize[-15.8,-2.5]} \\
+dist8 & \textbf{HGCD} & -8.3\,{\scriptsize[-15.0,-1.7]} & 0.8\,{\scriptsize[-2.5,4.2]} & -9.2\,{\scriptsize[-15.8,-2.5]} \\
+\midrule
+order & Direct (no CoT) & -2.5\,{\scriptsize[-7.5,2.5]} & -0.8\,{\scriptsize[-4.2,2.5]} & -1.7\,{\scriptsize[-5.8,2.5]} \\
+order & CoT & 2.5\,{\scriptsize[-5.0,10.0]} & 0.8\,{\scriptsize[-1.7,3.3]} & 1.7\,{\scriptsize[-5.8,10.0]} \\
+order & CAD & -0.8\,{\scriptsize[-5.0,3.3]} & 0.0\,{\scriptsize[-4.2,4.2]} & -0.8\,{\scriptsize[-4.2,2.5]} \\
+order & AdaCAD & -0.8\,{\scriptsize[-4.2,2.5]} & -0.8\,{\scriptsize[-4.2,2.5]} & 0.0\,{\scriptsize[-3.3,3.3]} \\
+order & CAD-chain & 2.5\,{\scriptsize[-5.0,10.0]} & 0.8\,{\scriptsize[-1.7,3.3]} & 1.7\,{\scriptsize[-5.8,10.0]} \\
+order & Calibration (content-free) & 0.0\,{\scriptsize[-7.5,7.5]} & -0.8\,{\scriptsize[-2.5,0.0]} & 0.8\,{\scriptsize[-6.7,8.3]} \\
+order & Direct $\times$ CoT (PoE) & 1.7\,{\scriptsize[-5.8,9.2]} & -0.8\,{\scriptsize[-4.2,1.7]} & 2.5\,{\scriptsize[-4.2,10.0]} \\
+order & HGCD (no graph) & 3.3\,{\scriptsize[-5.0,11.7]} & 0.8\,{\scriptsize[-1.7,3.3]} & 2.5\,{\scriptsize[-5.8,10.8]} \\
+order & HGCD (log-space) & 2.5\,{\scriptsize[-5.0,10.0]} & 0.8\,{\scriptsize[-1.7,3.3]} & 1.7\,{\scriptsize[-5.8,10.0]} \\
+order & HGCD (adaptive $\alpha$) & 2.5\,{\scriptsize[-5.0,10.0]} & 0.8\,{\scriptsize[-1.7,3.3]} & 1.7\,{\scriptsize[-5.8,10.0]} \\
+order & \textbf{HGCD} & 3.3\,{\scriptsize[-5.0,11.7]} & 0.8\,{\scriptsize[-1.7,3.3]} & 2.5\,{\scriptsize[-5.8,10.8]} \\
+\bottomrule
+\end{tabular}

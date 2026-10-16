@@ -157,7 +157,10 @@ def _corrupt_clutrr_hop(h: C.Hop, rels: List[str], rng: random.Random) -> C.Hop:
 
 def run_estimators_clutrr(lm, examples: List[D.ClutrrExample], pool: List[D.ClutrrExample],
                           rels: List[str], rollouts: int = 0, batch_size: int = 8,
-                          seed: int = 0, compose: bool = False) -> List[Dict]:
+                          seed: int = 0, compose=False) -> List[Dict]:
+    """compose: False | True (append a hop stating the gold answer) | "wrong" (append a hop
+    stating a WRONG relation that contradicts the relational hops: a reader that computes over
+    the chain should resist it; a reader that copies should follow it)."""
     """Gold chains + one inserted true-but-redundant hop (true necessity 0)."""
     cands = [" " + r for r in rels]
     rows = []
@@ -167,8 +170,13 @@ def run_estimators_clutrr(lm, examples: List[D.ClutrrExample], pool: List[D.Clut
         hops = [C.Hop(i + 1, h.text(), h.tail) for i, h in enumerate(ex.gold_hops)]
         rpos = rng.randint(0, len(hops) - 1)
         hops.insert(rpos, C.Hop(0, red.text(), red.tail))
+        wrong = None
         if compose:  # T_copy = 1: the answer becomes a string the reader can copy from the chain
-            hops.append(C.Hop(len(hops) + 1, f"So {ex.target} is {ex.source}'s relative:", ex.answer))
+            stated = ex.answer
+            if compose == "wrong":
+                wrong = rng.choice([r for r in rels if r != ex.answer])
+                stated = wrong
+            hops.append(C.Hop(len(hops) + 1, f"So {ex.target} is {ex.source}'s relative:", stated))
         base = lm.prompt(clutrr_messages(ex2.story_text, ex2.source, ex2.target))
         pre = ex2.answer_prefix()
         g = rels.index(ex.answer)
@@ -202,7 +210,10 @@ def run_estimators_clutrr(lm, examples: List[D.ClutrrExample], pool: List[D.Clut
                 pns[j] = y_full - float(np.mean(ys))
         for j in range(len(hops)):
             rows.append(dict(
-                dataset="clutrr_copy" if compose else "clutrr", uid=ex.uid, k=ex.k, hop=j,
+                dataset={False: "clutrr", True: "clutrr_copy", "wrong": "clutrr_copywrong"}[compose],
+                uid=ex.uid, k=ex.k, hop=j,
+                p_wrong_full=float(p_full[rels.index(wrong)]) if wrong else np.nan,
+                follows_wrong=int(wrong is not None and np.argmax(p_full) == rels.index(wrong)),
                 n_hops=len(hops), p_gold_nochain=float(p_none[g]),
                 p_gold_shape=float(p_shape[g]),
                 label=int(j != rpos), is_final=int(j == len(hops) - 1),
