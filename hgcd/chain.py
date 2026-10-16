@@ -198,3 +198,13 @@ def _sub_ent(text: str, old: str, new: str) -> str:
     if not old or len(old) < 2:
         return text
     return re.sub(_ent_pattern(old), new, text, flags=re.IGNORECASE)
+
+
+def mask_marker_tree(hops: List[Hop], j: int) -> List[Hop]:
+    """Volume-matched artifact control for do_total: insert [MASKED] into hop j AND every DRG
+    descendant while keeping all content. Same number of mask tokens in the same places as the
+    total-effect intervention, but no information removed."""
+    out = list(hops)
+    for d in [j] + descendants(hops, j):
+        out[d] = replace(out[d], body=f"{MASK} {hops[d].body}", result=f"{hops[d].result} {MASK}")
+    return out

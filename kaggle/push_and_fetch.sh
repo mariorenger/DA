@@ -2,20 +2,13 @@
 # Push the notebook to Kaggle as a private GPU kernel, wait for it, download the results.
 # Needs KAGGLE_USERNAME and KAGGLE_KEY in the environment (never commit them).
 set -euo pipefail
-PRESET="${1:-kaggle}"
+NB="${1:-A_reliance_small}"   # A_reliance_small | B_7b_and_mediation
 : "${KAGGLE_USERNAME:?set KAGGLE_USERNAME}" "${KAGGLE_KEY:?set KAGGLE_KEY}"
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 WORK="$(mktemp -d)"
 python3 "$ROOT/tools/build_notebook.py" >/dev/null
-python3 - "$ROOT/notebooks/hgcd_kaggle.ipynb" "$WORK/hgcd_kaggle.ipynb" "$PRESET" <<'PY'
-import sys, nbformat
-nb = nbformat.read(sys.argv[1], as_version=4)
-for c in nb.cells:
-    if c.cell_type == "code" and 'PRESET = "kaggle"' in c.source:
-        c.source = c.source.replace('PRESET = "kaggle"', f'PRESET = "{sys.argv[3]}"')
-nbformat.write(nb, sys.argv[2])
-PY
-SLUG="hgcd-${PRESET//_/-}"
+cp "$ROOT/notebooks/run_$NB.ipynb" "$WORK/hgcd_kaggle.ipynb"
+SLUG="hgcd-$(echo "$NB" | tr "_A-Z" "-a-z")"
 cat > "$WORK/kernel-metadata.json" <<JSON
 {"id": "$KAGGLE_USERNAME/$SLUG", "title": "$SLUG", "code_file": "hgcd_kaggle.ipynb",
  "language": "python", "kernel_type": "notebook", "is_private": true,
@@ -29,6 +22,6 @@ while true; do
   case "$s" in *complete*|*error*|*cancel*) break;; esac
   sleep 300
 done
-mkdir -p "$ROOT/results/kaggle_out_$PRESET"
-kaggle kernels output "$KAGGLE_USERNAME/$SLUG" -p "$ROOT/results/kaggle_out_$PRESET"
-echo "downloaded to results/kaggle_out_$PRESET"
+mkdir -p "$ROOT/results/kaggle_out_$NB"
+kaggle kernels output "$KAGGLE_USERNAME/$SLUG" -p "$ROOT/results/kaggle_out_$NB"
+echo "downloaded to results/kaggle_out_$NB"

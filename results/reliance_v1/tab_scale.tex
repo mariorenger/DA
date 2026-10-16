@@ -1,0 +1,16 @@
+\begin{tabular}{lcccc}
+\toprule
+Quantity ($\Delta p(\text{gold})$, points) & qwen-0.5b & qwen-1.5b & smollm2-1.7b & qwen-3b \\
+\midrule
+CLUTRR, non-final gold hop: total & 0.1 & -1.5 & 1.8 & 7.3 \\
+CLUTRR, redundant hop: total & -1.9 & -0.2 & -0.4 & 2.0 \\
+CLUTRR, final gold hop: placebo & 0.7 & -0.0 & 4.1 & 7.4 \\
+CLUTRR+copy, non-final: total & 60.8 & 76.1 & 69.5 & 77.0 \\
+CLUTRR+copy, non-final: direct & 1.3 & 1.3 & 1.0 & 1.7 \\
+MuSiQue, non-final: total & 56.7 & 56.9 & 66.8 & 49.1 \\
+MuSiQue, non-final: direct & -2.4 & 0.6 & -3.9 & 0.5 \\
+MuSiQue, final: total & 67.2 & 69.7 & 73.5 & 55.0 \\
+Rollout PNS, gold baseline: necessary (non-final) & 78.1 & 74.4 & 72.2 & 60.8 \\
+Rollout PNS, gold baseline: \emph{redundant} & 79.5 & 74.5 & 74.7 & 55.3 \\
+\bottomrule
+\end{tabular}

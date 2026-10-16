@@ -184,15 +184,16 @@ def estimator_table(rows: List[Dict]) -> Tuple[pd.DataFrame, pd.DataFrame]:
     aucs = []
     for ds, g in df.groupby("dataset"):
         g2 = g[g.full_correct == 1]  # PS = 1 condition (as in PNS identifiability)
-        for est in ["d_total", "d_naive", "d_cf_direct", "d_cf_total", "pns_rollout", "d_placebo",
-                    "d_maskmark", "drg_relevant"]:
+        for est in ["d_total", "d_naive", "d_cf_direct", "d_cf_total", "d_total_rawlogp", "pns_rollout", "pns_goldbase", "d_placebo",
+                    "d_maskmark", "d_maskmark_tree", "drg_relevant"]:
             if est not in g or g[est].isna().all():
                 continue
             aucs.append(dict(dataset=ds, estimator=est, auc_all=auc(g[est], g.label),
                              auc_ps1=auc(g2[est], g2.label), n_hops=len(g), n_ps1=len(g2)))
     df["position"] = np.where(df.label == 0, "redundant",
                               np.where(df.is_final == 1, "gold-final", "gold-nonfinal"))
-    cols = [c for c in ["d_total", "d_naive", "d_cf_total", "d_cf_direct", "pns_rollout",
+    cols = [c for c in ["d_total", "d_naive", "d_cf_total", "d_cf_direct", "d_total_rawlogp",
+                         "pns_rollout", "pns_goldbase", "d_maskmark_tree",
                          "d_placebo", "d_maskmark"] if c in df]
     pos = df.groupby(["dataset", "position"])[cols].mean().reset_index()
     return pd.DataFrame(aucs), pos

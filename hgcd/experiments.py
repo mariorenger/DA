@@ -21,8 +21,17 @@ def _log(msg: str):
     print(time.strftime("[%H:%M:%S] "), msg, flush=True)
 
 
+_RAW: List[np.ndarray] = []
+
+
 def _dist(lm, prefix: str, cands: List[str]) -> np.ndarray:
-    return softmax_logp(lm.score(prefix, cands))
+    lp = lm.score(prefix, cands)
+    _RAW[:] = [lp]           # keep only the last raw log-probs (candidate-set-free robustness)
+    return softmax_logp(lp)
+
+
+def _raw_last() -> np.ndarray:
+    return _RAW[-1]
 
 
 def _score_chain_contexts(lm, base_prompt: str, hops: List[C.Hop], ans_prefix: str,
@@ -30,13 +39,19 @@ def _score_chain_contexts(lm, base_prompt: str, hops: List[C.Hop], ans_prefix: s
     """p(a | context, intervened chain) for every hop and intervention type."""
     def ctx(hs):
         return base_prompt + C.render_chain(hs) + ans_prefix
-    rec = {"p_cot": _dist(lm, ctx(hops), cands),
-           "p_tot": [_dist(lm, ctx(C.do_total(hops, j)), cands) for j in range(len(hops))]}
+    rec = {"p_cot": _dist(lm, ctx(hops), cands)}
+    rec["lp_cot"] = _raw_last()
+    rec["p_tot"], rec["lp_tot"] = [], []
+    for j in range(len(hops)):
+        rec["p_tot"].append(_dist(lm, ctx(C.do_total(hops, j)), cands))
+        rec["lp_tot"].append(_raw_last())
     if full:
         rec["p_nai"] = [_dist(lm, ctx(C.do_naive(hops, j)), cands) for j in range(len(hops))]
         rec["p_pla"] = [_dist(lm, ctx(C.placebo(hops, j)), cands) for j in range(len(hops))]
         if marker:
             rec["p_mm"] = [_dist(lm, ctx(C.mask_marker(hops, j)), cands) for j in range(len(hops))]
+            rec["p_mmt"] = [_dist(lm, ctx(C.mask_marker_tree(hops, j)), cands)
+                            for j in range(len(hops))]
     else:
         rec["p_nai"] = rec["p_pla"] = None
     return rec
@@ -147,6 +162,23 @@ def run_clutrr(lm, examples: List[D.ClutrrExample], pool: List[D.ClutrrExample],
 
 # ============================================================================ estimator validation
 
+def _rollout_pns(lm, base, pre, cands, g, corrupt, keep, k, batch_size, max_new):
+    """PNS_j = P(correct | resample after original h_j) - P(correct | resample after corrupted h_j).
+    Returns per-hop estimates; also stores both arms for diagnostics in `_rollout_pns.last`."""
+    prompts = [base + C.render_chain(p) for p in corrupt + keep]
+    conts = lm.generate(prompts, max_new_tokens=max_new, do_sample=True, n=k,
+                        batch_size=max(1, batch_size // 2))
+    n = len(corrupt)
+
+    def acc(prefix_hops, outs):
+        return float(np.mean([np.argmax(_dist(lm, base + C.render_chain(prefix_hops + C.parse_chain(c))
+                                               + pre, cands)) == g for c in outs]))
+    y_cor = [acc(corrupt[j], conts[j * k:(j + 1) * k]) for j in range(n)]
+    y_keep = [acc(keep[j], conts[(n + j) * k:(n + j + 1) * k]) for j in range(n)]
+    _rollout_pns.last = (y_keep, y_cor)
+    return [yk - yc for yk, yc in zip(y_keep, y_cor)]
+
+
 def _corrupt_clutrr_hop(h: C.Hop, rels: List[str], rng: random.Random) -> C.Hop:
     m = C.CLUTRR_HOP_RE.match(h.body)
     if not m:
@@ -195,19 +227,17 @@ def run_estimators_clutrr(lm, examples: List[D.ClutrrExample], pool: List[D.Clut
         p_cft = [_dist(lm, ctx(C.replace_result(hops, j, cf_new[j], True)), cands)
                  for j in range(len(hops))]
         pns = [np.nan] * len(hops)
+        pns_gold = [np.nan] * len(hops)
         if rollouts > 0:
-            parts = [hops[:j] + [_corrupt_clutrr_hop(hops[j], rels, rng)] for j in range(len(hops))]
-            prompts = [base + C.render_chain(part) for part in parts]
-            conts = lm.generate(prompts, max_new_tokens=26 * (len(hops) + 1) + 16,
-                                do_sample=True, n=rollouts, batch_size=max(1, batch_size // 2))
-            y_full = float(np.argmax(p_full) == g)
-            for j in range(len(hops)):
-                ys = []
-                for c in conts[j * rollouts:(j + 1) * rollouts]:
-                    allh = parts[j] + C.parse_chain(c)
-                    p = _dist(lm, base + C.render_chain(allh) + pre, cands)
-                    ys.append(float(np.argmax(p) == g))
-                pns[j] = y_full - float(np.mean(ys))
+            # Resampling estimator with a RESAMPLED baseline: both arms regenerate the continuation,
+            # so the model's inability to regenerate a correct continuation cancels. (Comparing a
+            # resampled corrupted arm with the fixed gold continuation makes every hop, including
+            # provably redundant ones, look necessary.)
+            corrupt = [hops[:j] + [_corrupt_clutrr_hop(hops[j], rels, rng)] for j in range(len(hops))]
+            keep = [hops[:j + 1] for j in range(len(hops))]
+            pns = _rollout_pns(lm, base, pre, cands, g, corrupt, keep, rollouts, batch_size,
+                               26 * (len(hops) + 1) + 16)
+            pns_gold = [float(np.argmax(p_full) == g) - yc for yc in _rollout_pns.last[1]]
         for j in range(len(hops)):
             rows.append(dict(
                 dataset={False: "clutrr", True: "clutrr_copy", "wrong": "clutrr_copywrong"}[compose],
@@ -223,9 +253,11 @@ def run_estimators_clutrr(lm, examples: List[D.ClutrrExample], pool: List[D.Clut
                 d_naive=float(p_full[g] - recs["p_nai"][j][g]),
                 d_placebo=float(p_full[g] - recs["p_pla"][j][g]),
                 d_maskmark=float(p_full[g] - recs["p_mm"][j][g]),
+                d_maskmark_tree=float(p_full[g] - recs["p_mmt"][j][g]),
+                d_total_rawlogp=float(recs["lp_cot"][g] - recs["lp_tot"][j][g]),
                 d_cf_direct=float(p_full[g] - p_cfd[j][g]),
                 d_cf_total=float(p_full[g] - p_cft[j][g]),
-                pns_rollout=pns[j]))
+                pns_rollout=pns[j], pns_goldbase=pns_gold[j]))
         if (n + 1) % 10 == 0:
             _log(f"estimators clutrr {n + 1}/{len(examples)}")
     return rows
@@ -270,15 +302,13 @@ def run_estimators_musique(lm, examples: List[D.MusiqueExample], seed: int = 0,
         p_cft = [_dist(lm, ctx(C.replace_result(hops, j, cf_new[j], True)), cands)
                  for j in range(len(hops))]
         pns = [np.nan] * len(hops)
+        pns_gold = [np.nan] * len(hops)
         if rollouts > 0:
-            parts = [hops[:j] + [C.Hop(hops[j].idx, hops[j].body, cf_new[j])] for j in range(len(hops))]
-            conts = lm.generate([base + C.render_chain(pt) for pt in parts], max_new_tokens=120,
-                                do_sample=True, n=rollouts, batch_size=max(1, batch_size // 2))
-            y_full = float(np.argmax(p_full) == g)
-            for j in range(len(hops)):
-                ys = [float(np.argmax(_dist(lm, ctx(parts[j] + C.parse_chain(c)), cands)) == g)
-                      for c in conts[j * rollouts:(j + 1) * rollouts]]
-                pns[j] = y_full - float(np.mean(ys))
+            corrupt = [hops[:j] + [C.Hop(hops[j].idx, hops[j].body, cf_new[j])] for j in range(len(hops))]
+            keep = [hops[:j + 1] for j in range(len(hops))]
+            pns = _rollout_pns(lm, base, ex.answer_prefix(), cands, g, corrupt, keep, rollouts,
+                               batch_size, 120)
+            pns_gold = [float(np.argmax(p_full) == g) - yc for yc in _rollout_pns.last[1]]
         for j in range(len(hops)):
             rows.append(dict(
                 dataset="musique", uid=ex.uid, k=ex.k, hop=j, n_hops=len(hops),
@@ -290,9 +320,11 @@ def run_estimators_musique(lm, examples: List[D.MusiqueExample], seed: int = 0,
                 d_naive=float(p_full[g] - recs["p_nai"][j][g]),
                 d_placebo=float(p_full[g] - recs["p_pla"][j][g]),
                 d_maskmark=float(p_full[g] - recs["p_mm"][j][g]),
+                d_maskmark_tree=float(p_full[g] - recs["p_mmt"][j][g]),
+                d_total_rawlogp=float(recs["lp_cot"][g] - recs["lp_tot"][j][g]),
                 d_cf_direct=float(p_full[g] - p_cfd[j][g]),
                 d_cf_total=float(p_full[g] - p_cft[j][g]),
-                pns_rollout=pns[j]))
+                pns_rollout=pns[j], pns_goldbase=pns_gold[j]))
         if (n + 1) % 10 == 0:
             _log(f"estimators musique {n + 1}/{len(examples)}")
     return rows
@@ -301,7 +333,9 @@ def run_estimators_musique(lm, examples: List[D.MusiqueExample], seed: int = 0,
 # ============================================================================ MuSiQue decoding
 
 def run_musique(lm, examples: List[D.MusiqueExample], conditions=("orig", "dist8", "order"),
-                batch_size: int = 4) -> List[Dict]:
+                batch_size: int = 4, lean: bool = False) -> List[Dict]:
+    """lean=True scores only the full chain (no per-hop interventions): enough for CoT, direct,
+    CAD, calibration, PoE and the exact mediation analysis, at a fraction of the cost."""
     recs = []
     orig: Dict[str, tuple] = {}
     for cond in conditions:
@@ -317,7 +351,10 @@ def run_musique(lm, examples: List[D.MusiqueExample], conditions=("orig", "dist8
             fa = fa.strip().strip(".")
             cand_txt = _musique_cands_model(e, [fa] + [h.result for h in hops])
             cands = [" " + c for c in cand_txt]
-            r = _score_chain_contexts(lm, p, hops, e.answer_prefix(), cands, full=(cond == "orig"))
+            r = _score_chain_contexts(lm, p, [] if lean else hops, e.answer_prefix(), cands,
+                                      full=(cond == "orig") and not lean)
+            if lean:  # p_cot must still condition on the real chain
+                r["p_cot"] = _dist(lm, p + C.render_chain(hops) + e.answer_prefix(), cands)
             r["sc_votes"] = None
             r["p_dir"] = _dist(lm, p + e.answer_prefix(), cands)
             r["p_noctx"] = _dist(lm, lm.prompt(musique_question_only(e.question))
@@ -328,7 +365,11 @@ def run_musique(lm, examples: List[D.MusiqueExample], conditions=("orig", "dist8
             elif e.uid in orig:  # mediation: original chain, intervened context
                 ohops, ofa = orig[e.uid]
                 fc_txt = _musique_cands_model(e, [ofa] + [h.result for h in ohops])
-                fr = _fixed_chain(lm, p, ohops, e.answer_prefix(), [" " + c for c in fc_txt])
+                fr = _fixed_chain(lm, p, [] if lean else ohops, e.answer_prefix(),
+                                  [" " + c for c in fc_txt])
+                if lean:
+                    fr["p_cot"] = _dist(lm, p + C.render_chain(ohops) + e.answer_prefix(),
+                                        [" " + c for c in fc_txt])
                 fr["p_dir"] = _dist(lm, p + e.answer_prefix(), [" " + c for c in fc_txt])
                 fr["p_noctx"] = _dist(lm, lm.prompt(musique_question_only(e.question))
                                       + e.answer_prefix(), [" " + c for c in fc_txt])

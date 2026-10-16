@@ -76,13 +76,17 @@ EST_NAMES = {
     "d_total": "Mask hop + DRG descendants (total)",
     "d_cf_direct": "Replace result, keep downstream (direct)",
     "d_cf_total": "Replace result, propagate (total)",
-    "pns_rollout": "Corrupt + resample downstream (rollout PNS)",
+    "pns_rollout": "Corrupt + resample, resampled baseline (ours)",
+    "pns_goldbase": "Corrupt + resample, gold-chain baseline (PNS as in Yu et al.)",
+    "d_total_rawlogp": "Mask hop + descendants, raw log-prob (no candidate set)",
     "drg_relevant": "DRG path indicator (structure only)",
     "d_placebo": "Placebo rewrite (control)",
     "d_maskmark": "Mask token, content kept (control)",
+    "d_maskmark_tree": "Mask tokens on hop + descendants, content kept (control)",
 }
 EST_SHORT = {"d_total": "mask-tot", "d_naive": "mask-dir", "d_cf_total": "cf-tot",
-             "d_cf_direct": "cf-dir", "pns_rollout": "rollout", "d_placebo": "placebo",
+             "d_cf_direct": "cf-dir", "pns_rollout": "rollout", "pns_goldbase": "rollout-gold", "d_total_rawlogp": "tot-rawlp",
+             "d_maskmark_tree": "marker-tree", "d_placebo": "placebo",
              "d_maskmark": "marker"}
 
 
@@ -205,7 +209,7 @@ def reliance_table(run_dirs: Dict[str, str], out_tex: str, out_pdf: str = None) 
     if df.empty:
         return df
     cols = [c for c in ["auc_d_naive", "auc_d_total", "auc_d_cf_direct", "auc_d_cf_total",
-                        "auc_pns_rollout", "auc_d_placebo"] if c in df]
+                        "auc_pns_rollout", "auc_pns_goldbase", "auc_d_placebo"] if c in df]
     head = ["Model", "Data", "PS", "Rel.(final)", "Rel.(non-final)"] + \
            [EST_SHORT.get(c[4:], c[4:]) for c in cols]
     lines = ["\\begin{tabular}{ll" + "c" * (3 + len(cols)) + "}", "\\toprule",

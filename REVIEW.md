@@ -237,3 +237,37 @@ appear as a word in the chain?).
 **Paper reframed** around F1–F4 ("Read, Not Reasoned"); HGCD kept as the decoding probe whose null
 result is explained by F1 and F3. Remaining open question for A*: does computation over the chain
 emerge with scale (`MODE="reliance"`, 0.5B → 7B)?
+
+## Round 7: external review (NeurIPS-style, score 3/10) + own critique of the reliance-v1 run
+
+### Own findings from the reliance run (4 models, 0.5B–3B; the 7B job was killed at 12 h)
+- R1 replicated at every scale: MuSiQue non-final hop direct −3.9…+0.6 vs total 49–67 pts;
+  CLUTRR+copy direct 1.0–1.7 vs total 61–77.
+- **New bias found:** resampling necessity with the gold continuation as baseline gives 55–80 pts
+  to *redundant* hops (= necessary hops 61–78). Closed form: bias = 1 − r (r = regeneration
+  success), see Prop. `rollout`. This is the assumption P(A=y | do(S)) = 1 of Yu et al. failing.
+  Fixed: resampled baseline; the old estimator is kept as a column for comparison.
+- CLUTRR reliance: ≤ 1.8 pts up to 1.7B, 7.3 at 3B, but the placebo on the final hop is also 7.4
+  at 3B, so nothing is detectable yet.
+- **Wrong argument corrected:** "CoT is more vulnerable to distractors than direct answering" is
+  NOT supported by a paired test (−5.8 [−11.7, 0.0]; −1.7 [−6.7, 3.3]). Only the within-CoT
+  mediation (TIE ≈ −10, NDE ≈ +1) stands. Also renamed NIE → TIE (TE − NDE is the total
+  indirect effect).
+- **Gap in "copy, not compute":** the near-zero CLUTRR content effect may simply mean the model
+  cannot compose kinship relations (it solves only ~19% of gold chains). The wrong-answer copy test
+  is informative only on chains the model *can* solve, so it is now reported conditioned on
+  PS = 1 of the plain chain.
+
+### External review: response point by point
+| Point | Verdict | What changed |
+|---|---|---|
+| W2 n too small (n=120) | Valid for the decoding tables; less so for the estimator benchmark (>2,000 hops per model) | Paper claims nothing that depends on accuracy differences < 6 pts; mediation rerun at n=500 (notebook B) |
+| W2 models too small | Valid for R3; not for R1/R2 (identities, confirmed at every scale) | 7B on Kaggle (notebook B); 14B and OLMo-2-7B on A100 (`kaggle/a100_run.sh`); R3 is scoped to ≤ 3B |
+| W3 split narrative | Valid | HGCD moved to an appendix as a probe; paper is now a causal evaluation paper |
+| W4 mixture assumption | Valid: our own data falsify it | The mixture propositions moved to the appendix and are labelled as not supported |
+| W4 candidate set | Partly valid | Raw log-prob effect added (needs no candidate set); estimator claims use gold-answer probability, not decoding |
+| Q1 HGCD role | Agreed | Probe only (R5) |
+| Q2 7B missing | Valid: the text promised 7B | Removed the promise; 7B/14B runs prepared |
+| Q3 DRG connectivity | Numbers existed but were not in the paper | Reported: 25% / 36% fully connected; affects only the decoding probe (benchmark uses gold chains) |
+| Q4 subtree masking artifact | Valid concern | Volume-matched control: same mask tokens on hop + descendants with content kept; the cf-replacement version (no mask on hop j) already agrees |
+| "??", pending, pilot appendix | Valid | Removed; `\maybeinput` no longer prints "Pending" |

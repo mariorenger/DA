@@ -52,6 +52,9 @@ class Config:
     run_musique: bool = True
     est_compose: bool = True             # copy-vs-compute: CLUTRR chains with the answer written in
     only_estimators: bool = False        # "reliance" study: estimator stage only
+    run_estimators: bool = True
+    run_clutrr_decoding: bool = True
+    musique_lean: bool = False           # mediation-only MuSiQue run: no per-hop HGCD contexts
     device_map: str = ""                 # e.g. "auto" to shard a 7B model over 2 T4s
 
 
@@ -64,8 +67,14 @@ PRESETS = {
     "kaggle_full": dict(n_per_k=80, n_dev=120, n_est_per_k=60, est_rollouts=4, n_ms=300,
                         n_est_ms=200),
     # Reliance-vs-scale study (cheap): run once per model size, estimator stage only.
-    "reliance": dict(ks_est=[2, 3, 4], n_est_per_k=60, n_est_ms=150, est_rollouts=4,
+    "reliance": dict(ks_est=[2, 3, 4], n_est_per_k=60, n_est_ms=150, est_rollouts=2,
                      only_estimators=True),
+    # 7B alone (sharded over 2 T4s): no rollouts, smaller n, fits one Kaggle session
+    # Mediation at larger n (reviewer W2): MuSiQue only, orig vs dist8, no per-hop contexts
+    "mediation": dict(run_estimators=False, run_clutrr_decoding=False, n_ms=500,
+                      ms_conditions=["orig", "dist8"], musique_lean=True, batch_size=8),
+    "reliance_7b": dict(ks_est=[2, 3, 4], n_est_per_k=40, n_est_ms=100, est_rollouts=0,
+                        only_estimators=True, batch_size=4),
     "a100": dict(model="Qwen/Qwen2.5-7B-Instruct", ks_test=[2, 3, 4, 5, 6, 7, 8, 9, 10],
                  n_per_k=100, n_dev=150, n_est_per_k=80, est_rollouts=4, n_ms=500,
                  n_est_ms=300, batch_size=16),
@@ -127,51 +136,58 @@ def run(cfg: Config):
     pool = train
     summary["clutrr_filter"] = {"train": len(train), "test": len(test), "dev": len(dev)}
 
-    # ------------------------------------------------------------- 1) estimator validation
-    est_ex = D.sample_by_k(test, cfg.ks_est, cfg.n_est_per_k, cfg.seed + 7)
-    _log(f"estimator validation on {len(est_ex)} CLUTRR gold chains")
-    est_rows = _cached(os.path.join(cfg.outdir, "stage_est_clutrr.pkl"),
-                       lambda: E.run_estimators_clutrr(lm, est_ex, pool, rels,
-                                                       rollouts=cfg.est_rollouts,
-                                                       batch_size=cfg.batch_size, seed=cfg.seed))
-    if cfg.est_compose:
-        _log("estimator validation on CLUTRR chains + explicit answer hop (copy vs compute)")
-        est_rows = est_rows + _cached(os.path.join(cfg.outdir, "stage_est_clutrr_copy.pkl"),
-                                      lambda: E.run_estimators_clutrr(lm, est_ex, pool, rels,
-                                                                      batch_size=cfg.batch_size,
-                                                                      seed=cfg.seed, compose=True))
-        est_rows = est_rows + _cached(os.path.join(cfg.outdir, "stage_est_clutrr_copywrong.pkl"),
-                                      lambda: E.run_estimators_clutrr(lm, est_ex, pool, rels,
-                                                                      batch_size=cfg.batch_size,
-                                                                      seed=cfg.seed, compose="wrong"))
-        cw = pd.DataFrame(est_rows)
-        cw = cw[cw.dataset == "clutrr_copywrong"].drop_duplicates("uid")
-        summary["copy_wrong_follow_rate"] = float(cw.follows_wrong.mean())
-        summary["copy_wrong_p_gold"] = float(cw.p_full_gold.mean())
-        _log(f"wrong answer hop: followed in {cw.follows_wrong.mean():.2f} of chains")
-    ms = None
-    if cfg.run_musique:
-        ms = D.load_musique("dev")
-        rng = np.random.default_rng(cfg.seed)
-        ms_est = [ms[i] for i in rng.choice(len(ms), cfg.n_est_ms, replace=False)]
-        _log(f"estimator validation on {len(ms_est)} MuSiQue gold chains")
-        est_rows = est_rows + _cached(os.path.join(cfg.outdir, "stage_est_musique.pkl"),
-                                      lambda: E.run_estimators_musique(lm, ms_est, seed=cfg.seed,
-                                                                       rollouts=cfg.est_rollouts,
-                                                                       batch_size=cfg.batch_size))
-    pd.DataFrame(est_rows).to_csv(os.path.join(cfg.outdir, "estimators.csv"), index=False)
-    aucs, pos = M.estimator_table(est_rows)
-    R.estimator_latex(aucs, pos, os.path.join(cfg.outdir, "tab_estimators_auc.tex"),
-                      os.path.join(cfg.outdir, "tab_estimators_pos.tex"))
-    summary["estimator_auc"] = aucs.to_dict("records")
-    summary["estimator_position"] = pos.to_dict("records")
-    fc = M.form_content_table(est_rows)
-    if len(fc):
-        R.form_content_latex(fc, os.path.join(cfg.outdir, "tab_form_content.tex"))
-        summary["form_content"] = fc.to_dict("records")
-        _log("\n" + fc.to_string())
-    _log("\n" + aucs.to_string())
-    _log("\n" + pos.to_string())
+    ms = D.load_musique("dev") if cfg.run_musique else None
+    if cfg.run_estimators:
+        # ------------------------------------------------------------- 1) estimator validation
+        est_ex = D.sample_by_k(test, cfg.ks_est, cfg.n_est_per_k, cfg.seed + 7)
+        _log(f"estimator validation on {len(est_ex)} CLUTRR gold chains")
+        est_rows = _cached(os.path.join(cfg.outdir, "stage_est_clutrr.pkl"),
+                           lambda: E.run_estimators_clutrr(lm, est_ex, pool, rels,
+                                                           rollouts=cfg.est_rollouts,
+                                                           batch_size=cfg.batch_size, seed=cfg.seed))
+        if cfg.est_compose:
+            _log("estimator validation on CLUTRR chains + explicit answer hop (copy vs compute)")
+            est_rows = est_rows + _cached(os.path.join(cfg.outdir, "stage_est_clutrr_copy.pkl"),
+                                          lambda: E.run_estimators_clutrr(lm, est_ex, pool, rels,
+                                                                          batch_size=cfg.batch_size,
+                                                                          seed=cfg.seed, compose=True))
+            est_rows = est_rows + _cached(os.path.join(cfg.outdir, "stage_est_clutrr_copywrong.pkl"),
+                                          lambda: E.run_estimators_clutrr(lm, est_ex, pool, rels,
+                                                                          batch_size=cfg.batch_size,
+                                                                          seed=cfg.seed, compose="wrong"))
+            er = pd.DataFrame(est_rows)
+            cw = er[er.dataset == "clutrr_copywrong"].drop_duplicates("uid").set_index("uid")
+            ps = er[er.dataset == "clutrr"].drop_duplicates("uid").set_index("uid").full_correct
+            cw = cw.join(ps.rename("ps_plain"), how="left")
+            comp = cw[cw.ps_plain == 1]   # chains the model DOES solve from the relational hops alone
+            summary["copy_wrong"] = dict(
+                follow_rate=float(cw.follows_wrong.mean()), n=int(len(cw)),
+                follow_rate_when_solvable=float(comp.follows_wrong.mean()) if len(comp) else None,
+                n_solvable=int(len(comp)), p_gold=float(cw.p_full_gold.mean()))
+            _log(f"wrong answer hop: followed in {cw.follows_wrong.mean():.2f} of chains; "
+                 f"in {comp.follows_wrong.mean() if len(comp) else float('nan'):.2f} of the "
+                 f"{len(comp)} chains the model solves without it")
+        if cfg.run_musique:
+            rng = np.random.default_rng(cfg.seed)
+            ms_est = [ms[i] for i in rng.choice(len(ms), cfg.n_est_ms, replace=False)]
+            _log(f"estimator validation on {len(ms_est)} MuSiQue gold chains")
+            est_rows = est_rows + _cached(os.path.join(cfg.outdir, "stage_est_musique.pkl"),
+                                          lambda: E.run_estimators_musique(lm, ms_est, seed=cfg.seed,
+                                                                           rollouts=cfg.est_rollouts,
+                                                                           batch_size=cfg.batch_size))
+        pd.DataFrame(est_rows).to_csv(os.path.join(cfg.outdir, "estimators.csv"), index=False)
+        aucs, pos = M.estimator_table(est_rows)
+        R.estimator_latex(aucs, pos, os.path.join(cfg.outdir, "tab_estimators_auc.tex"),
+                          os.path.join(cfg.outdir, "tab_estimators_pos.tex"))
+        summary["estimator_auc"] = aucs.to_dict("records")
+        summary["estimator_position"] = pos.to_dict("records")
+        fc = M.form_content_table(est_rows)
+        if len(fc):
+            R.form_content_latex(fc, os.path.join(cfg.outdir, "tab_form_content.tex"))
+            summary["form_content"] = fc.to_dict("records")
+            _log("\n" + fc.to_string())
+        _log("\n" + aucs.to_string())
+        _log("\n" + pos.to_string())
     if cfg.only_estimators:
         summary["minutes"] = (time.time() - t0) / 60
         with open(os.path.join(cfg.outdir, "summary.json"), "w") as f:
@@ -179,61 +195,63 @@ def run(cfg: Config):
         _log(f"done (estimators only) in {summary['minutes']:.1f} min -> {cfg.outdir}")
         return summary
 
-    # ------------------------------------------------------------- 2) alpha selection on dev
-    dev_ex = D.sample_by_k(dev, [2, 3, 4], max(1, cfg.n_dev // 3), cfg.seed + 1)
-    _log(f"alpha selection on {len(dev_ex)} CLUTRR validation examples")
-    dev_recs = _cached(os.path.join(cfg.outdir, "stage_dev.pkl"),
-                       lambda: E.run_clutrr(lm, dev_ex, pool, rels, conditions=["orig"],
-                                            batch_size=cfg.batch_size, l1=False))
-    best, sweep = select_alpha(dev_recs, M.GREEDY_METHODS, cfg.alphas, cfg.beta, M.clutrr_table)
-    for m in M.GREEDY_METHODS:          # methods absent on dev (e.g. sc) need no alpha
-        best.setdefault(m, 0.0)
-    best["l1+cot"], best["l1+hgcd"] = 0.0, best.get("hgcd", 1.0)
-    sweep.to_csv(os.path.join(cfg.outdir, "alpha_sweep_dev.csv"), index=False)
-    summary["alpha"] = best
-    _log(f"selected alphas: {best}")
+    best = {m: 1.0 for m in M.GREEDY_METHODS}
+    if cfg.run_clutrr_decoding:
+        # ------------------------------------------------------------- 2) alpha selection on dev
+        dev_ex = D.sample_by_k(dev, [2, 3, 4], max(1, cfg.n_dev // 3), cfg.seed + 1)
+        _log(f"alpha selection on {len(dev_ex)} CLUTRR validation examples")
+        dev_recs = _cached(os.path.join(cfg.outdir, "stage_dev.pkl"),
+                           lambda: E.run_clutrr(lm, dev_ex, pool, rels, conditions=["orig"],
+                                                batch_size=cfg.batch_size, l1=False))
+        best, sweep = select_alpha(dev_recs, M.GREEDY_METHODS, cfg.alphas, cfg.beta, M.clutrr_table)
+        for m in M.GREEDY_METHODS:          # methods absent on dev (e.g. sc) need no alpha
+            best.setdefault(m, 0.0)
+        best["l1+cot"], best["l1+hgcd"] = 0.0, best.get("hgcd", 1.0)
+        sweep.to_csv(os.path.join(cfg.outdir, "alpha_sweep_dev.csv"), index=False)
+        summary["alpha"] = best
+        _log(f"selected alphas: {best}")
 
-    # ------------------------------------------------------------- 3) CLUTRR test
-    test_ex = D.sample_by_k(test, cfg.ks_test, cfg.n_per_k, cfg.seed)
-    _log(f"CLUTRR test: {len(test_ex)} examples x {len(cfg.conditions)} conditions")
-    recs = _cached(os.path.join(cfg.outdir, "clutrr_records.pkl"),
-                   lambda: E.run_clutrr(lm, test_ex, pool, rels, conditions=cfg.conditions,
-                                        batch_size=cfg.batch_size, l1=cfg.l1,
-                                        l1_alpha=cfg.l1_alpha, sc_n=cfg.sc_n))
-    df = _table_with_alphas(recs, best, cfg.beta, M.clutrr_table)
-    df.to_csv(os.path.join(cfg.outdir, "clutrr_decisions.csv"), index=False)
-    s = R.main_table(df, os.path.join(cfg.outdir, "tab_clutrr_main.tex"))
-    a = R.ate_latex(df[~df.method.str.startswith("l1+")],
-                    os.path.join(cfg.outdir, "tab_clutrr_ate.tex"))
-    R.figures(df, sweep, cfg.outdir, "clutrr")
-    ro = R.readout_latex(df, os.path.join(cfg.outdir, "tab_clutrr_readout.tex"))
-    summary["clutrr_readout"] = ro.to_dict("records")
-    cp = M.copy_table(df)
-    if len(cp):
-        cp.to_csv(os.path.join(cfg.outdir, "clutrr_copy_diagnostic.csv"), index=False)
-        summary["clutrr_copy_diagnostic"] = cp.to_dict("records")
-        _log("\n" + cp.to_string())
-    fx = M.fixed_records(recs)
-    if fx:
-        dff = _table_with_alphas(fx, {m: a for m, a in best.items() if not m.startswith("l1+")},
-                                 cfg.beta, M.clutrr_table)
-        med = M.mediation_table(df, dff)
-        R.mediation_latex(med, os.path.join(cfg.outdir, "tab_clutrr_mediation.tex"))
-        summary["clutrr_mediation"] = med.to_dict("records")
-        _log("\n" + med[["cond", "method", "te", "nde", "nie"]].to_string())
-    comps = [M.paired_compare(df, "hgcd", b) for b in ["cot", "sc", "cad_chain", "calib", "hgcd_placebo",
-                                                        "hgcd_naive", "hgcd_uniform", "hgcd_log"]]
-    if cfg.l1:
-        comps.append(M.paired_compare(df, "l1+hgcd", "cot"))
-    summary["clutrr_acc"] = s.to_dict("records")
-    summary["clutrr_ate"] = a.to_dict("records")
-    summary["clutrr_paired"] = comps
-    o = df[df.cond == "orig"]
-    summary["clutrr_format"] = {"fmt_ok": float(o.fmt_ok.mean()), "hop_fid": float(o.hop_fid.mean()),
-                                "drg_connected": float(o.drg_connected.mean()),
-                                "mean_hops": float(o.n_hops.mean())}
-    _log("\n" + s.to_string())
-    _log("\n" + pd.DataFrame(comps).to_string())
+        # ------------------------------------------------------------- 3) CLUTRR test
+        test_ex = D.sample_by_k(test, cfg.ks_test, cfg.n_per_k, cfg.seed)
+        _log(f"CLUTRR test: {len(test_ex)} examples x {len(cfg.conditions)} conditions")
+        recs = _cached(os.path.join(cfg.outdir, "clutrr_records.pkl"),
+                       lambda: E.run_clutrr(lm, test_ex, pool, rels, conditions=cfg.conditions,
+                                            batch_size=cfg.batch_size, l1=cfg.l1,
+                                            l1_alpha=cfg.l1_alpha, sc_n=cfg.sc_n))
+        df = _table_with_alphas(recs, best, cfg.beta, M.clutrr_table)
+        df.to_csv(os.path.join(cfg.outdir, "clutrr_decisions.csv"), index=False)
+        s = R.main_table(df, os.path.join(cfg.outdir, "tab_clutrr_main.tex"))
+        a = R.ate_latex(df[~df.method.str.startswith("l1+")],
+                        os.path.join(cfg.outdir, "tab_clutrr_ate.tex"))
+        R.figures(df, sweep, cfg.outdir, "clutrr")
+        ro = R.readout_latex(df, os.path.join(cfg.outdir, "tab_clutrr_readout.tex"))
+        summary["clutrr_readout"] = ro.to_dict("records")
+        cp = M.copy_table(df)
+        if len(cp):
+            cp.to_csv(os.path.join(cfg.outdir, "clutrr_copy_diagnostic.csv"), index=False)
+            summary["clutrr_copy_diagnostic"] = cp.to_dict("records")
+            _log("\n" + cp.to_string())
+        fx = M.fixed_records(recs)
+        if fx:
+            dff = _table_with_alphas(fx, {m: a for m, a in best.items() if not m.startswith("l1+")},
+                                     cfg.beta, M.clutrr_table)
+            med = M.mediation_table(df, dff)
+            R.mediation_latex(med, os.path.join(cfg.outdir, "tab_clutrr_mediation.tex"))
+            summary["clutrr_mediation"] = med.to_dict("records")
+            _log("\n" + med[["cond", "method", "te", "nde", "nie"]].to_string())
+        comps = [M.paired_compare(df, "hgcd", b) for b in ["cot", "sc", "cad_chain", "calib", "hgcd_placebo",
+                                                            "hgcd_naive", "hgcd_uniform", "hgcd_log"]]
+        if cfg.l1:
+            comps.append(M.paired_compare(df, "l1+hgcd", "cot"))
+        summary["clutrr_acc"] = s.to_dict("records")
+        summary["clutrr_ate"] = a.to_dict("records")
+        summary["clutrr_paired"] = comps
+        o = df[df.cond == "orig"]
+        summary["clutrr_format"] = {"fmt_ok": float(o.fmt_ok.mean()), "hop_fid": float(o.hop_fid.mean()),
+                                    "drg_connected": float(o.drg_connected.mean()),
+                                    "mean_hops": float(o.n_hops.mean())}
+        _log("\n" + s.to_string())
+        _log("\n" + pd.DataFrame(comps).to_string())
 
     # ------------------------------------------------------------- 4) MuSiQue
     if cfg.run_musique:
@@ -242,7 +260,8 @@ def run(cfg: Config):
         _log(f"MuSiQue: {len(ms_ex)} examples x {len(cfg.ms_conditions)} conditions")
         mrecs = _cached(os.path.join(cfg.outdir, "musique_records.pkl"),
                         lambda: E.run_musique(lm, ms_ex, conditions=cfg.ms_conditions,
-                                              batch_size=max(1, cfg.batch_size // 2)))
+                                              batch_size=max(1, cfg.batch_size // 2),
+                                              lean=cfg.musique_lean))
         mbest = {m: best.get(m, 1.0) for m in M.GREEDY_METHODS}
         mdf = _table_with_alphas(mrecs, mbest, cfg.beta, M.musique_table)
         free = M.musique_table(mrecs, methods=["cot"])

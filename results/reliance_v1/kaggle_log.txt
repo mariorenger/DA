@@ -1,0 +1,78 @@
+6.4s 1 0.00s - Debugger warning: It seems that frozen modules are being used, which may
+6.4s 2 0.00s - make the debugger miss breakpoints. Please pass -Xfrozen_modules=off
+6.4s 3 0.00s - to python to disable frozen modules.
+6.4s 4 0.00s - Note: Debugging will proceed. Set PYDEVD_DISABLE_FILE_VALIDATION=1 to disable this validation.
+7.0s 5 0.00s - Debugger warning: It seems that frozen modules are being used, which may
+7.0s 6 0.00s - make the debugger miss breakpoints. Please pass -Xfrozen_modules=off
+7.0s 7 0.00s - to python to disable frozen modules.
+7.0s 8 0.00s - Note: Debugging will proceed. Set PYDEVD_DISABLE_FILE_VALIDATION=1 to disable this validation.
+30.4s 9 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 846.4/846.4 kB 41.0 MB/s eta 0:00:00
+30.6s 10 name, memory.total [MiB]
+30.6s 11 Tesla T4, 15360 MiB
+30.6s 12 Tesla T4, 15360 MiB
+30.7s 13 Writing hgcd/__init__.py
+30.7s 14 Writing hgcd/data.py
+30.7s 15 Writing hgcd/chain.py
+30.7s 16 Writing hgcd/prompts.py
+30.8s 17 Writing hgcd/lm.py
+30.8s 18 Writing hgcd/decoding.py
+30.8s 19 Writing hgcd/experiments.py
+30.8s 20 Writing hgcd/metrics.py
+30.8s 21 Writing hgcd/report.py
+30.9s 22 Writing hgcd/pipeline.py
+4624.1s 23 [qwen-0.5b] exit code 0; log tail:
+4624.1s 24 [03:38:29]
+4624.1s 25 dataset       position   d_total   d_naive  d_cf_total  d_cf_direct  pns_rollout  d_placebo  d_maskmark
+4624.1s 26 0       clutrr     gold-final  0.030330  0.030330    0.032080     0.032080     0.023734   0.006861   -0.001418
+4624.1s 27 1       clutrr  gold-nonfinal  0.000649 -0.007680    0.012639     0.003867     0.043639  -0.009379   -0.014829
+4624.1s 28 2       clutrr      redundant -0.018608 -0.018608    0.001708     0.001708     0.041139  -0.004451   -0.009785
+4624.1s 29 3  clutrr_copy     gold-final  0.578114  0.578114    0.620343     0.620343          NaN   0.042950    0.017520
+4624.1s 30 4  clutrr_copy  gold-nonfinal  0.607511  0.013045    0.610491    -0.001067          NaN   0.011884    0.006532
+4624.1s 31 5  clutrr_copy      redundant  0.010963  0.010963    0.007821     0.007821          NaN   0.009836    0.004808
+4624.1s 32 6      musique     gold-final  0.671888  0.671888    0.759255     0.759255     0.796667  -0.084290   -0.034916
+4624.1s 33 7      musique  gold-nonfinal  0.566541 -0.024254    0.641620     0.053745     0.781128  -0.031286   -0.004380
+4624.1s 34 8      musique      redundant -0.045027 -0.051420    0.044505     0.039341     0.795000  -0.043826   -0.014332
+4624.1s 35 [03:38:29]  done (estimators only) in 76.4 min -> /kaggle/working/results/reliance_qwen-0.5b
+4624.1s 36 
+8905.4s 37 [qwen-1.5b] exit code 0; log tail:
+8905.4s 38 [04:49:51]
+8905.4s 39 dataset       position   d_total   d_naive  d_cf_total  d_cf_direct  pns_rollout  d_placebo  d_maskmark
+8905.4s 40 0       clutrr     gold-final -0.006493 -0.006493    0.024661     0.024661     0.018987  -0.000253    0.006059
+8905.4s 41 1       clutrr  gold-nonfinal -0.014992 -0.006029    0.001740     0.001403    -0.010355  -0.004238   -0.007394
+8905.4s 42 2       clutrr      redundant -0.001755 -0.001755   -0.012114    -0.012114     0.007911   0.004382   -0.002945
+8905.4s 43 3  clutrr_copy     gold-final  0.729298  0.729298    0.774579     0.774579          NaN  -0.001145    0.003329
+8905.4s 44 4  clutrr_copy  gold-nonfinal  0.761146  0.013010    0.781255     0.008604          NaN   0.002282    0.007616
+8905.4s 45 5  clutrr_copy      redundant  0.006269  0.006269    0.000278     0.000278          NaN  -0.000110    0.006696
+8905.4s 46 6      musique     gold-final  0.697347  0.697347    0.888166     0.888166     0.848333  -0.001550    0.000522
+8905.4s 47 7      musique  gold-nonfinal  0.568592  0.005573    0.665154     0.011497     0.744163   0.001527    0.001968
+8905.4s 48 8      musique      redundant  0.003673 -0.002642    0.008386     0.003174     0.745000   0.000866    0.001637
+8905.4s 49 [04:49:51]  done (estimators only) in 147.7 min -> /kaggle/working/results/reliance_qwen-1.5b
+8905.4s 50 
+18301.2s 51 [smollm2-1.7b] exit code 0; log tail:
+18301.2s 52 [07:26:29]
+18301.2s 53 dataset       position   d_total   d_naive  d_cf_total  d_cf_direct  pns_rollout  d_placebo  d_maskmark
+18301.2s 54 0       clutrr     gold-final  0.010205  0.010205    0.046336     0.046336     0.047468   0.041030    0.005174
+18301.2s 55 1       clutrr  gold-nonfinal  0.017994  0.002748    0.018685     0.010556     0.060651  -0.014219   -0.010100
+18301.2s 56 2       clutrr      redundant -0.003708 -0.003708    0.015268     0.015268     0.045886  -0.003176   -0.003041
+18301.2s 57 3  clutrr_copy     gold-final  0.635273  0.635273    0.681769     0.681769          NaN  -0.039209    0.016876
+18301.2s 58 4  clutrr_copy  gold-nonfinal  0.694845  0.009503    0.707215    -0.010831          NaN   0.006385    0.013024
+18301.2s 59 5  clutrr_copy      redundant  0.002281  0.002281   -0.012487    -0.012487          NaN   0.004231    0.009183
+18301.2s 60 6      musique     gold-final  0.734890  0.734890    0.764342     0.764342     0.800000  -0.013039   -0.003319
+18301.2s 61 7      musique  gold-nonfinal  0.668230 -0.039210    0.715828     0.008789     0.721790   0.011288    0.018477
+18301.2s 62 8      musique      redundant -0.011955 -0.018360    0.019815     0.013458     0.746667   0.000096    0.012305
+18301.2s 63 [07:26:29]  done (estimators only) in 156.5 min -> /kaggle/working/results/reliance_smollm2-1.7b
+18301.2s 64 
+20031.5s 65 [qwen-3b] exit code 0; log tail:
+20031.5s 66 [07:55:19]
+20031.5s 67 dataset       position   d_total   d_naive  d_cf_total  d_cf_direct  pns_rollout  d_placebo  d_maskmark
+20031.5s 68 0       clutrr     gold-final  0.054816  0.054816    0.081340     0.081340     0.071203   0.073618    0.014387
+20031.5s 69 1       clutrr  gold-nonfinal  0.073181  0.010872    0.064063     0.006668     0.082101  -0.013802   -0.016291
+20031.5s 70 2       clutrr      redundant  0.020322  0.020322    0.029849     0.029849     0.072785  -0.005623    0.003570
+20031.5s 71 3  clutrr_copy     gold-final  0.694682  0.694682    0.696843     0.696843          NaN   0.004528    0.017448
+20031.5s 72 4  clutrr_copy  gold-nonfinal  0.770267  0.017334    0.789772     0.005258          NaN   0.001370    0.004704
+20031.5s 73 5  clutrr_copy      redundant  0.013202  0.013202   -0.000876    -0.000876          NaN  -0.001648    0.001665
+20031.5s 74 6      musique     gold-final  0.550089  0.550089    0.702967     0.702967     0.683333  -0.014295   -0.008029
+20031.5s 75 7      musique  gold-nonfinal  0.491080  0.005415    0.612470     0.012175     0.607977   0.002762   -0.004529
+20031.5s 76 8      musique      redundant -0.014852 -0.017751    0.000901    -0.004781     0.553333   0.008991    0.005470
+20031.5s 77 [07:55:19]  done (estimators only) in 256.7 min -> /kaggle/working/results/reliance_qwen-3b
+20031.5s 78 
