@@ -170,7 +170,8 @@ _INV = {"father": ("son", "daughter"), "mother": ("son", "daughter"),
         "daughter-in-law": ("father-in-law", "mother-in-law")}
 
 
-def graph_compose(table, triples, src: str, tgt: str, vocab: set) -> Tuple[Optional[str], str]:
+def graph_compose(table, triples, src: str, tgt: str, vocab: set,
+                  gender_prior: Optional[Dict[str, str]] = None) -> Tuple[Optional[str], str]:
     """Treat every fact the model wrote as an edge of a kinship graph (order-free), add inverse
     edges when the gender they need is stated by the model's own relation words, find the shortest
     path src -> tgt and compose its relations with the rule table."""
@@ -178,7 +179,7 @@ def graph_compose(table, triples, src: str, tgt: str, vocab: set) -> Tuple[Optio
     facts = [(n(a), r, n(b)) for a, r, b in triples if r in vocab and a and b and n(a) != n(b)]
     if not facts:
         return None, "no_facts"
-    gender = {}
+    gender = dict(gender_prior or {})       # 'm' / 'f' by normalised name; stated facts override
     for a, r, b in facts:
         gender[b] = "f" if r in _FEMALE else "m"
     adj = defaultdict(list)
@@ -219,13 +220,39 @@ EXTRACT_SHOTS = [
 ]
 
 
-def extract_messages(story: str, rels: List[str]) -> List[dict]:
-    msgs = [{"role": "system", "content": EXTRACT_SYSTEM.format(rels=", ".join(rels))}]
-    for st, facts in EXTRACT_SHOTS:
+EXTRACT_GENDER_NOTE = (" Then write one last line 'Genders:' giving every person's gender as stated "
+                       "by the story's pronouns, e.g. 'Genders: Ann=female, Bob=male'.")
+EXTRACT_SHOT_GENDERS = ["Genders: Mabel=female, Rupert=male, Agatha=female",
+                        "Genders: Clement=male, Bertram=male, Winifred=female, Odette=female"]
+
+
+def extract_messages(story: str, rels: List[str], genders: bool = False) -> List[dict]:
+    sysm = EXTRACT_SYSTEM.format(rels=", ".join(rels)) + (EXTRACT_GENDER_NOTE if genders else "")
+    msgs = [{"role": "system", "content": sysm}]
+    for (st, facts), gl in zip(EXTRACT_SHOTS, EXTRACT_SHOT_GENDERS):
         msgs.append({"role": "user", "content": f"Story: {st}"})
-        msgs.append({"role": "assistant", "content": "\n".join(facts)})
+        msgs.append({"role": "assistant", "content": "\n".join(facts + ([gl] if genders else []))})
     msgs.append({"role": "user", "content": f"Story: {story}"})
     return msgs
+
+
+def parse_genders(text: Optional[str]) -> Dict[str, str]:
+    out = {}
+    for ln in (text or "").splitlines():
+        if ln.strip().lower().startswith("genders"):
+            for name, g in re.findall(r"([A-Z][\w\-]*)\s*[=:]\s*(male|female|man|woman|boy|girl)", ln, re.I):
+                out[C.norm(name)] = "f" if g.lower() in ("female", "woman", "girl") else "m"
+    return out
+
+
+def induce_gender_lexicon(train: List[D.ClutrrExample], purity: float = 0.95) -> Dict[str, str]:
+    """Name -> gender learned from the training split only (CLUTRR reuses a fixed name pool)."""
+    lex = defaultdict(Counter)
+    for e in train:
+        for k, v in e.genders.items():
+            lex[C.norm(k)][v] += 1
+    return {k: ("f" if c.most_common(1)[0][0] == "female" else "m") for k, c in lex.items()
+            if c.most_common(1)[0][1] >= purity * sum(c.values())}
 
 
 def parse_facts(text: Optional[str]) -> List[Tuple[str, str, str]]:
@@ -259,7 +286,11 @@ def run_clutrr(lm, args) -> pd.DataFrame:
     vocab_l = D.clutrr_relations(train)
     vocab = set(vocab_l)
     _log(f"composition table: {len(table)} rules from {len(train)} training stories")
-    ex = D.sample_by_k(test, args.ks, args.n_per_k, args.seed)
+    glex = induce_gender_lexicon(train)
+    pool = test if args.split == "test" else D.load_clutrr(args.split)
+    ex = D.sample_by_k(pool, args.ks, args.n_per_k, args.seed)
+    cov = np.mean([C.norm(n) in glex for e in ex for n in e.names])
+    _log(f"gender lexicon: {len(glex)} names from train; covers {cov:.2f} of people in this sample")
     _log(f"CLUTRR test: {len(ex)} examples, k in {sorted(set(e.k for e in ex))}")
     rows = []
     for s in range(0, len(ex), args.chunk):
@@ -283,7 +314,8 @@ def run_clutrr(lm, args) -> pd.DataFrame:
         # fact extraction (no reasoning asked): greedy + sampled, then graph search + rule table
         ext_g, ext_s = [None] * len(part), [None] * len(part)
         if args.extract:
-            ep = [lm.prompt(extract_messages(e.story_text, vocab_l)) for e in part]
+            ep = [lm.prompt(extract_messages(e.story_text, vocab_l, genders=bool(args.extract_genders)))
+                  for e in part]
             mxe = [20 * (e.k + 3) for e in part]
             for k in sorted(set(e.k for e in part)):
                 idx = [i for i, e in enumerate(part) if e.k == k]
@@ -319,13 +351,24 @@ def run_clutrr(lm, args) -> pd.DataFrame:
             preds_ext = {}
             if args.extract:
                 ef = [parse_facts(x) for x in [ext_g[i]] + ext_s[i]]
+                gm = [parse_genders(x) for x in [ext_g[i]] + ext_s[i]]
                 ex_res = [graph_compose(table, f, e.source, e.target, vocab) for f in ef]
+                lex_res = [graph_compose(table, f, e.source, e.target, vocab, glex) for f in ef]
+                g_res = [graph_compose(table, f, e.source, e.target, vocab, g) for f, g in zip(ef, gm)]
+                gl_res = [graph_compose(table, f, e.source, e.target, vocab, {**glex, **g})
+                          for f, g in zip(ef, gm)]
                 union = [t for f in ef for t in f]
                 eu = graph_compose(table, union, e.source, e.target, vocab)
                 preds_ext = {"ext": ex_res[0][0] or free_by[i][0], "ext_only": ex_res[0][0],
                              "ext_sc": _vote([r for r, _ in ex_res[1:]]) or sc_vote,
                              "ext_union": eu[0] or free_by[i][0],
-                             "ext_all": _vote([r for r, _ in ex_res]) or _vote([r for r, _ in gsym]) or sc_vote}
+                             "ext_all": _vote([r for r, _ in ex_res]) or _vote([r for r, _ in gsym]) or sc_vote,
+                             "ext_lex": lex_res[0][0] or free_by[i][0],
+                             "ext_g": g_res[0][0] or free_by[i][0],
+                             "ext_glex": gl_res[0][0] or free_by[i][0],
+                             "ext_g_sc": _vote([r for r, _ in g_res[1:]]) or sc_vote,
+                             "ext_glex_sc": _vote([r for r, _ in gl_res[1:]]) or sc_vote,
+                             "ext_glex_all": _vote([r for r, _ in gl_res]) or sc_vote}
             preds = {
                 "graph": gsym[0][0] or free_by[i][0],
                 "graph_sc": _vote([r for r, _ in gsym[1:]]) or sc_vote,
@@ -561,6 +604,9 @@ def main():
     ap.add_argument("--conditions", nargs="+", default=["orig", "dist8"])
     ap.add_argument("--top_k", type=int, default=4)
     ap.add_argument("--extract", type=int, default=1)
+    ap.add_argument("--extract_genders", type=int, default=1,
+                    help="ask the extractor to also state each person's gender (from pronouns)")
+    ap.add_argument("--split", default="test", choices=["test", "validation"])
     ap.add_argument("--ms_methods", nargs="+",
                     default=["attn_sel", "self_sel", "gold_only"],
                     help="MuSiQue methods besides cot_free/last_hop/sc: attn_sel attn_rerank attn_drop2 "

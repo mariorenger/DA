@@ -345,3 +345,18 @@ least-attended) — orig and dist8, compared by uid with this run's cot_free and
 .035), gold_only ceiling +9.2 / +14.0. Top-4 attention recall drops to 0.37 (1.5B) / 0.77 (3B)
 with ~10.6 paragraphs. The distractor cost the ceiling reveals (up to 14 EM) is real, but neither
 hard filter recovers it.
+
+**Offline diagnosis of C2 (why extraction covers only 12–18%).** Gold-edge recall of the greedy
+extraction is already 0.70 / 0.71 / 0.87; the graph breaks because inverse edges need the gender of
+the person, which the facts often do not state. With dataset genders (oracle, not usable) composable
+answers rise 21→58 / 32→66 / 31→114 of 278. A name→gender lexicon learned from the *training* split
+(112 names, covers 39% of test people, 98.5% accurate) already gives greedy ext_lex 38.8 / 36.7 /
+48.9 vs sc 27.0 / 25.9 / 29.9 — post hoc on C2's questions, so not evidence by itself.
+
+**C4 (pre-registered before any result).** CLUTRR *validation* split (never used; k = 2, 3, 4 × 100,
+seed 2), Qwen 1.5B/3B/7B. The extractor also states each person's gender from the story's pronouns.
+Because validation names come from the training name pool (lexicon coverage ≈ 1.0), the lexicon is
+near-oracle there, so the **primary endpoint excludes it**: ext_g_sc (model-stated genders only,
+vote over 5 sampled extractions, fallback sc) − max(cot_free, sc_plus[10 samples]) ≥ 2 points with
+95% CI > 0 on both 1.5B and 3B. Secondary: ext_g, ext_glex_sc; C3 (held-out test k = 5–10) will be
+re-scored offline with the train lexicon (its greedy extractions are saved).

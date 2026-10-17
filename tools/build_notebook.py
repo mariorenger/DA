@@ -157,6 +157,21 @@ NOTEBOOKS = {
                 "--ms_methods", "attn_rerank", "attn_drop2", "--bs", "4", "--max_minutes", "420"))],
     },
 }""",
+    # pre-registered: gender-aware extraction on the never-used CLUTRR validation split
+    "C4_gender_clutrr": """{
+    "small": {
+        "0": [("qwen-1.5b", "Qwen/Qwen2.5-1.5B-Instruct", "causaldec_clutrr",
+               ("--task", "clutrr", "--split", "validation", "--ks", "2", "3", "4", "--n_per_k", "100",
+                "--seed", "2", "--sc_extra", "5", "--max_minutes", "300"))],
+        "1": [("qwen-3b", "Qwen/Qwen2.5-3B-Instruct", "causaldec_clutrr",
+               ("--task", "clutrr", "--split", "validation", "--ks", "2", "3", "4", "--n_per_k", "100",
+                "--seed", "2", "--sc_extra", "5", "--max_minutes", "300"))],
+    },
+    "7b": {"0,1": [("qwen-7b", "Qwen/Qwen2.5-7B-Instruct", "causaldec_clutrr",
+                    ("--task", "clutrr", "--split", "validation", "--ks", "2", "3", "4", "--n_per_k", "100",
+                     "--seed", "2", "--sc_extra", "5", "--device_map", "auto", "--bs", "4",
+                     "--max_minutes", "330"))]},
+}""",
     "M_select_orig": """{
     "orig": {
         "0": [("qwen-1.5b", "Qwen/Qwen2.5-1.5B-Instruct", "causaldec_musique",
