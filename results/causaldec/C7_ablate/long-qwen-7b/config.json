@@ -1,0 +1,35 @@
+{
+ "task": "clutrr",
+ "model": "Qwen/Qwen2.5-7B-Instruct",
+ "outdir": "/kaggle/working/results/causaldec_clutrr_long-qwen-7b",
+ "device_map": "auto",
+ "bs": 4,
+ "sc_n": 5,
+ "sc_extra": 0,
+ "seed": 5,
+ "chunk": 40,
+ "max_minutes": 470.0,
+ "ks": [
+  5,
+  6,
+  7,
+  8
+ ],
+ "n_per_k": 50,
+ "n": 300,
+ "conditions": [
+  "orig",
+  "dist8"
+ ],
+ "top_k": 4,
+ "extract": 1,
+ "extract_genders": 1,
+ "split": "test",
+ "ext_llm": 1,
+ "task_name": "gen_train23_test2to10",
+ "ms_methods": [
+  "attn_sel",
+  "self_sel",
+  "gold_only"
+ ]
+}

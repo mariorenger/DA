@@ -68,7 +68,12 @@ questions it can solve. \textbf{(iv) Distractors harm chain-of-thought through t
 the chain held at its original value, the effect of four distractor paragraphs on CoT vanishes
 (direct effect $-0.6$ to $+1.0$ EM, $n{=}500$), while direct answering is harmed directly ($-3.8$ to
 $-4.6$). A readout-level decoding probe that contrasts the model with interventions on its own hops
-therefore cannot help, and does not. All hypotheses were fixed before each GPU run.
+therefore cannot help, and does not. \textbf{(v) Executing the composition outside the model does.}
+When the model only extracts facts and genders and a rule table induced from training data composes
+them along the kinship graph, CLUTRR accuracy rises by $21$--$37$ points over compute-matched
+self-consistency on short chains (1.5B--7B, two unseen splits) and by $24$ points on unseen long
+chains at 7B; given the same extracted facts, the model itself is no better than CoT. All hypotheses
+were fixed before each GPU run.
 \end{abstract}
 
 \section{Introduction}
@@ -104,6 +109,10 @@ vetoed, yet the relational hops still carry no measurable effect.
 \item \textbf{Where robustness failures live.} Distractors harm chain-of-thought entirely through
 the regenerated chain, which explains why readout-level contrastive decoding---including a
 graph-aware rule we formulate as a probe (\hgcd{})---cannot help at this scale.
+\item \textbf{A decoding intervention the diagnosis predicts.} Moving the composition out of the
+model (extract facts, execute the reasoning graph's structural equations with a rule table) beats
+compute-matched self-consistency by $13$--$37$ points, and an ablation holding the extracted facts
+fixed shows the gain is caused by the composition step (\cref{sec:decoding}).
 \end{enumerate}
 
 \section{Related Work}
@@ -461,9 +470,10 @@ whose extraction is too incomplete.
 
 \paragraph{The gain is caused by the composition, not by the re-presented facts.} Holding the
 extraction fixed, we let the model answer from its own extracted facts instead of the rule table
-(\cref{tab:clutrr-ablation}). On short chains this is no better than plain CoT, while the rule
-table on the same facts is $13$--$26$ points better: the information needed to answer is present in
-the model's output, and the step that fails is composing it, exactly as R3 diagnosed.
+(\cref{tab:clutrr-ablation}). On short chains this is no better than plain CoT ($-3.2$ to $+1.3$),
+while the rule table on the same facts is $13$--$35$ points better at every scale, and $13$ points
+better at 7B on long chains: the information needed to answer is present in the model's output, and
+the step that fails is composing it, exactly as R3 diagnosed.
 
 \begin{table}[h]
 \centering\small
@@ -520,7 +530,7 @@ rate. Correctly measured, models from 0.5B to 7B depend on their chains when the
 from them, not when it must be computed; small models copy a stated answer even against their own
 solution, and 7B vetoes it without composing through the chain either. Distractors hurt
 chain-of-thought through the chain it regenerates. Decoding rules that act on the chain's readout
-cannot repair either.
+cannot repair either; executing the composition the chain describes, outside the model, can.
 
 \bibliographystyle{plainnat}
 \bibliography{refs}

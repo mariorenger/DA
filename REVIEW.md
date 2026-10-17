@@ -440,3 +440,21 @@ ext_llm is no better than plain CoT (+1.3 [−6.3, +8.9] / −1.9 [−9.5, +5.1]
 does not help; executing the composition outside the model does — the information was there, the
 composition was not. Long chains: ext_g − ext_llm +4.0 [−3.5, +11.5] / +5.0 [−2.0, +12.5] (n.s.).
 7B pending.
+
+**C7 ablation, 7B.** ext_g − ext_llm = **+35.4 [+27.2, +44.3]** (short) and **+13.0 [+5.0, +21.0]**
+(long); ext_llm vs CoT −3.2 / +7.0. Pre-registered hypothesis (CI > 0 at 3B and 7B) holds on short
+chains for both and on long chains at 7B (3B long +5.0 [−2.0, +12.5], n.s.).
+
+### Round 9 summary
+* Readout-level methods (HGCD, calibration, CAD on the answer) and evidence selection before the
+  chain (attention top-K / rerank / drop-2, prompted self-selection) do not beat greedy free
+  generation or self-consistency on MuSiQue at 1.5B–3B. (7B attention untested: fp16 overflow.)
+* Executing the composition outside the model works: extract facts + genders → kinship graph →
+  rule table (from the training split). Beats compute-matched SC by +21 to +37 pts on short chains
+  (validation and an unseen CLUTRR task, 1.5B–7B) and by +24 pts on unseen long chains at 7B
+  (+9.5 at 3B, none at 1.5B).
+* Causal ablation: with the same extracted facts, the LLM composing them is no better than CoT,
+  the rule table is +13 to +35 pts better → the models have the information but do not compose it.
+* Process lessons: three post-hoc wins (C2, gender lexicon, C3 diagnosis) were only accepted after
+  pre-registered confirmations on unused data (C4, C5, C6); one bug (fp16 attention) invalidated
+  1.5B/7B attention numbers and was caught by checking selections against a trivial rule.
