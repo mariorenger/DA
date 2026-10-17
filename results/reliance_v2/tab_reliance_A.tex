@@ -1,0 +1,22 @@
+\begin{tabular}{llcccccccccc}
+\toprule
+Model & Data & PS & Rel.(final) & Rel.(non-final) & mask-dir & mask-tot & cf-dir & cf-tot & rollout & rollout-gold & placebo \\
+\midrule
+reliance_qwen-0.5b & clutrr & 0.15 & 0.030 & 0.001 & 0.621 & 0.632 & 0.567 & 0.558 & 0.510 & 0.501 & 0.511 \\
+reliance_qwen-0.5b & clutrr_copy & 0.88 & 0.578 & 0.608 & 0.637 & 0.996 & 0.596 & 0.999 & -- & -- & 0.560 \\
+reliance_qwen-0.5b & clutrr_copywrong & 0.01 & -0.117 & -0.081 & 0.412 & 0.150 & 0.443 & 0.137 & -- & -- & 0.410 \\
+reliance_qwen-0.5b & musique & 0.86 & 0.672 & 0.567 & 0.720 & 0.943 & 0.728 & 0.941 & 0.646 & 0.511 & 0.509 \\
+reliance_qwen-1.5b & clutrr & 0.17 & -0.006 & -0.015 & 0.499 & 0.498 & 0.569 & 0.563 & 0.486 & 0.496 & 0.483 \\
+reliance_qwen-1.5b & clutrr_copy & 0.94 & 0.729 & 0.761 & 0.666 & 1.000 & 0.653 & 1.000 & -- & -- & 0.469 \\
+reliance_qwen-1.5b & clutrr_copywrong & 0.05 & -0.168 & -0.133 & 0.472 & 0.150 & 0.479 & 0.175 & -- & -- & 0.584 \\
+reliance_qwen-1.5b & musique & 0.97 & 0.697 & 0.569 & 0.816 & 0.977 & 0.788 & 0.985 & 0.668 & 0.524 & 0.480 \\
+reliance_qwen-3b & clutrr & 0.28 & 0.055 & 0.073 & 0.518 & 0.574 & 0.511 & 0.554 & 0.535 & 0.504 & 0.522 \\
+reliance_qwen-3b & clutrr_copy & 0.94 & 0.695 & 0.770 & 0.703 & 0.991 & 0.723 & 0.998 & -- & -- & 0.467 \\
+reliance_qwen-3b & clutrr_copywrong & 0.11 & -0.190 & -0.099 & 0.483 & 0.297 & 0.438 & 0.253 & -- & -- & 0.497 \\
+reliance_qwen-3b & musique & 0.94 & 0.550 & 0.491 & 0.761 & 0.970 & 0.714 & 0.974 & 0.640 & 0.551 & 0.470 \\
+reliance_smollm2-1.7b & clutrr & 0.27 & 0.010 & 0.018 & 0.547 & 0.570 & 0.521 & 0.546 & 0.497 & 0.503 & 0.534 \\
+reliance_smollm2-1.7b & clutrr_copy & 0.91 & 0.635 & 0.695 & 0.647 & 0.995 & 0.640 & 0.998 & -- & -- & 0.385 \\
+reliance_smollm2-1.7b & clutrr_copywrong & 0.08 & -0.147 & -0.088 & 0.472 & 0.186 & 0.509 & 0.191 & -- & -- & 0.482 \\
+reliance_smollm2-1.7b & musique & 0.84 & 0.735 & 0.668 & 0.659 & 0.980 & 0.675 & 0.982 & 0.610 & 0.505 & 0.502 \\
+\bottomrule
+\end{tabular}

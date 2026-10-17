@@ -1,0 +1,30 @@
+\begin{tabular}{llccccc}
+\toprule
+Dataset & Estimator & Q-0.5B & Q-1.5B & Smol-1.7B & Q-3B & Q-7B \\
+\midrule
+MuSiQue & total & 0.943 & 0.977 & 0.980 & 0.970 & 0.863 \\
+MuSiQue & direct (naive) & 0.720 & 0.816 & 0.659 & 0.761 & 0.706 \\
+MuSiQue & cf, propagated & 0.941 & 0.985 & 0.982 & 0.974 & 0.866 \\
+MuSiQue & total, raw log-prob & 0.991 & 0.993 & 0.995 & 0.980 & 0.877 \\
+MuSiQue & rollout, gold base & 0.511 & 0.524 & 0.505 & 0.551 & -- \\
+MuSiQue & rollout, resampled & 0.646 & 0.668 & 0.610 & 0.640 & -- \\
+MuSiQue & marker-tree (control) & 0.653 & 0.567 & 0.563 & 0.679 & 0.549 \\
+MuSiQue & placebo (control) & 0.509 & 0.480 & 0.502 & 0.470 & 0.543 \\
+\midrule
+CLUTRR+copy & total & 0.996 & 1.000 & 0.995 & 0.991 & 0.945 \\
+CLUTRR+copy & direct (naive) & 0.637 & 0.666 & 0.647 & 0.703 & 0.724 \\
+CLUTRR+copy & cf, propagated & 0.999 & 1.000 & 0.998 & 0.998 & 0.915 \\
+CLUTRR+copy & total, raw log-prob & 0.995 & 1.000 & 0.996 & 0.988 & 0.962 \\
+CLUTRR+copy & marker-tree (control) & 0.949 & 0.609 & 0.815 & 0.779 & 0.640 \\
+CLUTRR+copy & placebo (control) & 0.560 & 0.469 & 0.385 & 0.467 & 0.462 \\
+\midrule
+CLUTRR & total & 0.632 & 0.498 & 0.570 & 0.574 & 0.515 \\
+CLUTRR & direct (naive) & 0.621 & 0.499 & 0.547 & 0.518 & 0.520 \\
+CLUTRR & cf, propagated & 0.558 & 0.563 & 0.546 & 0.554 & 0.550 \\
+CLUTRR & total, raw log-prob & 0.645 & 0.467 & 0.558 & 0.566 & 0.526 \\
+CLUTRR & rollout, gold base & 0.501 & 0.496 & 0.503 & 0.504 & -- \\
+CLUTRR & rollout, resampled & 0.510 & 0.486 & 0.497 & 0.535 & -- \\
+CLUTRR & marker-tree (control) & 0.508 & 0.534 & 0.501 & 0.457 & 0.474 \\
+CLUTRR & placebo (control) & 0.511 & 0.483 & 0.534 & 0.522 & 0.571 \\
+\bottomrule
+\end{tabular}

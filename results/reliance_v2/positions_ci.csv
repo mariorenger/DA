@@ -1,0 +1,76 @@
+model,row,dataset,position,est,mean,lo,hi,n_q
+qwen-0.5b,"CLUTRR, non-final hop: total",clutrr,gold-nonfinal,d_total,0.0006492580920473869,-0.011601930938538533,0.014436479936122196,158
+qwen-0.5b,"CLUTRR, non-final hop: placebo",clutrr,gold-nonfinal,d_placebo,-0.009378618871044487,-0.014822205693640414,-0.004285530586922017,158
+qwen-0.5b,"CLUTRR, final hop: total",clutrr,gold-final,d_total,0.030330390445409788,0.020400286352618372,0.04054285841976666,158
+qwen-0.5b,"CLUTRR, final hop: placebo",clutrr,gold-final,d_placebo,0.0068610137292091835,-0.003923847776098137,0.017233025322604754,158
+qwen-0.5b,"CLUTRR+copy, non-final: total",clutrr_copy,gold-nonfinal,d_total,0.6075113076535332,0.5770662350990333,0.6388570193182322,158
+qwen-0.5b,"CLUTRR+copy, non-final: direct",clutrr_copy,gold-nonfinal,d_naive,0.013045129574098304,0.006186498542497126,0.019679512046497254,158
+qwen-0.5b,"CLUTRR+copy, non-final: marker-tree",clutrr_copy,gold-nonfinal,d_maskmark_tree,0.1099064408686244,0.09721928449676612,0.12270132364349305,158
+qwen-0.5b,"MuSiQue, non-final: total",musique,gold-nonfinal,d_total,0.5665414962673155,0.5049632044966427,0.6232118240117318,150
+qwen-0.5b,"MuSiQue, non-final: direct",musique,gold-nonfinal,d_naive,-0.024253922590726465,-0.04594009718374631,-0.00270089065890849,150
+qwen-0.5b,"MuSiQue, non-final: marker-tree",musique,gold-nonfinal,d_maskmark_tree,0.07345502894195838,0.03528506041220438,0.11195597466913818,150
+qwen-0.5b,"MuSiQue, redundant: total",musique,redundant,d_total,-0.045027416124265675,-0.07336518956580815,-0.017642061967440774,150
+qwen-0.5b,"Rollout, gold baseline: necessary",musique,gold-nonfinal,pns_goldbase,0.7898832684824902,0.7210743801652892,0.8501917083572541,150
+qwen-0.5b,"Rollout, gold baseline: redundant",musique,redundant,pns_goldbase,0.78,0.7133333333333334,0.84,150
+qwen-0.5b,"Rollout, resampled baseline: necessary",musique,gold-nonfinal,pns_rollout,0.03501945525291829,0.0040318532193289285,0.06719367588932806,150
+qwen-0.5b,"Rollout, resampled baseline: redundant",musique,redundant,pns_rollout,0.016666666666666666,-0.02,0.06,150
+qwen-1.5b,"CLUTRR, non-final hop: total",clutrr,gold-nonfinal,d_total,-0.01499243416707878,-0.04169732648105541,0.0103147774131602,158
+qwen-1.5b,"CLUTRR, non-final hop: placebo",clutrr,gold-nonfinal,d_placebo,-0.0042381860926480885,-0.013644332331719806,0.004887600412443293,158
+qwen-1.5b,"CLUTRR, final hop: total",clutrr,gold-final,d_total,-0.00649317698090884,-0.030164359901858295,0.015623690437394545,158
+qwen-1.5b,"CLUTRR, final hop: placebo",clutrr,gold-final,d_placebo,-0.00025337632382326213,-0.01822445677153641,0.017538384945643404,158
+qwen-1.5b,"CLUTRR+copy, non-final: total",clutrr_copy,gold-nonfinal,d_total,0.7611459150617788,0.7245780567466145,0.7968230289083451,158
+qwen-1.5b,"CLUTRR+copy, non-final: direct",clutrr_copy,gold-nonfinal,d_naive,0.01300953226414884,0.009797330084785049,0.016536974542946743,158
+qwen-1.5b,"CLUTRR+copy, non-final: marker-tree",clutrr_copy,gold-nonfinal,d_maskmark_tree,0.03970333796249254,0.029826799669006913,0.050698720708396594,158
+qwen-1.5b,"MuSiQue, non-final: total",musique,gold-nonfinal,d_total,0.5685922070292802,0.4990641678377657,0.6307111373817277,150
+qwen-1.5b,"MuSiQue, non-final: direct",musique,gold-nonfinal,d_naive,0.005572897007632089,0.00032987877573603403,0.011963144827680919,150
+qwen-1.5b,"MuSiQue, non-final: marker-tree",musique,gold-nonfinal,d_maskmark_tree,-6.45080216165652e-05,-0.01039544997551677,0.008594918513189878,150
+qwen-1.5b,"MuSiQue, redundant: total",musique,redundant,d_total,0.0036728790472130564,-0.005771066640911134,0.0204095160740108,150
+qwen-1.5b,"Rollout, gold baseline: necessary",musique,gold-nonfinal,pns_goldbase,0.7568093385214008,0.7029245461733601,0.8106098333936979,150
+qwen-1.5b,"Rollout, gold baseline: redundant",musique,redundant,pns_goldbase,0.7633333333333333,0.7033333333333334,0.8166666666666667,150
+qwen-1.5b,"Rollout, resampled baseline: necessary",musique,gold-nonfinal,pns_rollout,0.06420233463035019,0.020289830910357295,0.11155463980985927,150
+qwen-1.5b,"Rollout, resampled baseline: redundant",musique,redundant,pns_rollout,-0.0033333333333333335,-0.056666666666666664,0.04666666666666667,150
+smollm2-1.7b,"CLUTRR, non-final hop: total",clutrr,gold-nonfinal,d_total,0.017993634670528065,0.0021867555771381665,0.03429998526337228,158
+smollm2-1.7b,"CLUTRR, non-final hop: placebo",clutrr,gold-nonfinal,d_placebo,-0.014219367769261176,-0.023107124879189023,-0.005117922044125697,158
+smollm2-1.7b,"CLUTRR, final hop: total",clutrr,gold-final,d_total,0.010205268017429887,-0.010852860258011993,0.031970723463894096,158
+smollm2-1.7b,"CLUTRR, final hop: placebo",clutrr,gold-final,d_placebo,0.041029904834069236,0.024552948788392228,0.05809290121814193,158
+smollm2-1.7b,"CLUTRR+copy, non-final: total",clutrr_copy,gold-nonfinal,d_total,0.69484472428014,0.6631361985477854,0.7256334592591067,158
+smollm2-1.7b,"CLUTRR+copy, non-final: direct",clutrr_copy,gold-nonfinal,d_naive,0.009503210802202247,0.001606659282067015,0.01691481683131293,158
+smollm2-1.7b,"CLUTRR+copy, non-final: marker-tree",clutrr_copy,gold-nonfinal,d_maskmark_tree,0.06802632461745199,0.056187644530436155,0.0808415092585265,158
+smollm2-1.7b,"MuSiQue, non-final: total",musique,gold-nonfinal,d_total,0.668229647785106,0.6142890681202606,0.7186264606495908,150
+smollm2-1.7b,"MuSiQue, non-final: direct",musique,gold-nonfinal,d_naive,-0.03920999371460388,-0.0584840007374296,-0.022015876571277404,150
+smollm2-1.7b,"MuSiQue, non-final: marker-tree",musique,gold-nonfinal,d_maskmark_tree,0.02275559494142854,-0.004752256008844166,0.04916695150134811,150
+smollm2-1.7b,"MuSiQue, redundant: total",musique,redundant,d_total,-0.011955242075221932,-0.030422857746984958,0.009239539167188116,150
+smollm2-1.7b,"Rollout, gold baseline: necessary",musique,gold-nonfinal,pns_goldbase,0.688715953307393,0.6141663879852857,0.761364815164089,150
+smollm2-1.7b,"Rollout, gold baseline: redundant",musique,redundant,pns_goldbase,0.7266666666666667,0.66,0.79,150
+smollm2-1.7b,"Rollout, resampled baseline: necessary",musique,gold-nonfinal,pns_rollout,-0.0019455252918287938,-0.030902867152867153,0.025699407114624463,150
+smollm2-1.7b,"Rollout, resampled baseline: redundant",musique,redundant,pns_rollout,0.03333333333333333,-0.006666666666666667,0.07666666666666666,150
+qwen-3b,"CLUTRR, non-final hop: total",clutrr,gold-nonfinal,d_total,0.07318064644665458,0.037529192505025184,0.11010036726354426,158
+qwen-3b,"CLUTRR, non-final hop: placebo",clutrr,gold-nonfinal,d_placebo,-0.013801889533346228,-0.034870592490004314,0.004689354691384964,158
+qwen-3b,"CLUTRR, final hop: total",clutrr,gold-final,d_total,0.05481554106223695,0.018829739994632444,0.08758745002496246,158
+qwen-3b,"CLUTRR, final hop: placebo",clutrr,gold-final,d_placebo,0.07361811146065372,0.039706627817975265,0.10834721794550939,158
+qwen-3b,"CLUTRR+copy, non-final: total",clutrr_copy,gold-nonfinal,d_total,0.770266601821894,0.7193746687896206,0.8155010393649993,158
+qwen-3b,"CLUTRR+copy, non-final: direct",clutrr_copy,gold-nonfinal,d_naive,0.017334092715694794,0.004966306359572765,0.03389614874099662,158
+qwen-3b,"CLUTRR+copy, non-final: marker-tree",clutrr_copy,gold-nonfinal,d_maskmark_tree,0.03584447271321093,0.01751951990255904,0.056561870024249804,158
+qwen-3b,"MuSiQue, non-final: total",musique,gold-nonfinal,d_total,0.4910797297989562,0.41401360626722317,0.5645848266721146,150
+qwen-3b,"MuSiQue, non-final: direct",musique,gold-nonfinal,d_naive,0.005414901913625332,-0.007968866946088955,0.01904673902396205,150
+qwen-3b,"MuSiQue, non-final: marker-tree",musique,gold-nonfinal,d_maskmark_tree,-0.0031322820690877565,-0.014434210392178137,0.007933301095085079,150
+qwen-3b,"MuSiQue, redundant: total",musique,redundant,d_total,-0.014852366409609656,-0.0383939868942625,0.003880446374951842,150
+qwen-3b,"Rollout, gold baseline: necessary",musique,gold-nonfinal,pns_goldbase,0.6147859922178989,0.5428015564202334,0.6823343808880002,150
+qwen-3b,"Rollout, gold baseline: redundant",musique,redundant,pns_goldbase,0.5633333333333334,0.49325,0.6333333333333333,150
+qwen-3b,"Rollout, resampled baseline: necessary",musique,gold-nonfinal,pns_rollout,0.11284046692607004,0.07058278867102397,0.16527402563173324,150
+qwen-3b,"Rollout, resampled baseline: redundant",musique,redundant,pns_rollout,0.043333333333333335,-0.013333333333333334,0.10666666666666667,150
+qwen-7b,"CLUTRR, non-final hop: total",clutrr,gold-nonfinal,d_total,0.012613651518588748,-0.03369815401582161,0.06011816843185779,118
+qwen-7b,"CLUTRR, non-final hop: placebo",clutrr,gold-nonfinal,d_placebo,-0.016933852614541767,-0.03995782890268866,0.005265370112255093,118
+qwen-7b,"CLUTRR, final hop: total",clutrr,gold-final,d_total,0.02860660709106601,-0.020941144453178087,0.08379165794044792,118
+qwen-7b,"CLUTRR, final hop: placebo",clutrr,gold-final,d_placebo,0.008518122747854018,-0.03213247588242508,0.04717425130545459,118
+qwen-7b,"CLUTRR+copy, non-final: total",clutrr_copy,gold-nonfinal,d_total,0.5185252888641944,0.44710709384810376,0.5896618603889168,118
+qwen-7b,"CLUTRR+copy, non-final: direct",clutrr_copy,gold-nonfinal,d_naive,0.009000921031668307,-0.01680499446605438,0.03371340602459004,118
+qwen-7b,"CLUTRR+copy, non-final: marker-tree",clutrr_copy,gold-nonfinal,d_maskmark_tree,0.03725851521231425,0.006644360336006323,0.06584605737158927,118
+qwen-7b,"MuSiQue, non-final: total",musique,gold-nonfinal,d_total,0.4131921538239033,0.32763749003140574,0.4990706092881767,100
+qwen-7b,"MuSiQue, non-final: direct",musique,gold-nonfinal,d_naive,0.06516011057197997,0.02526108729979322,0.11151874442773699,100
+qwen-7b,"MuSiQue, non-final: marker-tree",musique,gold-nonfinal,d_maskmark_tree,0.05680566976286063,0.010192276646172354,0.1040450267374125,100
+qwen-7b,"MuSiQue, redundant: total",musique,redundant,d_total,-0.016262943297385164,-0.045547863776984915,0.011927567596549754,100
+qwen-7b,"Rollout, gold baseline: necessary",musique,gold-nonfinal,pns_goldbase,,,,100
+qwen-7b,"Rollout, gold baseline: redundant",musique,redundant,pns_goldbase,,,,100
+qwen-7b,"Rollout, resampled baseline: necessary",musique,gold-nonfinal,pns_rollout,,,,100
+qwen-7b,"Rollout, resampled baseline: redundant",musique,redundant,pns_rollout,,,,100

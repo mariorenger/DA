@@ -1,0 +1,36 @@
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+Loading weights:   0%|          | 0/338 [00:00<?, ?it/s]Loading weights:   0%|          | 1/338 [00:03<17:43,  3.15s/it]Loading weights:  51%|█████     | 171/338 [00:03<00:02, 63.87it/s]Loading weights:  57%|█████▋    | 193/338 [00:04<00:02, 54.44it/s]Loading weights:  61%|██████    | 207/338 [00:05<00:02, 43.77it/s]Loading weights:  65%|██████▍   | 219/338 [00:05<00:02, 41.02it/s]Loading weights:  68%|██████▊   | 231/338 [00:05<00:02, 38.40it/s]Loading weights:  70%|███████   | 237/338 [00:06<00:02, 38.04it/s]Loading weights:  72%|███████▏  | 243/338 [00:06<00:02, 35.04it/s]Loading weights:  73%|███████▎  | 247/338 [00:06<00:03, 29.69it/s]Loading weights:  75%|███████▌  | 255/338 [00:07<00:03, 23.74it/s]Loading weights:  76%|███████▋  | 258/338 [00:07<00:03, 22.83it/s]Loading weights:  79%|███████▉  | 267/338 [00:07<00:03, 20.65it/s]Loading weights:  80%|███████▉  | 270/338 [00:08<00:03, 19.67it/s]Loading weights:  83%|████████▎ | 279/338 [00:08<00:03, 18.11it/s]Loading weights:  83%|████████▎ | 281/338 [00:08<00:03, 16.21it/s]Loading weights:  86%|████████▌ | 291/338 [00:09<00:02, 18.91it/s]Loading weights:  87%|████████▋ | 293/338 [00:09<00:02, 15.79it/s]Loading weights:  90%|████████▉ | 303/338 [00:10<00:02, 17.32it/s]Loading weights:  90%|█████████ | 305/338 [00:10<00:02, 16.24it/s]Loading weights:  93%|█████████▎| 315/338 [00:10<00:01, 17.14it/s]Loading weights:  94%|█████████▍| 317/338 [00:11<00:01, 16.16it/s]Loading weights:  97%|█████████▋| 327/338 [00:11<00:00, 17.47it/s]Loading weights:  97%|█████████▋| 329/338 [00:11<00:00, 16.20it/s]Loading weights: 100%|██████████| 338/338 [00:11<00:00, 28.73it/s]
+[21:02:16]  loaded Qwen/Qwen2.5-1.5B-Instruct on cuda:0
+[21:02:18]  MuSiQue: 500 examples x 2 conditions
+[21:02:18]  MuSiQue [orig] generating 500 chains
+[21:25:47]  MuSiQue [orig] scoring
+[21:50:29]  MuSiQue [dist8] generating 500 chains
+[22:17:16]  MuSiQue [dist8] scoring
+[23:31:15]  
+     cond        method     te    nde    nie
+0   dist8        adacad -0.076 -0.060 -0.016
+1   dist8           cad -0.082 -0.070 -0.012
+2   dist8     cad_chain -0.022  0.016 -0.038
+3   dist8         calib -0.034  0.000 -0.034
+4   dist8           cot -0.026  0.010 -0.036
+5   dist8        direct -0.056 -0.046 -0.010
+6   dist8          hgcd -0.026  0.010 -0.036
+7   dist8      hgcd_ada -0.026  0.010 -0.036
+8   dist8      hgcd_log -0.026  0.010 -0.036
+9   dist8  hgcd_uniform -0.026  0.010 -0.036
+10  dist8           poe -0.046 -0.002 -0.044
+[23:31:15]  
+          method   mean       lo     hi    n split
+0         adacad  0.288  0.24800  0.330  500   All
+1            cad  0.298  0.25800  0.340  500   All
+2      cad_chain  0.224  0.18800  0.262  500   All
+3          calib  0.252  0.21400  0.290  500   All
+4            cot  0.212  0.17795  0.248  500   All
+5         direct  0.242  0.20600  0.280  500   All
+6           free  0.252  0.21400  0.292  500   All
+7           hgcd  0.212  0.17795  0.248  500   All
+8       hgcd_ada  0.212  0.17795  0.248  500   All
+9       hgcd_log  0.212  0.17795  0.248  500   All
+10  hgcd_uniform  0.212  0.17795  0.248  500   All
+11           poe  0.246  0.21000  0.286  500   All
+[23:31:15]  done in 150.2 min -> /kaggle/working/results/mediation_qwen-1.5b

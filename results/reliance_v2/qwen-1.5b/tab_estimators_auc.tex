@@ -1,0 +1,18 @@
+\begin{tabular}{lcccccccc}
+\toprule
+Estimator & \multicolumn{2}{c}{clutrr} & \multicolumn{2}{c}{clutrr\_copy} & \multicolumn{2}{c}{clutrr\_copywrong} & \multicolumn{2}{c}{musique} \\
+ & all & PS$=$1 & all & PS$=$1 & all & PS$=$1 & all & PS$=$1 \\
+\midrule
+Mask hop only (direct) & 0.499 & 0.560 & 0.666 & 0.672 & 0.472 & 0.581 & 0.816 & 0.822 \\
+Mask hop + DRG descendants (total) & 0.498 & 0.553 & 1.000 & 1.000 & 0.150 & 0.899 & 0.977 & 0.977 \\
+Replace result, keep downstream (direct) & 0.569 & 0.651 & 0.653 & 0.653 & 0.479 & 0.645 & 0.788 & 0.790 \\
+Replace result, propagate (total) & 0.563 & 0.671 & 1.000 & 1.000 & 0.175 & 0.935 & 0.985 & 0.985 \\
+Corrupt + resample, resampled baseline (ours) & 0.486 & 0.534 & -- & -- & -- & -- & 0.668 & 0.673 \\
+Corrupt + resample, gold-chain baseline (PNS as in Yu et al.) & 0.496 & 0.505 & -- & -- & -- & -- & 0.524 & 0.524 \\
+Mask hop + descendants, raw log-prob (no candidate set) & 0.467 & 0.564 & 1.000 & 1.000 & 0.153 & 0.948 & 0.993 & 0.995 \\
+DRG path indicator (structure only) & 1.000 & 1.000 & 0.500 & 0.500 & 0.500 & 0.500 & 0.997 & 0.997 \\
+Placebo rewrite (control) & 0.483 & 0.523 & 0.469 & 0.477 & 0.584 & 0.411 & 0.480 & 0.478 \\
+Mask token, content kept (control) & 0.510 & 0.531 & 0.499 & 0.508 & 0.545 & 0.504 & 0.478 & 0.474 \\
+Mask tokens on hop + descendants, content kept (control) & 0.534 & 0.546 & 0.609 & 0.618 & 0.450 & 0.367 & 0.567 & 0.568 \\
+\bottomrule
+\end{tabular}

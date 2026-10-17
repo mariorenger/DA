@@ -1,0 +1,130 @@
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+Loading weights:   0%|          | 0/290 [00:00<?, ?it/s]Loading weights:   0%|          | 1/290 [00:00<04:20,  1.11it/s]Loading weights: 100%|██████████| 290/290 [00:00<00:00, 304.35it/s]
+[17:36:08]  loaded Qwen/Qwen2.5-0.5B-Instruct on cuda:0
+[17:36:14]  estimator validation on 158 CLUTRR gold chains
+[17:37:31]  estimators clutrr 10/158
+[17:38:50]  estimators clutrr 20/158
+[17:40:03]  estimators clutrr 30/158
+[17:41:26]  estimators clutrr 40/158
+[17:43:11]  estimators clutrr 50/158
+[17:45:00]  estimators clutrr 60/158
+[17:46:38]  estimators clutrr 70/158
+[17:48:15]  estimators clutrr 80/158
+[17:49:55]  estimators clutrr 90/158
+[17:51:46]  estimators clutrr 100/158
+[17:54:07]  estimators clutrr 110/158
+[17:56:19]  estimators clutrr 120/158
+[17:58:37]  estimators clutrr 130/158
+[18:00:51]  estimators clutrr 140/158
+[18:03:12]  estimators clutrr 150/158
+[18:05:14]  estimator validation on CLUTRR chains + explicit answer hop (copy vs compute)
+[18:05:45]  estimators clutrr 10/158
+[18:06:16]  estimators clutrr 20/158
+[18:06:46]  estimators clutrr 30/158
+[18:07:18]  estimators clutrr 40/158
+[18:07:57]  estimators clutrr 50/158
+[18:08:36]  estimators clutrr 60/158
+[18:09:15]  estimators clutrr 70/158
+[18:09:54]  estimators clutrr 80/158
+[18:10:32]  estimators clutrr 90/158
+[18:11:13]  estimators clutrr 100/158
+[18:12:01]  estimators clutrr 110/158
+[18:12:48]  estimators clutrr 120/158
+[18:13:36]  estimators clutrr 130/158
+[18:14:26]  estimators clutrr 140/158
+[18:15:16]  estimators clutrr 150/158
+[18:16:27]  estimators clutrr 10/158
+[18:16:58]  estimators clutrr 20/158
+[18:17:30]  estimators clutrr 30/158
+[18:18:03]  estimators clutrr 40/158
+[18:18:44]  estimators clutrr 50/158
+[18:19:25]  estimators clutrr 60/158
+[18:20:05]  estimators clutrr 70/158
+[18:20:45]  estimators clutrr 80/158
+[18:21:24]  estimators clutrr 90/158
+[18:22:06]  estimators clutrr 100/158
+[18:22:55]  estimators clutrr 110/158
+[18:23:44]  estimators clutrr 120/158
+[18:24:32]  estimators clutrr 130/158
+[18:25:22]  estimators clutrr 140/158
+[18:26:12]  estimators clutrr 150/158
+[18:26:51]  wrong answer hop: followed in 0.66 of chains; in 0.71 of the 24 chains the model solves without it
+[18:26:51]  estimator validation on 150 MuSiQue gold chains
+[18:29:18]  estimators musique 10/150
+[18:32:18]  estimators musique 20/150
+[18:35:23]  estimators musique 30/150
+[18:38:45]  estimators musique 40/150
+[18:42:17]  estimators musique 50/150
+[18:45:39]  estimators musique 60/150
+[18:48:48]  estimators musique 70/150
+[18:52:23]  estimators musique 80/150
+[18:55:26]  estimators musique 90/150
+[18:58:25]  estimators musique 100/150
+[19:01:20]  estimators musique 110/150
+[19:04:34]  estimators musique 120/150
+[19:07:46]  estimators musique 130/150
+[19:12:21]  estimators musique 140/150
+[19:15:23]  estimators musique 150/150
+[19:15:24]  
+            dataset      form   form_lo   form_hi   content  content_lo  content_hi    n
+0            clutrr -0.007939 -0.016873  0.000591  0.002701   -0.016468    0.022146  158
+1       clutrr_copy -0.004572 -0.013111  0.003646  0.572628    0.540151    0.606856  158
+2  clutrr_copywrong -0.004572 -0.013111  0.003646 -0.122512   -0.146482   -0.099346  158
+3           musique  0.040651  0.000466  0.080966  0.484902    0.419419    0.552627  150
+[19:15:24]  
+             dataset        estimator   auc_all   auc_ps1  n_hops  n_ps1
+0             clutrr          d_total  0.632005  0.782051     654    102
+1             clutrr          d_naive  0.620955  0.711538     654    102
+2             clutrr      d_cf_direct  0.566902  0.581197     654    102
+3             clutrr       d_cf_total  0.557919  0.694444     654    102
+4             clutrr  d_total_rawlogp  0.644676  0.778312     654    102
+5             clutrr      pns_rollout  0.510081  0.681624     654    102
+6             clutrr     pns_goldbase  0.500542  0.557692     654    102
+7             clutrr        d_placebo  0.511318  0.461538     654    102
+8             clutrr       d_maskmark  0.499311  0.543803     654    102
+9             clutrr  d_maskmark_tree  0.507733  0.597222     654    102
+10            clutrr     drg_relevant  1.000000  1.000000     654    102
+11       clutrr_copy          d_total  0.996342  0.998913     812    708
+12       clutrr_copy          d_naive  0.636986  0.657205     812    708
+13       clutrr_copy      d_cf_direct  0.595992  0.596174     812    708
+14       clutrr_copy       d_cf_total  0.999119  0.999937     812    708
+15       clutrr_copy  d_total_rawlogp  0.995355  0.998205     812    708
+16       clutrr_copy        d_placebo  0.559923  0.576488     812    708
+17       clutrr_copy       d_maskmark  0.545262  0.554121     812    708
+18       clutrr_copy  d_maskmark_tree  0.948845  0.962512     812    708
+19       clutrr_copy     drg_relevant  0.500000  0.500000     812    708
+20  clutrr_copywrong          d_total  0.149799  1.000000     812     10
+21  clutrr_copywrong          d_naive  0.412089  0.500000     812     10
+22  clutrr_copywrong      d_cf_direct  0.442612  0.250000     812     10
+23  clutrr_copywrong       d_cf_total  0.136860  1.000000     812     10
+24  clutrr_copywrong  d_total_rawlogp  0.160550  1.000000     812     10
+25  clutrr_copywrong        d_placebo  0.410492  0.687500     812     10
+26  clutrr_copywrong       d_maskmark  0.465548  0.375000     812     10
+27  clutrr_copywrong  d_maskmark_tree  0.148734  1.000000     812     10
+28  clutrr_copywrong     drg_relevant  0.500000  0.500000     812     10
+29           musique          d_total  0.943358  0.943086     557    477
+30           musique          d_naive  0.719771  0.725051     557    477
+31           musique      d_cf_direct  0.727584  0.740288     557    477
+32           musique       d_cf_total  0.940590  0.956674     557    477
+33           musique  d_total_rawlogp  0.991351  0.991936     557    477
+34           musique      pns_rollout  0.645545  0.672325     557    477
+35           musique     pns_goldbase  0.511450  0.518812     557    477
+36           musique        d_placebo  0.509484  0.504433     557    477
+37           musique       d_maskmark  0.475856  0.465339     557    477
+38           musique  d_maskmark_tree  0.653350  0.670854     557    477
+39           musique     drg_relevant  0.996667  0.996124     557    477
+[19:15:24]  
+             dataset       position   d_total   d_naive  d_cf_total  d_cf_direct  d_total_rawlogp  pns_rollout  pns_goldbase  d_maskmark_tree  d_placebo  d_maskmark
+0             clutrr     gold-final  0.030330  0.030330    0.032080     0.032080         0.248438     0.037975      0.034810        -0.000610   0.006861   -0.001418
+1             clutrr  gold-nonfinal  0.000649 -0.007680    0.012639     0.003867         0.121653     0.032544      0.042899        -0.016013  -0.009379   -0.014829
+2             clutrr      redundant -0.018608 -0.018608    0.001708     0.001708        -0.135343     0.028481      0.037975        -0.011917  -0.004451   -0.009785
+3        clutrr_copy     gold-final  0.578114  0.578114    0.620343     0.620343         2.086856          NaN           NaN         0.101084   0.042950    0.017520
+4        clutrr_copy  gold-nonfinal  0.607511  0.013045    0.610491    -0.001067         2.647752          NaN           NaN         0.109906   0.011884    0.006532
+5        clutrr_copy      redundant  0.010963  0.010963    0.007821     0.007821         0.007773          NaN           NaN        -0.019489   0.009836    0.004808
+6   clutrr_copywrong     gold-final -0.117026 -0.117026   -0.074798    -0.074798        -2.646386          NaN           NaN        -0.016628  -0.013369   -0.004680
+7   clutrr_copywrong  gold-nonfinal -0.081035 -0.002347   -0.079907     0.000074        -2.065723          NaN           NaN        -0.021689  -0.001529   -0.003137
+8   clutrr_copywrong      redundant -0.003128 -0.003128   -0.001340    -0.001340        -0.177313          NaN           NaN         0.000147  -0.001083   -0.002708
+9            musique     gold-final  0.671888  0.671888    0.759255     0.759255         8.375412     0.763333      0.796667         0.029950  -0.084290   -0.034916
+10           musique  gold-nonfinal  0.566541 -0.024254    0.641620     0.053745         7.545108     0.035019      0.789883         0.073455  -0.031286   -0.004380
+11           musique      redundant -0.045027 -0.051420    0.044505     0.039341        -0.175526     0.016667      0.780000        -0.031400  -0.043826   -0.014332
+[19:15:24]  done (estimators only) in 100.0 min -> /kaggle/working/results/reliance_qwen-0.5b

@@ -1,0 +1,130 @@
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+Loading weights:   0%|          | 0/218 [00:00<?, ?it/s]Loading weights:   0%|          | 1/218 [00:00<01:25,  2.52it/s]Loading weights:  18%|█▊        | 40/218 [00:00<00:01, 103.64it/s]Loading weights:  28%|██▊       | 62/218 [00:00<00:01, 116.50it/s]Loading weights:  37%|███▋      | 81/218 [00:00<00:01, 117.23it/s]Loading weights:  44%|████▍     | 97/218 [00:00<00:01, 110.00it/s]Loading weights:  51%|█████     | 111/218 [00:01<00:00, 108.63it/s]Loading weights:  57%|█████▋    | 124/218 [00:01<00:00, 103.95it/s]Loading weights:  63%|██████▎   | 138/218 [00:01<00:00, 102.37it/s]Loading weights:  72%|███████▏  | 156/218 [00:01<00:00, 103.35it/s]Loading weights:  80%|███████▉  | 174/218 [00:01<00:00, 111.65it/s]Loading weights:  85%|████████▌ | 186/218 [00:01<00:00, 112.25it/s]Loading weights:  92%|█████████▏| 201/218 [00:01<00:00, 111.51it/s]Loading weights:  98%|█████████▊| 213/218 [00:02<00:00, 106.46it/s]Loading weights: 100%|██████████| 218/218 [00:02<00:00, 104.84it/s]
+[20:45:34]  loaded HuggingFaceTB/SmolLM2-1.7B-Instruct on cuda:0
+[20:45:35]  estimator validation on 158 CLUTRR gold chains
+[20:47:47]  estimators clutrr 10/158
+[20:50:15]  estimators clutrr 20/158
+[20:52:42]  estimators clutrr 30/158
+[20:55:15]  estimators clutrr 40/158
+[20:58:43]  estimators clutrr 50/158
+[21:02:15]  estimators clutrr 60/158
+[21:05:46]  estimators clutrr 70/158
+[21:09:04]  estimators clutrr 80/158
+[21:12:22]  estimators clutrr 90/158
+[21:16:14]  estimators clutrr 100/158
+[21:21:17]  estimators clutrr 110/158
+[21:26:17]  estimators clutrr 120/158
+[21:30:45]  estimators clutrr 130/158
+[21:35:52]  estimators clutrr 140/158
+[21:41:05]  estimators clutrr 150/158
+[21:44:41]  estimator validation on CLUTRR chains + explicit answer hop (copy vs compute)
+[21:45:48]  estimators clutrr 10/158
+[21:46:57]  estimators clutrr 20/158
+[21:48:03]  estimators clutrr 30/158
+[21:49:11]  estimators clutrr 40/158
+[21:50:44]  estimators clutrr 50/158
+[21:52:16]  estimators clutrr 60/158
+[21:53:48]  estimators clutrr 70/158
+[21:55:20]  estimators clutrr 80/158
+[21:56:50]  estimators clutrr 90/158
+[21:58:26]  estimators clutrr 100/158
+[22:00:20]  estimators clutrr 110/158
+[22:02:15]  estimators clutrr 120/158
+[22:04:09]  estimators clutrr 130/158
+[22:06:07]  estimators clutrr 140/158
+[22:08:06]  estimators clutrr 150/158
+[22:10:45]  estimators clutrr 10/158
+[22:11:55]  estimators clutrr 20/158
+[22:13:02]  estimators clutrr 30/158
+[22:14:12]  estimators clutrr 40/158
+[22:15:48]  estimators clutrr 50/158
+[22:17:20]  estimators clutrr 60/158
+[22:18:53]  estimators clutrr 70/158
+[22:20:25]  estimators clutrr 80/158
+[22:21:56]  estimators clutrr 90/158
+[22:23:32]  estimators clutrr 100/158
+[22:25:29]  estimators clutrr 110/158
+[22:27:25]  estimators clutrr 120/158
+[22:29:21]  estimators clutrr 130/158
+[22:31:19]  estimators clutrr 140/158
+[22:33:19]  estimators clutrr 150/158
+[22:34:51]  wrong answer hop: followed in 0.56 of chains; in 0.57 of the 42 chains the model solves without it
+[22:34:51]  estimator validation on 150 MuSiQue gold chains
+[22:39:43]  estimators musique 10/150
+[22:45:15]  estimators musique 20/150
+[22:51:03]  estimators musique 30/150
+[22:56:56]  estimators musique 40/150
+[23:03:11]  estimators musique 50/150
+[23:09:24]  estimators musique 60/150
+[23:15:18]  estimators musique 70/150
+[23:21:53]  estimators musique 80/150
+[23:27:48]  estimators musique 90/150
+[23:33:18]  estimators musique 100/150
+[23:38:52]  estimators musique 110/150
+[23:44:58]  estimators musique 120/150
+[23:51:09]  estimators musique 130/150
+[23:59:37]  estimators musique 140/150
+[00:05:10]  estimators musique 150/150
+[00:05:11]  
+            dataset      form   form_lo   form_hi   content  content_lo  content_hi    n
+0            clutrr -0.019479 -0.034172 -0.005104  0.013675   -0.005971    0.034357  158
+1       clutrr_copy -0.022407 -0.038651 -0.006078  0.638363    0.598552    0.677276  158
+2  clutrr_copywrong -0.022407 -0.038651 -0.006078 -0.143985   -0.183542   -0.106113  158
+3           musique -0.053756 -0.081951 -0.028041  0.663976    0.612573    0.716485  150
+[00:05:11]  
+             dataset        estimator   auc_all   auc_ps1  n_hops  n_ps1
+0             clutrr          d_total  0.570156  0.621828     654    179
+1             clutrr          d_naive  0.547086  0.585332     654    179
+2             clutrr      d_cf_direct  0.521374  0.518770     654    179
+3             clutrr       d_cf_total  0.546116  0.541189     654    179
+4             clutrr  d_total_rawlogp  0.558098  0.623045     654    179
+5             clutrr      pns_rollout  0.496918  0.548922     654    179
+6             clutrr     pns_goldbase  0.502558  0.461244     654    179
+7             clutrr        d_placebo  0.533700  0.542753     654    179
+8             clutrr       d_maskmark  0.514432  0.492179     654    179
+9             clutrr  d_maskmark_tree  0.500625  0.474800     654    179
+10            clutrr     drg_relevant  1.000000  1.000000     654    179
+11       clutrr_copy          d_total  0.995045  0.997611     812    734
+12       clutrr_copy          d_naive  0.647466  0.645198     812    734
+13       clutrr_copy      d_cf_direct  0.640179  0.635534     812    734
+14       clutrr_copy       d_cf_total  0.997639  0.999976     812    734
+15       clutrr_copy  d_total_rawlogp  0.996061  0.997234     812    734
+16       clutrr_copy        d_placebo  0.385137  0.387194     812    734
+17       clutrr_copy       d_maskmark  0.525026  0.534169     812    734
+18       clutrr_copy  d_maskmark_tree  0.814501  0.835158     812    734
+19       clutrr_copy     drg_relevant  0.500000  0.500000     812    734
+20  clutrr_copywrong          d_total  0.186186  0.729345     812     67
+21  clutrr_copywrong          d_naive  0.472371  0.568376     812     67
+22  clutrr_copywrong      d_cf_direct  0.508971  0.722222     812     67
+23  clutrr_copywrong       d_cf_total  0.190754  0.729345     812     67
+24  clutrr_copywrong  d_total_rawlogp  0.215674  0.787749     812     67
+25  clutrr_copywrong        d_placebo  0.481535  0.472934     812     67
+26  clutrr_copywrong       d_maskmark  0.472603  0.552707     812     67
+27  clutrr_copywrong  d_maskmark_tree  0.336237  0.467236     812     67
+28  clutrr_copywrong     drg_relevant  0.500000  0.500000     812     67
+29           musique          d_total  0.980410  0.991709     557    462
+30           musique          d_naive  0.658739  0.684170     557    462
+31           musique      d_cf_direct  0.675430  0.701082     557    462
+32           musique       d_cf_total  0.981556  0.991922     557    462
+33           musique  d_total_rawlogp  0.995201  0.994118     557    462
+34           musique      pns_rollout  0.610000  0.632570     557    462
+35           musique     pns_goldbase  0.505012  0.518294     557    462
+36           musique        d_placebo  0.502490  0.494992     557    462
+37           musique       d_maskmark  0.486274  0.473167     557    462
+38           musique  d_maskmark_tree  0.563325  0.611513     557    462
+39           musique     drg_relevant  0.996667  0.996032     557    462
+[00:05:11]  
+             dataset       position   d_total   d_naive  d_cf_total  d_cf_direct  d_total_rawlogp  pns_rollout  pns_goldbase  d_maskmark_tree  d_placebo  d_maskmark
+0             clutrr     gold-final  0.010205  0.010205    0.046336     0.046336         0.116994     0.066456      0.047468         0.012100   0.041030    0.005174
+1             clutrr  gold-nonfinal  0.017994  0.002748    0.018685     0.010556         0.269415     0.016272      0.051775        -0.016305  -0.014219   -0.010100
+2             clutrr      redundant -0.003708 -0.003708    0.015268     0.015268         0.049549     0.041139      0.060127         0.000866  -0.003176   -0.003041
+3        clutrr_copy     gold-final  0.635273  0.635273    0.681769     0.681769         2.345417          NaN           NaN         0.118106  -0.039209    0.016876
+4        clutrr_copy  gold-nonfinal  0.694845  0.009503    0.707215    -0.010831         2.732727          NaN           NaN         0.068026   0.006385    0.013024
+5        clutrr_copy      redundant  0.002281  0.002281   -0.012487    -0.012487        -0.004547          NaN           NaN         0.005362   0.004231    0.009183
+6   clutrr_copywrong     gold-final -0.147074 -0.147074   -0.100579    -0.100579        -2.596355          NaN           NaN        -0.015662   0.008319   -0.002330
+7   clutrr_copywrong  gold-nonfinal -0.087646  0.001265   -0.086385     0.010728        -2.245944          NaN           NaN        -0.012648   0.002251   -0.002134
+8   clutrr_copywrong      redundant -0.001379 -0.001379    0.001827     0.001827        -0.281323          NaN           NaN        -0.003222   0.004269   -0.001516
+9            musique     gold-final  0.734890  0.734890    0.764342     0.764342         8.003077     0.656667      0.790000         0.019856  -0.013039   -0.003319
+10           musique  gold-nonfinal  0.668230 -0.039210    0.715828     0.008789         8.727843    -0.001946      0.688716         0.022756   0.011288    0.018477
+11           musique      redundant -0.011955 -0.018360    0.019815     0.013458        -0.025126     0.033333      0.726667         0.010304   0.000096    0.012305
+[00:05:11]  done (estimators only) in 200.2 min -> /kaggle/working/results/reliance_smollm2-1.7b

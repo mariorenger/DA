@@ -271,3 +271,39 @@ emerge with scale (`MODE="reliance"`, 0.5B → 7B)?
 | Q3 DRG connectivity | Numbers existed but were not in the paper | Reported: 25% / 36% fully connected; affects only the decoding probe (benchmark uses gold chains) |
 | Q4 subtree masking artifact | Valid concern | Volume-matched control: same mask tokens on hop + descendants with content kept; the cf-replacement version (no mask on hop j) already agrees |
 | "??", pending, pilot appendix | Valid | Removed; `\maybeinput` no longer prints "Pending" |
+
+## Round 8 — Kaggle runs A (reliance, 4 models) and B (7B + mediation n=500)
+Raw outputs: `results/reliance_v2/<model>/`, `results/mediation_n500/<model>/`; aggregation
+`tools/analyze_reliance_v2.py` (question-clustered bootstrap) → `tab_scale.tex`, `tab_auc_scale.tex`,
+`tab_copy_wrong.tex`, `positions_ci.csv`.
+
+- **R1 holds at 7B.** MuSiQue non-final: total 41.3 vs naive 6.5; AUC total 0.86–0.98 vs naive
+  0.66–0.82 across 5 models. Raw log-prob version agrees (0.88–0.995), so the candidate set is not
+  driving it.
+- **Volume-matched control (Q4).** Marker-tree moves p(gold) by −0.3…11 pts vs 41–77 for total →
+  not a mask-volume artefact. *But* it ranks hops on CLUTRR+copy at 0.5B (AUC 0.95): reported as a
+  limitation, not hidden.
+- **Prop. rollout confirmed by its fix.** Redundant hop: gold baseline 56–78 pts → resampled
+  baseline −0.3…4.3. New nuance: necessary hops under resampling are also small (−0.2…11), because
+  the model re-derives the step from the context → resampling measures *recoverability*, total
+  masking measures *use*. Written into R2.
+- **Wrong-copy test (the gap from round 7) — main new result.** Follow rate of a stated wrong
+  relation: 66.5 / 58.2 / 56.3 / 46.2 / 22.9 % (0.5B…7B). Conditioned on PS=1 of the plain chain:
+  70.8 / 63.0 / 57.1 / 47.7 / **10.3** %. Up to 3B solvable ≈ unsolvable → copying overrides the
+  model's own solution (so "cannot compose" does not explain R3). At 7B the stated answer is
+  vetoed when the model can solve — yet CLUTRR relational hops still carry 1.3 [−3.4, 6.0] pts →
+  7B composes, but not through the chain.
+- **Correction to my own earlier claim.** I had written "3B CLUTRR 7.3 ≈ final-hop placebo 7.4 →
+  nothing detectable". That compared different positions. Against the same-position placebo
+  (−1.4) and the redundant hop (2.0), 7.3 [3.8, 11.0] *is* detectable — small, an order of
+  magnitude below the copy effect. Text fixed.
+- **Mediation at n=500 shrinks the effect (winner's curse in the n=120 pilot).** CoT TE −2.6
+  [−6.2, 1.2] (1.5B, no longer significant) and −5.6 [−9.6, −1.6] (3B); NDE +1.0 / −0.6 (≈0);
+  TIE −3.6 [−7.2, 0.0] / −5.0 [−8.8, −1.0]. Direct answering: NDE −4.6 / −3.8. The qualitative
+  split replicates, the magnitude is ~3–6 pts, not ~10. CoT − direct TE: +3.0 [−0.8, 6.8], +0.2
+  [−3.8, 4.2]; CAD − direct: −2.6 [−6.0, 0.8], −1.6 [−4.4, 1.2] → H3 (CAD fragility) still not
+  supported.
+- **Decoding side-notes (n=500, MuSiQue orig).** Calibration beats CoT (+4.0, p=0.002; +5.4,
+  p<0.001) → H8 strengthened beyond CLUTRR. CAD beats CoT at 1.5B (+8.6, p<0.001), not at 3B. HGCD
+  rows in these runs are not informative (lean mode = CoT by construction) and were dropped from
+  the table.

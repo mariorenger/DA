@@ -1,0 +1,16 @@
+\begin{tabular}{lcccccccc}
+\toprule
+Estimator & \multicolumn{2}{c}{clutrr} & \multicolumn{2}{c}{clutrr\_copy} & \multicolumn{2}{c}{clutrr\_copywrong} & \multicolumn{2}{c}{musique} \\
+ & all & PS$=$1 & all & PS$=$1 & all & PS$=$1 & all & PS$=$1 \\
+\midrule
+Mask hop only (direct) & 0.520 & 0.599 & 0.724 & 0.760 & 0.488 & 0.642 & 0.706 & 0.730 \\
+Mask hop + DRG descendants (total) & 0.515 & 0.615 & 0.945 & 0.968 & 0.365 & 0.694 & 0.863 & 0.892 \\
+Replace result, keep downstream (direct) & 0.556 & 0.611 & 0.635 & 0.652 & 0.474 & 0.609 & 0.686 & 0.694 \\
+Replace result, propagate (total) & 0.550 & 0.647 & 0.915 & 0.945 & 0.358 & 0.651 & 0.866 & 0.901 \\
+Mask hop + descendants, raw log-prob (no candidate set) & 0.526 & 0.698 & 0.962 & 0.985 & 0.392 & 0.764 & 0.877 & 0.886 \\
+DRG path indicator (structure only) & 1.000 & 1.000 & 0.500 & 0.500 & 0.500 & 0.500 & 0.995 & 0.994 \\
+Placebo rewrite (control) & 0.571 & 0.619 & 0.462 & 0.455 & 0.564 & 0.587 & 0.543 & 0.545 \\
+Mask token, content kept (control) & 0.453 & 0.424 & 0.505 & 0.508 & 0.476 & 0.486 & 0.494 & 0.496 \\
+Mask tokens on hop + descendants, content kept (control) & 0.474 & 0.460 & 0.640 & 0.658 & 0.427 & 0.516 & 0.549 & 0.571 \\
+\bottomrule
+\end{tabular}
