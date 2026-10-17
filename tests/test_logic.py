@@ -122,3 +122,15 @@ def test_estimator_latex_runs(tmp_path):
     aucs, pos = estimator_table(rows)
     R.estimator_latex(aucs, pos, str(tmp_path / "a.tex"), str(tmp_path / "b.tex"))
     assert "mask-tot" in (tmp_path / "b.tex").read_text()
+
+
+def test_causaldec_compose_and_parse():
+    from hgcd.causaldec import compose, chain_compose, parse_triples
+    table = {("father", "brother"): "uncle", ("uncle", "son"): "cousin_m",
+             ("brother", "son"): "nephew", ("father", "nephew"): "cousin_m"}
+    assert compose(table, ["father", "brother"]) == "uncle"
+    assert compose(table, ["father", "brother", "son"]) == "cousin_m"   # both bracketings agree
+    tr = parse_triples("Hop 1: Ann's father is Bob. => Bob\nHop 2: Carl is Bob's brother. => Carl\n")
+    assert tr == [("Ann", "father", "Bob"), ("Bob", "brother", "Carl")]
+    assert chain_compose(table, tr, "Ann", "Carl", {"father", "brother"}) == ("uncle", "ok")
+    assert chain_compose(table, tr, "Ann", "Dan", {"father", "brother"})[1] == "bad_end"

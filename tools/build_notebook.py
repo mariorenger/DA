@@ -13,7 +13,7 @@ import nbformat as nbf
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 MODULES = ["__init__", "data", "chain", "prompts", "lm", "decoding", "experiments", "metrics",
-           "report", "pipeline"]
+           "report", "pipeline", "causaldec"]
 
 INTRO = """# Read, not reasoned? Kaggle run-all
 
@@ -52,8 +52,11 @@ def run_job(label, model, preset, extra, gpus):
     env = dict(os.environ, CUDA_VISIBLE_DEVICES=gpus)
     out = f"{OUT}/{preset}_{label}"
     with open(out + ".log", "w") as log:
-        rc = subprocess.call([sys.executable, "-m", "hgcd.pipeline", "--preset", preset,
-                              "--model", model, "--outdir", out, *extra],
+        cmd = ([sys.executable, "-m", "hgcd.causaldec", "--model", model, "--outdir", out, *extra]
+               if preset.startswith("causaldec") else
+               [sys.executable, "-m", "hgcd.pipeline", "--preset", preset, "--model", model,
+                "--outdir", out, *extra])
+        rc = subprocess.call(cmd,
                              env=env, stdout=log, stderr=subprocess.STDOUT)
     print(f"[{label}] exit {rc} after {(time.time() - T0) / 3600:.1f} h; log tail:")
     print("".join(open(out + ".log").readlines()[-14:]))
@@ -81,6 +84,8 @@ if rel:
     display(df)
     print(open(f"{OUT}/tab_reliance.tex").read())
 for k, d in dirs.items():
+    if os.path.exists(f"{d}/summary.csv"):
+        print("=" * 10, k); print(pd.read_csv(f"{d}/summary.csv").round(3).to_string())
     if os.path.exists(f"{d}/summary.json"):
         s = json.load(open(f"{d}/summary.json"))
         print(k, "copy_wrong:", s.get("copy_wrong"))
@@ -104,6 +109,40 @@ NOTEBOOKS = {
         "0": [("qwen-1.5b", "Qwen/Qwen2.5-1.5B-Instruct", "mediation", ())],
         "1": [("qwen-3b", "Qwen/Qwen2.5-3B-Instruct", "mediation", ())],
     },
+}""",
+    # ---- round 9: decoding with causal / structural information (hgcd/causaldec.py)
+    "C_symbolic_clutrr": """{
+    "small": {
+        "0": [("qwen-1.5b", "Qwen/Qwen2.5-1.5B-Instruct", "causaldec_clutrr",
+               ("--task", "clutrr", "--max_minutes", "240"))],
+        "1": [("qwen-3b", "Qwen/Qwen2.5-3B-Instruct", "causaldec_clutrr",
+               ("--task", "clutrr", "--max_minutes", "240"))],
+    },
+    "7b": {"0,1": [("qwen-7b", "Qwen/Qwen2.5-7B-Instruct", "causaldec_clutrr",
+                    ("--task", "clutrr", "--device_map", "auto", "--bs", "4", "--max_minutes", "300"))]},
+}""",
+    "M_select_orig": """{
+    "orig": {
+        "0": [("qwen-1.5b", "Qwen/Qwen2.5-1.5B-Instruct", "causaldec_musique",
+               ("--task", "musique", "--n", "500", "--conditions", "orig", "--max_minutes", "480"))],
+        "1": [("qwen-3b", "Qwen/Qwen2.5-3B-Instruct", "causaldec_musique",
+               ("--task", "musique", "--n", "500", "--conditions", "orig", "--bs", "6",
+                "--max_minutes", "480"))],
+    },
+}""",
+    "M_select_dist8": """{
+    "dist8": {
+        "0": [("qwen-1.5b", "Qwen/Qwen2.5-1.5B-Instruct", "causaldec_musique",
+               ("--task", "musique", "--n", "500", "--conditions", "dist8", "--max_minutes", "480"))],
+        "1": [("qwen-3b", "Qwen/Qwen2.5-3B-Instruct", "causaldec_musique",
+               ("--task", "musique", "--n", "500", "--conditions", "dist8", "--bs", "4",
+                "--max_minutes", "480"))],
+    },
+}""",
+    "M_select_7b": """{
+    "7b": {"0,1": [("qwen-7b", "Qwen/Qwen2.5-7B-Instruct", "causaldec_musique",
+                    ("--task", "musique", "--n", "300", "--conditions", "orig", "dist8",
+                     "--device_map", "auto", "--bs", "4", "--max_minutes", "560"))]},
 }""",
 }
 
