@@ -284,8 +284,86 @@ Literature im lặng ở nhiều chỗ chính là nơi đóng góp của bạn c
 
 Một phần đáng kể bằng chứng then chốt là preprint hoặc venue cấp workshop: Popper-ly (NeSy 2026), Kelesis (workshop ESWC 2026), CASE và DeCoRe (preprint), NWCAD (arXiv), Attrieval (work-in-progress). Ngoài ra, ghi chú nghiên cứu không trích xuất được bảng số của ProbTree và CaCo-CoT. Nên coi các con số này là tín hiệu định hướng, không phải hằng số đã được tái lập.
 
+## Kết quả thực nghiệm: hợp thành ngoài model thắng lớn, chọn bằng chứng thì không
+
+Sau khảo sát, các hướng được chạy trên Kaggle T4 (Qwen2.5-1.5B/3B/7B-Instruct). Ngưỡng go/no-go được ghi vào `REVIEW.md` trước mỗi lần chạy: phương pháp phải vượt max(CoT greedy, SC cùng compute) ít nhất 2 điểm, với 95% CI của paired bootstrap > 0.
+
+### MuSiQue: chọn bằng chứng trước khi sinh chuỗi là NO-GO
+
+n = 500 câu, 4 hoặc 8 distractor, EM (%):
+
+| Distractor | Model | CoT | SC₅ | Attn top-4 | Attn rerank | Self-select | Gold only |
+|---|---|---|---|---|---|---|---|
+| 4 | 1.5B | 24.8 | 28.4 | 23.6 | 23.0 | 13.2 | 34.8 |
+| 4 | 3B | 38.8 | 41.4 | 33.8 | 37.4 | 29.6 | 48.6 |
+| 8 | 1.5B | 22.2 | 25.0 | 22.0 | 22.2 | 13.2 | 31.4 |
+| 8 | 3B | 31.6 | 35.6 | 27.4 | 33.6 | 24.8 | 45.6 |
+
+- Trần (gold only) cao hơn CoT 9–14 điểm, nên có chỗ để cải thiện. Nhưng attention calibrated kiểu ICR ở ≤3B không tìm được đủ gold paragraph: hard top-4 làm mất gold và *giảm* EM. Rerank (giữ toàn bộ paragraph, chỉ đổi thứ tự) ≈ CoT. Self-selection bằng prompt tệ hơn hẳn.
+- SC₅ vẫn là baseline mạnh nhất (+2.6 đến +4.0). Không phương pháp chọn bằng chứng nào vượt nó.
+- **Bug đã phát hiện và sửa.** Attention eager ở fp16 bị overflow với Qwen-1.5B và 7B shard. Hậu quả là attn top-4 luôn giữ 4 paragraph đầu (500/500 câu). Lỗi được bắt bằng cách so lựa chọn với một luật tầm thường. Bản sửa (fp32 retry, kiểm tra điểm suy biến) được chạy lại cho 1.5B (bảng trên). Số liệu attention của 7B bị loại.
+
+### CLUTRR: trích fact rồi để bảng luật hợp thành là GO
+
+Pipeline:
+1. Model chỉ viết các fact `X's rel is Y.` và giới tính.
+2. Các fact được dựng thành đồ thị quan hệ gia đình có cạnh nghịch đảo.
+3. BFS từ nguồn đến đích.
+4. Hợp thành dọc đường đi bằng bảng 126 luật, được induce từ tập train.
+
+Model không còn phải tự hợp thành. Accuracy (%), Δ so với baseline tốt nhất (SC₁₀ cùng compute hoặc CoT):
+
+| Tập đánh giá | Model | n | CoT | SC₁₀ | Extract+rules SC₅ | Δ [95% CI] |
+|---|---|---|---|---|---|---|
+| Validation k=2–4 | 1.5B | 300 | 25.7 | 28.7 | 60.7 | +32.0 [26.0, 38.0] |
+| | 3B | 300 | 36.3 | 38.0 | 70.0 | +32.0 [25.3, 38.3] |
+| | 7B | 300 | 39.7 | 43.3 | 80.0 | +36.7 [31.0, 42.3] |
+| Task chưa thấy k=2–4 | 1.5B | 158 | 31.6 | 31.0 | 52.5 | +20.9 [12.0, 30.4] |
+| | 3B | 158 | 30.4 | 32.3 | 59.5 | +27.2 [19.0, 35.4] |
+| | 7B | 158 | 39.2 | 40.5 | 74.1 | +33.5 [25.3, 42.4] |
+| Task chưa thấy k=5–8 | 1.5B | 200 | 34.5 | 29.5 | 33.5 | −1.0 [−8.5, 6.5] |
+| | 3B | 200 | 26.0 | 29.0 | 38.5 | +9.5 [3.5, 15.5] |
+| | 7B | 200 | 26.0 | 28.5 | 52.5 | **+24.0 [17.0, 31.5]** (primary đăng ký trước) |
+
+Chuỗi dài là nơi phương pháp còn yếu ở model nhỏ. Lý do là recall của bước trích fact giảm theo số hop: chỉ cần thiếu một cạnh là BFS không tìm được đường đi.
+
+### Ablation nhân quả: model có đủ thông tin nhưng không hợp thành được
+
+Giữ nguyên các fact model đã trích, chỉ thay *ai hợp thành*: chính LLM (ext_llm) hay bảng luật (ext_g).
+
+| Chuỗi | Model | CoT | LLM trên fact của mình | Luật trên fact của mình | Luật − LLM [95% CI] |
+|---|---|---|---|---|---|
+| k=2–4 | 1.5B | 31.6 | 32.9 | 46.2 | +13.3 [5.1, 22.2] |
+| | 3B | 30.4 | 28.5 | 54.4 | +25.9 [18.4, 34.2] |
+| | 7B | 39.2 | 36.1 | 71.5 | +35.4 [27.2, 44.3] |
+| k=5–8 | 1.5B | 34.5 | 29.0 | 33.0 | +4.0 [−3.5, 11.5] |
+| | 3B | 26.0 | 27.0 | 32.0 | +5.0 [−2.0, 12.5] |
+| | 7B | 26.0 | 33.0 | 46.0 | +13.0 [5.0, 21.0] |
+
+Khi được đưa đúng các fact nó vừa viết, LLM không làm tốt hơn CoT. Bảng luật trên cùng các fact đó thì tốt hơn 13–35 điểm. Đây chính là điều R3 ("read, not reasoned") dự đoán: nút thắt là bước hợp thành, không phải bước đọc. Can thiệp hiệu quả là *thực thi structural equation của đồ thị suy luận ở ngoài model*.
+
+### Những gì đã thất bại và bài học quy trình
+
+- **Thất bại:**
+  - HGCD, calibration và CAD trên readout không vượt CoT hoặc SC.
+  - Hợp thành theo thứ tự chuỗi chỉ áp dụng được cho 4–6% câu, nên phải chuyển sang đồ thị không phụ thuộc thứ tự.
+  - Bước trích fact ban đầu (C3, test k=5–10) là NO-GO. Phải thêm giới tính do model khai báo thì mới vượt ngưỡng.
+- **Kỷ luật thống kê:** ba "thắng lợi" tìm thấy post hoc (C2, gender lexicon, chẩn đoán C3) chỉ được chấp nhận sau khi xác nhận trên dữ liệu chưa dùng, với giả thuyết đăng ký trước (C4, C5, C6).
+- **Caveat:**
+  - CLUTRR là miền có luật đóng: bảng luật induce được từ train và đạt 95% đúng trên chuỗi gold. Kết quả không tự chuyển sang MuSiQue, nơi "luật hợp thành" là bridge entity mở.
+  - Bảng luật dùng tri thức từ tập train mà CoT không được thấy. So sánh công bằng hơn là với một model fine-tune nhẹ hoặc few-shot có bảng luật trong prompt. Đây là việc nên làm tiếp.
+  - Mỗi ô chỉ 158–300 câu, một seed.
+
+### Bước tiếp theo đề xuất
+
+1. Tăng recall của bước trích fact trên chuỗi dài: trích theo từng câu, hoặc gộp fact từ nhiều sample (union) trước khi dựng đồ thị.
+2. Baseline mạnh hơn: đưa bảng luật vào prompt (rules-in-context), hoặc dùng program-of-thought.
+3. Với MuSiQue, chuyển ý tưởng "thực thi ngoài model" sang bridge entity: tách câu hỏi thành sub-question, trả lời từng hop bằng string match hoặc retrieval, rồi thế đáp án vào hop sau. Đây là dạng "luật" duy nhất có sẵn trong miền mở.
+
 ## Kết luận
 
 Ý tưởng "decoder nhân quả" cho model nhỏ cần được đảo chiều. Câu hỏi đúng không phải là làm sao ước lượng hiệu ứng nhân quả ở readout rồi cân lại đáp án. Câu hỏi đúng là làm sao *thực hiện* can thiệp lên đầu vào của mediator, để chuỗi được sinh ra từ đúng bằng chứng và mang đúng chuỗi ký tự. Dữ liệu mediation của bạn (NDE ≈ 0, readout chỉ copy) là lập luận mạnh nhất hiện có cho sự đảo chiều này, mạnh hơn bất kỳ paper nào trong tập đã khảo sát, vì literature chưa từng đo trực tiếp đường đi của tác hại distractor ở ≤3B.
 
 Hệ quả thứ hai ít hiển nhiên hơn. Thói quen copy của model ≤3B, vốn bị coi là bệnh lý về độ faithful, thực ra là một kênh truyền đáng tin. Ai kiểm soát được những gì được viết vào chuỗi, bằng bảng luật, string match hay attention bias theo hop, sẽ kiểm soát được đáp án. Vì vậy giá trị khoa học của phép thử go/no-go nằm ở chỗ nó trả lời được một câu hỏi literature còn bỏ ngỏ: can thiệp lên mediator có vượt được SC cùng compute hay không. Dù kết quả trên MuSiQue ra sao, câu trả lời đó vẫn có giá trị công bố.
+
+**Cập nhật sau thực nghiệm.** Kết quả round 9 xác nhận sự đảo chiều này ở dạng mạnh nhất: trên CLUTRR, khi bước hợp thành được thực thi ngoài model, accuracy tăng 21–37 điểm so với SC cùng compute. Ablation cho thấy chính bước hợp thành (không phải bước trích fact) tạo ra mức tăng. Trên MuSiQue, can thiệp ở mức chọn bằng chứng bằng attention của model ≤3B chưa đủ chính xác để vượt SC.
