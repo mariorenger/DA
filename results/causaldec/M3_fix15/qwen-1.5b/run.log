@@ -1,0 +1,53 @@
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+Loading weights:   0%|          | 0/338 [00:00<?, ?it/s]Loading weights:   0%|          | 1/338 [00:01<08:57,  1.59s/it]Loading weights:  51%|█████     | 171/338 [00:01<00:01, 135.30it/s]Loading weights:  71%|███████   | 240/338 [00:02<00:00, 140.00it/s]Loading weights:  84%|████████▍ | 285/338 [00:02<00:00, 137.00it/s]Loading weights:  94%|█████████▍| 317/338 [00:02<00:00, 141.69it/s]Loading weights: 100%|██████████| 338/338 [00:02<00:00, 121.38it/s]
+[10:21:45] loaded Qwen/Qwen2.5-1.5B-Instruct on cuda:0
+[10:21:49] MuSiQue: 500 examples x ['orig', 'dist8']
+[10:28:59]   [orig] 40/500 (8 min)
+[10:35:52]   [orig] 80/500 (15 min)
+[10:42:58]   [orig] 120/500 (22 min)
+[10:50:15]   [orig] 160/500 (29 min)
+[10:56:40]   [orig] 200/500 (36 min)
+[11:03:58]   [orig] 240/500 (43 min)
+[11:11:18]   [orig] 280/500 (50 min)
+[11:18:03]   [orig] 320/500 (57 min)
+[11:24:28]   [orig] 360/500 (64 min)
+[11:31:31]   [orig] 400/500 (71 min)
+[11:38:19]   [orig] 440/500 (77 min)
+[11:45:33]   [orig] 480/500 (85 min)
+[11:48:57]   [orig] 500/500 (88 min)
+[11:58:10]   [dist8] 40/500 (97 min)
+[12:07:11]   [dist8] 80/500 (106 min)
+[12:16:21]   [dist8] 120/500 (115 min)
+[12:25:44]   [dist8] 160/500 (125 min)
+[12:34:07]   [dist8] 200/500 (133 min)
+[12:43:38]   [dist8] 240/500 (143 min)
+[12:53:04]   [dist8] 280/500 (152 min)
+[13:02:06]   [dist8] 320/500 (161 min)
+[13:10:28]   [dist8] 360/500 (170 min)
+[13:19:48]   [dist8] 400/500 (179 min)
+[13:29:14]   [dist8] 440/500 (188 min)
+[13:38:18]   [dist8] 480/500 (197 min)
+[13:42:41]   [dist8] 500/500 (202 min)
+[13:42:41] 
+    cond       method   mean     lo     hi    n  d_vs_cot_free  d_lo_cot_free  d_hi_cot_free  p_vs_cot_free metric
+0  dist8   attn_drop2  0.186  0.152  0.220  500         -0.032         -0.066          0.004          0.097     em
+1  dist8  attn_rerank  0.222  0.186  0.260  500          0.004         -0.036          0.042          0.921     em
+2  dist8     attn_sel  0.220  0.184  0.254  500          0.002         -0.034          0.038          1.000     em
+3  dist8     cot_free  0.218  0.184  0.256  500            NaN            NaN            NaN            NaN     em
+4  dist8     last_hop  0.166  0.136  0.200  500         -0.052         -0.072         -0.034          0.000     em
+5   orig   attn_drop2  0.250  0.212  0.288  500         -0.006         -0.046          0.032          0.839     em
+6   orig  attn_rerank  0.230  0.196  0.268  500         -0.026         -0.064          0.016          0.228     em
+7   orig     attn_sel  0.236  0.200  0.274  500         -0.020         -0.060          0.018          0.368     em
+8   orig     cot_free  0.256  0.218  0.296  500            NaN            NaN            NaN            NaN     em
+9   orig     last_hop  0.192  0.158  0.228  500         -0.064         -0.086         -0.044          0.000     em
+0  dist8   attn_drop2  0.281  0.247  0.316  500         -0.012         -0.046          0.025            NaN     f1
+1  dist8  attn_rerank  0.306  0.269  0.343  500          0.013         -0.027          0.052            NaN     f1
+2  dist8     attn_sel  0.297  0.260  0.332  500          0.005         -0.033          0.040            NaN     f1
+3  dist8     cot_free  0.293  0.257  0.329  500            NaN            NaN            NaN            NaN     f1
+4  dist8     last_hop  0.223  0.191  0.256  500         -0.070         -0.091         -0.049            NaN     f1
+5   orig   attn_drop2  0.348  0.310  0.386  500         -0.000         -0.038          0.038            NaN     f1
+6   orig  attn_rerank  0.322  0.288  0.360  500         -0.026         -0.066          0.014            NaN     f1
+7   orig     attn_sel  0.335  0.300  0.375  500         -0.014         -0.054          0.025            NaN     f1
+8   orig     cot_free  0.348  0.311  0.387  500            NaN            NaN            NaN            NaN     f1
+9   orig     last_hop  0.269  0.234  0.306  500         -0.079         -0.103         -0.057            NaN     f1
+[13:42:41] extra: {'attn_stats': {'fp32_retry': 1000, 'ok': 1000}, 'attn_recall': 0.7946666666666666, 'drop2_recall': 0.9158333333333333, 'self_recall': nan, 'self_kept': nan, 'n_paras': 8.63, 'minutes': 201.7885952949524}

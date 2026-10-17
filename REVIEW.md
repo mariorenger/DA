@@ -420,3 +420,16 @@ not a reasoning effect.
 + genders), but the *LLM* answers from its own extracted facts instead of the rule table (ext_llm).
 Hypothesis: ext_g − ext_llm > 0 with 95% CI > 0 at 3B and 7B, i.e. the gain is caused by executing
 the composition outside the model, not by the information being re-presented.
+
+**M3 (Qwen-1.5B MuSiQue attention rerun with the fix).** The fp32 retry fired on 1000/1000 examples,
+confirming the fp16 overflow. With valid scores, top-4 gold recall is 0.83 (orig) / 0.76 (dist8)
+instead of the 0.61 / 0.37 of the buggy run, but answers still do not improve: vs cot_free, attn_sel
+−2.0 / +0.2, attn_rerank −2.6 / +0.4, attn_drop2 −0.6 / −3.2 EM, all below sc (−3 to −6). The earlier
+1.5B harm (−6.8 / −8.6) was inflated by the bug; the conclusion is unchanged: attention-based evidence
+selection before CoT is a NO-GO at 1.5B and 3B (7B untested — scores invalid there).
+
+**C6, Qwen-1.5B (fresh short chains).** ext_g_sc − max(cot_free, sc_plus) = +20.9 [+12.0, +30.4]
+(p = 1e-4); ext_g +14.6. So on short chains the method helps at every size (1.5B / 3B / 7B: +20.9 /
++27.2 / +33.5); on long chains only from 3B up (C5).
+
+C7 moved to account m81extend after 2.5 h QUEUED on the other account (deleted there unrun).
