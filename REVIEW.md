@@ -433,3 +433,10 @@ selection before CoT is a NO-GO at 1.5B and 3B (7B untested — scores invalid t
 +27.2 / +33.5); on long chains only from 3B up (C5).
 
 C7 moved to account m81extend after 2.5 h QUEUED on the other account (deleted there unrun).
+
+**C7 ablation, 1.5B / 3B (same extraction; LLM composes vs rule table composes).** Short chains:
+ext_llm is no better than plain CoT (+1.3 [−6.3, +8.9] / −1.9 [−9.5, +5.1]) while ext_g − ext_llm =
+**+13.3 [+5.1, +22.2]** (1.5B) and **+25.9 [+18.4, +34.2]** (3B). Re-presenting the model's own facts
+does not help; executing the composition outside the model does — the information was there, the
+composition was not. Long chains: ext_g − ext_llm +4.0 [−3.5, +11.5] / +5.0 [−2.0, +12.5] (n.s.).
+7B pending.

@@ -1,0 +1,27 @@
+{
+ "model": "Qwen/Qwen2.5-1.5B-Instruct",
+ "task": "clutrr",
+ "sym_status": {
+  "unparsed": 0.565,
+  "bad_start": 0.335,
+  "ok": 0.05,
+  "broken": 0.03,
+  "rel_oov": 0.015,
+  "no_rule": 0.005
+ },
+ "graph_status": {
+  "no_path": 0.665,
+  "ok": 0.235,
+  "no_facts": 0.09,
+  "no_rule": 0.01
+ },
+ "ext_status": {
+  "no_path": 0.94,
+  "ok": 0.04,
+  "no_rule": 0.015,
+  "no_facts": 0.005
+ },
+ "hop_fidelity": 0.22589010658244404,
+ "sym_gold_acc": 0.995,
+ "minutes": 30.20034202734629
+}
