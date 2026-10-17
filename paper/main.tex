@@ -35,6 +35,7 @@
 \newcommand{\reliancedir}{../results/reliance_v1}
 \newcommand{\reldir}{../results/reliance_v2}
 \newcommand{\meddir}{../results/mediation_n500}
+\newcommand{\cddir}{../results/causaldec}
 \newcommand{\maybeinput}[1]{\IfFileExists{#1}{\input{#1}}{}}
 
 \title{Read, Not Reasoned?\\ Ground-Truth Causal Interventions on Multi-Hop Reasoning Chains}
@@ -423,6 +424,68 @@ assumption behind our decoding propositions (\cref{app:method}) is not supported
 \caption{CLUTRR CoT accuracy by whether the model's own chain reaches every gold-path entity.}
 \label{tab:readout}
 \maybeinput{\resultsdir/tab_clutrr_readout.tex}
+\end{table}
+
+
+\section{From diagnosis to decoding: execute the composition outside the model}
+\label{sec:decoding}
+R3--R5 locate the failure: the answer is read from the chain rather than computed over it, and
+distractors act through chain generation. Two decoding interventions follow, and we tested both
+against greedy free-form CoT and compute-matched self-consistency (SC), with every endpoint fixed in
+\texttt{REVIEW.md} before the run that tests it.
+
+\paragraph{Cutting the distractor $\to$ chain path does not help.} On MuSiQue we removed or reordered
+paragraphs before the chain was generated, using the model's calibrated attention from the question
+to each paragraph (calibrated as in ICR~\citealp{chen2025icr}) or the model's own selection (\cref{tab:musique-selection}).
+Hard filtering keeps all gold paragraphs too rarely (top-4 recall $0.77$--$0.86$ at 3B), and a
+lost gold paragraph halves accuracy; reranking that keeps every paragraph is neutral; self-selection
+is worse. Nothing beats SC. The oracle that keeps only gold paragraphs gains $9$--$14$ EM, so the
+distractor cost is real but not recoverable by these selectors at $\le3$B. (Attention scores
+overflowed in fp16 for Qwen-1.5B and the sharded 7B; the 1.5B rows are from a corrected fp32 rerun,
+7B attention results are excluded.)
+
+\paragraph{Making the answer a function of the chain works.} On CLUTRR the model only
+\emph{extracts} facts (``$X$'s \emph{rel} is $Y$'') and states each person's gender from the
+story's pronouns; the facts form a kinship graph, and a composition table induced from the
+\emph{training} split (126 rules; $95\%$ correct on gold chains) composes the relations along the
+path from the query's source to its target, falling back to CoT when no path exists (in the spirit of
+Faithful CoT~\citealp{lyu2023faithful}, but with the extractor and the rules separated). The structural
+equations of the reasoning graph are thus executed rather than imitated. Chain-order parsing of the
+model's own CoT applied to only $4$--$6\%$ of chains, and extraction without genders to
+$12$--$18\%$; diagnosis showed that most failures were missing inverse edges, which need the gender
+of the person they describe. With model-stated genders the method beats SC by $21$--$37$ points on
+short chains at every scale, on the held-out validation split and on a CLUTRR task never used before
+(\cref{tab:clutrr-symbolic}); on unseen long chains ($k{=}5$--8) it helps from 3B ($+9.5$) and
+strongly at 7B ($+24.0$ [$+17.0$, $+31.5$], the pre-registered primary endpoint), but not at 1.5B,
+whose extraction is too incomplete.
+
+\paragraph{The gain is caused by the composition, not by the re-presented facts.} Holding the
+extraction fixed, we let the model answer from its own extracted facts instead of the rule table
+(\cref{tab:clutrr-ablation}). On short chains this is no better than plain CoT, while the rule
+table on the same facts is $13$--$26$ points better: the information needed to answer is present in
+the model's output, and the step that fails is composing it, exactly as R3 diagnosed.
+
+\begin{table}[h]
+\centering\small
+\caption{CLUTRR accuracy. Extract+rules: model-extracted facts and genders, composed by a rule table
+induced from the training split; $\Delta$ is Extract+rules SC$_5$ minus the better of CoT and
+SC$_{10}$ (compute-matched), with paired bootstrap CI.}
+\label{tab:clutrr-symbolic}
+\resizebox{\linewidth}{!}{\maybeinput{\cddir/tab_clutrr_symbolic.tex}}
+\end{table}
+
+\begin{table}[h]
+\centering\small
+\caption{Ablation on the unseen CLUTRR task: same greedy extraction, composed by the LLM or by the rule table.}
+\label{tab:clutrr-ablation}
+\maybeinput{\cddir/tab_clutrr_ablation.tex}
+\end{table}
+
+\begin{table}[h]
+\centering\small
+\caption{MuSiQue EM ($n{=}500$) when distractors are filtered before chain generation.}
+\label{tab:musique-selection}
+\resizebox{\linewidth}{!}{\maybeinput{\cddir/tab_musique_selection.tex}}
 \end{table}
 
 \section{Limitations and scope}

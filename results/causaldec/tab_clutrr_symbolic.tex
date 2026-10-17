@@ -1,0 +1,17 @@
+\begin{tabular}{llrccccc}
+\toprule
+Evaluation set & Model & $n$ & CoT & SC$_{10}$ & Extract+rules & Extract+rules, SC$_5$ & $\Delta$ vs.\ best baseline \\
+\midrule
+Validation, $k{=}2$--4 & 1.5B & 300 & 25.7 & 28.7 & 51.0 & 60.7 & +32.0\,{\scriptsize[+26.0,+38.0]} \\
+ & 3B & 300 & 36.3 & 38.0 & 64.3 & 70.0 & +32.0\,{\scriptsize[+25.3,+38.3]} \\
+ & 7B & 300 & 39.7 & 43.3 & 77.3 & 80.0 & +36.7\,{\scriptsize[+31.0,+42.3]} \\
+\midrule
+Unseen task, $k{=}2$--4 & 1.5B & 158 & 31.6 & 31.0 & 46.2 & 52.5 & +20.9\,{\scriptsize[+12.0,+30.4]} \\
+ & 3B & 158 & 30.4 & 32.3 & 54.4 & 59.5 & +27.2\,{\scriptsize[+19.0,+35.4]} \\
+ & 7B & 158 & 39.2 & 40.5 & 71.5 & 74.1 & +33.5\,{\scriptsize[+25.3,+42.4]} \\
+\midrule
+Unseen task, $k{=}5$--8 & 1.5B & 200 & 34.5 & 29.5 & 33.0 & 33.5 & -1.0\,{\scriptsize[-8.5,+6.5]} \\
+ & 3B & 200 & 26.0 & 29.0 & 32.0 & 38.5 & +9.5\,{\scriptsize[+3.5,+15.5]} \\
+ & 7B & 200 & 26.0 & 28.5 & 46.0 & 52.5 & +24.0\,{\scriptsize[+17.0,+31.5]} \\
+\bottomrule
+\end{tabular}
