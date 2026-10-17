@@ -1,0 +1,22 @@
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+Fetching 2 files:   0%|          | 0/2 [00:00<?, ?it/s]Fetching 2 files:  50%|█████     | 1/2 [00:33<00:33, 33.53s/it]Fetching 2 files: 100%|██████████| 2/2 [00:46<00:00, 21.24s/it]Fetching 2 files: 100%|██████████| 2/2 [00:46<00:00, 23.09s/it]
+Loading weights:   0%|          | 0/434 [00:00<?, ?it/s]Loading weights:   0%|          | 1/434 [00:02<15:20,  2.13s/it]Loading weights:  34%|███▍      | 147/434 [00:02<00:03, 84.72it/s]Loading weights:  42%|████▏     | 183/434 [00:02<00:02, 88.86it/s]Loading weights:  48%|████▊     | 207/434 [00:02<00:02, 96.04it/s]Loading weights:  53%|█████▎    | 228/434 [00:03<00:01, 105.99it/s]Loading weights:  57%|█████▋    | 248/434 [00:03<00:01, 105.40it/s]Loading weights:  61%|██████    | 265/434 [00:03<00:02, 66.09it/s] Loading weights:  64%|██████▍   | 277/434 [00:04<00:02, 62.84it/s]Loading weights:  66%|██████▌   | 287/434 [00:04<00:03, 41.63it/s]Loading weights:  68%|██████▊   | 295/434 [00:04<00:03, 40.95it/s]Loading weights:  70%|███████   | 304/434 [00:05<00:02, 45.38it/s]Loading weights:  73%|███████▎  | 316/434 [00:05<00:02, 54.65it/s]Loading weights:  75%|███████▌  | 327/434 [00:05<00:01, 63.07it/s]Loading weights:  78%|███████▊  | 339/434 [00:05<00:01, 68.72it/s]Loading weights:  81%|████████  | 351/434 [00:05<00:01, 77.05it/s]Loading weights:  84%|████████▍ | 364/434 [00:05<00:00, 83.71it/s]Loading weights:  89%|████████▉ | 387/434 [00:05<00:00, 101.70it/s]Loading weights:  92%|█████████▏| 401/434 [00:05<00:00, 108.43it/s]Loading weights:  97%|█████████▋| 423/434 [00:06<00:00, 119.06it/s]Loading weights: 100%|██████████| 434/434 [00:06<00:00, 71.90it/s] 
+[01:57:50] loaded Qwen/Qwen2.5-3B-Instruct on cuda:0
+[01:57:52] composition table: 126 rules from 11708 training stories
+[01:57:52] CLUTRR test: 278 examples, k in [2, 3, 4, 6, 8]
+[02:00:13]   40/278 done (4 min)
+[02:02:56]   80/278 done (6 min)
+[02:06:01]   120/278 done (9 min)
+[02:09:20]   160/278 done (13 min)
+[02:13:21]   200/278 done (17 min)
+[02:18:20]   240/278 done (22 min)
+[02:22:33]   278/278 done (26 min)
+[02:22:33] 
+  cond     method   mean     lo     hi    n  d_vs_sc  d_lo_sc  d_hi_sc  p_vs_sc  d_vs_cot_score  d_lo_cot_score  d_hi_cot_score  p_vs_cot_score  d_vs_cot_free  d_lo_cot_free  d_hi_cot_free  p_vs_cot_free
+0  all   cot_free  0.223  0.176  0.273  278   -0.072   -0.112   -0.032    0.001          -0.022          -0.054           0.011           0.263            NaN            NaN            NaN            NaN
+1  all  cot_score  0.245  0.194  0.295  278   -0.050   -0.097   -0.004    0.054             NaN             NaN             NaN             NaN          0.022         -0.011          0.054          0.263
+2  all         sc  0.295  0.245  0.349  278      NaN      NaN      NaN      NaN           0.050           0.004           0.097           0.054          0.072          0.032          0.112          0.001
+3  all        sym  0.237  0.191  0.288  278   -0.058   -0.101   -0.014    0.014          -0.007          -0.043           0.029           0.845          0.014          0.000          0.032          0.219
+4  all   sym_only  0.025  0.007  0.047  278   -0.270   -0.324   -0.216    0.000          -0.219          -0.273          -0.165           0.000         -0.198         -0.248         -0.147          0.000
+5  all     sym_sc  0.317  0.266  0.371  278    0.022    0.004    0.043    0.070           0.072           0.022           0.122           0.008          0.094          0.050          0.140          0.000
+[02:22:33] extra: {'sym_status': {'unparsed': 0.5359712230215827, 'bad_start': 0.34532374100719426, 'rel_oov': 0.046762589928057555, 'ok': 0.039568345323741004, 'broken': 0.017985611510791366, 'bad_end': 0.007194244604316547, 'no_rule': 0.007194244604316547}, 'hop_fidelity': 0.2912384378211716, 'sym_gold_acc': 0.9532374100719424, 'minutes': 25.922337194283802}

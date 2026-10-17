@@ -121,6 +121,16 @@ NOTEBOOKS = {
     "7b": {"0,1": [("qwen-7b", "Qwen/Qwen2.5-7B-Instruct", "causaldec_clutrr",
                     ("--task", "clutrr", "--device_map", "auto", "--bs", "4", "--max_minutes", "300"))]},
 }""",
+    "C2_extract_clutrr": """{
+    "small": {
+        "0": [("qwen-1.5b", "Qwen/Qwen2.5-1.5B-Instruct", "causaldec_clutrr",
+               ("--task", "clutrr", "--max_minutes", "240"))],
+        "1": [("qwen-3b", "Qwen/Qwen2.5-3B-Instruct", "causaldec_clutrr",
+               ("--task", "clutrr", "--max_minutes", "240"))],
+    },
+    "7b": {"0,1": [("qwen-7b", "Qwen/Qwen2.5-7B-Instruct", "causaldec_clutrr",
+                    ("--task", "clutrr", "--device_map", "auto", "--bs", "4", "--max_minutes", "300"))]},
+}""",
     "M_select_orig": """{
     "orig": {
         "0": [("qwen-1.5b", "Qwen/Qwen2.5-1.5B-Instruct", "causaldec_musique",

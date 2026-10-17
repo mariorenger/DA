@@ -101,6 +101,9 @@ def induce_table(train: List[D.ClutrrExample], iters: int = 8, purity: float = 0
 
 
 _HOP_REL = re.compile(r"^\s*(.+?)['’]s?\s+([A-Za-z][A-Za-z\- ]*?)\s+is\s+(.+?)\s*\.?\s*$")
+# "X has a <relation> named Y."
+_HOP_HAS = re.compile(r"^\s*([A-Z][\w\-]*)\s+has\s+an?\s+([A-Za-z][A-Za-z\- ]*?)\s+(?:named|called)\s+"
+                      r"([A-Z][\w\-]*)\s*\.?\s*$")
 # the same fact written the other way round: "Y is X's <relation>."
 _HOP_REL_INV = re.compile(r"^\s*([A-Z][\w\-]*(?:\s+[A-Z][\w\-]*)?)\s+is\s+(.+?)['’]s?\s+"
                           r"([A-Za-z][A-Za-z\- ]*?)\s*\.?\s*$")
@@ -119,7 +122,10 @@ def parse_triples(chain_text: str) -> List[Tuple[str, str, str]]:
     for h in C.parse_chain(chain_text):
         m = _HOP_REL.match(h.body)
         mi = _HOP_REL_INV.match(h.body)
-        if mi:
+        mh = _HOP_HAS.match(h.body)
+        if mh:
+            out.append((mh.group(1).strip(), _rel_norm(mh.group(2)), mh.group(3).strip()))
+        elif mi:
             out.append((mi.group(2).strip(), _rel_norm(mi.group(3)), mi.group(1).strip()))
         elif m:
             out.append((m.group(1).strip(), _rel_norm(m.group(2)), m.group(3).strip().strip(".")))
@@ -146,6 +152,86 @@ def chain_compose(table, triples, src: str, tgt: str, vocab: set) -> Tuple[Optio
         return None, "bad_end"
     r = compose(table, [t[1] for t in triples])
     return (r, "ok") if r else (None, "no_rule")
+
+
+_FEMALE = {"mother", "daughter", "sister", "wife", "grandmother", "granddaughter", "aunt", "niece",
+           "mother-in-law", "daughter-in-law"}
+# inverse relation by the gender of the person it now describes: (rel) -> (male, female)
+_INV = {"father": ("son", "daughter"), "mother": ("son", "daughter"),
+        "son": ("father", "mother"), "daughter": ("father", "mother"),
+        "brother": ("brother", "sister"), "sister": ("brother", "sister"),
+        "husband": ("husband", "wife"), "wife": ("husband", "wife"),
+        "grandfather": ("grandson", "granddaughter"), "grandmother": ("grandson", "granddaughter"),
+        "grandson": ("grandfather", "grandmother"), "granddaughter": ("grandfather", "grandmother"),
+        "uncle": ("nephew", "niece"), "aunt": ("nephew", "niece"),
+        "nephew": ("uncle", "aunt"), "niece": ("uncle", "aunt"),
+        "father-in-law": ("son-in-law", "daughter-in-law"), "mother-in-law": ("son-in-law", "daughter-in-law"),
+        "son-in-law": ("father-in-law", "mother-in-law"),
+        "daughter-in-law": ("father-in-law", "mother-in-law")}
+
+
+def graph_compose(table, triples, src: str, tgt: str, vocab: set) -> Tuple[Optional[str], str]:
+    """Treat every fact the model wrote as an edge of a kinship graph (order-free), add inverse
+    edges when the gender they need is stated by the model's own relation words, find the shortest
+    path src -> tgt and compose its relations with the rule table."""
+    n = C.norm
+    facts = [(n(a), r, n(b)) for a, r, b in triples if r in vocab and a and b and n(a) != n(b)]
+    if not facts:
+        return None, "no_facts"
+    gender = {}
+    for a, r, b in facts:
+        gender[b] = "f" if r in _FEMALE else "m"
+    adj = defaultdict(list)
+    for a, r, b in facts:
+        adj[a].append((r, b))
+        if a in gender and r in _INV:      # "a's r is b"  =>  "b's r' is a", r' gendered by a
+            adj[b].append((_INV[r][gender[a] == "f"], a))
+    s, t = n(src), n(tgt)
+    prev, frontier = {s: None}, [s]
+    while frontier and t not in prev:
+        nxt = []
+        for u in frontier:
+            for r, v in adj[u]:
+                if v not in prev:
+                    prev[v] = (u, r)
+                    nxt.append(v)
+        frontier = nxt
+    if t not in prev:
+        return None, "no_path"
+    rels, v = [], t
+    while prev[v] is not None:
+        u, r = prev[v]
+        rels.append(r)
+        v = u
+    r = compose(table, rels[::-1])
+    return (r, "ok") if r else (None, "no_rule")
+
+
+EXTRACT_SYSTEM = ("List every family relation stated in the story, one per line, in the form "
+                  "\"X's <relation> is Y.\" Use only these relation words: {rels}. "
+                  "Write only facts the story states; do not infer or answer anything.")
+EXTRACT_SHOTS = [
+    ("Mabel took her son Rupert to the zoo. Rupert and his sister Agatha baked a cake for their "
+     "grandmother.", ["Mabel's son is Rupert.", "Rupert's sister is Agatha."]),
+    ("Clement went fishing with his father Bertram. Bertram called his sister Winifred to wish her a "
+     "happy birthday. Winifred was proud of her daughter Odette.",
+     ["Clement's father is Bertram.", "Bertram's sister is Winifred.", "Winifred's daughter is Odette."]),
+]
+
+
+def extract_messages(story: str, rels: List[str]) -> List[dict]:
+    msgs = [{"role": "system", "content": EXTRACT_SYSTEM.format(rels=", ".join(rels))}]
+    for st, facts in EXTRACT_SHOTS:
+        msgs.append({"role": "user", "content": f"Story: {st}"})
+        msgs.append({"role": "assistant", "content": "\n".join(facts)})
+    msgs.append({"role": "user", "content": f"Story: {story}"})
+    return msgs
+
+
+def parse_facts(text: Optional[str]) -> List[Tuple[str, str, str]]:
+    """Facts written one per line (no 'Hop i:' prefix needed)."""
+    lines = [ln.strip().lstrip("-*0123456789. ").strip() for ln in (text or "").splitlines()]
+    return parse_triples("".join(f"Hop {i + 1}: {ln} => x\n" for i, ln in enumerate(lines) if ln))
 
 
 def _first_rel(text: str, vocab: List[str]) -> Optional[str]:
@@ -192,6 +278,20 @@ def run_clutrr(lm, args) -> pd.DataFrame:
             for t, i in enumerate(idx):
                 greedy[i] = g[t]
                 samples[i] = sm[t * args.sc_n:(t + 1) * args.sc_n] if args.sc_n else []
+        # fact extraction (no reasoning asked): greedy + sampled, then graph search + rule table
+        ext_g, ext_s = [None] * len(part), [None] * len(part)
+        if args.extract:
+            ep = [lm.prompt(extract_messages(e.story_text, vocab_l)) for e in part]
+            mxe = [20 * (e.k + 3) for e in part]
+            for k in sorted(set(e.k for e in part)):
+                idx = [i for i, e in enumerate(part) if e.k == k]
+                g = lm.generate([ep[i] for i in idx], max_new_tokens=mxe[idx[0]], batch_size=args.bs,
+                                stop="\n\n")
+                sm = lm.generate([ep[i] for i in idx], max_new_tokens=mxe[idx[0]], do_sample=True,
+                                 n=args.sc_n, batch_size=max(1, args.bs // 2), stop="\n\n") if args.sc_n else []
+                for t, i in enumerate(idx):
+                    ext_g[i] = g[t]
+                    ext_s[i] = sm[t * args.sc_n:(t + 1) * args.sc_n] if args.sc_n else []
         # free-form answer after each chain (greedy and sampled), one batched pass
         ans_prompts, owner = [], []
         for i, e in enumerate(part):
@@ -212,7 +312,22 @@ def run_clutrr(lm, args) -> pd.DataFrame:
             trip = parse_triples(greedy[i])
             gold_t = {(C.norm(h.head), h.rel, C.norm(h.tail)) for h in e.gold_hops}
             fid = np.mean([(C.norm(a), r, C.norm(b)) in gold_t for a, r, b in trip]) if trip else 0.0
+            gsym = [graph_compose(table, parse_triples(c), e.source, e.target, vocab) for c in chains]
+            sc_vote = _vote([free_by[i][j] for j in range(1, len(chains))]) if samples[i] else free_by[i][0]
+            preds_ext = {}
+            if args.extract:
+                ef = [parse_facts(x) for x in [ext_g[i]] + ext_s[i]]
+                ex_res = [graph_compose(table, f, e.source, e.target, vocab) for f in ef]
+                union = [t for f in ef for t in f]
+                eu = graph_compose(table, union, e.source, e.target, vocab)
+                preds_ext = {"ext": ex_res[0][0] or free_by[i][0], "ext_only": ex_res[0][0],
+                             "ext_sc": _vote([r for r, _ in ex_res[1:]]) or sc_vote,
+                             "ext_union": eu[0] or free_by[i][0],
+                             "ext_all": _vote([r for r, _ in ex_res]) or _vote([r for r, _ in gsym]) or sc_vote}
             preds = {
+                "graph": gsym[0][0] or free_by[i][0],
+                "graph_sc": _vote([r for r, _ in gsym[1:]]) or sc_vote,
+                **preds_ext,
                 "cot_free": free_by[i][0],
                 "cot_score": cot_score,
                 "sc": _vote([free_by[i][j] for j in range(1, len(chains))]) if samples[i] else None,
@@ -226,7 +341,11 @@ def run_clutrr(lm, args) -> pd.DataFrame:
                 rows.append(dict(uid=e.uid, k=e.k, method=mth, pred=p, gold=e.answer,
                                  correct=float(p == e.answer), sym_status=sym[0][1],
                                  n_valid_sym=sum(r is not None for r, _ in sym), hop_fidelity=fid,
-                                 chain=greedy[i] if mth == "cot_free" else None))
+                                 graph_status=gsym[0][1],
+                                 ext_status=(graph_compose(table, parse_facts(ext_g[i]), e.source, e.target,
+                                                           vocab)[1] if args.extract else None),
+                                 chain=greedy[i] if mth == "cot_free" else None,
+                                 extract=ext_g[i] if mth == "cot_free" else None))
         _log(f"  {min(s + args.chunk, len(ex))}/{len(ex)} done "
              f"({(time.time() - T0) / 60:.0f} min)")
         pd.DataFrame(rows).to_csv(os.path.join(args.outdir, "decisions.csv"), index=False)
@@ -419,6 +538,7 @@ def main():
     ap.add_argument("--n", type=int, default=300)
     ap.add_argument("--conditions", nargs="+", default=["orig", "dist8"])
     ap.add_argument("--top_k", type=int, default=4)
+    ap.add_argument("--extract", type=int, default=1)
     args = ap.parse_args()
     os.makedirs(args.outdir, exist_ok=True)
     json.dump(vars(args), open(os.path.join(args.outdir, "config.json"), "w"), indent=1)
@@ -429,10 +549,12 @@ def main():
         df = run_clutrr(lm, args)
         summ = summarize(df[df.method != "sym_gold"].assign(cond="all"), "correct", ["cond"],
                          ["cot_free", "sc", "cot_score"])
+        g = df[df.method == "cot_free"]
         byk = summarize(df.assign(cond="all"), "correct", ["k"], ["cot_free"])
         byk.to_csv(os.path.join(args.outdir, "by_k.csv"), index=False)
-        diag = df[df.method == "cot_free"].sym_status.value_counts(normalize=True).to_dict()
-        extra = dict(sym_status=diag, hop_fidelity=float(df[df.method == "cot_free"].hop_fidelity.mean()),
+        diag = g.sym_status.value_counts(normalize=True).to_dict()
+        extra = dict(sym_status=diag, graph_status=g.graph_status.value_counts(normalize=True).to_dict(),
+                     ext_status=g.ext_status.value_counts(normalize=True).to_dict(), hop_fidelity=float(df[df.method == "cot_free"].hop_fidelity.mean()),
                      sym_gold_acc=float(df[df.method == "sym_gold"].correct.mean()))
     else:
         df = run_musique(lm, args)

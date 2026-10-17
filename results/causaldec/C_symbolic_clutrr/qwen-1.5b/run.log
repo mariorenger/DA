@@ -1,0 +1,21 @@
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+Loading weights:   0%|          | 0/338 [00:00<?, ?it/s]Loading weights:   0%|          | 1/338 [00:01<08:39,  1.54s/it]Loading weights:  51%|█████     | 173/338 [00:01<00:01, 146.21it/s]Loading weights:  81%|████████  | 273/338 [00:02<00:00, 144.31it/s]Loading weights:  99%|█████████▉| 334/338 [00:02<00:00, 143.93it/s]Loading weights: 100%|██████████| 338/338 [00:02<00:00, 121.81it/s]
+[01:57:46] loaded Qwen/Qwen2.5-1.5B-Instruct on cuda:0
+[01:57:50] composition table: 126 rules from 11708 training stories
+[01:57:50] CLUTRR test: 278 examples, k in [2, 3, 4, 6, 8]
+[01:59:47]   40/278 done (3 min)
+[02:01:54]   80/278 done (5 min)
+[02:04:24]   120/278 done (8 min)
+[02:07:09]   160/278 done (11 min)
+[02:10:14]   200/278 done (14 min)
+[02:14:09]   240/278 done (18 min)
+[02:17:38]   278/278 done (21 min)
+[02:17:38] 
+  cond     method   mean     lo     hi    n  d_vs_sc  d_lo_sc  d_hi_sc  p_vs_sc  d_vs_cot_score  d_lo_cot_score  d_hi_cot_score  p_vs_cot_score  d_vs_cot_free  d_lo_cot_free  d_hi_cot_free  p_vs_cot_free
+0  all   cot_free  0.234  0.183  0.284  278   -0.025   -0.076    0.022    0.392           0.068           0.022           0.115           0.007            NaN            NaN            NaN            NaN
+1  all  cot_score  0.165  0.122  0.209  278   -0.094   -0.144   -0.040    0.001             NaN             NaN             NaN             NaN         -0.068         -0.115         -0.022          0.007
+2  all         sc  0.259  0.209  0.309  278      NaN      NaN      NaN      NaN           0.094           0.040           0.144           0.001          0.025         -0.022          0.076          0.392
+3  all        sym  0.259  0.209  0.313  278    0.000   -0.050    0.054    1.000           0.094           0.043           0.144           0.000          0.025          0.007          0.047          0.039
+4  all   sym_only  0.036  0.018  0.058  278   -0.223   -0.277   -0.169    0.000          -0.129          -0.176          -0.079           0.000         -0.198         -0.255         -0.140          0.000
+5  all     sym_sc  0.277  0.223  0.327  278    0.018    0.000    0.036    0.125           0.112           0.054           0.165           0.000          0.043         -0.007          0.097          0.141
+[02:17:38] extra: {'sym_status': {'unparsed': 0.5251798561151079, 'bad_start': 0.3345323741007194, 'ok': 0.050359712230215826, 'rel_oov': 0.050359712230215826, 'broken': 0.03597122302158273, 'bad_end': 0.0035971223021582736}, 'hop_fidelity': 0.26032329493432127, 'sym_gold_acc': 0.9532374100719424, 'minutes': 21.003515481948853}
