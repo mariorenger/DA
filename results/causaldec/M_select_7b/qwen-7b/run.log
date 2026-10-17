@@ -1,0 +1,48 @@
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+Fetching 4 files:   0%|          | 0/4 [00:00<?, ?it/s]Fetching 4 files:  25%|██▌       | 1/4 [01:08<03:24, 68.07s/it]Fetching 4 files: 100%|██████████| 4/4 [01:11<00:00, 13.68s/it]Fetching 4 files: 100%|██████████| 4/4 [01:11<00:00, 17.76s/it]
+Loading weights:   0%|          | 0/339 [00:00<?, ?it/s]Loading weights:   0%|          | 1/339 [00:02<15:38,  2.78s/it]Loading weights:  16%|█▌        | 54/339 [00:02<00:10, 26.16it/s]Loading weights:  24%|██▍       | 83/339 [00:03<00:07, 33.58it/s]Loading weights:  30%|██▉       | 101/339 [00:04<00:07, 31.12it/s]Loading weights:  33%|███▎      | 113/339 [00:04<00:07, 28.41it/s]Loading weights:  37%|███▋      | 124/339 [00:05<00:08, 26.74it/s]Loading weights:  39%|███▊      | 131/339 [00:05<00:08, 24.39it/s]Loading weights:  40%|████      | 136/339 [00:05<00:07, 25.85it/s]Loading weights:  42%|████▏     | 141/339 [00:05<00:08, 24.48it/s]Loading weights:  44%|████▎     | 148/339 [00:06<00:06, 27.51it/s]Loading weights:  47%|████▋     | 160/339 [00:06<00:06, 29.77it/s]Loading weights:  51%|█████     | 172/339 [00:07<00:08, 19.26it/s]Loading weights:  52%|█████▏    | 175/339 [00:08<00:11, 14.07it/s]Loading weights:  54%|█████▍    | 184/339 [00:08<00:08, 17.27it/s]Loading weights:  55%|█████▌    | 187/339 [00:08<00:09, 15.61it/s]Loading weights:  58%|█████▊    | 196/339 [00:08<00:06, 21.80it/s]Loading weights:  61%|██████▏   | 208/339 [00:09<00:04, 26.91it/s]Loading weights:  63%|██████▎   | 212/339 [00:09<00:04, 26.57it/s]Loading weights:  65%|██████▌   | 222/339 [00:09<00:03, 36.10it/s]Loading weights:  68%|██████▊   | 232/339 [00:09<00:03, 35.24it/s]Loading weights:  72%|███████▏  | 244/339 [00:10<00:02, 33.10it/s]Loading weights:  76%|███████▌  | 256/339 [00:10<00:02, 38.53it/s]Loading weights:  77%|███████▋  | 261/339 [00:10<00:02, 35.15it/s]Loading weights:  79%|███████▉  | 268/339 [00:10<00:01, 37.68it/s]Loading weights:  81%|████████  | 273/339 [00:10<00:01, 34.99it/s]Loading weights:  83%|████████▎ | 280/339 [00:11<00:01, 31.91it/s]Loading weights:  86%|████████▌ | 292/339 [00:11<00:01, 44.72it/s]Loading weights:  88%|████████▊ | 298/339 [00:11<00:00, 41.91it/s]Loading weights:  90%|████████▉ | 304/339 [00:11<00:00, 44.48it/s]Loading weights:  93%|█████████▎| 316/339 [00:11<00:00, 39.77it/s]Loading weights:  97%|█████████▋| 328/339 [00:12<00:00, 48.02it/s]Loading weights: 100%|██████████| 339/339 [00:12<00:00, 27.93it/s]
+[02:00:44] loaded Qwen/Qwen2.5-7B-Instruct on cuda:0
+[02:00:46] MuSiQue: 300 examples x ['orig', 'dist8']
+[02:29:14]   [orig] 40/300 (30 min)
+[03:00:59]   [orig] 80/300 (62 min)
+[03:29:30]   [orig] 120/300 (90 min)
+[03:59:57]   [orig] 160/300 (121 min)
+[04:29:03]   [orig] 200/300 (150 min)
+[04:58:43]   [orig] 240/300 (180 min)
+[05:27:55]   [orig] 280/300 (209 min)
+[05:41:30]   [orig] 300/300 (222 min)
+[06:18:46]   [dist8] 40/300 (260 min)
+[06:59:28]   [dist8] 80/300 (300 min)
+[07:34:40]   [dist8] 120/300 (336 min)
+[08:14:16]   [dist8] 160/300 (375 min)
+[08:51:44]   [dist8] 200/300 (413 min)
+[09:30:06]   [dist8] 240/300 (451 min)
+[10:06:59]   [dist8] 280/300 (488 min)
+[10:25:31]   [dist8] 300/300 (506 min)
+[10:25:31] 
+     cond     method   mean     lo     hi    n  d_vs_cot_free  d_lo_cot_free  d_hi_cot_free  p_vs_cot_free  d_vs_sc  d_lo_sc  d_hi_sc  p_vs_sc metric
+0   dist8   attn_sel  0.087  0.057  0.120  300         -0.143         -0.193         -0.093          0.000   -0.163   -0.217   -0.113    0.000     em
+1   dist8   cot_free  0.230  0.183  0.277  300            NaN            NaN            NaN            NaN   -0.020   -0.050    0.010    0.286     em
+2   dist8  gold_only  0.330  0.280  0.383  300          0.100          0.047          0.153          0.000    0.080    0.027    0.130    0.003     em
+3   dist8   last_hop  0.320  0.270  0.370  300          0.090          0.050          0.130          0.000    0.070    0.020    0.117    0.010     em
+4   dist8         sc  0.250  0.203  0.297  300          0.020         -0.010          0.050          0.286      NaN      NaN      NaN      NaN     em
+5   dist8   self_sel  0.157  0.117  0.197  300         -0.073         -0.120         -0.030          0.004   -0.093   -0.140   -0.050    0.000     em
+6    orig   attn_sel  0.113  0.080  0.147  300         -0.163         -0.217         -0.113          0.000   -0.167   -0.220   -0.117    0.000     em
+7    orig   cot_free  0.277  0.227  0.327  300            NaN            NaN            NaN            NaN   -0.003   -0.040    0.037    1.000     em
+8    orig  gold_only  0.347  0.293  0.403  300          0.070          0.017          0.123          0.019    0.067    0.013    0.120    0.017     em
+9    orig   last_hop  0.350  0.297  0.403  300          0.073          0.023          0.120          0.008    0.070    0.010    0.130    0.029     em
+10   orig         sc  0.280  0.230  0.330  300          0.003         -0.037          0.040          1.000      NaN      NaN      NaN      NaN     em
+11   orig   self_sel  0.167  0.127  0.210  300         -0.110         -0.160         -0.060          0.000   -0.113   -0.163   -0.060    0.000     em
+0   dist8   attn_sel  0.178  0.145  0.212  300         -0.176         -0.226         -0.127            NaN   -0.198   -0.249   -0.148      NaN     f1
+1   dist8   cot_free  0.354  0.309  0.399  300            NaN            NaN            NaN            NaN   -0.022   -0.053    0.008      NaN     f1
+2   dist8  gold_only  0.490  0.445  0.536  300          0.137          0.088          0.185            NaN    0.114    0.069    0.161      NaN     f1
+3   dist8   last_hop  0.406  0.358  0.456  300          0.053          0.015          0.091            NaN    0.030   -0.015    0.075      NaN     f1
+4   dist8         sc  0.376  0.332  0.420  300          0.022         -0.008          0.053            NaN      NaN      NaN      NaN      NaN     f1
+5   dist8   self_sel  0.266  0.227  0.307  300         -0.087         -0.132         -0.045            NaN   -0.110   -0.155   -0.067      NaN     f1
+6    orig   attn_sel  0.240  0.204  0.276  300         -0.155         -0.207         -0.105            NaN   -0.171   -0.223   -0.121      NaN     f1
+7    orig   cot_free  0.395  0.350  0.440  300            NaN            NaN            NaN            NaN   -0.016   -0.052    0.020      NaN     f1
+8    orig  gold_only  0.494  0.446  0.541  300          0.099          0.046          0.151            NaN    0.082    0.036    0.130      NaN     f1
+9    orig   last_hop  0.440  0.388  0.490  300          0.044          0.003          0.086            NaN    0.028   -0.026    0.082      NaN     f1
+10   orig         sc  0.412  0.363  0.457  300          0.016         -0.020          0.052            NaN      NaN      NaN      NaN      NaN     f1
+11   orig   self_sel  0.293  0.253  0.336  300         -0.103         -0.154         -0.052            NaN   -0.119   -0.167   -0.067      NaN     f1
+[10:25:31] extra: {'attn_recall': 0.48125, 'self_recall': 0.64, 'self_kept': 2.17, 'n_paras': 8.636666666666667, 'minutes': 506.4853565812111}

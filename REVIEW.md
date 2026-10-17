@@ -398,3 +398,25 @@ Re-run: M3 (1.5B, orig + dist8).
 +2.0 [−2.2, +6.2] (dist8); attn_drop2: −5.0 / +0.2; all below sc. Keeping every paragraph removes
 the recall loss but does not recover the distractor cost either. NO-GO for attention-based
 selection at 3B.
+
+**C5 (pre-registered, fresh long chains k = 5–8, other CLUTRR task, n = 200).** **GO on the primary
+(Qwen-7B): ext_g_sc − sc_plus = +24.0 [+17.0, +31.5], p < 1e-4** (cot_free 26.0, sc_plus 28.5,
+ext_g 46.0, ext_g_sc 52.5). Secondary: 3B +9.5 [+3.5, +15.5] (p = .003); 1.5B no gain (ext_g_sc −
+cot_free −1.0 [−8.5, +6.5]). Model-stated genders fixed exactly the bottleneck C3 diagnosed; the
+benefit now scales with the extractor (7B > 3B > 1.5B).
+
+**C6 (fresh short chains k = 2–4, other CLUTRR task, n = 158).** Confirms C4 out of distribution:
+ext_g_sc − sc_plus = +27.2 [+19.0, +35.4] (3B), +33.5 [+25.3, +42.4] (7B); greedy ext_g alone +22.2
+/ +31.0. (1.5B part runs in M3.)
+
+**M_select_7b (MuSiQue, n = 300).** Attention scores were degenerate here too (attn_sel kept the
+first four paragraphs in 300/300) → 7B attention results invalid; the sharded 7B cannot take the fp32
+retry, and the valid 3B results are already negative, so no rerun. Valid rows: self_sel −11.0 / −7.3
+EM, sc +0.3 / +2.0, gold_only +7.0 / +10.0. last_hop beats cot_free (+7.3 / +9.0 EM, +4.5 F1) because
+7B's free-form answers are often full sentences (mean 9.7 vs 4.7 words) — an answer-format effect,
+not a reasoning effect.
+
+**C7 (ablation, launched before results).** Same questions as C6/C5, same greedy extraction (facts
++ genders), but the *LLM* answers from its own extracted facts instead of the rule table (ext_llm).
+Hypothesis: ext_g − ext_llm > 0 with 95% CI > 0 at 3B and 7B, i.e. the gain is caused by executing
+the composition outside the model, not by the information being re-presented.

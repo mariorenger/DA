@@ -208,6 +208,21 @@ NOTEBOOKS = {
                      "--n_per_k", "60", "--seed", "7", "--sc_extra", "5", "--device_map", "auto",
                      "--bs", "4", "--max_minutes", "300"))]},
 }""",
+    # ablation: same extracted facts, LLM composes vs rule table composes (fresh C6/C5 questions)
+    "C7_ablate_small": """{
+    "ablate": {
+        "0": [("short-qwen-1.5b", "Qwen/Qwen2.5-1.5B-Instruct", "causaldec_clutrr", ("--task", "clutrr", "--task_name", "gen_train23_test2to10", "--ks", "2", "3", "4", "--n_per_k", "60", "--seed", "7", "--ext_llm", "1", "--sc_extra", "0", "--max_minutes", "200")),
+              ("long-qwen-1.5b", "Qwen/Qwen2.5-1.5B-Instruct", "causaldec_clutrr", ("--task", "clutrr", "--task_name", "gen_train23_test2to10", "--ks", "5", "6", "7", "8", "--n_per_k", "50", "--seed", "5", "--ext_llm", "1", "--sc_extra", "0", "--max_minutes", "420"))],
+        "1": [("short-qwen-3b", "Qwen/Qwen2.5-3B-Instruct", "causaldec_clutrr", ("--task", "clutrr", "--task_name", "gen_train23_test2to10", "--ks", "2", "3", "4", "--n_per_k", "60", "--seed", "7", "--ext_llm", "1", "--sc_extra", "0", "--max_minutes", "200")),
+              ("long-qwen-3b", "Qwen/Qwen2.5-3B-Instruct", "causaldec_clutrr", ("--task", "clutrr", "--task_name", "gen_train23_test2to10", "--ks", "5", "6", "7", "8", "--n_per_k", "50", "--seed", "5", "--ext_llm", "1", "--sc_extra", "0", "--max_minutes", "420"))],
+    },
+}""",
+    "C7_ablate_7b": """{
+    "7b": {"0,1": [("short-qwen-7b", "Qwen/Qwen2.5-7B-Instruct", "causaldec_clutrr",
+                     ("--task", "clutrr", "--task_name", "gen_train23_test2to10", "--ks", "2", "3", "4", "--n_per_k", "60", "--seed", "7", "--ext_llm", "1", "--sc_extra", "0", "--device_map", "auto", "--bs", "4", "--max_minutes", "240")),
+                    ("long-qwen-7b", "Qwen/Qwen2.5-7B-Instruct", "causaldec_clutrr",
+                     ("--task", "clutrr", "--task_name", "gen_train23_test2to10", "--ks", "5", "6", "7", "8", "--n_per_k", "50", "--seed", "5", "--ext_llm", "1", "--sc_extra", "0", "--device_map", "auto", "--bs", "4", "--max_minutes", "470"))]},
+}""",
     "M_select_orig": """{
     "orig": {
         "0": [("qwen-1.5b", "Qwen/Qwen2.5-1.5B-Instruct", "causaldec_musique",

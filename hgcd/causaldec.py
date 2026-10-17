@@ -327,6 +327,16 @@ def run_clutrr(lm, args) -> pd.DataFrame:
                 for t, i in enumerate(idx):
                     ext_g[i] = g[t]
                     ext_s[i] = sm[t * args.sc_n:(t + 1) * args.sc_n] if args.sc_n else []
+        # ablation: same extracted facts (and genders), but the LLM composes instead of the rule table
+        llm_ext = [None] * len(part)
+        if args.extract and args.ext_llm:
+            fp = [lm.prompt(clutrr_messages(ext_g[i] or "(no facts)", e.source, e.target))
+                  for i, e in enumerate(part)]
+            fch = lm.generate(fp, max_new_tokens=26 * (max(e.k for e in part) + 2) + 16, batch_size=args.bs)
+            fans = lm.generate([p_ + C.render_chain(C.parse_chain(c_)) + e.answer_prefix()
+                                for p_, c_, e in zip(fp, fch, part)], max_new_tokens=8,
+                               batch_size=args.bs * 2, stop="\n")
+            llm_ext = [_first_rel(a_, vocab_l) for a_ in fans]
         # free-form answer after each chain (greedy and sampled), one batched pass
         ans_prompts, owner = [], []
         for i, e in enumerate(part):
@@ -370,6 +380,8 @@ def run_clutrr(lm, args) -> pd.DataFrame:
                              "ext_g_sc": _vote([r for r, _ in g_res[1:]]) or sc_vote,
                              "ext_glex_sc": _vote([r for r, _ in gl_res[1:]]) or sc_vote,
                              "ext_glex_all": _vote([r for r, _ in gl_res]) or sc_vote}
+                if args.ext_llm:
+                    preds_ext["ext_llm"] = llm_ext[i]
             preds = {
                 "graph": gsym[0][0] or free_by[i][0],
                 "graph_sc": _vote([r for r, _ in gsym[1:]]) or sc_vote,
@@ -635,6 +647,8 @@ def main():
     ap.add_argument("--extract_genders", type=int, default=1,
                     help="ask the extractor to also state each person's gender (from pronouns)")
     ap.add_argument("--split", default="test", choices=["test", "validation"])
+    ap.add_argument("--ext_llm", type=int, default=0,
+                    help="ablation: LLM answers from its own extracted facts (no rule table)")
     ap.add_argument("--task_name", default=D.CLUTRR_TASK,
                     help="CLUTRR task folder to draw evaluation stories from (rules always come from "
                          "the gen_train234 training split)")
