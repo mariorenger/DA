@@ -1,0 +1,32 @@
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+Loading weights:   0%|          | 0/338 [00:00<?, ?it/s]Loading weights:   0%|          | 1/338 [00:01<09:06,  1.62s/it]Loading weights:  51%|█████     | 171/338 [00:01<00:01, 133.52it/s]Loading weights:  71%|███████▏  | 241/338 [00:02<00:00, 128.96it/s]Loading weights:  84%|████████▍ | 285/338 [00:02<00:00, 125.97it/s]Loading weights:  93%|█████████▎| 316/338 [00:03<00:00, 117.58it/s]Loading weights: 100%|██████████| 338/338 [00:03<00:00, 109.49it/s]
+[01:58:13] loaded Qwen/Qwen2.5-1.5B-Instruct on cuda:0
+[01:58:16] MuSiQue: 500 examples x ['orig']
+[02:09:59]   [orig] 40/500 (13 min)
+[02:21:19]   [orig] 80/500 (24 min)
+[02:33:14]   [orig] 120/500 (36 min)
+[02:45:04]   [orig] 160/500 (48 min)
+[02:55:50]   [orig] 200/500 (59 min)
+[03:07:48]   [orig] 240/500 (71 min)
+[03:19:55]   [orig] 280/500 (83 min)
+[03:31:26]   [orig] 320/500 (95 min)
+[03:41:57]   [orig] 360/500 (105 min)
+[03:53:44]   [orig] 400/500 (117 min)
+[04:05:08]   [orig] 440/500 (128 min)
+[04:16:59]   [orig] 480/500 (140 min)
+[04:22:33]   [orig] 500/500 (146 min)
+[04:22:34] 
+   cond     method   mean     lo     hi    n  d_vs_cot_free  d_lo_cot_free  d_hi_cot_free  p_vs_cot_free  d_vs_sc  d_lo_sc  d_hi_sc  p_vs_sc metric
+0  orig   attn_sel  0.180  0.148  0.214  500         -0.068         -0.110         -0.026          0.002   -0.104   -0.146   -0.062    0.000     em
+1  orig   cot_free  0.248  0.210  0.288  500            NaN            NaN            NaN            NaN   -0.036   -0.072    0.000    0.063     em
+2  orig  gold_only  0.348  0.306  0.388  500          0.100          0.058          0.140          0.000    0.064    0.020    0.108    0.004     em
+3  orig   last_hop  0.194  0.160  0.230  500         -0.054         -0.074         -0.034          0.000   -0.090   -0.130   -0.052    0.000     em
+4  orig         sc  0.284  0.244  0.324  500          0.036          0.000          0.072          0.063      NaN      NaN      NaN      NaN     em
+5  orig   self_sel  0.132  0.102  0.162  500         -0.116         -0.160         -0.076          0.000   -0.152   -0.194   -0.108    0.000     em
+0  orig   attn_sel  0.253  0.218  0.288  500         -0.089         -0.130         -0.048            NaN   -0.108   -0.150   -0.066      NaN     f1
+1  orig   cot_free  0.342  0.306  0.380  500            NaN            NaN            NaN            NaN   -0.019   -0.054    0.016      NaN     f1
+2  orig  gold_only  0.452  0.412  0.493  500          0.110          0.068          0.152            NaN    0.091    0.049    0.134      NaN     f1
+3  orig   last_hop  0.271  0.237  0.308  500         -0.070         -0.093         -0.049            NaN   -0.089   -0.130   -0.050      NaN     f1
+4  orig         sc  0.361  0.323  0.401  500          0.019         -0.016          0.054            NaN      NaN      NaN      NaN      NaN     f1
+5  orig   self_sel  0.213  0.183  0.245  500         -0.129         -0.170         -0.086            NaN   -0.147   -0.191   -0.105      NaN     f1
+[04:22:34] extra: {'attn_recall': 0.6093333333333333, 'self_recall': 0.4275, 'self_kept': 1.55, 'n_paras': 6.63, 'minutes': 145.63934534390768}

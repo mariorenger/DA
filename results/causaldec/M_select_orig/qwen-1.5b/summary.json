@@ -1,0 +1,9 @@
+{
+ "model": "Qwen/Qwen2.5-1.5B-Instruct",
+ "task": "musique",
+ "attn_recall": 0.6093333333333333,
+ "self_recall": 0.4275,
+ "self_kept": 1.55,
+ "n_paras": 6.63,
+ "minutes": 145.63934534390768
+}

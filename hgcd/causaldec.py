@@ -458,43 +458,59 @@ def run_musique(lm, args) -> pd.DataFrame:
                 _, sa = _chain_and_answer(lm, [_ctx_text(p) for p in paras], qs, args.bs, args.sc_n)
                 preds["sc"] = [_vote(sa[i * args.sc_n:(i + 1) * args.sc_n], M._norm_ans)
                                for i in range(len(part))]
-            # attention-based evidence selection (top-K), then CoT
-            sel_ctx = []
-            for i, p in enumerate(paras):
-                try:
-                    sc = attention_scores(lm, p, qs[i])
-                    keep = sorted(np.argsort(-sc)[:args.top_k].tolist())
-                except Exception as err:          # never lose the run to one example
-                    _log(f"attention scoring failed ({err}); keeping all paragraphs")
-                    keep = list(range(len(p)))
-                kept = [p[j] for j in keep]
-                sup = [q for q in p if q["is_supporting"]]
-                extra["attn_recall"][i] = sum(q["is_supporting"] for q in kept) / max(1, len(sup))
-                sel_ctx.append(_ctx_text(kept))
-            _, preds["attn_sel"] = _chain_and_answer(lm, sel_ctx, qs, args.bs)
-            # self-selection by prompting, then CoT
-            sp = [lm.prompt([{"role": "system", "content": SELECT_SYSTEM},
-                             {"role": "user", "content": f"Paragraphs:\n{_ctx_text(p)}\nQuestion: {q}"}],
-                            assistant_prefix="Relevant:") for p, q in zip(paras, qs)]
-            raw = lm.generate(sp, max_new_tokens=24, batch_size=args.bs, stop="\n")
-            self_ctx = []
-            for i, (p, r) in enumerate(zip(paras, raw)):
-                nums = sorted({int(x) - 1 for x in re.findall(r"\d+", r) if 0 < int(x) <= len(p)})
-                kept = [p[j] for j in nums] if nums else p
-                sup = [q for q in p if q["is_supporting"]]
-                extra["self_recall"][i] = sum(q["is_supporting"] for q in kept) / max(1, len(sup))
-                extra["self_kept"][i] = len(kept)
-                self_ctx.append(_ctx_text(kept))
-            _, preds["self_sel"] = _chain_and_answer(lm, self_ctx, qs, args.bs)
-            # oracle ceiling: supporting paragraphs only
-            _, preds["gold_only"] = _chain_and_answer(
-                lm, [_ctx_text([q for q in p if q["is_supporting"]]) for p in paras], qs, args.bs)
+            M_ = set(args.ms_methods)
+            # attention scores (computed once, reused by every attention variant)
+            scores = [None] * len(part)
+            if M_ & {"attn_sel", "attn_rerank", "attn_drop2"}:
+                for i, p in enumerate(paras):
+                    try:
+                        scores[i] = attention_scores(lm, p, qs[i])
+                    except Exception as err:          # never lose the run to one example
+                        _log(f"attention scoring failed ({err}); keeping all paragraphs")
+                        scores[i] = np.zeros(len(p))
+
+            def _attn_ctx(name, pick):
+                ctxs = []
+                for i, p in enumerate(paras):
+                    keep = pick(scores[i], len(p))
+                    kept = [p[j] for j in keep]
+                    sup = [q for q in p if q["is_supporting"]]
+                    extra[name + "_recall"][i] = sum(q["is_supporting"] for q in kept) / max(1, len(sup))
+                    ctxs.append(_ctx_text(kept))
+                return ctxs
+            if "attn_sel" in M_:     # hard filter: top-K paragraphs, original order
+                c = _attn_ctx("attn", lambda sc, n: sorted(np.argsort(-sc)[:args.top_k].tolist()))
+                _, preds["attn_sel"] = _chain_and_answer(lm, c, qs, args.bs)
+            if "attn_rerank" in M_:  # soft: keep every paragraph, most-attended first
+                c = _attn_ctx("rerank", lambda sc, n: np.argsort(-sc).tolist())
+                _, preds["attn_rerank"] = _chain_and_answer(lm, c, qs, args.bs)
+            if "attn_drop2" in M_:   # mild filter: drop only the two least-attended paragraphs
+                c = _attn_ctx("drop2", lambda sc, n: sorted(np.argsort(-sc)[:max(1, n - 2)].tolist()))
+                _, preds["attn_drop2"] = _chain_and_answer(lm, c, qs, args.bs)
+            if "self_sel" in M_:     # self-selection by prompting, then CoT
+                sp = [lm.prompt([{"role": "system", "content": SELECT_SYSTEM},
+                                 {"role": "user", "content": f"Paragraphs:\n{_ctx_text(p)}\nQuestion: {q}"}],
+                                assistant_prefix="Relevant:") for p, q in zip(paras, qs)]
+                raw = lm.generate(sp, max_new_tokens=24, batch_size=args.bs, stop="\n")
+                self_ctx = []
+                for i, (p, r) in enumerate(zip(paras, raw)):
+                    nums = sorted({int(x) - 1 for x in re.findall(r"\d+", r) if 0 < int(x) <= len(p)})
+                    kept = [p[j] for j in nums] if nums else p
+                    sup = [q for q in p if q["is_supporting"]]
+                    extra["self_recall"][i] = sum(q["is_supporting"] for q in kept) / max(1, len(sup))
+                    extra["self_kept"][i] = len(kept)
+                    self_ctx.append(_ctx_text(kept))
+                _, preds["self_sel"] = _chain_and_answer(lm, self_ctx, qs, args.bs)
+            if "gold_only" in M_:    # oracle ceiling: supporting paragraphs only
+                _, preds["gold_only"] = _chain_and_answer(
+                    lm, [_ctx_text([q for q in p if q["is_supporting"]]) for p in paras], qs, args.bs)
             for i, e in enumerate(part):
                 for mth, pl in preds.items():
                     p = pl[i] or ""
                     rows.append(dict(uid=e.uid, k=e.k, cond=cond, method=mth, pred=p,
                                      em=M.em(p, golds[i]), f1=M.f1(p, golds[i]),
                                      attn_recall=extra["attn_recall"][i],
+                                     drop2_recall=extra["drop2_recall"][i],
                                      self_recall=extra["self_recall"][i],
                                      self_kept=extra["self_kept"][i], n_paras=len(paras[i]),
                                      chain=ch[i] if mth == "cot_free" else None))
@@ -545,6 +561,10 @@ def main():
     ap.add_argument("--conditions", nargs="+", default=["orig", "dist8"])
     ap.add_argument("--top_k", type=int, default=4)
     ap.add_argument("--extract", type=int, default=1)
+    ap.add_argument("--ms_methods", nargs="+",
+                    default=["attn_sel", "self_sel", "gold_only"],
+                    help="MuSiQue methods besides cot_free/last_hop/sc: attn_sel attn_rerank attn_drop2 "
+                         "self_sel gold_only")
     args = ap.parse_args()
     os.makedirs(args.outdir, exist_ok=True)
     json.dump(vars(args), open(os.path.join(args.outdir, "config.json"), "w"), indent=1)
@@ -567,7 +587,8 @@ def main():
         summ = pd.concat([summarize(df, "em", ["cond"], ["cot_free", "sc"]).assign(metric="em"),
                           summarize(df, "f1", ["cond"], ["cot_free", "sc"]).assign(metric="f1")])
         g = df[df.method == "cot_free"]
-        extra = dict(attn_recall=float(g.attn_recall.mean()), self_recall=float(g.self_recall.mean()),
+        extra = dict(attn_recall=float(g.attn_recall.mean()), drop2_recall=float(g.drop2_recall.mean()),
+                     self_recall=float(g.self_recall.mean()),
                      self_kept=float(g.self_kept.mean()), n_paras=float(g.n_paras.mean()))
     df.to_csv(os.path.join(args.outdir, "decisions.csv"), index=False)
     summ.to_csv(os.path.join(args.outdir, "summary.csv"), index=False)

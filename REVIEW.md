@@ -330,3 +330,12 @@ composes (≈ 80% of questions), so its compute ≈ 5 chains + 5 extractions > s
 k ∈ {5, 7, 9, 10} (never evaluated before), seed 1, Qwen 1.5B/3B/7B, plus a compute-matched
 baseline sc_plus = self-consistency over 10 sampled chains. Primary endpoint: ext_sc − max(cot_free,
 sc_plus) ≥ 2 points with 95% CI > 0 on both 1.5B and 3B. Secondary: ext_all, by-k breakdown.
+
+**M_select_orig (MuSiQue, 4 distractors, n = 500).** NO-GO, and a clear negative. EM vs cot_free:
+attn_sel −6.8 (1.5B) / −5.0 (3B); self_sel −11.6 / −9.2; last_hop −5.4 / −9.2; sc +3.6 / +2.6
+(n.s.); gold_only ceiling +10.0 / +9.8. Diagnosis: hard top-4 filtering keeps every gold paragraph
+in only 25% (1.5B) / 66% (3B) of questions; when a gold paragraph is lost EM collapses (0.24→0.13,
+0.30→0.15), when all are kept it helps at 1.5B (+4.7) and is neutral at 3B (+0.3). Recall, not
+precision, is the binding constraint. Follow-up M2 (launched): soft variants that cannot lose gold
+paragraphs — attn_rerank (keep all, most-attended first) and attn_drop2 (drop only the two
+least-attended) — orig and dist8, compared by uid with this run's cot_free and sc.

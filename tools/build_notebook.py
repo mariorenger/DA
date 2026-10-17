@@ -146,6 +146,17 @@ NOTEBOOKS = {
                     ("--task", "clutrr", "--ks", "5", "7", "9", "10", "--seed", "1", "--sc_extra", "5",
                      "--device_map", "auto", "--bs", "4", "--max_minutes", "330"))]},
 }""",
+    # soft attention selection (after M_select_orig showed hard top-K filtering loses gold paragraphs)
+    "M2_soft_select": """{
+    "soft": {
+        "0": [("qwen-1.5b", "Qwen/Qwen2.5-1.5B-Instruct", "causaldec_musique",
+               ("--task", "musique", "--n", "500", "--conditions", "orig", "dist8", "--sc_n", "0",
+                "--ms_methods", "attn_rerank", "attn_drop2", "--max_minutes", "420"))],
+        "1": [("qwen-3b", "Qwen/Qwen2.5-3B-Instruct", "causaldec_musique",
+               ("--task", "musique", "--n", "500", "--conditions", "orig", "dist8", "--sc_n", "0",
+                "--ms_methods", "attn_rerank", "attn_drop2", "--bs", "4", "--max_minutes", "420"))],
+    },
+}""",
     "M_select_orig": """{
     "orig": {
         "0": [("qwen-1.5b", "Qwen/Qwen2.5-1.5B-Instruct", "causaldec_musique",
