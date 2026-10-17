@@ -131,6 +131,21 @@ NOTEBOOKS = {
     "7b": {"0,1": [("qwen-7b", "Qwen/Qwen2.5-7B-Instruct", "causaldec_clutrr",
                     ("--task", "clutrr", "--device_map", "auto", "--bs", "4", "--max_minutes", "300"))]},
 }""",
+    # confirmation on held-out chain lengths (k = 5, 7, 9, 10 were never looked at), with a
+    # compute-matched self-consistency baseline (10 sampled chains)
+    "C3_confirm_clutrr": """{
+    "small": {
+        "0": [("qwen-1.5b", "Qwen/Qwen2.5-1.5B-Instruct", "causaldec_clutrr",
+               ("--task", "clutrr", "--ks", "5", "7", "9", "10", "--seed", "1", "--sc_extra", "5",
+                "--max_minutes", "300"))],
+        "1": [("qwen-3b", "Qwen/Qwen2.5-3B-Instruct", "causaldec_clutrr",
+               ("--task", "clutrr", "--ks", "5", "7", "9", "10", "--seed", "1", "--sc_extra", "5",
+                "--max_minutes", "300"))],
+    },
+    "7b": {"0,1": [("qwen-7b", "Qwen/Qwen2.5-7B-Instruct", "causaldec_clutrr",
+                    ("--task", "clutrr", "--ks", "5", "7", "9", "10", "--seed", "1", "--sc_extra", "5",
+                     "--device_map", "auto", "--bs", "4", "--max_minutes", "330"))]},
+}""",
     "M_select_orig": """{
     "orig": {
         "0": [("qwen-1.5b", "Qwen/Qwen2.5-1.5B-Instruct", "causaldec_musique",

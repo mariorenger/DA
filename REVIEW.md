@@ -307,3 +307,26 @@ Raw outputs: `results/reliance_v2/<model>/`, `results/mediation_n500/<model>/`; 
   p<0.001) → H8 strengthened beyond CLUTRR. CAD beats CoT at 1.5B (+8.6, p<0.001), not at 3B. HGCD
   rows in these runs are not informative (lean mode = CoT by construction) and were dropped from
   the table.
+
+## Round 9 — decoding with causal/structural information (hgcd/causaldec.py)
+Survey: `reports/Giải mã nhân quả đa bước.md`. Pre-registered go/no-go: beat max(cot_free, sc) by
+≥ 2 points with 95% CI > 0 on both Qwen2.5-1.5B and 3B.
+
+**C (chain-order symbolic composition), CLUTRR k ∈ {2,3,4,6,8}, n = 278.** NO-GO. sym_sc − sc:
++1.8 [0.0, 3.6] (1.5B), +2.2 [0.4, 4.3] (3B), +2.5 [0.7, 4.7] (7B). Diagnosis: the rule table
+(induced from training stories only; 95% correct on gold chains) applies to only 4–6% of model
+chains: models list facts out of order, invert them, or write non-relational sentences.
+Order-free graph composition is accurate when a path exists (48% vs 24% CoT at 3B; 63% vs 33% at
+7B) but covers 8–25% of chains → bottleneck = fact extraction, not composition.
+
+**C2 (fact extraction → kinship graph → rule table), same 278 questions.** Passes the threshold:
+ext_sc − sc = +6.1 [2.5, 10.1] (1.5B, p = .003), +7.2 [3.2, 11.2] (3B, p = .001),
++7.6 [4.0, 11.2] (7B, p < .001); ext_all +8.3 / +8.6 at 3B / 7B. Gains concentrate at k = 2–3.
+**Caveats (why this is not yet a GO):** (i) the method was designed after looking at C on the same
+questions → needs held-out confirmation; (ii) ext_sc falls back to sc when no extraction
+composes (≈ 80% of questions), so its compute ≈ 5 chains + 5 extractions > sc (5 chains).
+
+**C3 (pre-registered confirmation, launched before seeing any result):** held-out chain lengths
+k ∈ {5, 7, 9, 10} (never evaluated before), seed 1, Qwen 1.5B/3B/7B, plus a compute-matched
+baseline sc_plus = self-consistency over 10 sampled chains. Primary endpoint: ext_sc − max(cot_free,
+sc_plus) ≥ 2 points with 95% CI > 0 on both 1.5B and 3B. Secondary: ext_all, by-k breakdown.

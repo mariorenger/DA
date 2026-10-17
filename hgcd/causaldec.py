@@ -269,15 +269,17 @@ def run_clutrr(lm, args) -> pd.DataFrame:
         part = ex[s:s + args.chunk]
         prompts = [lm.prompt(clutrr_messages(e.story_text, e.source, e.target)) for e in part]
         mx = [26 * (e.k + 2) + 16 for e in part]
-        greedy, samples = [None] * len(part), [None] * len(part)
+        greedy, samples, extra_s = [None] * len(part), [None] * len(part), [None] * len(part)
+        nsm = args.sc_n + args.sc_extra if args.sc_n else 0   # extra samples: compute-matched SC
         for k in sorted(set(e.k for e in part)):            # batch by k: similar lengths
             idx = [i for i, e in enumerate(part) if e.k == k]
             g = lm.generate([prompts[i] for i in idx], max_new_tokens=mx[idx[0]], batch_size=args.bs)
             sm = lm.generate([prompts[i] for i in idx], max_new_tokens=mx[idx[0]], do_sample=True,
-                             n=args.sc_n, batch_size=max(1, args.bs // 2)) if args.sc_n else []
+                             n=nsm, batch_size=max(1, args.bs // 2)) if nsm else []
             for t, i in enumerate(idx):
                 greedy[i] = g[t]
-                samples[i] = sm[t * args.sc_n:(t + 1) * args.sc_n] if args.sc_n else []
+                samples[i] = sm[t * nsm:t * nsm + args.sc_n] if nsm else []
+                extra_s[i] = sm[t * nsm + args.sc_n:(t + 1) * nsm] if nsm else []
         # fact extraction (no reasoning asked): greedy + sampled, then graph search + rule table
         ext_g, ext_s = [None] * len(part), [None] * len(part)
         if args.extract:
@@ -295,7 +297,7 @@ def run_clutrr(lm, args) -> pd.DataFrame:
         # free-form answer after each chain (greedy and sampled), one batched pass
         ans_prompts, owner = [], []
         for i, e in enumerate(part):
-            for j, ch in enumerate([greedy[i]] + samples[i]):
+            for j, ch in enumerate([greedy[i]] + samples[i] + extra_s[i]):
                 ans_prompts.append(prompts[i] + C.render_chain(C.parse_chain(ch)) + e.answer_prefix())
                 owner.append((i, j))
         free = lm.generate(ans_prompts, max_new_tokens=8, batch_size=args.bs * 2, stop="\n")
@@ -331,6 +333,8 @@ def run_clutrr(lm, args) -> pd.DataFrame:
                 "cot_free": free_by[i][0],
                 "cot_score": cot_score,
                 "sc": _vote([free_by[i][j] for j in range(1, len(chains))]) if samples[i] else None,
+                "sc_plus": _vote([free_by[i][j] for j in range(1, len(chains) + len(extra_s[i]))])
+                if samples[i] else None,
                 "sym": sym[0][0] or free_by[i][0],
                 "sym_only": sym[0][0],
                 "sym_sc": _vote([r for r, _ in sym[1:]]) or (
@@ -530,6 +534,8 @@ def main():
     ap.add_argument("--device_map", default=None)
     ap.add_argument("--bs", type=int, default=8)
     ap.add_argument("--sc_n", type=int, default=5)
+    ap.add_argument("--sc_extra", type=int, default=0,
+                    help="extra sampled chains for a compute-matched self-consistency baseline (sc_plus)")
     ap.add_argument("--seed", type=int, default=0)
     ap.add_argument("--chunk", type=int, default=40)
     ap.add_argument("--max_minutes", type=float, default=600)
@@ -548,7 +554,7 @@ def main():
     if args.task == "clutrr":
         df = run_clutrr(lm, args)
         summ = summarize(df[df.method != "sym_gold"].assign(cond="all"), "correct", ["cond"],
-                         ["cot_free", "sc", "cot_score"])
+                         ["cot_free", "sc", "sc_plus", "cot_score"])
         g = df[df.method == "cot_free"]
         byk = summarize(df.assign(cond="all"), "correct", ["k"], ["cot_free"])
         byk.to_csv(os.path.join(args.outdir, "by_k.csv"), index=False)
