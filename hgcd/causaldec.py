@@ -287,7 +287,8 @@ def run_clutrr(lm, args) -> pd.DataFrame:
     vocab = set(vocab_l)
     _log(f"composition table: {len(table)} rules from {len(train)} training stories")
     glex = induce_gender_lexicon(train)
-    pool = test if args.split == "test" else D.load_clutrr(args.split)
+    pool = (test if (args.split == "test" and args.task_name == D.CLUTRR_TASK)
+            else D.load_clutrr(args.split, task=args.task_name))
     ex = D.sample_by_k(pool, args.ks, args.n_per_k, args.seed)
     cov = np.mean([C.norm(n) in glex for e in ex for n in e.names])
     _log(f"gender lexicon: {len(glex)} names from train; covers {cov:.2f} of people in this sample")
@@ -607,6 +608,9 @@ def main():
     ap.add_argument("--extract_genders", type=int, default=1,
                     help="ask the extractor to also state each person's gender (from pronouns)")
     ap.add_argument("--split", default="test", choices=["test", "validation"])
+    ap.add_argument("--task_name", default=D.CLUTRR_TASK,
+                    help="CLUTRR task folder to draw evaluation stories from (rules always come from "
+                         "the gen_train234 training split)")
     ap.add_argument("--ms_methods", nargs="+",
                     default=["attn_sel", "self_sel", "gold_only"],
                     help="MuSiQue methods besides cot_free/last_hop/sc: attn_sel attn_rerank attn_drop2 "

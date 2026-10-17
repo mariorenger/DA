@@ -360,3 +360,19 @@ near-oracle there, so the **primary endpoint excludes it**: ext_g_sc (model-stat
 vote over 5 sampled extractions, fallback sc) − max(cot_free, sc_plus[10 samples]) ≥ 2 points with
 95% CI > 0 on both 1.5B and 3B. Secondary: ext_g, ext_glex_sc; C3 (held-out test k = 5–10) will be
 re-scored offline with the train lexicon (its greedy extractions are saved).
+
+**C3 (pre-registered held-out confirmation, test k = 5/7/9/10, n = 205).** NO-GO. ext_sc −
+sc_plus(10 samples): +4.4 [+0.5, +8.8] (1.5B), +2.0 [−1.5, +5.9] (3B), +0.0 [−3.9, +3.9] (7B). The
+C2 gain does not transfer to long chains: composition applies to only 3–6% of stories. Re-scoring
+the saved extractions with the train name→gender lexicon (covers 24% of these names) does not help
+(+0.5 / −2.0 / −1.5). Diagnosis (7B): every gold edge is extracted in 57% / 47% / 21% / 14% of k =
+5 / 7 / 9 / 10 stories, but composition still fails — with dataset genders 51 of the 77 complete
+extractions compose (39 correctly); 17 fail for lack of a rule for intermediate relations outside
+the 20-relation vocabulary (e.g. grand-niece). So the C2 effect is a short-chain effect, and the
+long-chain bottleneck is gender, then rule coverage — not extraction recall at 7B.
+
+**C5 (pre-registered before any result).** Fresh long chains from a different CLUTRR task
+(gen_train23_test2to10 test split, no story overlap with anything used), k = 5–8 × 50, seed 5, with
+the gender-stating extractor. Primary (where the diagnosis says the mechanism applies): Qwen-7B
+ext_g_sc − max(cot_free, sc_plus) ≥ 2 points with 95% CI > 0. Secondary: 1.5B, 3B, ext_g,
+ext_glex_sc.

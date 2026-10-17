@@ -1,0 +1,26 @@
+{
+ "task": "clutrr",
+ "model": "Qwen/Qwen2.5-1.5B-Instruct",
+ "outdir": "/kaggle/working/results/causaldec_clutrr_qwen-1.5b",
+ "device_map": null,
+ "bs": 8,
+ "sc_n": 5,
+ "sc_extra": 5,
+ "seed": 1,
+ "chunk": 40,
+ "max_minutes": 300.0,
+ "ks": [
+  5,
+  7,
+  9,
+  10
+ ],
+ "n_per_k": 60,
+ "n": 300,
+ "conditions": [
+  "orig",
+  "dist8"
+ ],
+ "top_k": 4,
+ "extract": 1
+}
