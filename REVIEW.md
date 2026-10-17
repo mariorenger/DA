@@ -339,3 +339,9 @@ in only 25% (1.5B) / 66% (3B) of questions; when a gold paragraph is lost EM col
 precision, is the binding constraint. Follow-up M2 (launched): soft variants that cannot lose gold
 paragraphs — attn_rerank (keep all, most-attended first) and attn_drop2 (drop only the two
 least-attended) — orig and dist8, compared by uid with this run's cot_free and sc.
+
+**M_select_dist8 (MuSiQue, 8 distractors, n = 500).** Same pattern, NO-GO. EM vs cot_free (22.2 /
+31.6): attn_sel −8.6 / −4.2, self_sel −9.0 / −6.8, last_hop −5.2 / −4.6, sc +2.8 / +4.0 (p = .17 /
+.035), gold_only ceiling +9.2 / +14.0. Top-4 attention recall drops to 0.37 (1.5B) / 0.77 (3B)
+with ~10.6 paragraphs. The distractor cost the ceiling reveals (up to 14 EM) is real, but neither
+hard filter recovers it.

@@ -1,0 +1,33 @@
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+Fetching 2 files:   0%|          | 0/2 [00:00<?, ?it/s]Fetching 2 files:  50%|█████     | 1/2 [00:46<00:46, 46.48s/it]Fetching 2 files: 100%|██████████| 2/2 [00:46<00:00, 23.24s/it]
+Loading weights:   0%|          | 0/434 [00:00<?, ?it/s]Loading weights:   0%|          | 1/434 [00:02<15:34,  2.16s/it]Loading weights:  34%|███▍      | 147/434 [00:02<00:03, 89.69it/s]Loading weights:  50%|████▉     | 216/434 [00:03<00:02, 89.54it/s]Loading weights:  59%|█████▉    | 258/434 [00:04<00:02, 59.49it/s]Loading weights:  66%|██████▌   | 285/434 [00:05<00:03, 48.85it/s]Loading weights:  70%|██████▉   | 303/434 [00:05<00:02, 52.19it/s]Loading weights:  73%|███████▎  | 318/434 [00:05<00:02, 57.56it/s]Loading weights:  77%|███████▋  | 333/434 [00:05<00:01, 63.94it/s]Loading weights:  81%|████████  | 351/434 [00:06<00:01, 70.63it/s]Loading weights:  84%|████████▍ | 364/434 [00:06<00:00, 75.93it/s]Loading weights:  87%|████████▋ | 377/434 [00:06<00:00, 77.71it/s]Loading weights:  92%|█████████▏| 399/434 [00:06<00:00, 88.40it/s]Loading weights:  97%|█████████▋| 423/434 [00:06<00:00, 107.53it/s]Loading weights: 100%|██████████| 434/434 [00:06<00:00, 65.43it/s] 
+[02:00:16] loaded Qwen/Qwen2.5-3B-Instruct on cuda:0
+[02:00:16] MuSiQue: 500 examples x ['dist8']
+[02:24:21]   [dist8] 40/500 (25 min)
+[02:47:59]   [dist8] 80/500 (49 min)
+[03:12:05]   [dist8] 120/500 (73 min)
+[03:36:00]   [dist8] 160/500 (97 min)
+[03:57:15]   [dist8] 200/500 (118 min)
+[04:20:37]   [dist8] 240/500 (142 min)
+[04:45:15]   [dist8] 280/500 (166 min)
+[05:07:45]   [dist8] 320/500 (189 min)
+[05:29:18]   [dist8] 360/500 (210 min)
+[05:52:16]   [dist8] 400/500 (233 min)
+[06:14:56]   [dist8] 440/500 (256 min)
+[06:38:21]   [dist8] 480/500 (279 min)
+[06:48:50]   [dist8] 500/500 (290 min)
+[06:48:50] 
+    cond     method   mean     lo     hi    n  d_vs_cot_free  d_lo_cot_free  d_hi_cot_free  p_vs_cot_free  d_vs_sc  d_lo_sc  d_hi_sc  p_vs_sc metric
+0  dist8   attn_sel  0.274  0.236  0.314  500         -0.042         -0.082         -0.004          0.044   -0.082   -0.120   -0.044    0.000     em
+1  dist8   cot_free  0.316  0.276  0.356  500            NaN            NaN            NaN            NaN   -0.040   -0.076   -0.004    0.035     em
+2  dist8  gold_only  0.456  0.412  0.500  500          0.140          0.094          0.184          0.000    0.100    0.058    0.144    0.000     em
+3  dist8   last_hop  0.270  0.232  0.310  500         -0.046         -0.070         -0.022          0.000   -0.086   -0.126   -0.046    0.000     em
+4  dist8         sc  0.356  0.314  0.398  500          0.040          0.004          0.076          0.035      NaN      NaN      NaN      NaN     em
+5  dist8   self_sel  0.248  0.210  0.286  500         -0.068         -0.112         -0.024          0.004   -0.108   -0.152   -0.064    0.000     em
+0  dist8   attn_sel  0.369  0.330  0.406  500         -0.048         -0.090         -0.008            NaN   -0.089   -0.125   -0.051      NaN     f1
+1  dist8   cot_free  0.417  0.378  0.455  500            NaN            NaN            NaN            NaN   -0.041   -0.075   -0.007      NaN     f1
+2  dist8  gold_only  0.562  0.521  0.602  500          0.146          0.102          0.188            NaN    0.105    0.066    0.145      NaN     f1
+3  dist8   last_hop  0.372  0.333  0.411  500         -0.045         -0.065         -0.026            NaN   -0.086   -0.121   -0.050      NaN     f1
+4  dist8         sc  0.457  0.416  0.496  500          0.041          0.007          0.075            NaN      NaN      NaN      NaN      NaN     f1
+5  dist8   self_sel  0.333  0.296  0.371  500         -0.083         -0.127         -0.040            NaN   -0.124   -0.167   -0.083      NaN     f1
+[06:48:50] extra: {'attn_recall': 0.7695, 'self_recall': 0.5145, 'self_kept': 2.228, 'n_paras': 10.63, 'minutes': 289.8407239039739}
