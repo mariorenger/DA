@@ -1,0 +1,50 @@
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+Fetching 2 files:   0%|          | 0/2 [00:00<?, ?it/s]Fetching 2 files:  50%|█████     | 1/2 [00:46<00:46, 46.80s/it]Fetching 2 files: 100%|██████████| 2/2 [00:46<00:00, 23.40s/it]
+Loading weights:   0%|          | 0/434 [00:00<?, ?it/s]Loading weights:   0%|          | 1/434 [00:02<15:07,  2.10s/it]Loading weights:  31%|███       | 135/434 [00:02<00:03, 78.13it/s]Loading weights:  38%|███▊      | 166/434 [00:02<00:03, 80.89it/s]Loading weights:  43%|████▎     | 187/434 [00:03<00:03, 77.01it/s]Loading weights:  47%|████▋     | 203/434 [00:03<00:02, 83.27it/s]Loading weights:  50%|█████     | 218/434 [00:03<00:02, 89.49it/s]Loading weights:  54%|█████▎    | 233/434 [00:03<00:02, 88.16it/s]Loading weights:  59%|█████▉    | 255/434 [00:04<00:03, 45.63it/s]Loading weights:  62%|██████▏   | 269/434 [00:04<00:03, 53.42it/s]Loading weights:  65%|██████▍   | 280/434 [00:05<00:04, 38.17it/s]Loading weights:  67%|██████▋   | 291/434 [00:05<00:03, 44.22it/s]Loading weights:  70%|██████▉   | 303/434 [00:05<00:02, 50.04it/s]Loading weights:  73%|███████▎  | 315/434 [00:05<00:02, 56.77it/s]Loading weights:  76%|███████▌  | 329/434 [00:05<00:01, 66.13it/s]Loading weights:  81%|████████  | 351/434 [00:05<00:00, 88.86it/s]Loading weights:  84%|████████▍ | 364/434 [00:05<00:00, 89.92it/s]Loading weights:  89%|████████▉ | 387/434 [00:06<00:00, 114.76it/s]Loading weights:  92%|█████████▏| 401/434 [00:06<00:00, 112.61it/s]Loading weights:  97%|█████████▋| 423/434 [00:06<00:00, 127.95it/s]Loading weights: 100%|██████████| 434/434 [00:06<00:00, 68.49it/s] 
+[05:53:11] loaded Qwen/Qwen2.5-3B-Instruct on cuda:0
+[05:53:12] MuSiQue: 500 examples x ['orig', 'dist8']
+[06:00:30]   [orig] 40/500 (9 min)
+[06:07:38]   [orig] 80/500 (16 min)
+[06:15:17]   [orig] 120/500 (23 min)
+[06:22:53]   [orig] 160/500 (31 min)
+[06:29:45]   [orig] 200/500 (38 min)
+[06:37:06]   [orig] 240/500 (45 min)
+[06:44:52]   [orig] 280/500 (53 min)
+[06:51:57]   [orig] 320/500 (60 min)
+[06:58:49]   [orig] 360/500 (67 min)
+[07:06:18]   [orig] 400/500 (74 min)
+[07:13:19]   [orig] 440/500 (81 min)
+[07:20:52]   [orig] 480/500 (89 min)
+[07:24:04]   [orig] 500/500 (92 min)
+[07:33:39]   [dist8] 40/500 (102 min)
+[07:43:35]   [dist8] 80/500 (112 min)
+[07:53:44]   [dist8] 120/500 (122 min)
+[08:04:11]   [dist8] 160/500 (132 min)
+[08:12:40]   [dist8] 200/500 (141 min)
+[08:22:24]   [dist8] 240/500 (151 min)
+[08:32:42]   [dist8] 280/500 (161 min)
+[08:42:10]   [dist8] 320/500 (170 min)
+[08:50:50]   [dist8] 360/500 (179 min)
+[09:00:22]   [dist8] 400/500 (188 min)
+[09:09:58]   [dist8] 440/500 (198 min)
+[09:19:57]   [dist8] 480/500 (208 min)
+[09:24:37]   [dist8] 500/500 (213 min)
+[09:24:37] 
+    cond       method   mean     lo     hi    n  d_vs_cot_free  d_lo_cot_free  d_hi_cot_free  p_vs_cot_free metric
+0  dist8   attn_drop2  0.318  0.278  0.358  500          0.002         -0.036          0.042          1.000     em
+1  dist8  attn_rerank  0.336  0.294  0.378  500          0.020         -0.022          0.062          0.395     em
+2  dist8     cot_free  0.316  0.276  0.356  500            NaN            NaN            NaN            NaN     em
+3  dist8     last_hop  0.270  0.232  0.310  500         -0.046         -0.070         -0.022          0.000     em
+4   orig   attn_drop2  0.336  0.294  0.376  500         -0.050         -0.090         -0.008          0.018     em
+5   orig  attn_rerank  0.374  0.330  0.418  500         -0.012         -0.054          0.030          0.643     em
+6   orig     cot_free  0.386  0.344  0.428  500            NaN            NaN            NaN            NaN     em
+7   orig     last_hop  0.292  0.252  0.334  500         -0.094         -0.124         -0.066          0.000     em
+0  dist8   attn_drop2  0.423  0.385  0.460  500          0.006         -0.031          0.044            NaN     f1
+1  dist8  attn_rerank  0.451  0.409  0.489  500          0.034         -0.007          0.076            NaN     f1
+2  dist8     cot_free  0.417  0.378  0.455  500            NaN            NaN            NaN            NaN     f1
+3  dist8     last_hop  0.372  0.333  0.411  500         -0.045         -0.065         -0.026            NaN     f1
+4   orig   attn_drop2  0.444  0.406  0.482  500         -0.053         -0.090         -0.015            NaN     f1
+5   orig  attn_rerank  0.482  0.442  0.523  500         -0.015         -0.055          0.023            NaN     f1
+6   orig     cot_free  0.497  0.459  0.537  500            NaN            NaN            NaN            NaN     f1
+7   orig     last_hop  0.399  0.362  0.439  500         -0.098         -0.123         -0.074            NaN     f1
+[09:24:37] extra: {'attn_recall': nan, 'drop2_recall': 0.9285, 'self_recall': nan, 'self_kept': nan, 'n_paras': 8.63, 'minutes': 212.7568134744962}

@@ -437,13 +437,40 @@ def attention_scores(lm, paras: List[dict], question: str) -> np.ndarray:
         pos = a + len(line)
     tok_spans = [np.where((offs >= a) & (offs < b))[0] for a, b in spans]
     ids = torch.tensor([enc["input_ids"]], device=lm.device)
+    suffixes = [lm.tok(t, return_tensors="pt", add_special_tokens=False).input_ids.to(lm.device)
+                for t in (full[cut:], null[cut:])]
+    res = _attn_pass(lm, ids, suffixes, tok_spans)
+
+    def _bad(r):   # non-finite, or degenerate (all paragraphs scored alike)
+        d = r[0] - r[1]
+        return (not all(np.isfinite(x).all() for x in r)) or (len(d) > 1 and np.ptp(d) == 0)
+    if _bad(res):
+        # fp16 eager attention overflows on some models (seen on Qwen2.5-1.5B): redo in fp32
+        if getattr(lm.model, "hf_device_map", None) is None:
+            dt = next(lm.model.parameters()).dtype
+            lm.model.float()
+            try:
+                res = _attn_pass(lm, ids, suffixes, tok_spans)
+            finally:
+                lm.model.to(dt)
+            ATTN_STATS["fp32_retry"] += 1
+        if _bad(res):
+            ATTN_STATS["failed"] += 1
+            raise RuntimeError("non-finite attention scores")
+    ATTN_STATS["ok"] += 1
+    return res[0] - res[1]
+
+
+ATTN_STATS: Counter = Counter()
+
+
+def _attn_pass(lm, ids, suffixes, tok_spans) -> List[np.ndarray]:
     past = lm.model(input_ids=ids, use_cache=True).past_key_values
     L = ids.shape[1]
     res = []
     old = _set_attn(lm.model, "eager")
     try:
-        for text in (full[cut:], null[cut:]):
-            sid = lm.tok(text, return_tensors="pt", add_special_tokens=False).input_ids.to(lm.device)
+        for sid in suffixes:
             out = lm.model(input_ids=sid, past_key_values=copy.deepcopy(past), use_cache=True,
                            output_attentions=True,
                            cache_position=torch.arange(L, L + sid.shape[1], device=lm.device))
@@ -453,7 +480,7 @@ def attention_scores(lm, paras: List[dict], question: str) -> np.ndarray:
             res.append(np.array([a[t].sum() if len(t) else 0.0 for t in tok_spans]))
     finally:
         _set_attn(lm.model, old)
-    return res[0] - res[1]
+    return res
 
 
 SELECT_SYSTEM = ("You are given numbered paragraphs and a multi-hop question. Do not answer the "
@@ -637,7 +664,8 @@ def main():
         summ = pd.concat([summarize(df, "em", ["cond"], ["cot_free", "sc"]).assign(metric="em"),
                           summarize(df, "f1", ["cond"], ["cot_free", "sc"]).assign(metric="f1")])
         g = df[df.method == "cot_free"]
-        extra = dict(attn_recall=float(g.attn_recall.mean()), drop2_recall=float(g.drop2_recall.mean()),
+        extra = dict(attn_stats=dict(ATTN_STATS),
+                     attn_recall=float(g.attn_recall.mean()), drop2_recall=float(g.drop2_recall.mean()),
                      self_recall=float(g.self_recall.mean()),
                      self_kept=float(g.self_kept.mean()), n_paras=float(g.n_paras.mean()))
     df.to_csv(os.path.join(args.outdir, "decisions.csv"), index=False)

@@ -187,6 +187,27 @@ NOTEBOOKS = {
                      "--n_per_k", "50", "--seed", "5", "--sc_extra", "5", "--device_map", "auto",
                      "--bs", "4", "--max_minutes", "330"))]},
 }""",
+    # rerun of the Qwen-1.5B attention variants after the fp16 attention bug (scores were
+    # non-finite, so selection fell back to the first paragraphs) + fresh short-chain CLUTRR check
+    "M3_fix15_C6": """{
+    "fix": {
+        "0": [("qwen-1.5b", "Qwen/Qwen2.5-1.5B-Instruct", "causaldec_musique",
+               ("--task", "musique", "--n", "500", "--conditions", "orig", "dist8", "--sc_n", "0",
+                "--ms_methods", "attn_sel", "attn_rerank", "attn_drop2", "--max_minutes", "420"))],
+        "1": [("c6-qwen-1.5b", "Qwen/Qwen2.5-1.5B-Instruct", "causaldec_clutrr",
+               ("--task", "clutrr", "--task_name", "gen_train23_test2to10", "--ks", "2", "3", "4",
+                "--n_per_k", "60", "--seed", "7", "--sc_extra", "5", "--max_minutes", "300"))],
+    },
+}""",
+    "C6_fresh_short": """{
+    "small": {"0": [("qwen-3b", "Qwen/Qwen2.5-3B-Instruct", "causaldec_clutrr",
+                     ("--task", "clutrr", "--task_name", "gen_train23_test2to10", "--ks", "2", "3", "4",
+                      "--n_per_k", "60", "--seed", "7", "--sc_extra", "5", "--max_minutes", "300"))]},
+    "7b": {"0,1": [("qwen-7b", "Qwen/Qwen2.5-7B-Instruct", "causaldec_clutrr",
+                    ("--task", "clutrr", "--task_name", "gen_train23_test2to10", "--ks", "2", "3", "4",
+                     "--n_per_k", "60", "--seed", "7", "--sc_extra", "5", "--device_map", "auto",
+                     "--bs", "4", "--max_minutes", "300"))]},
+}""",
     "M_select_orig": """{
     "orig": {
         "0": [("qwen-1.5b", "Qwen/Qwen2.5-1.5B-Instruct", "causaldec_musique",

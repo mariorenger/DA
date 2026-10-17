@@ -1,0 +1,31 @@
+{
+ "task": "musique",
+ "model": "Qwen/Qwen2.5-3B-Instruct",
+ "outdir": "/kaggle/working/results/causaldec_musique_qwen-3b",
+ "device_map": null,
+ "bs": 4,
+ "sc_n": 0,
+ "sc_extra": 0,
+ "seed": 0,
+ "chunk": 40,
+ "max_minutes": 420.0,
+ "ks": [
+  2,
+  3,
+  4,
+  6,
+  8
+ ],
+ "n_per_k": 60,
+ "n": 500,
+ "conditions": [
+  "orig",
+  "dist8"
+ ],
+ "top_k": 4,
+ "extract": 1,
+ "ms_methods": [
+  "attn_rerank",
+  "attn_drop2"
+ ]
+}

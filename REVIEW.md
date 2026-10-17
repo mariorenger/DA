@@ -376,3 +376,25 @@ long-chain bottleneck is gender, then rule coverage — not extraction recall at
 the gender-stating extractor. Primary (where the diagnosis says the mechanism applies): Qwen-7B
 ext_g_sc − max(cot_free, sc_plus) ≥ 2 points with 95% CI > 0. Secondary: 1.5B, 3B, ext_g,
 ext_glex_sc.
+
+**C4 (pre-registered, CLUTRR validation k = 2–4, n = 300).** **GO**, by a wide margin. Accuracy:
+cot_free 25.7 / 36.3 / 39.7, sc_plus (10 samples) 28.7 / 38.0 / 43.3; ext_g (one greedy extraction
+with model-stated genders → kinship graph → rule table) 51.0 / 64.3 / 77.3; **ext_g_sc − sc_plus =
++32.0 [+26.0, +38.0] (1.5B), +32.0 [+25.3, +38.3] (3B), +36.7 [+31.0, +42.3] (7B)**, McNemar
+p < 1e-4. Train-lexicon variants add 1–4 more points (near-oracle on validation names, so not
+claimed). Checks: no uid overlap with train; 27 of 2,928 validation stories coincide with training
+stories (method memorises no story, only relation rules). Caveat: in-distribution chain lengths;
+C3 showed the earlier variant did not transfer to k = 5–10 → C5 (fresh long chains) and C6 (fresh
+short chains from a different CLUTRR task) are the generalisation tests.
+
+**Bug found in the MuSiQue attention selector.** For Qwen-1.5B the attention scores were
+degenerate (non-finite under fp16 eager attention): attn_sel kept exactly the first four paragraphs
+in 500/500 questions. All Qwen-1.5B attention results (attn_sel, attn_rerank, attn_drop2; M_select_*
+and M2) are therefore invalid; Qwen-3B results are valid (189/500 coincide, as expected by chance).
+Fixed: non-finite or degenerate scores are recomputed in fp32; counts reported in summary.json.
+Re-run: M3 (1.5B, orig + dist8).
+
+**M2 (soft selection, Qwen-3B valid only).** attn_rerank − cot_free: −1.2 [−5.4, +3.0] (orig),
++2.0 [−2.2, +6.2] (dist8); attn_drop2: −5.0 / +0.2; all below sc. Keeping every paragraph removes
+the recall loss but does not recover the distractor cost either. NO-GO for attention-based
+selection at 3B.
