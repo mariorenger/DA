@@ -13,7 +13,7 @@ import nbformat as nbf
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 MODULES = ["__init__", "data", "chain", "prompts", "lm", "decoding", "experiments", "metrics",
-           "report", "pipeline", "causaldec"]
+           "report", "pipeline", "causaldec", "cftrain"]
 
 INTRO = """# Read, not reasoned? Kaggle run-all
 
@@ -52,7 +52,9 @@ def run_job(label, model, preset, extra, gpus):
     env = dict(os.environ, CUDA_VISIBLE_DEVICES=gpus)
     out = f"{OUT}/{preset}_{label}"
     with open(out + ".log", "w") as log:
-        cmd = ([sys.executable, "-m", "hgcd.causaldec", "--model", model, "--outdir", out, *extra]
+        cmd = ([sys.executable, "-m", "hgcd.cftrain", "--model", model, "--outdir", out, *extra]
+               if preset.startswith("cftrain") else
+               [sys.executable, "-m", "hgcd.causaldec", "--model", model, "--outdir", out, *extra]
                if preset.startswith("causaldec") else
                [sys.executable, "-m", "hgcd.pipeline", "--preset", preset, "--model", model,
                 "--outdir", out, *extra])
@@ -223,6 +225,23 @@ NOTEBOOKS = {
                     ("long-qwen-7b", "Qwen/Qwen2.5-7B-Instruct", "causaldec_clutrr",
                      ("--task", "clutrr", "--task_name", "gen_train23_test2to10", "--ks", "5", "6", "7", "8", "--n_per_k", "50", "--seed", "5", "--ext_llm", "1", "--sc_extra", "0", "--device_map", "auto", "--bs", "4", "--max_minutes", "470"))]},
 }""",
+    # round 10: structured-chain SFT (see REVIEW.md, pre-registered); one seed per notebook
+    "CF1_seed0": """{
+    "cf1": {
+        "0": [("qwen-1.5b", "Qwen/Qwen2.5-1.5B-Instruct", "cftrain",
+               ("--arms", "p1", "s_plain", "s_struct", "--seed", "0", "--max_minutes", "560"))],
+        "1": [("qwen-3b", "Qwen/Qwen2.5-3B-Instruct", "cftrain",
+               ("--arms", "p1", "s_plain", "s_struct", "--seed", "0", "--max_minutes", "560"))],
+    },
+}""",
+    "CF1_seed1": """{
+    "cf1": {
+        "0": [("qwen-1.5b", "Qwen/Qwen2.5-1.5B-Instruct", "cftrain",
+               ("--arms", "s_plain", "s_struct", "--seed", "1", "--max_minutes", "560"))],
+        "1": [("qwen-3b", "Qwen/Qwen2.5-3B-Instruct", "cftrain",
+               ("--arms", "s_plain", "s_struct", "--seed", "1", "--max_minutes", "560"))],
+    },
+}""",
     "M_select_orig": """{
     "orig": {
         "0": [("qwen-1.5b", "Qwen/Qwen2.5-1.5B-Instruct", "causaldec_musique",
@@ -257,7 +276,7 @@ def build():
 def build_one(name, phases):
     nb = nbf.v4.new_notebook()
     cells = [nbf.v4.new_markdown_cell(INTRO),
-             nbf.v4.new_code_cell("!pip -q install -U \"transformers>=4.44\" accelerate scikit-learn 2>/dev/null | tail -1\n"
+             nbf.v4.new_code_cell("!pip -q install -U \"transformers>=4.44\" accelerate scikit-learn peft 2>/dev/null | tail -1\n"
                                   "!nvidia-smi --query-gpu=name,memory.total --format=csv || true"),
              nbf.v4.new_code_cell("import os\nos.makedirs('hgcd', exist_ok=True)\n"
                                   "os.environ.setdefault('HGCD_DATA', os.path.abspath('hgcd_data'))")]
