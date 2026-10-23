@@ -500,3 +500,32 @@ and we report that.
 (lower is better); S_struct vs D2 extract+rules (ext_g_sc) is exploratory.
 **Declared limits.** SFT uses train gold chains (labels the base CoT never saw); the claim is about what
 chain structure adds *given the same supervision*, hence the S_plain control. One seed per arm.
+
+---
+## Round 10b (pre-registered, code ready, NOT yet launched): does the recipe generalise?
+
+**Question.** CLUTRR is synthetic with a closed rule set. The recipe (each step a one-step lookup whose
+result is written down and read by the next step, LoRA-trained on chains built automatically from
+annotated decompositions) is tested on natural text.
+
+**Data.** MuSiQue-Ans (train decompositions with `paragraph_support_idx`; eval = the same 500 dev
+questions as rounds 9, conditions orig = 4 distractors and dist8 = 8 distractors) and 2WikiMultihopQA
+(compositional + inference questions that carry gold evidence triples; 500 random validation questions,
+80,860 train questions available).
+**Arms** (Qwen2.5-1.5B and 3B-Instruct; LoRA r=16; zero-shot system prompts; 1500-2000 train questions;
+loss on the target only):
+* p0       base, few-shot plain sub-question chain (prompts.musique_messages)
+* s_ans    SFT on the answer only (no chain): does a chain matter after fine-tuning at all?
+* s_plain  SFT on "Hop i: sub-question => answer ... Answer"
+* s_struct SFT on the same with "[from: <paragraph title>]" after every hop (each step cites the paragraph
+           it reads; hops without an identifiable source paragraph are skipped)
+MuSiQue baselines also join with the earlier cot_free / sc decisions (results/causaldec/M_select_*).
+**Primary endpoint (per dataset, Qwen2.5-3B, orig).** EM(s_struct) minus max(EM s_plain, EM s_ans, EM p0,
+and for MuSiQue EM sc) >= +2 points with paired-bootstrap 95% CI > 0. GO = both datasets pass at 3B;
+partial GO = one dataset. NO-GO otherwise: report that the recipe does not carry over to natural text.
+**Secondary.** 1.5B; dist8 robustness (EM drop relative to orig); citation precision (`cite_ok`: cited
+titles that are gold supporting paragraphs); `last_hop_match` (final answer equals the last hop result).
+**Declared limits.** Fine-tuning uses train annotations the base few-shot arm never sees, hence the s_ans
+and s_plain controls; one seed; 1500-2000 training questions (a small fraction of the training sets).
+**Launch rule.** Launch after round 10 (CLUTRR) reports, unless it returns a clear NO-GO for structure
+(s_struct not better than s_plain on CLUTRR), in which case this round is run only once for the report.

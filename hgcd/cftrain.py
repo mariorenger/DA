@@ -155,7 +155,7 @@ def msgs_struct_fewshot(ex: D.ClutrrExample) -> List[dict]:
 LORA_TARGETS = ["q_proj", "k_proj", "v_proj", "o_proj", "gate_proj", "up_proj", "down_proj"]
 
 
-def _tokenize(tok, prompt: str, target: str, max_len: int = 1024):
+def _tokenize(tok, prompt: str, target: str, max_len: int = 2048):
     p = tok(prompt, add_special_tokens=False).input_ids
     t = tok(target + tok.eos_token, add_special_tokens=False).input_ids
     ids = (p + t)[:max_len]

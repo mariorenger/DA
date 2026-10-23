@@ -13,7 +13,7 @@ import nbformat as nbf
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 MODULES = ["__init__", "data", "chain", "prompts", "lm", "decoding", "experiments", "metrics",
-           "report", "pipeline", "causaldec", "cftrain"]
+           "report", "pipeline", "causaldec", "cftrain", "egen"]
 
 INTRO = """# Read, not reasoned? Kaggle run-all
 
@@ -52,7 +52,9 @@ def run_job(label, model, preset, extra, gpus):
     env = dict(os.environ, CUDA_VISIBLE_DEVICES=gpus)
     out = f"{OUT}/{preset}_{label}"
     with open(out + ".log", "w") as log:
-        cmd = ([sys.executable, "-m", "hgcd.cftrain", "--model", model, "--outdir", out, *extra]
+        cmd = ([sys.executable, "-m", "hgcd.egen", "--model", model, "--outdir", out, *extra]
+               if preset.startswith("egen") else
+               [sys.executable, "-m", "hgcd.cftrain", "--model", model, "--outdir", out, *extra]
                if preset.startswith("cftrain") else
                [sys.executable, "-m", "hgcd.causaldec", "--model", model, "--outdir", out, *extra]
                if preset.startswith("causaldec") else
@@ -240,6 +242,27 @@ NOTEBOOKS = {
                ("--arms", "s_plain", "s_struct", "--seed", "1", "--max_minutes", "560"))],
         "1": [("qwen-3b", "Qwen/Qwen2.5-3B-Instruct", "cftrain",
                ("--arms", "s_plain", "s_struct", "--seed", "1", "--max_minutes", "560"))],
+    },
+}""",
+    # round 10b: does the structured-chain recipe generalise? (see REVIEW.md, pre-registered)
+    "EG1_musique": """{
+    "eg1": {
+        "0": [("qwen-1.5b", "Qwen/Qwen2.5-1.5B-Instruct", "egen",
+               ("--dataset", "musique", "--arms", "p0", "s_ans", "s_plain", "s_struct", "--n_train", "2000",
+                "--conds", "orig", "dist8", "--max_minutes", "560"))],
+        "1": [("qwen-3b", "Qwen/Qwen2.5-3B-Instruct", "egen",
+               ("--dataset", "musique", "--arms", "s_ans", "s_plain", "s_struct", "--n_train", "1500",
+                "--conds", "orig", "dist8", "--max_minutes", "560"))],
+    },
+}""",
+    "EG1_wiki2": """{
+    "eg1": {
+        "0": [("qwen-1.5b", "Qwen/Qwen2.5-1.5B-Instruct", "egen",
+               ("--dataset", "wiki2", "--arms", "p0", "s_ans", "s_plain", "s_struct", "--n_train", "2000",
+                "--max_minutes", "560"))],
+        "1": [("qwen-3b", "Qwen/Qwen2.5-3B-Instruct", "egen",
+               ("--dataset", "wiki2", "--arms", "p0", "s_ans", "s_plain", "s_struct", "--n_train", "1500",
+                "--max_minutes", "560"))],
     },
 }""",
     "M_select_orig": """{
