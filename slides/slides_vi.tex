@@ -1,0 +1,841 @@
+%% ============================================================================
+%% Read, Not Reasoned? -- bản trình bày tóm tắt kết quả nghiên cứu (theo mẫu LLMRec).
+%% Biên dịch: pdfLaTeX (hoặc tectonic), chạy 2 lần.
+%%  * Nếu cùng thư mục có theme "hust" (beamerthemehust.sty) thì dùng theme đó;
+%%    nếu không, dùng giao diện dự phòng định nghĩa ngay bên dưới.
+%%  * Bản có lời thoại gợi ý: bỏ dấu % ở hai dòng "pgfpages" và "show notes".
+%% Số liệu: thư mục results/ của repo; xem docs/research_notes.md và REVIEW.md.
+%% ============================================================================
+\documentclass[aspectratio=169,t]{beamer}
+\usepackage[utf8]{inputenc}
+\usepackage[vietnamese]{babel}
+\usepackage{amsmath,amssymb}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{tabularx}
+\usepackage{multirow}
+\usepackage{makecell}
+\usepackage{graphicx}
+\usepackage{tikz}
+\usetikzlibrary{positioning,calc,decorations.pathreplacing,arrows.meta}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.17}
+% \usepackage{pgfpages}
+% \setbeameroption{show notes on second screen=bottom}
+
+\definecolor{okc}{HTML}{1E7B34}
+\definecolor{partc}{HTML}{B7791F}
+\definecolor{failc}{HTML}{B91C1C}
+\definecolor{nac}{HTML}{64748B}
+\definecolor{keyc}{HTML}{14284B}
+\definecolor{softc}{HTML}{F2F4F8}
+\definecolor{accentc}{HTML}{A6192E}
+
+\newif\ifhusttheme
+\IfFileExists{beamerthemehust.sty}{\hustthemetrue}{\hustthemefalse}
+\ifhusttheme
+  \usetheme{hust}
+\else
+  \usetheme{default}
+  \setbeamercolor{structure}{fg=accentc}
+  \setbeamercolor{normal text}{fg=black!88}
+  \setbeamercolor{frametitle}{fg=white,bg=accentc}
+  \setbeamercolor{title}{fg=accentc}
+  \setbeamercolor{subtitle}{fg=keyc}
+  \setbeamercolor{block title}{fg=white,bg=keyc}
+  \setbeamercolor{block body}{fg=black,bg=keyc!5}
+  \setbeamercolor{block title alerted}{fg=white,bg=accentc}
+  \setbeamercolor{block body alerted}{fg=black,bg=accentc!5}
+  \setbeamercolor{block title example}{fg=white,bg=okc}
+  \setbeamercolor{block body example}{fg=black,bg=okc!5}
+  \setbeamercolor{foot}{fg=black!60,bg=black!5}
+  \setbeamertemplate{blocks}[rounded][shadow=false]
+  \setbeamertemplate{itemize items}[square]
+  \setbeamertemplate{enumerate items}[default]
+  \setbeamerfont{frametitle}{size=\large,series=\bfseries}
+  \setbeamerfont{title}{size=\LARGE,series=\bfseries}
+  \setbeamertemplate{frametitle}{%
+    \nointerlineskip
+    \begin{beamercolorbox}[wd=\paperwidth,ht=0.85cm,dp=0.3cm,leftskip=0.35cm,rightskip=0.35cm]{frametitle}%
+      \usebeamerfont{frametitle}\insertframetitle
+    \end{beamercolorbox}\vspace{1mm}}
+  \setbeamertemplate{footline}{%
+    \leavevmode\hbox{%
+    \begin{beamercolorbox}[wd=.34\paperwidth,ht=2.3ex,dp=0.9ex,leftskip=0.35cm]{foot}\tiny\insertshorttitle\ \textperiodcentered\ \insertshortauthor\end{beamercolorbox}%
+    \begin{beamercolorbox}[wd=.50\paperwidth,ht=2.3ex,dp=0.9ex,center]{foot}\tiny\insertsection\end{beamercolorbox}%
+    \begin{beamercolorbox}[wd=.16\paperwidth,ht=2.3ex,dp=0.9ex,right,rightskip=0.35cm]{foot}\tiny\insertframenumber\,/\,\inserttotalframenumber\end{beamercolorbox}}}
+  \setbeamertemplate{title page}{%
+    \vspace*{0.5cm}
+    {\usebeamercolor[fg]{title}\usebeamerfont{title}\inserttitle\par}
+    \vspace{0.25cm}
+    {\usebeamercolor[fg]{subtitle}\large\insertsubtitle\par}
+    \vspace{0.3cm}{\color{accentc}\rule{0.92\textwidth}{1.2pt}}\par
+    \vspace{0.45cm}
+    {\small\insertauthor\par}
+    \vspace{0.35cm}
+    {\small\color{black!60}\insertdate\par}}
+  \makeatletter\define@key{beamerframe}{Title}[true]{}\makeatother
+\fi
+\setbeamertemplate{caption}[numbered]
+\beamertemplatenavigationsymbolsempty
+\setbeamertemplate{note page}{%
+  \vspace*{4mm}\noindent\begin{minipage}[t]{\textwidth}
+    {\small\bfseries\color{accentc}Lời thoại gợi ý}\par\vspace{2mm}
+    {\small\insertnote\par}
+  \end{minipage}}
+
+\newcolumntype{Y}{>{\raggedright\arraybackslash}X}
+\newcolumntype{P}[1]{>{\raggedright\arraybackslash}p{#1}}
+\newcolumntype{Q}[1]{>{\centering\arraybackslash}p{#1}}
+\newcolumntype{R}[1]{>{\raggedleft\arraybackslash}p{#1}}
+\newcommand{\nhan}[2]{{\setlength{\fboxsep}{1.3pt}\colorbox{#1}{\tiny\bfseries\color{white}\rule[-1.4pt]{0pt}{6.3pt}#2}}}
+\newcommand{\nhanS}[2]{{\setlength{\fboxsep}{0.8pt}\colorbox{#1}{\tiny\bfseries\color{white}\rule[-1.1pt]{0pt}{5.6pt}\,#2\,}}}
+\newcommand{\OKs}{\nhanS{okc}{THÀNH CÔNG}}
+\newcommand{\PARTs}{\nhanS{partc}{CÓ ĐIỀU KIỆN}}
+\newcommand{\FAILs}{\nhanS{failc}{KHÔNG HIỆU QUẢ}}
+\newcommand{\NAs}{\nhanS{nac}{ĐANG CHẠY}}
+\newcommand{\OK}{\nhan{okc}{THÀNH CÔNG}}
+\newcommand{\PART}{\nhan{partc}{CÓ ĐIỀU KIỆN}}
+\newcommand{\FAIL}{\nhan{failc}{KHÔNG HIỆU QUẢ}}
+\newcommand{\NA}{\nhan{nac}{ĐANG CHẠY}}
+\newenvironment{ketluan}{\begin{block}{Kết luận}}{\end{block}}
+\newcommand{\ghichu}[1]{\par\vspace{2pt}{\tiny\color{nac}#1\par}}
+\newcommand{\code}[1]{\texttt{#1}}
+\newcommand{\ci}[2]{{\tiny[#1,\,#2]}}
+\newcommand{\dn}{\mathrm{do}_{\text{naive}}}
+\newcommand{\dt}{\mathrm{do}_{\text{total}}}
+
+\title[Read, Not Reasoned?]{Read, Not Reasoned?}
+\subtitle{Can thiệp nhân quả có ground truth lên chuỗi suy luận nhiều bước của mô hình ngôn ngữ nhỏ}
+\author[Học viên]{\texorpdfstring{%
+    \begin{tabular}{rl}
+        \textbf{Người thực hiện:} & [Họ tên học viên] \\[0.3em]
+        \textbf{GVHD:}            & [Tên giáo sư hướng dẫn]
+    \end{tabular}}{[Họ tên học viên]}%
+}
+\date{2026}
+
+\begin{document}
+%% ============================================================================ Bìa
+\begin{frame}[noframenumbering,Title]
+  \titlepage
+  \note{Kính chào thầy cô. Em trình bày nghiên cứu về một câu hỏi đơn giản: khi một mô hình ngôn ngữ nhỏ viết chuỗi suy luận từng bước, đáp án cuối có thật sự được suy ra từ chuỗi đó không, hay mô hình chỉ đọc lại chữ đã viết sẵn? Từ câu trả lời, em rút ra cách làm cho mô hình trả lời đúng hơn.}
+\par\kern0pt
+\end{frame}
+
+%% ============================================================================ Nội dung
+\begin{frame}[noframenumbering,shrink]{Nội dung trình bày}
+\small
+\begin{columns}[T,onlytextwidth]
+\column{0.5\textwidth}
+\begin{enumerate}
+  \setlength{\itemsep}{0.5em}
+  \item Vấn đề và câu hỏi nghiên cứu
+  \item Cách tiếp cận: tạo ground truth để đo
+  \item Bức tranh tổng thể: cái gì đúng, cái gì không
+  \item Chẩn đoán: mô hình \emph{đọc} chứ không \emph{suy luận} (R1--R5)
+\end{enumerate}
+\column{0.5\textwidth}
+\begin{enumerate}
+  \setcounter{enumi}{4}
+  \setlength{\itemsep}{0.5em}
+  \item Decoding: hướng nào không giúp, hướng nào giúp (D1--D3)
+  \item Vòng thí nghiệm đang chạy và kế hoạch kiểm tra tính tổng quát
+  \item Hạn chế, những chỗ đã tự sửa
+  \item Kết luận và hướng tiếp theo
+\end{enumerate}
+\end{columns}
+\vspace{0.6cm}
+{\footnotesize\color{nac} Phụ lục: thuật ngữ \textperiodcentered{} số liệu và vị trí file trong repo}
+\par\kern0pt
+\note{Bài trình bày đi theo đúng trình tự nghiên cứu. Phần 3 là phần cần nhớ nhất: một bảng cho biết từng hướng thành công hay thất bại.}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Vấn đề}
+%% ============================================================================ Vấn đề
+\begin{frame}[shrink]{Vấn đề: viết ra một bước có nghĩa là đã dùng bước đó?}
+\begin{columns}[T,onlytextwidth]
+\column{0.56\textwidth}
+\footnotesize
+Chain-of-thought (CoT) yêu cầu mô hình viết các bước trung gian trước khi trả lời. Nhưng \textbf{viết} một bước chưa chắc là \textbf{dùng} bước đó.
+\begin{itemize}
+  \setlength{\itemsep}{2pt}
+  \item Nhiều nghiên cứu xoá hoặc sửa một bước rồi xem đáp án có đổi không. Điểm yếu chung: \textbf{không ai biết bước nào thật sự cần thiết}, nên không kiểm chứng được phương pháp đo nào đúng.
+  \item Với mô hình nhỏ (0.5B--7B), câu hỏi thực dụng hơn: \textbf{có cách nào làm chúng trả lời đúng hơn} khi câu hỏi cần nhiều bước (hỏi đáp trên nhiều tài liệu, quan hệ họ hàng, truy vấn có quan hệ)?
+  \item Hướng ban đầu của đề tài: chỉnh \emph{decoding} (cách chọn token) để khuếch đại phần đáp án ``do chuỗi gây ra''.
+\end{itemize}
+\column{0.41\textwidth}
+\begin{block}{Hai câu hỏi trung tâm}
+\footnotesize
+\begin{enumerate}
+  \setlength{\itemsep}{3pt}
+  \item Đáp án có \emph{phụ thuộc nhân quả} vào chuỗi suy luận không, và đi qua đường nào?
+  \item Từ câu trả lời đó, can thiệp ở đâu thì mô hình trả lời đúng hơn: ở bước \emph{đọc đáp án}, hay ở bước \emph{tạo chuỗi}?
+\end{enumerate}
+\end{block}
+\end{columns}
+\par\kern0pt
+\note{Đây là hai câu hỏi xuyên suốt. Câu 1 là chẩn đoán, câu 2 là hành động. Kết quả của câu 1 quyết định câu 2.}
+\end{frame}
+
+%% ============================================================================ hai loại câu hỏi
+\begin{frame}[shrink]{Hai loại câu hỏi nhiều bước dùng để tách ``đọc'' khỏi ``suy luận''}
+\begin{columns}[T,onlytextwidth]
+\column{0.49\textwidth}
+\begin{block}{Bridge (MuSiQue, Wikipedia)}
+\scriptsize
+\textbf{Hỏi:} Vợ của đạo diễn phim X là ai?\par\vspace{2pt}
+\code{Hop 1: Đạo diễn phim X là ... $\Rightarrow$ Y}\\
+\code{Hop 2: Vợ của Y là ... $\Rightarrow$ Z}\par\vspace{2pt}
+Mỗi bước tìm một thực thể, bước sau dùng nó. Đáp án Z \textbf{được viết ra} ở bước cuối: chỉ cần đọc bước cuối là trả lời được.
+\end{block}
+\column{0.49\textwidth}
+\begin{block}{Compositional (CLUTRR, quan hệ gia đình)}
+\scriptsize
+\textbf{Chuyện:} Anna đưa con trai Ben đi chơi; Ben và chị gái Clara nướng bánh. \textbf{Hỏi:} Clara là gì của Anna?\par\vspace{2pt}
+\code{Hop 1: Ben là con trai của Anna.}\\
+\code{Hop 2: Clara là chị gái của Ben.}\par\vspace{2pt}
+Đáp án ``\textbf{con gái}'' \textbf{không xuất hiện} trong chuỗi: phải tự \emph{tính} son $\circ$ sister $=$ daughter.
+\end{block}
+\end{columns}
+\vspace{0.2cm}
+\begin{alertblock}{Ý tưởng then chốt}
+\footnotesize
+Nếu mô hình thật sự suy luận, chuỗi phải có tác dụng ở \emph{cả hai} loại. Nếu nó chỉ có tác dụng khi đáp án được viết sẵn (bridge) thì mô hình đang \textbf{đọc} chứ không \textbf{suy luận}.
+\end{alertblock}
+\par\kern0pt
+\note{Đây là thiết kế cốt lõi. Hai loại bài toán giống nhau về hình thức nhưng khác nhau ở chỗ đáp án có nằm trong chuỗi hay không.}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Cách tiếp cận}
+%% ============================================================================ ground truth
+\begin{frame}[shrink]{Cách tiếp cận: tự tạo ground truth bằng can thiệp có đáp án biết trước}
+\centering
+\begin{tikzpicture}[font=\scriptsize,>=Stealth,
+  stp/.style={draw=keyc,fill=keyc!5,rounded corners=2pt,text width=3.65cm,minimum height=2.6cm,align=left,inner sep=5pt,anchor=north west}]
+\node[stp] (a) at (0,0) {{\footnotesize\bfseries\color{keyc}1. Chuỗi gold}\par\vspace{3pt}
+  Viết sẵn chuỗi đúng từ đường đi gold của dữ liệu (MuSiQue có phân rã, CLUTRR có đồ thị quan hệ).};
+\node[stp,right=0.3cm of a.north east,anchor=north west] (b) {{\footnotesize\bfseries\color{keyc}2. Bước thừa}\par\vspace{3pt}
+  Chèn một bước \emph{đúng sự thật nhưng không liên quan}. Mức cần thiết thật của nó \textbf{bằng 0}; một phép đo tốt phải chấm nó $\approx 0$.};
+\node[stp,right=0.3cm of b.north east,anchor=north west] (c) {{\footnotesize\bfseries\color{keyc}3. Can thiệp hiệu ứng 0}\par\vspace{3pt}
+  Đổi tên người, đổi thứ tự câu, thêm distractor, câu trung tính (placebo). Về logic, đáp án đúng không đổi.};
+\node[stp,right=0.3cm of c.north east,anchor=north west] (d) {{\footnotesize\bfseries\color{keyc}4. Mediation chính xác}\par\vspace{3pt}
+  Tự \emph{đặt} chuỗi vào mô hình, nhờ đó quan sát trực tiếp hiệu ứng trực tiếp và hiệu ứng qua chuỗi trên từng câu.};
+\end{tikzpicture}
+\vspace{0.1cm}
+\begin{columns}[T,onlytextwidth]
+\column{0.5\textwidth}
+\scriptsize
+\textbf{Hai kiểu che một bước $j$:}
+\begin{itemize}
+  \setlength{\itemsep}{1pt}
+  \item $\dn$: che đúng bước $j$.
+  \item $\dt$: che bước $j$ \emph{và} mọi chỗ các bước sau nhắc lại kết quả của nó.
+\end{itemize}
+\column{0.5\textwidth}
+\scriptsize
+\textbf{Các control kèm theo:} placebo (viết lại cùng nghĩa), mask-marker (chèn \code{[MASKED]} nhưng giữ nội dung), marker-tree (cùng số token mask trên cả nhánh).
+\end{columns}
+\par\kern0pt
+\note{Vì có ground truth, ta kiểm chứng được cả các phương pháp đo trước khi dùng chúng để chẩn đoán mô hình.}
+\end{frame}
+
+%% ============================================================================ dữ liệu
+\begin{frame}[shrink]{Dữ liệu, mô hình và giao thức thống kê}
+\begin{columns}[T,onlytextwidth]
+\column{0.55\textwidth}
+\scriptsize
+\renewcommand{\arraystretch}{1.18}
+\begin{tabularx}{\linewidth}{@{}P{2.0cm}Y@{}}
+\toprule
+\textbf{Mục} & \textbf{Chi tiết}\\
+\midrule
+CLUTRR & chuỗi quan hệ gia đình sạch, 11.708 train / 635 test; thêm một task \emph{chưa từng dùng} để kiểm chứng\\
+MuSiQue-Ans & câu hỏi Wikipedia thật, có phân rã gold; ngữ cảnh gồm đoạn đúng và 4 (hoặc 8) distractor\\
+Mô hình & Qwen2.5-0.5B/1.5B/3B/7B-Instruct, SmolLM2-1.7B; greedy, fp16\\
+Phần cứng & Kaggle T4 16GB; không fine-tune ở phần chẩn đoán\\
+Thống kê & bootstrap 95\% CI, so sánh cặp, McNemar\\
+\bottomrule
+\end{tabularx}
+\column{0.42\textwidth}
+\begin{block}{Kỷ luật thí nghiệm}
+\scriptsize
+\begin{itemize}
+  \setlength{\itemsep}{2pt}
+  \item \textbf{Đăng ký trước}: giả thuyết, ngưỡng go/no-go ghi vào \code{REVIEW.md} \emph{trước} khi chạy GPU.
+  \item Ngưỡng thành công: vượt baseline tốt nhất (CoT hoặc self-consistency \emph{cùng compute}) $\ge 2$ điểm, CI $>0$.
+  \item Phát hiện post hoc chỉ được chấp nhận sau khi xác nhận lại trên dữ liệu chưa dùng.
+  \item Mọi bảng sinh từ code, không gõ tay.
+\end{itemize}
+\end{block}
+\end{columns}
+\par\kern0pt
+\note{Điểm khác với nhiều paper decoding là baseline luôn là self-consistency cùng compute, và ngưỡng được đặt trước khi chạy.}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Bức tranh tổng thể}
+%% ============================================================================ tổng quan
+\begin{frame}[shrink]{Tổng quan: cái gì đúng, cái gì không}
+\scriptsize
+\renewcommand{\arraystretch}{1.12}
+\setlength{\tabcolsep}{3pt}
+\begin{tabularx}{\textwidth}{@{}P{0.9cm}YP{3.35cm}P{2.05cm}@{}}
+\toprule
+\textbf{Mã} & \textbf{Phát hiện} & \textbf{Con số chính} & \textbf{Kết luận}\\
+\midrule
+R1 & Che một bước đơn lẻ bỏ sót suy luận kiểu bridge; che kèm các bước phụ thuộc thì đúng & $\dn$: $-4$ đến $+6.5$ điểm; $\dt$: 41--67 điểm & \OKs\\
+R2 & Resampling baseline cố định chấm bước thừa thành ``cần thiết'' & bước thừa 56--78 điểm; sửa còn $\le 4$ & \OKs\\
+R3 & \textbf{Chuỗi được đọc, không được suy luận} & CLUTRR: $-1.5$ đến $+7.3$; có đáp án viết sẵn: 52--77 & \OKs\\
+R4 & Distractor hại CoT \emph{qua} chuỗi & NDE $\approx0$; TIE $-3.6/-5.0$ & \OKs\\
+R5 & Chỉnh bước đọc đáp án (HGCD) không giúp & $|\Delta|\le1.7$, $p\ge0.6$ & \FAILs\\
+\midrule
+D1 & Lọc distractor bằng attention trước khi sinh (MuSiQue) & không vượt SC; top-4 còn tệ hơn CoT & \FAILs\\
+D2 & Trích fact rồi để bảng luật hợp thành (CLUTRR) & hơn SC cùng compute $+21$ đến $+37$ & \OKs\\
+D3 & Ablation: cùng fact, đổi bên hợp thành & luật hơn LLM $+13$ đến $+35$ & \OKs\\
+\bottomrule
+\end{tabularx}
+\ghichu{R1--R4 là kết quả chẩn đoán (đo lường); R5, D1--D3 là kết quả can thiệp (làm cho mô hình trả lời đúng hơn). ``Thành công'' ở R1--R4 nghĩa là giả thuyết đã dự đoán được xác nhận.}
+\par\kern0pt
+\note{Đây là slide quan trọng nhất. Chẩn đoán R1 đến R4 đều được xác nhận. Về can thiệp: chỉnh decoding ở bước đọc không giúp, lọc bằng attention không giúp, nhưng đưa phép hợp thành ra ngoài mô hình thì giúp rất nhiều.}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Chẩn đoán (R1--R5)}
+%% ============================================================================ R1
+\begin{frame}[shrink]{R1 \textperiodcentered{} Che một bước đơn lẻ không thấy được bước cần thiết}
+\begin{columns}[T,onlytextwidth]
+\column{0.5\textwidth}
+\scriptsize
+\textbf{Vì sao?} Bước sau đã chép lại kết quả của bước trước. Che Hop 1 nhưng Hop 2 vẫn ghi ``Y'' thì mô hình không mất thông tin: $\dn$ luôn báo ``không cần thiết'', \emph{kể cả khi Hop 1 cần thiết}. Đây là một đồng nhất thức (controlled direct effect), không phải nhiễu.\par\vspace{3pt}
+\textbf{Kiểm tra:} che một bước gold không phải bước cuối (MuSiQue); đo thay đổi xác suất đáp án đúng.\par\vspace{3pt}
+\renewcommand{\arraystretch}{1.1}
+\begin{tabularx}{\linewidth}{@{}YQ{1.3cm}Q{1.3cm}@{}}
+\toprule
+\textbf{AUC (0.5 = đoán mò)} & $\dt$ & $\dn$\\
+\midrule
+Qwen-1.5B & 0.98 & 0.82\\
+Qwen-3B & 0.97 & 0.76\\
+Qwen-7B & 0.86 & 0.71\\
+\bottomrule
+\end{tabularx}
+\column{0.48\textwidth}
+\centering
+\begin{tikzpicture}
+\begin{axis}[ybar, width=\linewidth, height=5.0cm, bar width=7pt, ymin=-10, ymax=75,
+  symbolic x coords={0.5B,1.5B,Smol,3B,7B}, xtick=data, x tick label style={font=\tiny},
+  ylabel={$\Delta p(\text{gold})$, điểm}, ylabel style={font=\tiny}, y tick label style={font=\tiny},
+  legend style={at={(0.5,1.05)},anchor=south,legend columns=3,font=\tiny,draw=none},
+  enlarge x limits=0.12, ymajorgrids, grid style={black!10}]
+\addplot[fill=keyc,draw=none] coordinates {(0.5B,56.7)(1.5B,56.9)(Smol,66.8)(3B,49.1)(7B,41.3)};
+\addplot[fill=partc,draw=none] coordinates {(0.5B,-2.4)(1.5B,0.6)(Smol,-3.9)(3B,0.5)(7B,6.5)};
+\addplot[fill=nac,draw=none] coordinates {(0.5B,7.3)(1.5B,0.0)(Smol,2.3)(3B,-0.3)(7B,5.7)};
+\legend{$\dt$,$\dn$,marker-tree (control)}
+\end{axis}
+\end{tikzpicture}
+\end{columns}
+\begin{ketluan}
+\footnotesize Muốn đo một bước có cần thiết không phải can thiệp cả các bước phụ thuộc vào nó; phương pháp ``xoá một bước'' đánh giá thấp có hệ thống các bước trung gian. Placebo ở mức đoán mò (AUC $\approx 0.5$); marker-tree chỉ 0--7 điểm nên hiệu ứng lớn không phải do che nhiều chữ.
+\end{ketluan}
+\par\kern0pt
+\note{Cột xanh đậm là che kèm các bước phụ thuộc: 41 đến 67 điểm. Cột cam là che một bước: gần như bằng không. Cột xám là control cùng số token mask nhưng giữ nội dung: nhỏ, nên hiệu ứng lớn không phải do che nhiều chữ. Hệ quả: muốn đo một bước có cần không phải can thiệp cả các bước phụ thuộc.}
+\end{frame}
+
+%% ============================================================================ R2
+\begin{frame}[shrink]{R2 \textperiodcentered{} Resampling với baseline cố định bị lệch đúng bằng $1-r$}
+\begin{columns}[T,onlytextwidth]
+\column{0.5\textwidth}
+\footnotesize
+Phương pháp phổ biến: làm hỏng một bước, cho mô hình tự viết tiếp, xem tỷ lệ đúng giảm bao nhiêu.\par\vspace{3pt}
+\textbf{Vấn đề:} so với chuỗi gold gốc (luôn đúng), nhưng mô hình tự viết tiếp chỉ đúng với tỷ lệ $r<1$. Phần sai do mô hình \emph{viết tiếp kém} ($1-r$) bị tính nhầm là ``do bước bị hỏng''.\par\vspace{3pt}
+\begin{exampleblock}{Ví dụ}
+\scriptsize
+Nếu $r=0.3$ thì \emph{mọi} bước, kể cả bước hoàn toàn không liên quan, bị chấm ``cần thiết'' khoảng 70 điểm. Cách sửa: so với một baseline \emph{cũng được resample}.
+\end{exampleblock}
+\column{0.48\textwidth}
+\scriptsize
+\renewcommand{\arraystretch}{1.2}
+\begin{tabularx}{\linewidth}{@{}YQ{1.0cm}Q{1.0cm}@{}}
+\toprule
+\textbf{MuSiQue (điểm ``cần thiết'')} & \textbf{1.5B} & \textbf{3B}\\
+\midrule
+Cố định: bước cần thiết & 75.7 & 61.5\\
+Cố định: \textbf{bước thừa} & \textbf{76.3} & \textbf{56.3}\\
+Resample: bước cần thiết & 6.4 & 11.3\\
+Resample: bước thừa & $-0.3$ & 4.3\\
+AUC, cố định & 0.52 & 0.55\\
+AUC, resample & 0.67 & 0.64\\
+\bottomrule
+\end{tabularx}
+\ghichu{Mô hình chỉ tự viết tiếp đúng 22--44\% số lần, nên 56--78 chính là $1-r$.}
+\end{columns}
+\par\vspace{4pt}
+\begin{ketluan}
+\footnotesize Một số số đo ``step necessity'' đã công bố chủ yếu phản ánh việc mô hình viết tiếp kém, không phản ánh tầm quan trọng của bước. Resampling đo \emph{khôi phục được không}, còn $\dt$ đo \emph{bước viết ra có được dùng không}.
+\end{ketluan}
+\par\kern0pt
+\note{Hai phương pháp trả lời hai câu hỏi khác nhau. Với baseline cố định, bước thừa và bước cần thiết gần như bằng nhau, AUC đoán mò.}
+\end{frame}
+
+%% ============================================================================ R3
+\begin{frame}[shrink]{R3 \textperiodcentered{} Kết quả chính: chuỗi được \emph{đọc}, không được \emph{suy luận}}
+\begin{columns}[T,onlytextwidth]
+\column{0.5\textwidth}
+\centering
+\begin{tikzpicture}
+\begin{axis}[ybar, width=\linewidth, height=4.5cm, bar width=8pt, ymin=-5, ymax=85,
+  symbolic x coords={0.5B,1.5B,Smol,3B,7B}, xtick=data, x tick label style={font=\tiny},
+  ylabel={$\Delta p(\text{gold})$, điểm}, ylabel style={font=\tiny}, y tick label style={font=\tiny},
+  legend style={at={(0.5,1.05)},anchor=south,legend columns=2,font=\tiny,draw=none},
+  enlarge x limits=0.12, ymajorgrids, grid style={black!10}]
+\addplot[fill=nac,draw=none] coordinates {(0.5B,0.1)(1.5B,-1.5)(Smol,1.8)(3B,7.3)(7B,1.3)};
+\addplot[fill=keyc,draw=none] coordinates {(0.5B,60.8)(1.5B,76.1)(Smol,69.5)(3B,77.0)(7B,51.9)};
+\legend{CLUTRR thường (phải tính),CLUTRR + đáp án viết sẵn}
+\end{axis}
+\end{tikzpicture}
+\par\scriptsize Che một bước quan hệ: chỉ có tác dụng khi đáp án được \emph{viết sẵn}.
+\column{0.48\textwidth}
+\scriptsize
+\textbf{Phép thử $T_{\text{copy-wrong}}$:} thêm một bước cuối viết đáp án \emph{sai}, mâu thuẫn với các bước quan hệ. Mô hình có chép theo không?\par\vspace{2pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabularx}{\linewidth}{@{}YQ{1.2cm}Q{1.55cm}@{}}
+\toprule
+ & \textbf{Chép sai} & \textbf{Khi tự giải đúng}\\
+\midrule
+Qwen-0.5B & 66.5\% & 70.8\%\\
+Qwen-1.5B & 58.2\% & 63.0\%\\
+Qwen-3B & 46.2\% & 47.7\%\\
+Qwen-7B & 22.9\% & \textbf{10.3\%}\\
+\bottomrule
+\end{tabularx}
+\end{columns}
+\par\vspace{3pt}
+\begin{ketluan}
+\footnotesize Đến 3B, mô hình chép đáp án sai \emph{như nhau} dù nó tự giải được câu đó (cột 2 $\approx$ cột 3): chữ viết sẵn \emph{đè lên} lời giải của chính nó. Ở 7B mới có bước chuyển (chỉ 10\%), nhưng các bước quan hệ vẫn không có hiệu ứng đo được.
+\end{ketluan}
+\par\kern0pt
+\note{Đây là kết quả trung tâm. Hai điều: một, sự phụ thuộc vào chuỗi chỉ xuất hiện khi có chữ để chép. Hai, mô hình nhỏ chép cả đáp án sai dù tự giải được. Mọi cách chỉnh decoding sau này đều bị giới hạn bởi điều này.}
+\end{frame}
+
+%% ============================================================================ R4
+\begin{frame}[shrink]{R4 \textperiodcentered{} Distractor làm hại CoT thông qua chuỗi, không phải trực tiếp}
+\begin{columns}[T,onlytextwidth]
+\column{0.46\textwidth}
+\footnotesize
+Với mỗi câu hỏi chạy ba lần:
+\begin{enumerate}
+  \setlength{\itemsep}{1pt}
+  \item input gốc, chuỗi gốc;
+  \item input có thêm distractor, chuỗi \emph{sinh lại};
+  \item input có distractor, nhưng \textbf{ép dùng lại chuỗi gốc}.
+\end{enumerate}
+\scriptsize
+TE $=$ (2)$-$(1); NDE $=$ (3)$-$(1) (trực tiếp); TIE $=$ TE $-$ NDE (qua chuỗi). Vì tự đặt chuỗi nên các đại lượng được \emph{quan sát}, không cần giả định.\par\vspace{3pt}
+\ghichu{MuSiQue, 8 distractor, $n=500$, EM (điểm).}
+\column{0.52\textwidth}
+\centering
+\begin{tikzpicture}
+\begin{axis}[ybar, width=\linewidth, height=4.5cm, bar width=8pt, ymin=-9, ymax=2.5,
+  symbolic x coords={1.5B Direct,1.5B CoT,3B Direct,3B CoT}, xtick=data, x tick label style={font=\tiny},
+  y tick label style={font=\tiny},
+  legend style={at={(0.5,1.05)},anchor=south,legend columns=2,font=\tiny,draw=none},
+  enlarge x limits=0.14, ymajorgrids, grid style={black!10}]
+\addplot[fill=partc,draw=none] coordinates {(1.5B Direct,-4.6)(1.5B CoT,1.0)(3B Direct,-3.8)(3B CoT,-0.6)};
+\addplot[fill=keyc,draw=none] coordinates {(1.5B Direct,-1.0)(1.5B CoT,-3.6)(3B Direct,-2.0)(3B CoT,-5.0)};
+\legend{NDE (trực tiếp),TIE (qua chuỗi)}
+\end{axis}
+\end{tikzpicture}
+\end{columns}
+\par\vspace{2pt}
+\begin{ketluan}
+\footnotesize Với CoT, giữ chuỗi cũ thì distractor gần như vô hại (NDE $\approx 0$); toàn bộ tác hại đến từ việc mô hình viết ra \emph{chuỗi khác}. Với Direct và CAD thì ngược lại. Vì vậy các phương pháp tương phản ở bước đọc đáp án (CAD) \emph{nhắm sai chỗ} đối với CoT. Độ lớn thật chỉ 3--6 điểm; pilot 120 câu từng báo $\approx 10$ điểm và đã được sửa.
+\end{ketluan}
+\par\kern0pt
+\note{Hệ quả thực dụng: nếu muốn chống distractor cho CoT thì phải can thiệp trước hoặc trong lúc sinh chuỗi, không phải ở bước đọc đáp án.}
+\end{frame}
+
+%% ============================================================================ R5
+\begin{frame}[shrink]{R5 \textperiodcentered{} Decoding ở bước đọc đáp án (HGCD) không giúp}
+\begin{columns}[T,onlytextwidth]
+\column{0.5\textwidth}
+\footnotesize
+\textbf{HGCD} là phương pháp của đề xuất ban đầu: cộng vào xác suất mỗi đáp án một lượng $\alpha\times$ (hiệu ứng nhân quả trung bình của các bước liên quan, tính bằng $\dt$) để khuếch đại phần ``do chuỗi gây ra''.\par\vspace{4pt}
+\scriptsize
+\renewcommand{\arraystretch}{1.2}
+\begin{tabularx}{\linewidth}{@{}YQ{0.9cm}Q{1.0cm}Q{1.35cm}@{}}
+\toprule
+\textbf{Accuracy (\%)} & \textbf{CoT} & \textbf{HGCD} & \textbf{Calibration}\\
+\midrule
+CLUTRR, Qwen-1.5B & 18.1 & 18.1 & 23.9\\
+CLUTRR, SmolLM2 & 21.4 & 21.0 & 24.8\\
+MuSiQue, Qwen-1.5B & 20.8 & 22.5 & --\\
+MuSiQue, SmolLM2 & 15.0 & 15.8 & --\\
+\bottomrule
+\end{tabularx}
+\column{0.47\textwidth}
+\begin{block}{Vì sao thất bại: R3 đã dự đoán}
+\footnotesize
+HGCD chỉ khuếch đại một sự phụ thuộc \emph{có thật} và tác động \emph{sau khi} chuỗi đã sinh. Nhưng đáp án không phụ thuộc vào nội dung suy luận của chuỗi (R3) và tác hại của distractor không nằm ở bước đọc (R4).
+\end{block}
+\begin{itemize}
+  \setlength{\itemsep}{2pt}
+  \scriptsize
+  \item HGCD $=$ CoT ($|\Delta|\le 1.7$, mọi $p\ge0.6$).
+  \item Calibration có tăng, nhưng không dùng thông tin từ chuỗi và mong manh (đổi input trung tính làm SmolLM2 giảm 5 điểm); sau kiểm tra nó $\approx$ sinh đáp án tự do.
+\end{itemize}
+\end{columns}
+\par\kern0pt
+\note{Thất bại này không ngẫu nhiên mà được giải thích bởi R3 và R4: đó là điểm làm cho thất bại có giá trị khoa học.}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Decoding (D1--D3)}
+%% ============================================================================ D1
+\begin{frame}[shrink]{D1 \textperiodcentered{} MuSiQue: lọc distractor trước khi sinh chuỗi không giúp}
+\begin{columns}[T,onlytextwidth]
+\column{0.53\textwidth}
+\scriptsize
+\textbf{Ý tưởng:} nếu distractor hại qua chuỗi (R4), hãy bỏ chúng \emph{trước} khi mô hình viết. Bộ chọn: attention hiệu chỉnh kiểu ICR (top-4 hoặc xếp lại thứ tự), hoặc để mô hình tự chọn.\par\vspace{3pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabularx}{\linewidth}{@{}lYcccccc@{}}
+\toprule
+\textbf{Dist.} & \textbf{Mô hình} & \textbf{CoT} & \textbf{SC$_5$} & \textbf{Top-4} & \textbf{Rerank} & \textbf{Tự chọn} & \textbf{Gold}\\
+\midrule
+4 & 1.5B & 24.8 & \textbf{28.4} & 23.6 & 23.0 & 13.2 & 34.8\\
+4 & 3B & 38.8 & \textbf{41.4} & 33.8 & 37.4 & 29.6 & 48.6\\
+8 & 1.5B & 22.2 & \textbf{25.0} & 22.0 & 22.2 & 13.2 & 31.4\\
+8 & 3B & 31.6 & \textbf{35.6} & 27.4 & 33.6 & 24.8 & 45.6\\
+\bottomrule
+\end{tabularx}
+\ghichu{EM (\%), $n=500$. ``Gold'' là trần lý thuyết (chỉ giữ đoạn đúng), không phải phương pháp.}
+\column{0.44\textwidth}
+\footnotesize
+\begin{itemize}
+  \setlength{\itemsep}{3pt}
+  \item Có chỗ để cải thiện: trần Gold cao hơn CoT 9--14 điểm.
+  \item Nhưng attention của mô hình $\le$3B chọn chưa đủ chính xác: top-4 giữ đủ đoạn gold chỉ 77--86\%, mất một đoạn gold là accuracy giảm một nửa.
+  \item Self-consistency vẫn là baseline mạnh nhất. Kết luận: \FAILs
+  \item \textbf{Bug đã bắt được:} attention fp16 bị tràn số làm ``top-4'' luôn là 4 đoạn đầu (500/500 câu); đã sửa và chạy lại, số 7B bị loại.
+\end{itemize}
+\end{columns}
+\par\kern0pt
+\note{Lọc bằng attention là hướng hợp lý trên giấy, nhưng ở mô hình nhỏ attention chưa đủ chính xác. Chi tiết bug được ghi lại để minh bạch.}
+\end{frame}
+
+%% ============================================================================ D2 pipeline
+\begin{frame}[shrink]{D2 \textperiodcentered{} Đưa phép hợp thành ra ngoài mô hình: pipeline Extract + rules}
+\centering
+\begin{tikzpicture}[font=\scriptsize,node distance=0.45cm,
+  b/.style={draw,rounded corners=2pt,align=center,minimum height=1.45cm,text width=2.45cm,inner sep=3pt},
+  ar/.style={-{Stealth[length=2mm]},thick}]
+\node[b,fill=keyc!8,draw=keyc] (s) {Câu chuyện\\(văn bản)};
+\node[b,fill=partc!15,draw=partc,right=of s] (e) {\textbf{LLM} trích fact\\ và giới tính};
+\node[b,fill=black!5,right=of e] (g) {Đồ thị quan hệ\\ + cạnh nghịch đảo};
+\node[b,fill=black!5,right=of g] (p) {BFS: đường đi\\ nguồn $\to$ đích};
+\node[b,fill=okc!15,draw=okc,right=of p] (r) {\textbf{Bảng 126 luật}\\ hợp thành};
+\draw[ar] (s)--(e); \draw[ar] (e)--(g); \draw[ar] (g)--(p); \draw[ar] (p)--(r);
+\node[below=0.3cm of e,text width=3.1cm,align=center,font=\tiny] {\code{Anna's son is Ben.}\\\code{Ben's sister is Clara.}\\\code{Genders: Anna=female,\ldots}};
+\node[below=0.3cm of g,text width=2.6cm,align=center,font=\tiny] {Ben $\xrightarrow{\text{mother}}$ Anna\\(cần giới tính của Anna)};
+\node[below=0.3cm of p,text width=2.6cm,align=center,font=\tiny] {Anna $\xrightarrow{\text{son}}$ Ben $\xrightarrow{\text{sister}}$ Clara};
+\node[below=0.3cm of r,text width=2.6cm,align=center,font=\tiny] {son $\circ$ sister $=$ \textbf{daughter}};
+\end{tikzpicture}
+\par\vspace{4pt}
+\begin{columns}[T,onlytextwidth]
+\column{0.5\textwidth}
+\scriptsize
+\textbf{Ý tưởng:} R3 cho thấy mô hình \emph{đọc} tốt nhưng \emph{không hợp thành}. Vậy để mô hình chỉ làm phần nó giỏi (trích fact), giao phép hợp thành cho bảng luật. Về nhân quả, đây là \emph{thực thi} structural equation của đồ thị suy luận.
+\column{0.48\textwidth}
+\scriptsize
+\textbf{Chi tiết:} bảng luật tự induce từ tập train (126 luật, đúng 95\% trên chuỗi gold); nếu không có đường đi thì quay về CoT; SC$_5$ cho bước trích fact. Baseline cùng compute: SC$_{10}$.
+\end{columns}
+\par\kern0pt
+\note{Mô hình chỉ làm bước màu cam. Phép hợp thành, bước màu xanh lá, do bảng luật đảm nhiệm.}
+\end{frame}
+
+%% ============================================================================ D2 kết quả
+\begin{frame}[shrink]{D2 \textperiodcentered{} Kết quả: hơn self-consistency cùng compute $+21$ đến $+37$ điểm}
+\begin{columns}[T,onlytextwidth]
+\column{0.56\textwidth}
+\centering
+\begin{tikzpicture}
+\begin{axis}[ybar, width=\linewidth, height=5.1cm, bar width=5.5pt, ymin=0, ymax=90,
+  symbolic x coords={V 1.5B,V 3B,V 7B,S 1.5B,S 3B,S 7B,L 1.5B,L 3B,L 7B}, xtick=data,
+  x tick label style={font=\tiny,rotate=30,anchor=east}, y tick label style={font=\tiny},
+  ylabel={Accuracy (\%)}, ylabel style={font=\tiny},
+  legend style={at={(0.5,1.05)},anchor=south,legend columns=3,font=\tiny,draw=none},
+  enlarge x limits=0.07, ymajorgrids, grid style={black!10}]
+\addplot[fill=nac,draw=none] coordinates {(V 1.5B,25.7)(V 3B,36.3)(V 7B,39.7)(S 1.5B,31.6)(S 3B,30.4)(S 7B,39.2)(L 1.5B,34.5)(L 3B,26.0)(L 7B,26.0)};
+\addplot[fill=partc,draw=none] coordinates {(V 1.5B,28.7)(V 3B,38.0)(V 7B,43.3)(S 1.5B,31.0)(S 3B,32.3)(S 7B,40.5)(L 1.5B,29.5)(L 3B,29.0)(L 7B,28.5)};
+\addplot[fill=okc,draw=none] coordinates {(V 1.5B,60.7)(V 3B,70.0)(V 7B,80.0)(S 1.5B,52.5)(S 3B,59.5)(S 7B,74.1)(L 1.5B,33.5)(L 3B,38.5)(L 7B,52.5)};
+\legend{CoT,SC$_{10}$ (cùng compute),Extract+rules (SC$_5$)}
+\end{axis}
+\end{tikzpicture}
+\ghichu{V: validation, chuỗi 2--4 bước; S: task chưa thấy, 2--4 bước; L: task chưa thấy, \textbf{5--8 bước} (mô hình chỉ gặp chuỗi $\le 4$ lúc phát triển).}
+\column{0.41\textwidth}
+\scriptsize
+\renewcommand{\arraystretch}{1.12}
+\begin{tabularx}{\linewidth}{@{}lYR{2.1cm}@{}}
+\toprule
+ & & \textbf{$\Delta$ [CI 95\%]}\\
+\midrule
+V & 1.5B/3B/7B & $+32.0$/$+32.0$/$+36.7$\\
+S & 1.5B/3B/7B & $+20.9$/$+27.2$/$+33.5$\\
+L & 1.5B & $-1.0$ (n.s.)\\
+L & 3B & $+9.5\ \ci{3.5}{15.5}$\\
+L & 7B & $\mathbf{+24.0}\ \ci{17.0}{31.5}$\\
+\bottomrule
+\end{tabularx}
+\par\vspace{3pt}
+\footnotesize
+\begin{itemize}
+  \setlength{\itemsep}{2pt}
+  \item Dòng L, 7B là kiểm định chính đăng ký trước: \OKs
+  \item Chuỗi dài ở 1.5B không tăng vì trích sót fact: thiếu một cạnh là không tìm được đường đi.
+\end{itemize}
+\end{columns}
+\par\kern0pt
+\note{Trên chuỗi ngắn, accuracy gần như gấp đôi ở mọi cỡ mô hình. Trên chuỗi dài, mức tăng tăng theo kích thước mô hình vì mô hình lớn trích fact đầy đủ hơn.}
+\end{frame}
+
+%% ============================================================================ D3
+\begin{frame}[shrink]{D3 \textperiodcentered{} Ablation nhân quả: mô hình có đủ thông tin nhưng không tự hợp thành được}
+\begin{columns}[T,onlytextwidth]
+\column{0.46\textwidth}
+\footnotesize
+\textbf{Câu hỏi:} mức tăng ở D2 có thể chỉ vì việc ``trích fact'' giúp sắp xếp thông tin?\par\vspace{3pt}
+\textbf{Thiết kế:} giữ \emph{nguyên} các fact mà mô hình đã trích, chỉ đổi \emph{bên làm phép hợp thành}:
+\begin{itemize}
+  \setlength{\itemsep}{2pt}
+  \item \textbf{LLM hợp thành}: đưa lại các fact đó cho chính mô hình.
+  \item \textbf{Luật hợp thành}: bảng luật như D2.
+\end{itemize}
+Input giống hệt nhau, chỉ cơ chế tính đáp án khác nhau.
+\column{0.52\textwidth}
+\scriptsize
+\renewcommand{\arraystretch}{1.12}
+\setlength{\tabcolsep}{3pt}
+\begin{tabularx}{\linewidth}{@{}llQ{0.8cm}Q{0.95cm}Q{0.95cm}R{1.9cm}@{}}
+\toprule
+\textbf{Chuỗi} & \textbf{Mô hình} & \textbf{CoT} & \textbf{LLM} & \textbf{Luật} & \textbf{Luật$-$LLM}\\
+\midrule
+2--4 & 1.5B & 31.6 & 32.9 & 46.2 & $+13.3$\\
+ & 3B & 30.4 & 28.5 & 54.4 & $+25.9$\\
+ & 7B & 39.2 & 36.1 & 71.5 & $+35.4$\\
+\midrule
+5--8 & 1.5B & 34.5 & 29.0 & 33.0 & $+4.0$ n.s.\\
+ & 3B & 26.0 & 27.0 & 32.0 & $+5.0$ n.s.\\
+ & 7B & 26.0 & 33.0 & 46.0 & $+13.0$\\
+\bottomrule
+\end{tabularx}
+\end{columns}
+\par\vspace{3pt}
+\begin{ketluan}
+\footnotesize Được đưa đúng các fact mình vừa viết, LLM vẫn chỉ $\approx$ CoT; bảng luật trên \emph{cùng} các fact đó cao hơn 13--35 điểm. Vậy mức tăng đến từ \textbf{bước hợp thành}, không phải bước trích fact: đúng như R3 chẩn đoán. Đây là bằng chứng can thiệp khép vòng giữa chẩn đoán và hành động.
+\end{ketluan}
+\par\kern0pt
+\note{Đây là ablation quan trọng nhất về mặt nhân quả: cùng input, thay đúng bộ phận bị nghi ngờ.}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Đang chạy và kế hoạch}
+%% ============================================================================ Vòng 10
+\begin{frame}[shrink]{Đang chạy \textperiodcentered{} Dạy mô hình tự làm phép hợp thành: structured-chain SFT}
+\begin{columns}[T,onlytextwidth]
+\column{0.52\textwidth}
+\footnotesize
+\textbf{Câu hỏi thực dụng:} D2 dựa vào bảng luật nên \emph{rule-based} và chỉ đúng ở miền đóng. Có thể \emph{dạy} chính mô hình làm việc đó không?\par\vspace{3pt}
+\textbf{Ý tưởng:} sau mỗi hop, ghi thêm một dòng ``quan hệ tích luỹ'': mỗi bước chỉ còn là tra cứu hai quan hệ (việc mô hình nhỏ làm được), và đáp án cuối là bản sao dòng cuối.
+\begin{exampleblock}{Ví dụ chuỗi có cấu trúc}
+\scriptsize
+\code{Hop 1: Mabel's son is Rupert. $\Rightarrow$ Rupert}\\
+\code{So Rupert is Mabel's son.}\\
+\code{Hop 2: Rupert's sister is Agatha. $\Rightarrow$ Agatha}\\
+\code{So Agatha is Mabel's daughter.}\\
+\code{Answer: Agatha is Mabel's daughter.}
+\end{exampleblock}
+\column{0.45\textwidth}
+\scriptsize
+\renewcommand{\arraystretch}{1.12}
+\begin{tabularx}{\linewidth}{@{}P{1.3cm}Y@{}}
+\toprule
+\textbf{Nhánh} & \textbf{Nội dung}\\
+\midrule
+P1 & mô hình gốc, few-shot có dòng tích luỹ (không huấn luyện)\\
+S\_plain & LoRA trên chuỗi gold thường\\
+S\_struct & LoRA trên chuỗi có dòng tích luỹ\\
+\bottomrule
+\end{tabularx}
+\par\vspace{3pt}
+\textbf{Đã có (P1):} chỉ ra lệnh trong prompt \textbf{không giúp}: độ chính xác từng bước chỉ 12--18\%, accuracy 23--28\% (ngang CoT thường). Các nhánh huấn luyện \NAs
+\par\vspace{3pt}
+\textbf{Tiêu chí đăng ký trước:} trên chuỗi 5--8 bước, S\_struct (3B) hơn baseline tốt nhất $\ge 2$ điểm với CI $>0$; nếu không, kết luận cấu trúc chuỗi không thêm gì so với fine-tune thường.
+\end{columns}
+\par\kern0pt
+\note{Phần này đang chạy trên Kaggle, chưa có kết quả huấn luyện, nên em chỉ trình bày thiết kế, kết quả sơ bộ P1 và tiêu chí thành công đã ghi trước.}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Hạn chế và kết luận}
+%% ============================================================================ Hạn chế
+\begin{frame}[shrink]{Hạn chế và những chỗ đã tự sửa}
+\begin{columns}[T,onlytextwidth]
+\column{0.5\textwidth}
+\begin{block}{Hạn chế}
+\scriptsize
+\begin{enumerate}
+  \setlength{\itemsep}{2pt}
+  \item Bảng luật dùng nhãn train mà CoT thường không thấy: cần đối chứng fine-tune cùng dữ liệu và rules-in-prompt.
+  \item CLUTRR là miền đóng, tổng hợp; chưa chứng minh trên văn bản thật.
+  \item Extract + rules gần Faithful CoT / Logic-LM: đóng góp mới nằm ở chẩn đoán và ablation nhân quả.
+  \item Mỗi ô 158--500 câu, đa số một seed; $T_{\text{copy-wrong}}$ chỉ 24--44 câu.
+  \item DRG dựa string match: chỉ 25--36\% chuỗi liên thông.
+  \item Chỉ hai miền; chưa kết luận gì cho math hay code; chưa chạy mô hình $>$7B.
+\end{enumerate}
+\end{block}
+\column{0.48\textwidth}
+\scriptsize
+\renewcommand{\arraystretch}{1.1}
+\begin{tabularx}{\linewidth}{@{}YY@{}}
+\toprule
+\textbf{Claim cũ} & \textbf{Đã sửa thành}\\
+\midrule
+Distractor làm CoT mất $\approx10$ điểm (pilot 120 câu) & $n=500$: 3--6 điểm\\
+``CoT dễ tổn thương hơn Direct'' & không có ý nghĩa, bỏ claim\\
+Calibration là đóng góp phương pháp & $\approx$ sinh tự do, chỉ là baseline\\
+Attention top-4 trên 1.5B & bug fp16, đã sửa; loại số 7B\\
+Extract không giới tính $+6$--8 điểm & post hoc, xác nhận thất bại; chỉ báo cáo bản đăng ký trước\\
+\bottomrule
+\end{tabularx}
+\end{columns}
+\par\kern0pt
+\note{Em nêu hạn chế trước. Quan trọng nhất: bảng luật dùng nhãn train, và chưa chứng minh trên văn bản thật. Bảng bên phải là các lần tự sửa, đều ghi trong nhật ký thí nghiệm.}
+\end{frame}
+
+%% ============================================================================ Kết luận
+\begin{frame}[shrink]{Kết luận: chứng minh được gì, chưa chứng minh được gì}
+\begin{columns}[T,onlytextwidth]
+\column{0.5\textwidth}
+\begin{block}{Chứng minh được}
+\scriptsize
+\begin{enumerate}
+  \setlength{\itemsep}{3pt}
+  \item Hai cách đo ``step importance'' phổ biến (xoá một bước; resampling baseline cố định) \textbf{lệch có hệ thống}, có công thức đóng và được xác nhận (R1, R2).
+  \item Mô hình 0.5B--7B \textbf{đọc} chứ không \textbf{suy luận qua} chuỗi; $\le$3B chép cả đáp án sai mà nó tự giải được (R3).
+  \item Tác hại của distractor đi qua chuỗi được sinh lại (R4), nên decoding ở bước đọc không sửa được (R5).
+  \item Thực thi phép hợp thành ngoài mô hình tăng accuracy rất lớn, và ablation chứng minh bước hợp thành là nguyên nhân (D2, D3).
+\end{enumerate}
+\end{block}
+\column{0.47\textwidth}
+\begin{block}{Chưa chứng minh được}
+\scriptsize
+\begin{itemize}
+  \setlength{\itemsep}{3pt}
+  \item Một phương pháp \emph{decoding token} mới vượt self-consistency: HGCD, CAD, calibration, lọc bằng attention đều không đạt.
+  \item Extract + rules mới đúng ở miền có luật đóng (CLUTRR).
+  \item Mô hình học được phép hợp thành qua dữ liệu có cấu trúc (đang chạy).
+  \item Công thức có tổng quát sang văn bản thật (kế hoạch).
+\end{itemize}
+\end{block}
+\end{columns}
+\par\vspace{3pt}
+\begin{alertblock}{Thông điệp}
+\footnotesize Mô hình nhỏ \emph{đọc} chuỗi chứ không \emph{suy luận qua} chuỗi. Vì vậy chỉnh cách chọn token không giúp được; muốn trả lời đúng hơn phải \textbf{can thiệp vào chỗ bị hỏng}: cấu trúc chuỗi và bước hợp thành.
+\end{alertblock}
+\par\kern0pt
+\note{Em tóm tắt lại bốn điều đã chứng minh và bốn điều chưa. Thông điệp: tìm đúng chỗ hỏng rồi mới can thiệp.}
+\end{frame}
+
+%% ============================================================================ Hướng tiếp
+\begin{frame}[shrink]{Hướng tiếp theo}
+\scriptsize
+\renewcommand{\arraystretch}{1.25}
+\begin{tabularx}{\textwidth}{@{}P{0.7cm}YP{2.8cm}@{}}
+\toprule
+\textbf{\#} & \textbf{Việc cần làm} & \textbf{Mục đích}\\
+\midrule
+1 & Chạy xong structured-chain SFT (CLUTRR, 2 seed); đối chứng fine-tune thường & biết cấu trúc chuỗi có thêm gì so với fine-tune cùng dữ liệu\\
+2 & Baseline rules-in-prompt cho CLUTRR & loại bỏ phản biện ``bảng luật là thông tin mô hình không thấy''\\
+3 & Kiểm tra tổng quát: MuSiQue và 2WikiMultihopQA (huấn luyện chuỗi có trích dẫn đoạn nguồn) & chứng minh tính ứng dụng trên văn bản thật\\
+4 & Nếu có tín hiệu: constrained decoding theo bảng luật hoặc DPO với cặp phản thực (chép đáp án sai vs hợp thành đúng) & phiên bản ``decoding đúng nghĩa'' và đo mô hình có biết bác bỏ tri thức sai\\
+5 & Mô hình lớn hơn (14B, OLMo-2) và dữ liệu thật của người dùng & kiểm tra quy mô và ứng dụng\\
+\bottomrule
+\end{tabularx}
+\par\vspace{4pt}
+\begin{alertblock}{Nói thẳng về mức độ tin cậy của việc 3}
+\scriptsize Khả năng thắng trên MuSiQue ở mức trung bình-thấp (không có phép hợp thành thật sự, chỉ là tra cứu cầu nối); 2WikiMultihop có cơ hội tốt hơn. Nếu thua, ta biết rõ giới hạn là miền có luật đóng. Code đã sẵn sàng (\code{hgcd/egen.py}) nhưng \emph{chưa chạy}.
+\end{alertblock}
+\par\kern0pt
+\note{Ưu tiên một và ba. Ba quyết định phần ứng dụng của luận văn.}
+\end{frame}
+
+%% ============================================================================ Cảm ơn
+\begin{frame}[c,noframenumbering]
+\centering
+{\Huge\bfseries\color{accentc}XIN TRÂN TRỌNG CẢM ƠN!\par}
+\vspace{0.5cm}
+{\large Câu hỏi và thảo luận\par}
+\par\kern0pt
+\note{Cảm ơn thầy cô đã lắng nghe. Phần phụ lục có thuật ngữ và vị trí các file kết quả.}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\appendix
+\section{Phụ lục}
+%% ============================================================================ Thuật ngữ
+\begin{frame}[shrink]{Phụ lục \textperiodcentered{} Thuật ngữ}
+\begin{columns}[T,onlytextwidth]
+\column{0.49\textwidth}
+\scriptsize
+\begin{description}
+  \setlength{\itemsep}{1pt}
+  \item[CoT] chain-of-thought: chuỗi suy luận từng bước mô hình viết ra trước khi trả lời.
+  \item[Hop] một bước trong chuỗi, dạng \code{Hop i: nội dung $\Rightarrow$ kết quả}.
+  \item[DRG] đồ thị suy luận có hướng: nối bước $i\to j$ nếu kết quả của $i$ được nhắc lại trong $j$.
+  \item[$\dn$, $\dt$] che một bước / che bước cùng các bước phụ thuộc.
+  \item[Placebo, marker] control: viết lại cùng nghĩa / chèn \code{[MASKED]} nhưng giữ nội dung.
+  \item[AUC] khả năng phân biệt bước cần thiết với bước thừa (0.5 là đoán mò).
+  \item[PS $=1$] câu hỏi mà mô hình tự giải đúng từ chuỗi gold.
+\end{description}
+\column{0.48\textwidth}
+\scriptsize
+\begin{description}
+  \setlength{\itemsep}{1pt}
+  \item[TE / NDE / TIE] hiệu ứng tổng / trực tiếp (chuỗi cố định) / gián tiếp (qua chuỗi).
+  \item[SC] self-consistency: sinh nhiều chuỗi, bỏ phiếu đa số; ``cùng compute'' nghĩa là baseline có ngân sách sinh không ít hơn.
+  \item[HGCD, CAD] decoding ở bước đọc đáp án: khuếch đại hiệu ứng của chuỗi / tương phản có và không có ngữ cảnh.
+  \item[Calibration] trừ phần thiên lệch của mô hình khi không có nội dung.
+  \item[Go/no-go] ngưỡng thành công ghi trước khi chạy.
+  \item[LoRA] fine-tune nhẹ bằng các ma trận hạng thấp.
+  \item[Rules-in-prompt] đưa bảng luật vào prompt thay vì thực thi ngoài mô hình.
+\end{description}
+\end{columns}
+\par\kern0pt
+\note{Slide dự phòng.}
+\end{frame}
+
+%% ============================================================================ Nguồn
+\begin{frame}[shrink]{Phụ lục \textperiodcentered{} Nguồn số liệu và vị trí file}
+\scriptsize
+\renewcommand{\arraystretch}{1.18}
+\begin{tabularx}{\textwidth}{@{}P{4.4cm}Y@{}}
+\toprule
+\textbf{Nội dung} & \textbf{Đường dẫn trong repo (nhánh \code{claude/funny-cori-rt5wrv})}\\
+\midrule
+Paper tiếng Anh / báo cáo tiếng Việt chi tiết & \code{paper/main.pdf}, \code{paper/baocao\_vi.pdf}\\
+Nhật ký giả thuyết đăng ký trước và go/no-go & \code{REVIEW.md}\\
+R1--R3 (reliance) & \code{results/reliance\_v2/}\\
+R4 (mediation, $n=500$) & \code{results/mediation\_n500/}\\
+R5 (HGCD) & \code{results/decoding/}\\
+D1--D3 (decoding vòng 9) & \code{results/causaldec/} (C4, C5, C6: CLUTRR; C7\_ablate; M\_select*: MuSiQue)\\
+Structured-chain SFT (đang chạy) & \code{hgcd/cftrain.py}, \code{results/cftrain/}\\
+Kiểm tra tổng quát (chưa chạy) & \code{hgcd/egen.py}\\
+Ghi chú nghiên cứu và nhật ký trao đổi & \code{docs/research\_notes.md}, \code{docs/conversation\_log.md}\\
+\bottomrule
+\end{tabularx}
+\par\kern0pt
+\note{Slide dự phòng: cho biết mỗi con số đến từ đâu.}
+\end{frame}
+
+\end{document}
