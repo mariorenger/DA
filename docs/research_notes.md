@@ -17,8 +17,8 @@ Tạo lại: `python tools/export_transcript.py <session.jsonl> docs/conversatio
 | Round 9 | Decoding có thông tin cấu trúc | MuSiQue lọc bằng attention: NO-GO; CLUTRR extract+rules: GO (+21..+37 so với SC cùng compute); ablation: bảng luật hơn LLM 13–35 điểm |
 | Sau R9 | Hỏi "decode có tốt không" | Decode token: không. Cái tốt là thực thi phép hợp thành ngoài mô hình (rule-based, miền đóng) |
 | Round 10 | Pilot: R_nec của CF-DAPO (do_naive) ≈ 0; do_total bị hack bằng chép đáp án | RL chưa nên làm; thử SFT cấu trúc trước |
-| Round 10 (đang chạy) | Structured-chain SFT trên CLUTRR (S_plain vs S_struct vs P1) | Chờ kết quả; tiêu chí đã đăng ký trong REVIEW.md |
-| Round 10b (code sẵn, chưa chạy) | Tổng quát hoá: MuSiQue và 2WikiMultihopQA | Chạy sau khi có kết quả CLUTRR |
+| Round 10 (xong) | Structured-chain SFT trên CLUTRR (S_plain vs S_struct vs P1; 2 seed) | Tiêu chí chính NO-GO: cấu trúc không hơn fine-tune thường. Phát hiện phụ: fine-tune thường 3B đạt 94.7/77.8/59.0 (val/mới ngắn/mới dài), hơn D2 +15..+25 |
+| Round 10b (2Wiki đang chạy; MuSiQue bị chặn do hết hạn mức GPU tuần của tài khoản nguyenpn) | Tổng quát hoá: MuSiQue và 2WikiMultihopQA | Chờ kết quả |
 
 ## 3. Số liệu chính (xem paper/main.tex, paper/baocao_vi.pdf)
 - CLUTRR extract+rules SC5 so với baseline tốt nhất: validation k2–4 +32.0/+32.0/+36.7 (1.5B/3B/7B); task chưa thấy k2–4 +20.9/+27.2/+33.5; k5–8 −1.0/+9.5/+24.0 (7B là kiểm định chính đăng ký trước, GO).
@@ -28,8 +28,9 @@ Tạo lại: `python tools/export_transcript.py <session.jsonl> docs/conversatio
 - Pilot R_nec: do_naive 1.0–8.9 điểm mọi nơi; do_total 42–77 (MuSiQue, CLUTRR+copy), 3–11 (CLUTRR thường).
 
 ## 4. Trạng thái việc đang chạy / chờ
-- Kaggle: `nguyenpn/hgcd-cf1-seed0`, `ngpnguyen/hgcd-cf1-seed1` (round 10, CLUTRR). Có lịch kiểm tra tự động (send_later).
-- Notebook sẵn sàng, chưa đẩy: `notebooks/run_EG1_musique.ipynb`, `notebooks/run_EG1_wiki2.ipynb`.
+- Kaggle: `ngpnguyen/hgcd-eg1-wiki2` (round 10b, 2Wiki) đang chạy. `notebooks/run_EG1_musique.ipynb` chưa đẩy được vì tài khoản `nguyenpn` hết hạn mức GPU 30h/tuần.
+- Kết quả round 10 (CLUTRR): `results/cftrain/seed{0,1}/`, phân tích `results/cftrain/analysis.csv`, `tools/analyze_cf.py`.
+- Việc tiếp: đo mô hình đã fine-tune bằng giao thức R3/R4 (cần lưu adapter), thêm nhánh s_ans (chỉ đáp án).
 - Code: `hgcd/cftrain.py` (SFT cấu trúc CLUTRR), `hgcd/egen.py` (MuSiQue/2Wiki), `tools/build_notebook.py`.
 - Chưa làm: DPO/GRPO với cặp phản thực (chỉ khi SFT cấu trúc có tín hiệu), mô hình 7B huấn luyện, miền ứng dụng thật của người dùng.
 

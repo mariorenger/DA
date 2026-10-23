@@ -140,7 +140,7 @@
   \setcounter{enumi}{4}
   \setlength{\itemsep}{0.5em}
   \item Decoding: hướng nào không giúp, hướng nào giúp (D1--D3)
-  \item Vòng thí nghiệm đang chạy và kế hoạch kiểm tra tính tổng quát
+  \item Fine-tune trên chuỗi gold (D4) và kiểm tra tính tổng quát
   \item Hạn chế, những chỗ đã tự sửa
   \item Kết luận và hướng tiếp theo
 \end{enumerate}
@@ -280,7 +280,7 @@ Thống kê & bootstrap 95\% CI, so sánh cặp, McNemar\\
 %% ============================================================================ tổng quan
 \begin{frame}[shrink]{Tổng quan: cái gì đúng, cái gì không}
 \scriptsize
-\renewcommand{\arraystretch}{1.12}
+\renewcommand{\arraystretch}{1.02}
 \setlength{\tabcolsep}{3pt}
 \begin{tabularx}{\textwidth}{@{}P{0.9cm}YP{3.35cm}P{2.05cm}@{}}
 \toprule
@@ -295,6 +295,7 @@ R5 & Chỉnh bước đọc đáp án (HGCD) không giúp & $|\Delta|\le1.7$, $p
 D1 & Lọc distractor bằng attention trước khi sinh (MuSiQue) & không vượt SC; top-4 còn tệ hơn CoT & \FAILs\\
 D2 & Trích fact rồi để bảng luật hợp thành (CLUTRR) & hơn SC cùng compute $+21$ đến $+37$ & \OKs\\
 D3 & Ablation: cùng fact, đổi bên hợp thành & luật hơn LLM $+13$ đến $+35$ & \OKs\\
+D4 & Fine-tune LoRA trên chuỗi gold; thêm dòng ``quan hệ tích luỹ'' & fine-tune thường: 3B đạt 95\%/78\%/59\%; cấu trúc không hơn ($-3$ đến $-7$) & \FAILs\ (cấu trúc)\\
 \bottomrule
 \end{tabularx}
 \ghichu{R1--R4 là kết quả chẩn đoán (đo lường); R5, D1--D3 là kết quả can thiệp (làm cho mô hình trả lời đúng hơn). ``Thành công'' ở R1--R4 nghĩa là giả thuyết đã dự đoán được xác nhận.}
@@ -641,39 +642,44 @@ Input giống hệt nhau, chỉ cơ chế tính đáp án khác nhau.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Đang chạy và kế hoạch}
 %% ============================================================================ Vòng 10
-\begin{frame}[shrink]{Đang chạy \textperiodcentered{} Dạy mô hình tự làm phép hợp thành: structured-chain SFT}
+\begin{frame}[shrink]{D4 \textperiodcentered{} Fine-tune trên chuỗi gold: bản thường đã đủ, cấu trúc không thêm gì}
 \begin{columns}[T,onlytextwidth]
-\column{0.52\textwidth}
-\footnotesize
-\textbf{Câu hỏi thực dụng:} D2 dựa vào bảng luật nên \emph{rule-based} và chỉ đúng ở miền đóng. Có thể \emph{dạy} chính mô hình làm việc đó không?\par\vspace{3pt}
-\textbf{Ý tưởng:} sau mỗi hop, ghi thêm một dòng ``quan hệ tích luỹ'': mỗi bước chỉ còn là tra cứu hai quan hệ (việc mô hình nhỏ làm được), và đáp án cuối là bản sao dòng cuối.
-\begin{exampleblock}{Ví dụ chuỗi có cấu trúc}
+\column{0.55\textwidth}
 \scriptsize
-\code{Hop 1: Mabel's son is Rupert. $\Rightarrow$ Rupert}\\
-\code{So Rupert is Mabel's son.}\\
-\code{Hop 2: Rupert's sister is Agatha. $\Rightarrow$ Agatha}\\
-\code{So Agatha is Mabel's daughter.}\\
-\code{Answer: Agatha is Mabel's daughter.}
-\end{exampleblock}
-\column{0.45\textwidth}
-\scriptsize
+\textbf{Thí nghiệm:} LoRA trên 3000 chuỗi CLUTRR (chỉ 2--4 bước), $\sim$10--17 phút trên 1 GPU T4; đánh giá trên tập validation, task chưa thấy, và chuỗi dài 5--8 bước (chỉ gặp lúc đánh giá). S\_struct thêm một dòng ``quan hệ tích luỹ'' sau mỗi hop.\par\vspace{2pt}
 \renewcommand{\arraystretch}{1.12}
-\begin{tabularx}{\linewidth}{@{}P{1.3cm}Y@{}}
+\setlength{\tabcolsep}{3pt}
+\begin{tabularx}{\linewidth}{@{}llQ{1.0cm}Q{1.0cm}Q{1.0cm}@{}}
 \toprule
-\textbf{Nhánh} & \textbf{Nội dung}\\
+\textbf{Mô hình} & \textbf{Nhánh} & \textbf{Val 2--4} & \textbf{Mới 2--4} & \textbf{Mới 5--8}\\
 \midrule
-P1 & mô hình gốc, few-shot có dòng tích luỹ (không huấn luyện)\\
-S\_plain & LoRA trên chuỗi gold thường\\
-S\_struct & LoRA trên chuỗi có dòng tích luỹ\\
+3B & CoT thường & 36.3 & 30.4 & 26.0\\
+3B & D2 Extract+rules & 70.0 & 59.5 & 38.5\\
+3B & P1 (prompt có cấu trúc) & 28.3 & 27.9 & 23.5\\
+3B & \textbf{S\_plain} & \textbf{94.7} & \textbf{77.8} & \textbf{59.0}\\
+3B & S\_struct & 89.3 & 72.2 & 52.5\\
+\midrule
+1.5B & S\_plain & 83.0 & 60.1 & 47.0\\
+1.5B & S\_struct & 83.3 & 60.8 & 42.5\\
 \bottomrule
 \end{tabularx}
-\par\vspace{3pt}
-\textbf{Đã có (P1):} chỉ ra lệnh trong prompt \textbf{không giúp}: độ chính xác từng bước chỉ 12--18\%, accuracy 23--28\% (ngang CoT thường). Các nhánh huấn luyện \NAs
-\par\vspace{3pt}
-\textbf{Tiêu chí đăng ký trước:} trên chuỗi 5--8 bước, S\_struct (3B) hơn baseline tốt nhất $\ge 2$ điểm với CI $>0$; nếu không, kết luận cấu trúc chuỗi không thêm gì so với fine-tune thường.
+\ghichu{Seed 0; seed 1 cho cùng kết luận (3B: S\_plain 94.7 / 74.7 / 58.5; S\_struct 89.3 / 70.9 / 55.5). Độ chính xác (\%), greedy.}
+\column{0.42\textwidth}
+\footnotesize
+\begin{block}{Kết quả đối chiếu với tiêu chí đăng ký trước}
+\scriptsize
+Chuỗi 5--8 bước, 3B: S\_struct $-$ tốt nhất của (S\_plain, CoT, SC) $=-6.5\ \ci{-14.5}{2.0}$ (seed 0) và $-3.0\ \ci{-11.0}{5.0}$ (seed 1). Cần $\ge +2$ với CI $>0$: \FAILs
+\end{block}
+\begin{itemize}
+  \setlength{\itemsep}{2pt}
+  \scriptsize
+  \item Nhưng \textbf{fine-tune thường} đưa 3B từ 36\% lên 95\% (val) và còn hơn D2 $+15$ đến $+25$ điểm, tổng quát được cả chuỗi dài hơn lúc huấn luyện.
+  \item Cấu trúc chỉ hơn ở chuỗi mà bảng luật phủ được (3B, 5--8 bước: 66.0/60.4 so với 54.7/51.9) và \emph{tệ hơn nhiều} ở chuỗi không phủ: kết luận chỉ là giả thuyết.
+  \item Độ bền khi đổi tên, đổi thứ tự, thêm distractor: hai nhánh như nhau.
+\end{itemize}
 \end{columns}
 \par\kern0pt
-\note{Phần này đang chạy trên Kaggle, chưa có kết quả huấn luyện, nên em chỉ trình bày thiết kế, kết quả sơ bộ P1 và tiêu chí thành công đã ghi trước.}
+\note{Kết quả đáo nghịch: tiêu chí đăng ký trước không đạt, cấu trúc chuỗi không thêm gì so với fine-tune thường. Nhưng fine-tune thường rất mạnh: nó hơn cả pipeline rule-based D2. Vì vậy câu chuyện thay đổi: mô hình KHÔNG THỂ hợp thành chỉ đúng với mô hình được prompt; fine-tune trên chuỗi gold dạy được việc đó. Cần kiểm tra thêm xem mô hình sau fine-tune có thật sự dùng chuỗi hay không.}
 \end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -689,7 +695,7 @@ S\_struct & LoRA trên chuỗi có dòng tích luỹ\\
   \item Bảng luật dùng nhãn train mà CoT thường không thấy: cần đối chứng fine-tune cùng dữ liệu và rules-in-prompt.
   \item CLUTRR là miền đóng, tổng hợp; chưa chứng minh trên văn bản thật.
   \item Extract + rules gần Faithful CoT / Logic-LM: đóng góp mới nằm ở chẩn đoán và ablation nhân quả.
-  \item Mỗi ô 158--500 câu, đa số một seed; $T_{\text{copy-wrong}}$ chỉ 24--44 câu.
+  \item Mỗi ô 158--500 câu, một đến hai seed; phân tích theo vùng phủ của bảng luật là post hoc; $T_{\text{copy-wrong}}$ chỉ 24--44 câu.
   \item DRG dựa string match: chỉ 25--36\% chuỗi liên thông.
   \item Chỉ hai miền; chưa kết luận gì cho math hay code; chưa chạy mô hình $>$7B.
 \end{enumerate}
@@ -725,6 +731,7 @@ Extract không giới tính $+6$--8 điểm & post hoc, xác nhận thất bại
   \item Mô hình 0.5B--7B \textbf{đọc} chứ không \textbf{suy luận qua} chuỗi; $\le$3B chép cả đáp án sai mà nó tự giải được (R3).
   \item Tác hại của distractor đi qua chuỗi được sinh lại (R4), nên decoding ở bước đọc không sửa được (R5).
   \item Thực thi phép hợp thành ngoài mô hình tăng accuracy rất lớn, và ablation chứng minh bước hợp thành là nguyên nhân (D2, D3).
+  \item \textbf{Fine-tune thường} trên 3000 chuỗi gold dạy được phép hợp thành (3B: 36\% $\to$ 95\%) và còn hơn D2; thêm dòng ``quan hệ tích luỹ'' không thêm gì (D4).
 \end{enumerate}
 \end{block}
 \column{0.47\textwidth}
@@ -734,14 +741,15 @@ Extract không giới tính $+6$--8 điểm & post hoc, xác nhận thất bại
   \setlength{\itemsep}{3pt}
   \item Một phương pháp \emph{decoding token} mới vượt self-consistency: HGCD, CAD, calibration, lọc bằng attention đều không đạt.
   \item Extract + rules mới đúng ở miền có luật đóng (CLUTRR).
-  \item Mô hình học được phép hợp thành qua dữ liệu có cấu trúc (đang chạy).
-  \item Công thức có tổng quát sang văn bản thật (kế hoạch).
+  \item Mô hình sau fine-tune có \emph{thật sự dùng chuỗi} (chưa đo bằng R3/R4).
+  \item Công thức fine-tune tổng quát sang văn bản thật (2Wiki đang chạy; MuSiQue chờ hạn mức GPU).
+  \item Cấu trúc chuỗi có ích (tiêu chí chính không đạt).
 \end{itemize}
 \end{block}
 \end{columns}
 \par\vspace{3pt}
 \begin{alertblock}{Thông điệp}
-\footnotesize Mô hình nhỏ \emph{đọc} chuỗi chứ không \emph{suy luận qua} chuỗi. Vì vậy chỉnh cách chọn token không giúp được; muốn trả lời đúng hơn phải \textbf{can thiệp vào chỗ bị hỏng}: cấu trúc chuỗi và bước hợp thành.
+\footnotesize Mô hình nhỏ chưa huấn luyện \emph{đọc} chuỗi chứ không \emph{suy luận qua} chuỗi, nên chỉnh cách chọn token không giúp. Cái giúp là \textbf{can thiệp vào chỗ bị hỏng}: đưa phép hợp thành ra ngoài, hoặc dạy mô hình bằng chuỗi có nhãn. Kết quả cuối cùng thực dụng nhất là fine-tune thường; phần nhân quả cần chứng minh tiếp là mô hình sau fine-tune có dùng chuỗi hay không.
 \end{alertblock}
 \par\kern0pt
 \note{Em tóm tắt lại bốn điều đã chứng minh và bốn điều chưa. Thông điệp: tìm đúng chỗ hỏng rồi mới can thiệp.}
@@ -755,16 +763,16 @@ Extract không giới tính $+6$--8 điểm & post hoc, xác nhận thất bại
 \toprule
 \textbf{\#} & \textbf{Việc cần làm} & \textbf{Mục đích}\\
 \midrule
-1 & Chạy xong structured-chain SFT (CLUTRR, 2 seed); đối chứng fine-tune thường & biết cấu trúc chuỗi có thêm gì so với fine-tune cùng dữ liệu\\
-2 & Baseline rules-in-prompt cho CLUTRR & loại bỏ phản biện ``bảng luật là thông tin mô hình không thấy''\\
-3 & Kiểm tra tổng quát: MuSiQue và 2WikiMultihopQA (huấn luyện chuỗi có trích dẫn đoạn nguồn) & chứng minh tính ứng dụng trên văn bản thật\\
-4 & Nếu có tín hiệu: constrained decoding theo bảng luật hoặc DPO với cặp phản thực (chép đáp án sai vs hợp thành đúng) & phiên bản ``decoding đúng nghĩa'' và đo mô hình có biết bác bỏ tri thức sai\\
-5 & Mô hình lớn hơn (14B, OLMo-2) và dữ liệu thật của người dùng & kiểm tra quy mô và ứng dụng\\
+1 & Đo mô hình đã fine-tune bằng giao thức R3/R4 (chép đáp án sai, $\dt$ lên các hop quan hệ, mediation); thêm nhánh chỉ huấn luyện đáp án & biết fine-tune có làm mô hình \emph{dùng chuỗi} hay chỉ học thuộc đáp án\\
+2 & Kiểm tra tổng quát: 2WikiMultihopQA (đang chạy) và MuSiQue (chờ hạn mức GPU) với chuỗi dựng tự động từ annotation & chứng minh tính ứng dụng trên văn bản thật\\
+3 & Đối chứng công bằng: rules-in-prompt; bảng luật phủ toàn bộ chuỗi để kiểm tra giả thuyết ``cấu trúc có ích khi có đủ supervision'' & loại phản biện và kiểm tra phát hiện post hoc\\
+4 & DPO với cặp phản thực (chép đáp án sai vs hợp thành đúng) nếu bước 1 cho thấy mô hình vẫn chép & dạy mô hình bác bỏ tri thức sai\\
+5 & Mô hình lớn hơn (7B, 14B) và dữ liệu thật của người dùng & kiểm tra quy mô và ứng dụng\\
 \bottomrule
 \end{tabularx}
 \par\vspace{4pt}
 \begin{alertblock}{Nói thẳng về mức độ tin cậy của việc 3}
-\scriptsize Khả năng thắng trên MuSiQue ở mức trung bình-thấp (không có phép hợp thành thật sự, chỉ là tra cứu cầu nối); 2WikiMultihop có cơ hội tốt hơn. Nếu thua, ta biết rõ giới hạn là miền có luật đóng. Code đã sẵn sàng (\code{hgcd/egen.py}) nhưng \emph{chưa chạy}.
+\scriptsize Khả năng thắng trên MuSiQue ở mức trung bình-thấp (không có phép hợp thành thật sự, chỉ là tra cứu cầu nối); 2WikiMultihop có cơ hội tốt hơn. Nay phép so sánh chính là fine-tune thường so với fine-tune chuỗi có trích dẫn đoạn nguồn. Code: \code{hgcd/egen.py}; 2Wiki đang chạy, MuSiQue chưa chạy được do hết hạn mức GPU tuần của một tài khoản.
 \end{alertblock}
 \par\kern0pt
 \note{Ưu tiên một và ba. Ba quyết định phần ứng dụng của luận văn.}
