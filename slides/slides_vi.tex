@@ -214,14 +214,14 @@ Nếu mô hình thật sự suy luận, chuỗi phải có tác dụng ở \emph
 \begin{frame}[shrink]{Cách tiếp cận: tự tạo ground truth bằng can thiệp có đáp án biết trước}
 \centering
 \begin{tikzpicture}[font=\scriptsize,>=Stealth,
-  stp/.style={draw=keyc,fill=keyc!5,rounded corners=2pt,text width=3.65cm,minimum height=2.6cm,align=left,inner sep=5pt,anchor=north west}]
+  stp/.style={draw=keyc,fill=keyc!5,rounded corners=2pt,text width=3.05cm,minimum height=2.9cm,align=left,inner sep=4pt,anchor=north west}]
 \node[stp] (a) at (0,0) {{\footnotesize\bfseries\color{keyc}1. Chuỗi gold}\par\vspace{3pt}
   Viết sẵn chuỗi đúng từ đường đi gold của dữ liệu (MuSiQue có phân rã, CLUTRR có đồ thị quan hệ).};
-\node[stp,right=0.3cm of a.north east,anchor=north west] (b) {{\footnotesize\bfseries\color{keyc}2. Bước thừa}\par\vspace{3pt}
+\node[stp,right=0.2cm of a.north east,anchor=north west] (b) {{\footnotesize\bfseries\color{keyc}2. Bước thừa}\par\vspace{3pt}
   Chèn một bước \emph{đúng sự thật nhưng không liên quan}. Mức cần thiết thật của nó \textbf{bằng 0}; một phép đo tốt phải chấm nó $\approx 0$.};
-\node[stp,right=0.3cm of b.north east,anchor=north west] (c) {{\footnotesize\bfseries\color{keyc}3. Can thiệp hiệu ứng 0}\par\vspace{3pt}
+\node[stp,right=0.2cm of b.north east,anchor=north west] (c) {{\footnotesize\bfseries\color{keyc}3. Can thiệp hiệu ứng 0}\par\vspace{3pt}
   Đổi tên người, đổi thứ tự câu, thêm distractor, câu trung tính (placebo). Về logic, đáp án đúng không đổi.};
-\node[stp,right=0.3cm of c.north east,anchor=north west] (d) {{\footnotesize\bfseries\color{keyc}4. Mediation chính xác}\par\vspace{3pt}
+\node[stp,right=0.2cm of c.north east,anchor=north west] (d) {{\footnotesize\bfseries\color{keyc}4. Mediation chính xác}\par\vspace{3pt}
   Tự \emph{đặt} chuỗi vào mô hình, nhờ đó quan sát trực tiếp hiệu ứng trực tiếp và hiệu ứng qua chuỗi trên từng câu.};
 \end{tikzpicture}
 \vspace{0.1cm}
@@ -527,8 +527,8 @@ HGCD chỉ khuếch đại một sự phụ thuộc \emph{có thật} và tác �
 %% ============================================================================ D2 pipeline
 \begin{frame}[shrink]{D2 \textperiodcentered{} Đưa phép hợp thành ra ngoài mô hình: pipeline Extract + rules}
 \centering
-\begin{tikzpicture}[font=\scriptsize,node distance=0.45cm,
-  b/.style={draw,rounded corners=2pt,align=center,minimum height=1.45cm,text width=2.45cm,inner sep=3pt},
+\begin{tikzpicture}[font=\scriptsize,node distance=0.3cm,
+  b/.style={draw,rounded corners=2pt,align=center,minimum height=1.45cm,text width=2.05cm,inner sep=3pt},
   ar/.style={-{Stealth[length=2mm]},thick}]
 \node[b,fill=keyc!8,draw=keyc] (s) {Câu chuyện\\(văn bản)};
 \node[b,fill=partc!15,draw=partc,right=of s] (e) {\textbf{LLM} trích fact\\ và giới tính};
@@ -536,10 +536,10 @@ HGCD chỉ khuếch đại một sự phụ thuộc \emph{có thật} và tác �
 \node[b,fill=black!5,right=of g] (p) {BFS: đường đi\\ nguồn $\to$ đích};
 \node[b,fill=okc!15,draw=okc,right=of p] (r) {\textbf{Bảng 126 luật}\\ hợp thành};
 \draw[ar] (s)--(e); \draw[ar] (e)--(g); \draw[ar] (g)--(p); \draw[ar] (p)--(r);
-\node[below=0.3cm of e,text width=3.1cm,align=center,font=\tiny] {\code{Anna's son is Ben.}\\\code{Ben's sister is Clara.}\\\code{Genders: Anna=female,\ldots}};
-\node[below=0.3cm of g,text width=2.6cm,align=center,font=\tiny] {Ben $\xrightarrow{\text{mother}}$ Anna\\(cần giới tính của Anna)};
-\node[below=0.3cm of p,text width=2.6cm,align=center,font=\tiny] {Anna $\xrightarrow{\text{son}}$ Ben $\xrightarrow{\text{sister}}$ Clara};
-\node[below=0.3cm of r,text width=2.6cm,align=center,font=\tiny] {son $\circ$ sister $=$ \textbf{daughter}};
+\node[below=0.3cm of e,text width=2.6cm,align=center,font=\tiny] {\code{Anna's son is Ben.}\\\code{Ben's sister is Clara.}\\\code{Genders: Anna=female,\ldots}};
+\node[below=0.3cm of g,text width=2.2cm,align=center,font=\tiny] {Ben $\xrightarrow{\text{mother}}$ Anna\\(cần giới tính của Anna)};
+\node[below=0.3cm of p,text width=2.2cm,align=center,font=\tiny] {Anna $\xrightarrow{\text{son}}$ Ben $\xrightarrow{\text{sister}}$ Clara};
+\node[below=0.3cm of r,text width=2.2cm,align=center,font=\tiny] {son $\circ$ sister $=$ \textbf{daughter}};
 \end{tikzpicture}
 \par\vspace{4pt}
 \begin{columns}[T,onlytextwidth]
