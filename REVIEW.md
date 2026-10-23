@@ -458,3 +458,45 @@ chains for both and on long chains at 7B (3B long +5.0 [−2.0, +12.5], n.s.).
 * Process lessons: three post-hoc wins (C2, gender lexicon, C3 diagnosis) were only accepted after
   pre-registered confirmations on unused data (C4, C5, C6); one bug (fp16 attention) invalidated
   1.5B/7B attention numbers and was caught by checking selections against a trivial rule.
+
+---
+## Round 10 (pre-registered before any GPU run): reading-friendly chains, trained
+
+**Motivation.** R3/D3: models copy what is written in the chain but do not compose k relations in one
+step; a rule table composes correctly. Decoding cannot fix this. If instead *every step* of the chain is
+a pairwise composition ("running relation"), each step is a one-step lookup, which models can do, and
+the final answer is a copy of the last line. We test whether a LoRA-trained model learns this and
+whether it generalises beyond the training lengths. No rule table at inference time.
+
+**Pilot (offline, existing per-hop data, results/reliance_v2).** CF-DAPO's R_nec = mean max(0, Δ) of
+non-final gold hops. With the proposal's single-hop masking (do_naive): 1.0-8.9 points on every model and
+dataset (MuSiQue 1.0-8.9, CLUTRR 1.9-6.6): the reward is empty exactly where credit assignment is needed.
+With do_total: 42-77 points on MuSiQue and on CLUTRR+copy (answer written in the chain: a copy hack), but
+only 3.1-10.6 on plain CLUTRR. So (i) R_nec must use do_total, (ii) it rewards copying an answer written
+in a hop, (iii) on compositional chains the reward is sparse for untrained models. Consequence: start with
+supervised structure (this round); RL with a do_total reward only if this round shows signal.
+
+**Arms** (Qwen2.5-1.5B and 3B-Instruct, LoRA r=16 on all linear layers, fp16, 1 epoch, 3000 CLUTRR
+train stories with k in {2,3,4} from gen_train234, zero-shot system prompt, loss on the answer only):
+* B0  base, few-shot plain CoT (existing decisions.csv: cot_free, sc_plus; same uids)
+* P1  base, few-shot *structured* CoT (prompting only, no training)
+* S_plain   SFT on plain gold chains ("Hop i: X's rel is Y. => Y" ... Answer)
+* S_struct  SFT on structured chains: after each hop a running-composition line
+            "So Y is <source>'s <c_i>." with c_i from the pairwise rule table induced on the TRAIN split
+            (examples whose stepwise composition disagrees with the gold answer are dropped)
+* S_struct+DPO  only if S_struct passes the primary endpoint (separately pre-registered below)
+
+**Evaluation sets** (identical sampling to rounds 9 so baselines join on uid):
+C4 validation k=2-4 (seed 2, 100/k), C6 unseen task k=2-4 (seed 7, 60/k), C5 unseen task k=5-8
+(seed 5, 50/k). Train k never exceeds 4, so C5 tests length generalisation.
+Robustness: on the C6 questions, rename / order / distract (true effect 0); report accuracy and the
+flip rate (answer differs from the unperturbed answer of the same model).
+
+**Primary endpoint.** C5 (k=5-8): accuracy(S_struct, greedy) minus max(accuracy S_plain, B0 cot_free,
+B0 sc_plus), paired bootstrap 95% CI > 0 and point estimate >= +2 points, at Qwen2.5-3B. 1.5B is reported
+regardless. GO = 3B passes. NO-GO otherwise: then structure adds nothing beyond plain SFT on the same data
+and we report that.
+**Secondary.** Same contrast on C4 and C6; S_struct vs S_plain flip rate under rename/order/distract
+(lower is better); S_struct vs D2 extract+rules (ext_g_sc) is exploratory.
+**Declared limits.** SFT uses train gold chains (labels the base CoT never saw); the claim is about what
+chain structure adds *given the same supervision*, hence the S_plain control. One seed per arm.
