@@ -529,3 +529,44 @@ titles that are gold supporting paragraphs); `last_hop_match` (final answer equa
 and s_plain controls; one seed; 1500-2000 training questions (a small fraction of the training sets).
 **Launch rule.** Launch after round 10 (CLUTRR) reports, unless it returns a clear NO-GO for structure
 (s_struct not better than s_plain on CLUTRR), in which case this round is run only once for the report.
+
+---
+## Round 10 result (CLUTRR structured-chain SFT; 2 seeds x Qwen2.5-1.5B/3B; tools/analyze_cf.py)
+
+**Pre-registered primary endpoint (C5, k=5-8, Qwen2.5-3B): NO-GO.**
+s_struct minus the best baseline (which is s_plain in every cell): seed 0 **-6.5** [-14.5, +2.0],
+seed 1 **-3.0** [-11.0, +5.0]. The condition was +2 points with CI > 0; it fails in both seeds. At 1.5B:
+-4.5 / -2.5 (n.s.). Secondary C4 (3B): -5.3 [-8.7, -2.0] and -5.3 [-9.0, -1.7] (s_struct significantly worse);
+C6 (3B): -5.7 / -3.8 (n.s.). Conclusion: running-relation lines add nothing over plain SFT on the same gold chains.
+
+**Accuracy (%, greedy; seed 0 / seed 1).**
+| model | arm | C4 val k2-4 | C6 unseen k2-4 | C5 unseen k5-8 |
+|---|---|---|---|---|
+| 3B | base CoT (round 9) | 36.3 | 30.4 | 26.0 |
+| 3B | D2 extract+rules SC5 | 70.0 | 59.5 | 38.5 |
+| 3B | s_plain | 94.7 / 94.7 | 77.8 / 74.7 | 59.0 / 58.5 |
+| 3B | s_struct | 89.3 / 89.3 | 72.2 / 70.9 | 52.5 / 55.5 |
+| 1.5B | s_plain | 83.0 / 86.3 | 60.1 / 64.6 | 47.0 / 52.5 |
+| 1.5B | s_struct | 83.3 / 80.3 | 60.8 / 67.7 | 42.5 / 50.0 |
+P1 (prompting only, no training): 23.5-28.5 on all sets, step accuracy 12-18%: instructions in the prompt do not help.
+
+**Exploratory (not pre-registered), reported because they change the story.**
+1. *Plain SFT on 3000 gold chains (k<=4, LoRA, ~10-17 min on one T4) beats the rule-based pipeline D2 by
+   +25 (C4), +15-18 (C6), +20 (C5) points at 3B* and trains in minutes. The round-9 gains over CoT are largely
+   what supervised fine-tuning on the gold annotations gives; D2's advantage is that it needs no chain labels
+   at inference, not that it is more accurate. It also generalises to longer chains (k=5-8: 59% vs 26% base).
+2. Coverage split (the pairwise table covers 106/200 C5 chains): s_struct is much worse on uncovered chains
+   (C4 46-64% vs s_plain 86-96%: such chains were dropped from its training data) but on covered chains it is
+   better than s_plain at 3B (C5 66.0 / 60.4 vs 54.7 / 51.9; C6 82.4 / 81.5 vs 78.2 / 75.6). Hypothesis only:
+   structure helps where its supervision exists; test with a table that covers all chains.
+3. Robustness: flip rates under rename / order / distract are similar for both arms (3B: 12-18% / 18-24% /
+   28-34%); distractors still flip 28-51% of answers. Structure gives no robustness benefit.
+
+**Consequences.** (i) "Models cannot compose" (R3, D3) is a statement about prompted models: fine-tuning on gold
+chains changes it. (ii) The open mechanistic question is whether the fine-tuned model now *uses* the chain
+(do_total effect on relational hops, T_copy-wrong follow rate); run the round-3 protocol on s_plain next
+(needs saved adapters). (iii) Whether chain supervision is what matters, or answer supervision alone, needs an
+s_ans arm on CLUTRR. (iv) The generalisation run (MuSiQue / 2Wiki, round 10b) now tests the practical recipe
+"SFT on automatically built chains"; per the launch rule it is run once for the report.
+**Caveats.** SFT uses labels the base few-shot arm never sees; training distribution (k<=4, gen_train234) vs
+test tasks differ only partly; 2 seeds, n=158-300; stratified numbers are post hoc.

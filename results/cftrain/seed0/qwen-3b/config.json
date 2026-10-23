@@ -1,0 +1,24 @@
+{
+ "model": "Qwen/Qwen2.5-3B-Instruct",
+ "outdir": "/kaggle/working/results/cftrain_qwen-3b",
+ "arms": [
+  "s_plain",
+  "s_struct"
+ ],
+ "sets": [
+  "c4",
+  "c6",
+  "c5"
+ ],
+ "n_train": 3000,
+ "epochs": 1.0,
+ "lr": 0.0002,
+ "mb": 2,
+ "accum": 8,
+ "bs": 8,
+ "seed": 0,
+ "eval_scale": 1.0,
+ "robust": 1,
+ "device_map": null,
+ "max_minutes": 560.0
+}

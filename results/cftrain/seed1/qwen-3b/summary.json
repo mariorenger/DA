@@ -1,0 +1,16 @@
+{
+ "s_plain": {
+  "steps": 188,
+  "final_loss": 0.013316034451418091,
+  "n_train": 3000,
+  "minutes": 16.10852644443512,
+  "dropped": 0
+ },
+ "s_struct": {
+  "steps": 164,
+  "final_loss": 0.0022776938079914545,
+  "n_train": 2624,
+  "minutes": 17.59675054550171,
+  "dropped": 376
+ }
+}
