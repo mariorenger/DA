@@ -231,9 +231,9 @@ NOTEBOOKS = {
     "CF1_seed0": """{
     "cf1": {
         "0": [("qwen-1.5b", "Qwen/Qwen2.5-1.5B-Instruct", "cftrain",
-               ("--arms", "p1", "s_plain", "s_struct", "--seed", "0", "--max_minutes", "560"))],
+               ("--arms", "s_plain", "s_struct", "--seed", "0", "--max_minutes", "560"))],
         "1": [("qwen-3b", "Qwen/Qwen2.5-3B-Instruct", "cftrain",
-               ("--arms", "p1", "s_plain", "s_struct", "--seed", "0", "--max_minutes", "560"))],
+               ("--arms", "s_plain", "s_struct", "--seed", "0", "--max_minutes", "560"))],
     },
 }""",
     "CF1_seed1": """{
@@ -299,7 +299,8 @@ def build():
 def build_one(name, phases):
     nb = nbf.v4.new_notebook()
     cells = [nbf.v4.new_markdown_cell(INTRO),
-             nbf.v4.new_code_cell("!pip -q install -U \"transformers>=4.44\" accelerate scikit-learn peft 2>/dev/null | tail -1\n"
+             nbf.v4.new_code_cell("!pip -q uninstall -y torchao 2>/dev/null | tail -1\n"
+                                  "!pip -q install -U \"transformers>=4.44\" accelerate scikit-learn peft 2>/dev/null | tail -1\n"
                                   "!nvidia-smi --query-gpu=name,memory.total --format=csv || true"),
              nbf.v4.new_code_cell("import os\nos.makedirs('hgcd', exist_ok=True)\n"
                                   "os.environ.setdefault('HGCD_DATA', os.path.abspath('hgcd_data'))")]
