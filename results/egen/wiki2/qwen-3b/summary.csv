@@ -1,0 +1,5 @@
+arm,dataset,cond,n,em,lo,hi,f1,cite_ok,last_hop_match
+p0,wiki2,orig,500,28.8,24.8,32.8,41.948,,0.826
+s_ans,wiki2,orig,500,50.0,45.6,54.4,60.427,,
+s_plain,wiki2,orig,500,56.0,51.8,60.6,65.99,,1.0
+s_struct,wiki2,orig,500,54.4,50.0,58.8,65.4,0.948,1.0

@@ -1,0 +1,23 @@
+{
+ "s_ans": {
+  "steps": 125,
+  "final_loss": 0.08024822704610415,
+  "n_train": 2000,
+  "minutes": 37.013951420784,
+  "skipped": 276
+ },
+ "s_plain": {
+  "steps": 125,
+  "final_loss": 0.01184310800745152,
+  "n_train": 2000,
+  "minutes": 39.9016872604688,
+  "skipped": 306
+ },
+ "s_struct": {
+  "steps": 125,
+  "final_loss": 0.014405027760949452,
+  "n_train": 2000,
+  "minutes": 41.230940437316896,
+  "skipped": 517
+ }
+}

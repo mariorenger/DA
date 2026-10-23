@@ -296,6 +296,7 @@ D1 & Lọc distractor bằng attention trước khi sinh (MuSiQue) & không vư�
 D2 & Trích fact rồi để bảng luật hợp thành (CLUTRR) & hơn SC cùng compute $+21$ đến $+37$ & \OKs\\
 D3 & Ablation: cùng fact, đổi bên hợp thành & luật hơn LLM $+13$ đến $+35$ & \OKs\\
 D4 & Fine-tune LoRA trên chuỗi gold; thêm dòng ``quan hệ tích luỹ'' & fine-tune thường: 3B đạt 95\%/78\%/59\%; cấu trúc không hơn ($-3$ đến $-7$) & \FAILs\ (cấu trúc)\\
+D5 & Fine-tune trên văn bản thật (2Wiki), chuỗi có/không nguồn & fine-tune $+21$ đến $+30$ so với few-shot; chuỗi có nguồn không hơn chuỗi thường & \PARTs\\
 \bottomrule
 \end{tabularx}
 \ghichu{R1--R4 là kết quả chẩn đoán (đo lường); R5, D1--D3 là kết quả can thiệp (làm cho mô hình trả lời đúng hơn). ``Thành công'' ở R1--R4 nghĩa là giả thuyết đã dự đoán được xác nhận.}
@@ -682,6 +683,44 @@ Chuỗi 5--8 bước, 3B: S\_struct $-$ tốt nhất của (S\_plain, CoT, SC) $
 \note{Kết quả đáo nghịch: tiêu chí đăng ký trước không đạt, cấu trúc chuỗi không thêm gì so với fine-tune thường. Nhưng fine-tune thường rất mạnh: nó hơn cả pipeline rule-based D2. Vì vậy câu chuyện thay đổi: mô hình KHÔNG THỂ hợp thành chỉ đúng với mô hình được prompt; fine-tune trên chuỗi gold dạy được việc đó. Cần kiểm tra thêm xem mô hình sau fine-tune có thật sự dùng chuỗi hay không.}
 \end{frame}
 
+%% ============================================================================ D5
+\begin{frame}[shrink]{D5 \textperiodcentered{} Văn bản thật (2WikiMultihopQA): fine-tune là yếu tố quyết định}
+\begin{columns}[T,onlytextwidth]
+\column{0.54\textwidth}
+\scriptsize
+\textbf{Thí nghiệm:} câu hỏi compositional và inference (ví dụ: ``ông nội bên cha của X là ai?''), văn bản Wikipedia thật, 500 câu validation. Chuỗi huấn luyện tự dựng từ evidence gold; 1500--2000 câu train, LoRA.\par\vspace{2pt}
+\renewcommand{\arraystretch}{1.15}
+\setlength{\tabcolsep}{3pt}
+\begin{tabularx}{\linewidth}{@{}YQ{0.95cm}Q{0.85cm}Q{0.8cm}Q{0.95cm}@{}}
+\toprule
+\textbf{EM (\%)} & \textbf{Few-shot} & \textbf{Đáp án} & \textbf{Chuỗi} & \textbf{+Nguồn}\\
+\midrule
+Qwen-1.5B & 21.6 & 49.8 & 51.2 & 52.4\\
+Qwen-3B & 28.8 & 50.0 & \textbf{56.0} & 54.4\\
+\midrule
+3B inference (91) & 7.7 & 34.1 & 41.8 & 40.7\\
+3B compositional (409) & 33.5 & 53.5 & 59.2 & 57.5\\
+\bottomrule
+\end{tabularx}
+\ghichu{Đáp án = fine-tune chỉ đáp án; Chuỗi = chuỗi thường; +Nguồn = chuỗi có trích dẫn đoạn. Một seed. Train và eval cùng phân phối (in-distribution); prompt few-shot chỉ có một ví dụ nên là baseline prompting yếu.}
+\column{0.43\textwidth}
+\begin{block}{Đối chiếu với tiêu chí đăng ký trước}
+\scriptsize
+3B: chuỗi có nguồn $-$ chuỗi thường $=-1.6\ \ci{-4.6}{1.4}$; cần $\ge+2$ với CI $>0$: \FAILs\ (1.5B: $+1.2$, n.s.).
+\end{block}
+\begin{itemize}
+  \setlength{\itemsep}{2pt}
+  \scriptsize
+  \item Hiệu ứng chính: fine-tune cho \textbf{+21 đến +30 điểm} so với few-shot (3B: $+25.6\ \ci{20.4}{30.6}$).
+  \item Viết chuỗi giúp ở 3B so với chỉ trả lời đáp án: $+6.0\ \ci{2.0}{10.0}$ (1.5B: $+1.4$, n.s.), nhiều nhất ở câu inference.
+  \item Trích dẫn đoạn nguồn đúng 93--95\% nhưng không tăng EM.
+  \item MuSiQue chưa chạy (hết hạn mức GPU).
+\end{itemize}
+\end{columns}
+\par\kern0pt
+\note{Cùng quy luật với CLUTRR: yếu tố quyết định là huấn luyện trên chuỗi có nhãn, không phải cấu trúc thêm vào. Viết chuỗi có ích ở mô hình 3B. Cần nhớ đây là in-distribution và một seed.}
+\end{frame}
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Hạn chế và kết luận}
 %% ============================================================================ Hạn chế
@@ -731,7 +770,7 @@ Extract không giới tính $+6$--8 điểm & post hoc, xác nhận thất bại
   \item Mô hình 0.5B--7B \textbf{đọc} chứ không \textbf{suy luận qua} chuỗi; $\le$3B chép cả đáp án sai mà nó tự giải được (R3).
   \item Tác hại của distractor đi qua chuỗi được sinh lại (R4), nên decoding ở bước đọc không sửa được (R5).
   \item Thực thi phép hợp thành ngoài mô hình tăng accuracy rất lớn, và ablation chứng minh bước hợp thành là nguyên nhân (D2, D3).
-  \item \textbf{Fine-tune thường} trên 3000 chuỗi gold dạy được phép hợp thành (3B: 36\% $\to$ 95\%) và còn hơn D2; thêm dòng ``quan hệ tích luỹ'' không thêm gì (D4).
+  \item \textbf{Fine-tune thường} trên chuỗi gold dạy được phép hợp thành (CLUTRR 3B: 36\% $\to$ 95\%, hơn D2) và chuyển sang văn bản thật (2Wiki: $+21$ đến $+30$ so với few-shot); thêm cấu trúc hay trích dẫn nguồn không thêm gì (D4, D5).
 \end{enumerate}
 \end{block}
 \column{0.47\textwidth}
@@ -742,7 +781,7 @@ Extract không giới tính $+6$--8 điểm & post hoc, xác nhận thất bại
   \item Một phương pháp \emph{decoding token} mới vượt self-consistency: HGCD, CAD, calibration, lọc bằng attention đều không đạt.
   \item Extract + rules mới đúng ở miền có luật đóng (CLUTRR).
   \item Mô hình sau fine-tune có \emph{thật sự dùng chuỗi} (chưa đo bằng R3/R4).
-  \item Công thức fine-tune tổng quát sang văn bản thật (2Wiki đang chạy; MuSiQue chờ hạn mức GPU).
+  \item Tổng quát ngoài phân phối và sang MuSiQue (chưa chạy); chỉ mới kiểm tra 2Wiki cùng phân phối.
   \item Cấu trúc chuỗi có ích (tiêu chí chính không đạt).
 \end{itemize}
 \end{block}
@@ -764,7 +803,7 @@ Extract không giới tính $+6$--8 điểm & post hoc, xác nhận thất bại
 \textbf{\#} & \textbf{Việc cần làm} & \textbf{Mục đích}\\
 \midrule
 1 & Đo mô hình đã fine-tune bằng giao thức R3/R4 (chép đáp án sai, $\dt$ lên các hop quan hệ, mediation); thêm nhánh chỉ huấn luyện đáp án & biết fine-tune có làm mô hình \emph{dùng chuỗi} hay chỉ học thuộc đáp án\\
-2 & Kiểm tra tổng quát: 2WikiMultihopQA (đang chạy) và MuSiQue (chờ hạn mức GPU) với chuỗi dựng tự động từ annotation & chứng minh tính ứng dụng trên văn bản thật\\
+2 & MuSiQue (chưa chạy, hết hạn mức GPU) và câu hỏi ngoài phân phối của 2Wiki; thêm seed & chứng minh tính ứng dụng ngoài phân phối\\
 3 & Đối chứng công bằng: rules-in-prompt; bảng luật phủ toàn bộ chuỗi để kiểm tra giả thuyết ``cấu trúc có ích khi có đủ supervision'' & loại phản biện và kiểm tra phát hiện post hoc\\
 4 & DPO với cặp phản thực (chép đáp án sai vs hợp thành đúng) nếu bước 1 cho thấy mô hình vẫn chép & dạy mô hình bác bỏ tri thức sai\\
 5 & Mô hình lớn hơn (7B, 14B) và dữ liệu thật của người dùng & kiểm tra quy mô và ứng dụng\\
@@ -772,7 +811,7 @@ Extract không giới tính $+6$--8 điểm & post hoc, xác nhận thất bại
 \end{tabularx}
 \par\vspace{4pt}
 \begin{alertblock}{Nói thẳng về mức độ tin cậy của việc 3}
-\scriptsize Khả năng thắng trên MuSiQue ở mức trung bình-thấp (không có phép hợp thành thật sự, chỉ là tra cứu cầu nối); 2WikiMultihop có cơ hội tốt hơn. Nay phép so sánh chính là fine-tune thường so với fine-tune chuỗi có trích dẫn đoạn nguồn. Code: \code{hgcd/egen.py}; 2Wiki đang chạy, MuSiQue chưa chạy được do hết hạn mức GPU tuần của một tài khoản.
+\scriptsize Khả năng thắng trên MuSiQue ở mức trung bình-thấp (không có phép hợp thành thật sự, chỉ là tra cứu cầu nối); 2WikiMultihop có cơ hội tốt hơn. Nay phép so sánh chính là fine-tune thường so với fine-tune chuỗi có trích dẫn đoạn nguồn. Code: \code{hgcd/egen.py}; 2Wiki đã chạy (D5); MuSiQue chưa chạy được do hết hạn mức GPU tuần của một tài khoản.
 \end{alertblock}
 \par\kern0pt
 \note{Ưu tiên một và ba. Ba quyết định phần ứng dụng của luận văn.}

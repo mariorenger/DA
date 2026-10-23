@@ -1,0 +1,39 @@
+model,what,n,value,lo,hi
+qwen-1.5b,EM p0,500,21.6,17.8,25.2
+qwen-1.5b,EM s_ans,500,49.8,45.4,54.2
+qwen-1.5b,EM s_plain,500,51.2,46.8,55.6
+qwen-1.5b,EM s_struct,500,52.4,48.0,56.8
+qwen-1.5b,s_struct - best:s_plain,500,1.2,-2.0,4.4
+qwen-1.5b,s_struct - s_plain,500,1.2,-2.0,4.4
+qwen-1.5b,s_struct - s_ans,500,2.6,-1.4,6.8
+qwen-1.5b,s_struct - p0,500,30.8,25.8,35.8
+qwen-1.5b,s_plain - s_ans,500,1.4,-2.4,5.4
+qwen-1.5b,EM p0 [compositional],409,25.67,,
+qwen-1.5b,EM s_ans [compositional],409,53.79,,
+qwen-1.5b,EM s_plain [compositional],409,53.3,,
+qwen-1.5b,EM s_struct [compositional],409,53.3,,
+qwen-1.5b,EM p0 [inference],91,3.3,,
+qwen-1.5b,EM s_ans [inference],91,31.87,,
+qwen-1.5b,EM s_plain [inference],91,41.76,,
+qwen-1.5b,EM s_struct [inference],91,48.35,,
+qwen-1.5b,cite_ok (cited titles that are gold supporting),500,93.1,,
+qwen-1.5b,last_hop_match s_struct / s_plain,500,100.0,99.8,
+qwen-3b,EM p0,500,28.8,24.8,33.0
+qwen-3b,EM s_ans,500,50.0,45.6,54.4
+qwen-3b,EM s_plain,500,56.0,51.8,60.4
+qwen-3b,EM s_struct,500,54.4,50.0,58.8
+qwen-3b,s_struct - best:s_plain,500,-1.6,-4.6,1.4
+qwen-3b,s_struct - s_plain,500,-1.6,-4.6,1.4
+qwen-3b,s_struct - s_ans,500,4.4,0.6,8.2
+qwen-3b,s_struct - p0,500,25.6,20.4,30.6
+qwen-3b,s_plain - s_ans,500,6.0,2.0,10.0
+qwen-3b,EM p0 [compositional],409,33.5,,
+qwen-3b,EM s_ans [compositional],409,53.55,,
+qwen-3b,EM s_plain [compositional],409,59.17,,
+qwen-3b,EM s_struct [compositional],409,57.46,,
+qwen-3b,EM p0 [inference],91,7.69,,
+qwen-3b,EM s_ans [inference],91,34.07,,
+qwen-3b,EM s_plain [inference],91,41.76,,
+qwen-3b,EM s_struct [inference],91,40.66,,
+qwen-3b,cite_ok (cited titles that are gold supporting),500,94.8,,
+qwen-3b,last_hop_match s_struct / s_plain,500,100.0,100.0,

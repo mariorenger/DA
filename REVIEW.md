@@ -570,3 +570,28 @@ s_ans arm on CLUTRR. (iv) The generalisation run (MuSiQue / 2Wiki, round 10b) no
 "SFT on automatically built chains"; per the launch rule it is run once for the report.
 **Caveats.** SFT uses labels the base few-shot arm never sees; training distribution (k<=4, gen_train234) vs
 test tasks differ only partly; 2 seeds, n=158-300; stratified numbers are post hoc.
+
+---
+## Round 10b result: 2WikiMultihopQA (compositional + inference; 500 validation questions; tools/analyze_egen.py)
+MuSiQue was NOT run: the first Kaggle account hit its weekly 30 h GPU quota. 2Wiki ran to completion
+(Qwen2.5-1.5B and 3B, 1500-2000 train questions, LoRA, 1 epoch, one seed).
+
+| EM % (n=500) | p0 few-shot | s_ans (answer only) | s_plain (chain) | s_struct (chain + [from: title]) |
+|---|---|---|---|---|
+| 1.5B | 21.6 | 49.8 | 51.2 | 52.4 |
+| 3B | 28.8 | 50.0 | 56.0 | 54.4 |
+inference questions (n=91) 3B: 7.7 / 34.1 / 41.8 / 40.7; compositional (n=409): 33.5 / 53.5 / 59.2 / 57.5.
+
+**Pre-registered primary endpoint (3B): NO-GO.** s_struct minus the best baseline (s_plain) = **-1.6** [-4.6, +1.4]
+(condition: >= +2 with CI > 0). At 1.5B: +1.2 [-2.0, +4.4] (n.s.). Citing the source paragraph adds nothing over
+plain chains (citation precision 93-95%, last-hop/answer consistency ~100% in both).
+**Exploratory.** (1) Fine-tuning on 1500-2000 automatically built examples lifts EM by +21 to +30 over the
+few-shot baseline at both scales (3B s_struct - p0 = +25.6 [20.4, 30.6]); this is the main effect. (2) Writing
+the chain helps at 3B and not clearly at 1.5B: s_plain - s_ans = +6.0 [+2.0, +10.0] (3B), +1.4 [-2.4, +5.4] (1.5B);
+inference questions benefit most (3B +7.7, 1.5B +9.9 over answer-only). (3) Same pattern as CLUTRR: the
+decisive ingredient is supervised training on gold-annotated chains, not the structure added to them.
+**Caveats.** Train and eval come from the same templated distribution (in-distribution); the p0 prompt is a
+single MuSiQue shot (weak prompting baseline); the chains are built from gold evidence the base model never sees;
+one seed; s_struct trains on fewer questions (those with an identifiable source paragraph).
+Not tested: MuSiQue (open-domain bridge questions), out-of-distribution question types, mediation/reliance of the
+fine-tuned models (do they use the chain?).
