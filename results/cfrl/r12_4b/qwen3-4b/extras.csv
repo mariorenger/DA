@@ -1,0 +1,13 @@
+arm,metric,value,n
+s_plain,wrong_copy_follow_all,0.48333333333333334,120
+s_plain,wrong_copy_follow_given_ps1,0.48695652173913045,115
+s_plain,ps_plain_chain,0.9583333333333334,120
+s_plain,do_total_effect_nonfinal_hops,0.4087447240786529,252
+sft_before_grpo,wrong_copy_follow_all,0.5166666666666667,120
+sft_before_grpo,wrong_copy_follow_given_ps1,0.5087719298245614,114
+sft_before_grpo,ps_plain_chain,0.95,120
+sft_before_grpo,do_total_effect_nonfinal_hops,0.40246755908887505,252
+s_grpo,wrong_copy_follow_all,0.425,120
+s_grpo,wrong_copy_follow_given_ps1,0.415929203539823,113
+s_grpo,ps_plain_chain,0.9416666666666667,120
+s_grpo,do_total_effect_nonfinal_hops,0.34293619103817763,252

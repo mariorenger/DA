@@ -1,6 +1,6 @@
 # Ghi chú nghiên cứu (bản tra cứu nhanh)
 
-Cập nhật: 2026-10-23. Nhánh `claude/funny-cori-rt5wrv` của `mariorenger/DA`. Nhật ký đầy đủ của các cuộc trao đổi:
+Cập nhật: 2026-10-24. Nhánh `claude/funny-cori-rt5wrv` của `mariorenger/DA`. Nhật ký đầy đủ của các cuộc trao đổi:
 `docs/conversation_log.md` (xuất tự động, đã che token; tìm bằng `grep -n "từ khoá" docs/conversation_log.md`).
 Tạo lại: `python tools/export_transcript.py <session.jsonl> docs/conversation_log.md`.
 
@@ -20,6 +20,8 @@ Tạo lại: `python tools/export_transcript.py <session.jsonl> docs/conversatio
 | Round 10 (xong) | Structured-chain SFT trên CLUTRR (S_plain vs S_struct vs P1; 2 seed) | Tiêu chí chính NO-GO: cấu trúc không hơn fine-tune thường. Phát hiện phụ: fine-tune thường 3B đạt 94.7/77.8/59.0 (val/mới ngắn/mới dài), hơn D2 +15..+25 |
 | Round 11 (xong phần CLUTRR) | Chuỗi vs chỉ đáp án; DPO phản thực; GRPO; 7B | Chuỗi hơn chỉ-đáp-án +9..+23 (đề lạ/dài): GO. DPO: chép sai −22..−25 nhưng mất 5–13 điểm chuỗi dài: NO-GO. GRPO: không giúp chuỗi dài (+0.0): NO-GO. 7B = 3B. Sau fine-tune hiệu ứng che bước ~40 điểm (so với 3–10 trước đó) |
 | Round 10b (2Wiki xong; MuSiQue chưa chạy do hết hạn mức GPU tuần của tài khoản nguyenpn) | Tổng quát hoá: fine-tune trên chuỗi dựng tự động | 2Wiki 3B: few-shot 28.8, chỉ đáp án 50.0, chuỗi thường 56.0, chuỗi+nguồn 54.4. Tiêu chí chính NO-GO (−1.6 [−4.6, 1.4]); hiệu ứng chính là fine-tune (+21..+30) |
+| Round 11 (phần 2) | MuSiQue và 2Wiki chuyển loại câu hỏi (Qwen2.5 1.5B/3B) | MuSiQue: cấu trúc không hơn chuỗi thường (NO-GO), hiệu ứng chính là fine-tune (+20 so với few-shot). 2Wiki train compositional→test inference: chuỗi hơn chỉ-đáp-án +18.0 EM (3B), +8.0 (1.5B): GO. Mất dữ liệu từng câu của MuSiQue do ghi đè thư mục |
+| Round 12 (Qwen3 1.7B/4B/8B) | Mô hình mới, thinking mode, distillation từ teacher 8B, GRPO lọc prompt khó | Fine-tune chuỗi vẫn hơn few-shot +33..+49 và hơn thinking +19..+39 (4B). Chuỗi hơn chỉ-đáp-án +21 (C5, 4B). Distillation không chuỗi gold: −25..−32 (NO-GO). GRPO lọc khó: C5 −8.5 (NO-GO) |
 
 ## 3. Số liệu chính (xem paper/main.tex, paper/baocao_vi.pdf)
 - CLUTRR extract+rules SC5 so với baseline tốt nhất: validation k2–4 +32.0/+32.0/+36.7 (1.5B/3B/7B); task chưa thấy k2–4 +20.9/+27.2/+33.5; k5–8 −1.0/+9.5/+24.0 (7B là kiểm định chính đăng ký trước, GO).
@@ -29,7 +31,7 @@ Tạo lại: `python tools/export_transcript.py <session.jsonl> docs/conversatio
 - Pilot R_nec: do_naive 1.0–8.9 điểm mọi nơi; do_total 42–77 (MuSiQue, CLUTRR+copy), 3–11 (CLUTRR thường).
 
 ## 4. Trạng thái việc đang chạy / chờ
-- Kaggle: `nguyenpn/hgcd-eg2-musique-ood` (MuSiQue + 2Wiki chuyển loại câu hỏi) đang chạy; các notebook vòng 11 khác đã xong (kết quả `results/cfrl/`, phân tích `tools/analyze_cfrl.py`). `notebooks/run_EG1_musique.ipynb` chưa đẩy được vì tài khoản `nguyenpn` hết hạn mức GPU 30h/tuần. Kết quả 2Wiki: `results/egen/wiki2/`, phân tích `tools/analyze_egen.py`.
+- (Đã xong) Kaggle: `nguyenpn/hgcd-eg2-musique-ood` (MuSiQue + 2Wiki chuyển loại câu hỏi) đang chạy; các notebook vòng 11 khác đã xong (kết quả `results/cfrl/`, phân tích `tools/analyze_cfrl.py`). `notebooks/run_EG1_musique.ipynb` chưa đẩy được vì tài khoản `nguyenpn` hết hạn mức GPU 30h/tuần. Kết quả 2Wiki: `results/egen/wiki2/`, phân tích `tools/analyze_egen.py`.
 - Kết quả round 10 (CLUTRR): `results/cftrain/seed{0,1}/`, phân tích `results/cftrain/analysis.csv`, `tools/analyze_cf.py`.
 - Việc tiếp: đo mô hình đã fine-tune bằng giao thức R3/R4 (cần lưu adapter), thêm nhánh s_ans (chỉ đáp án).
 - Code: `hgcd/cftrain.py` (SFT cấu trúc CLUTRR), `hgcd/egen.py` (MuSiQue/2Wiki), `tools/build_notebook.py`.

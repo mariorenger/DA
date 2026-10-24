@@ -742,3 +742,14 @@ Source: results/cfrl/r12_8b (+ r12_8b_pfs for p_fs). Thinking evaluated on 60 qu
   Native thinking (60.0 on C6, 31.7 on C5, many outputs truncated) is better than few-shot on C6 but far below a 3000-chain LoRA fine-tune of the same model.
 * Mechanism after SFT (8B): wrong-copy follow 37.5%, do_total effect of non-final hops 38.4 pts - same shift as Qwen2.5.
 Pending: Qwen3-4B (`hgcd-r12-q3-4b`: s_grpo, p_think) for the formal H-J and H-G on 4B.
+
+### Round 12 results, part 3 (Qwen3-4B; formal tests)  - tools/analyze_r12.py, results/cfrl/r12_4b
+* **H-G (4B): GO.** s_plain - p_fs = +49.3 [43.7, 55.0] / +39.9 [31.6, 48.1] / +33.5 [25.5, 41.5] (C4/C6/C5). Versus native thinking (100 questions per set, cap 1500 tokens):
+  s_plain - p_think = +19.0 [8.0, 29.0] (C6) and +39.0 [29.0, 49.0] (C5); thinking finished only 86% (C6) and 31% (C5) of generations, so it is a lower bound for an unlimited budget.
+* **H-H (4B): GO.** s_plain - s_ans = +3.0 [0.0, 6.0] (C4), +10.8 [3.8, 17.7] (C6), +21.0 [14.0, 28.5] (C5). Same pattern at 1.7B (+10) and 8B (+14.5 on C5).
+* **H-J (4B hard-prompt GRPO): NO-GO.** Hard pool 131/500 prompts. s_grpo - SFT = -2.0 [-4.3, 0.3] (C4), -4.4 [-9.5, 0.6] (C6), -8.5 [-14.0, -3.0] (C5): significantly worse on long chains.
+  Side effects: wrong-copy follow 51.7% -> 42.5% (n=120, approximate), do_total effect 40 -> 34 pts. RL trades long-chain accuracy for less copying, as DPO did in round 11.
+* **H-I (distillation, final): NO-GO.** Non-inferiority fails (-25..-32 vs gold-chain SFT). The second condition would pass in isolation (s_star - p_fs = +17.0 / +13.3 / +6.0 [0.0, 12.0] on C4/C6/C5, CI lower bound exactly 0 on C5),
+  but the pre-registered rule needs both.
+**Round 12 conclusion.** Newer models (Qwen3 1.7B/4B/8B), native thinking, teacher-filtered distillation and hard-prompt GRPO do not replace or beat plain fine-tuning on automatically built gold chains;
+the chain supervision is what generalises (new task, longer chains, new question type). Caveats: one seed, Qwen3 in fp16, thinking on a capped subset.
