@@ -1,0 +1,15 @@
+model,arm,cond,n,em,lo,hi,f1,cite_ok
+qwen-1.5b,p0,orig,500,25.4,21.6,29.2,34.99,
+qwen-1.5b,s_ans,orig,500,45.2,40.8,49.6,55.80,
+qwen-1.5b,s_plain,orig,500,44.0,39.6,48.2,51.67,
+qwen-1.5b,s_struct,orig,500,45.6,41.2,50.0,53.25,0.92
+qwen-1.5b,p0,dist8,500,21.4,18.0,25.0,29.21,
+qwen-1.5b,s_ans,dist8,500,40.6,36.0,44.8,51.65,
+qwen-1.5b,s_plain,dist8,500,41.4,37.2,45.8,49.78,
+qwen-1.5b,s_struct,dist8,500,42.8,38.4,47.2,51.22,0.86
+qwen-3b,s_ans,orig,500,48.2,43.8,52.6,60.31,
+qwen-3b,s_plain,orig,500,50.0,45.6,54.2,60.49,
+qwen-3b,s_struct,orig,500,46.4,42.2,50.8,56.95,0.93
+qwen-3b,s_ans,dist8,500,45.2,40.8,49.6,56.63,
+qwen-3b,s_plain,dist8,500,48.8,44.6,53.0,58.25,
+qwen-3b,s_struct,dist8,500,45.6,41.2,50.0,57.28,0.89

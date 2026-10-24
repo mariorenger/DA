@@ -725,3 +725,20 @@ Tool: `tools/analyze_r12.py` -> results/cfrl/r12_analysis.csv (paired bootstrap,
 * **H-J (hard-prompt GRPO), exploratory at 1.7B (the pre-registered test is at 4B, pending): NO-GO direction.** Hard pool 193/500 prompts; training accuracy rose 0.66 -> 0.92 but held-out
   s_grpo - SFT = -3.0 [-6.0, 0.0] (C4), -0.6 [-5.1, 3.2] (C6), -6.0 [-12.0, 0.0] (C5). Wrong-copy follow fell 37.5% -> 30.8% (n=120, not significant); the dynamic filter kept <1/8 groups late in training (reward saturation).
 * Descriptive: after SFT Qwen3-1.7B has wrong-copy follow 37.5% and do_total effect of non-final hops 30 pts; 4B 50.0% and 40 pts (same mechanism change as Qwen2.5).
+
+### Round 11 part 2 results (MuSiQue, 2Wiki type shift; Qwen2.5, n=500)
+The two phases of `hgcd-eg2-musique-ood` wrote to the same folder name, so the MuSiQue per-question decisions were overwritten; only the printed summary tables
+survive (results/egen/musique/summary_from_kernel_log.csv). Consequence: CIs below are the per-arm Wilson/bootstrap intervals of the summary, and differences are judged
+by non-overlap plus an unpaired approximation, not by the paired bootstrap that was pre-registered. (Fix for future runs: distinct output names per phase.)
+* **H-E (MuSiQue, 3B): NO-GO.** EM s_struct 46.4 vs s_plain 50.0 vs s_ans 48.2 (orig); with 8 distractors 45.6 vs 48.8 vs 45.2. Structure does not beat plain chains (-3.6; unpaired CI about +-6, so not significant either way).
+  1.5B: s_struct 45.6 / s_plain 44.0 / s_ans 45.2, base few-shot p0 25.4: all fine-tuned arms tie. The effect on MuSiQue is fine-tuning itself (+20 over p0), not chains or structure.
+* **H-F (2Wiki, train on compositional only, test on inference questions): GO.** s_plain - s_ans = +18.0 EM at 3B (40.6 vs 22.6, intervals 36.2-45.0 vs 19.0-26.0) and +8.0 at 1.5B (34.4 vs 26.4).
+  Chain supervision transfers to an unseen question type where answer-only fine-tuning does not (descriptive: unpaired CIs do not overlap at 3B).
+
+### Round 12 results, part 2 (Qwen3-8B, SFT and thinking)
+Source: results/cfrl/r12_8b (+ r12_8b_pfs for p_fs). Thinking evaluated on 60 questions per set, cap 1500 tokens; unfinished = wrong (finished 87% on C6, 42% on C5).
+* **H-H (8B): chain matters.** s_plain - s_ans = -0.3 [-3.3, 2.3] (C4), +20.9 [13.3, 28.5] (C6), +14.5 [7.5, 21.5] (C5). Answer-only fits the training distribution; chains carry to new tasks and longer chains.
+* **H-G (8B): fine-tuning still dominates.** s_plain - p_fs = +40.7 / +46.2 / +31.0; s_plain - p_think = +23.3 [10.0, 36.7] (C6, n=60) and +33.3 [20.0, 46.7] (C5, n=60).
+  Native thinking (60.0 on C6, 31.7 on C5, many outputs truncated) is better than few-shot on C6 but far below a 3000-chain LoRA fine-tune of the same model.
+* Mechanism after SFT (8B): wrong-copy follow 37.5%, do_total effect of non-final hops 38.4 pts - same shift as Qwen2.5.
+Pending: Qwen3-4B (`hgcd-r12-q3-4b`: s_grpo, p_think) for the formal H-J and H-G on 4B.

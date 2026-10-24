@@ -61,8 +61,12 @@ if d4 is not None:
     if ds is not None:
         contrast("H-I", "qwen3-4b", ds, "s_star", d4, "p_fs", "needs diff >= +2, lo > 0")
 d8 = load("r12_8b", "qwen3-8b")
+dp = load("r12_8b_pfs", "qwen3-8b")
+if d8 is not None and dp is not None:
+    d8 = pd.concat([d8, dp])
 if d8 is not None:
     contrast("H-H", "qwen3-8b", d8, "s_plain", d8, "s_ans")
+    contrast("H-G", "qwen3-8b", d8, "s_plain", d8, "p_fs")
     contrast("H-G(think)", "qwen3-8b", d8, "s_plain", d8, "p_think", "subset uids only")
 
 df = pd.DataFrame(rows)

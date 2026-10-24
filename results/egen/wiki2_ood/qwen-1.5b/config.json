@@ -1,0 +1,29 @@
+{
+ "dataset": "wiki2",
+ "model": "Qwen/Qwen2.5-1.5B-Instruct",
+ "outdir": "/kaggle/working/results/egen_qwen-1.5b",
+ "arms": [
+  "s_ans",
+  "s_plain"
+ ],
+ "n_train": 2000,
+ "n_eval": 500,
+ "max_prompt_tokens": 1500,
+ "epochs": 1.0,
+ "lr": 0.0002,
+ "mb": 1,
+ "accum": 16,
+ "bs": 6,
+ "seed": 0,
+ "conds": [
+  "orig"
+ ],
+ "train_types": [
+  "compositional"
+ ],
+ "eval_types": [
+  "inference"
+ ],
+ "device_map": null,
+ "max_minutes": 560.0
+}
