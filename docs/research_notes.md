@@ -18,6 +18,7 @@ Tạo lại: `python tools/export_transcript.py <session.jsonl> docs/conversatio
 | Sau R9 | Hỏi "decode có tốt không" | Decode token: không. Cái tốt là thực thi phép hợp thành ngoài mô hình (rule-based, miền đóng) |
 | Round 10 | Pilot: R_nec của CF-DAPO (do_naive) ≈ 0; do_total bị hack bằng chép đáp án | RL chưa nên làm; thử SFT cấu trúc trước |
 | Round 10 (xong) | Structured-chain SFT trên CLUTRR (S_plain vs S_struct vs P1; 2 seed) | Tiêu chí chính NO-GO: cấu trúc không hơn fine-tune thường. Phát hiện phụ: fine-tune thường 3B đạt 94.7/77.8/59.0 (val/mới ngắn/mới dài), hơn D2 +15..+25 |
+| Round 11 (xong phần CLUTRR) | Chuỗi vs chỉ đáp án; DPO phản thực; GRPO; 7B | Chuỗi hơn chỉ-đáp-án +9..+23 (đề lạ/dài): GO. DPO: chép sai −22..−25 nhưng mất 5–13 điểm chuỗi dài: NO-GO. GRPO: không giúp chuỗi dài (+0.0): NO-GO. 7B = 3B. Sau fine-tune hiệu ứng che bước ~40 điểm (so với 3–10 trước đó) |
 | Round 10b (2Wiki xong; MuSiQue chưa chạy do hết hạn mức GPU tuần của tài khoản nguyenpn) | Tổng quát hoá: fine-tune trên chuỗi dựng tự động | 2Wiki 3B: few-shot 28.8, chỉ đáp án 50.0, chuỗi thường 56.0, chuỗi+nguồn 54.4. Tiêu chí chính NO-GO (−1.6 [−4.6, 1.4]); hiệu ứng chính là fine-tune (+21..+30) |
 
 ## 3. Số liệu chính (xem paper/main.tex, paper/baocao_vi.pdf)
@@ -28,7 +29,7 @@ Tạo lại: `python tools/export_transcript.py <session.jsonl> docs/conversatio
 - Pilot R_nec: do_naive 1.0–8.9 điểm mọi nơi; do_total 42–77 (MuSiQue, CLUTRR+copy), 3–11 (CLUTRR thường).
 
 ## 4. Trạng thái việc đang chạy / chờ
-- Kaggle: không có job nào đang chạy. `notebooks/run_EG1_musique.ipynb` chưa đẩy được vì tài khoản `nguyenpn` hết hạn mức GPU 30h/tuần. Kết quả 2Wiki: `results/egen/wiki2/`, phân tích `tools/analyze_egen.py`.
+- Kaggle: `nguyenpn/hgcd-eg2-musique-ood` (MuSiQue + 2Wiki chuyển loại câu hỏi) đang chạy; các notebook vòng 11 khác đã xong (kết quả `results/cfrl/`, phân tích `tools/analyze_cfrl.py`). `notebooks/run_EG1_musique.ipynb` chưa đẩy được vì tài khoản `nguyenpn` hết hạn mức GPU 30h/tuần. Kết quả 2Wiki: `results/egen/wiki2/`, phân tích `tools/analyze_egen.py`.
 - Kết quả round 10 (CLUTRR): `results/cftrain/seed{0,1}/`, phân tích `results/cftrain/analysis.csv`, `tools/analyze_cf.py`.
 - Việc tiếp: đo mô hình đã fine-tune bằng giao thức R3/R4 (cần lưu adapter), thêm nhánh s_ans (chỉ đáp án).
 - Code: `hgcd/cftrain.py` (SFT cấu trúc CLUTRR), `hgcd/egen.py` (MuSiQue/2Wiki), `tools/build_notebook.py`.

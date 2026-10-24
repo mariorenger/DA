@@ -343,6 +343,10 @@ D2 & Trích fact rồi để bảng luật hợp thành (CLUTRR) & hơn SC cùng
 D3 & Ablation: cùng fact, đổi bên hợp thành & luật hơn LLM $+13$ đến $+35$ & \OKs\\
 D4 & Fine-tune LoRA trên chuỗi gold; thêm dòng ``quan hệ tích luỹ'' & fine-tune thường: 3B đạt 95\%/78\%/59\%; cấu trúc không hơn ($-3$ đến $-7$) & \FAILs\ (cấu trúc)\\
 D5 & Fine-tune trên văn bản thật (2Wiki), chuỗi có/không nguồn & fine-tune $+21$ đến $+30$ so với few-shot; chuỗi có nguồn không hơn chuỗi thường & \PARTs\\
+D6 & Sau fine-tune mô hình có dùng các bước không? & hiệu ứng che bước 1--7 $\to$ $\sim$40 điểm; vẫn chép đáp án sai 13--48\% & \OKs\\
+D7 & Viết chuỗi so với chỉ trả lời đáp án & chuỗi hơn $+9$ đến $+23$ điểm ở đề lạ/dài & \OKs\\
+D8 & DPO với chuỗi phản thực (bác bỏ đáp án sai) & chép sai giảm 22--25 điểm, nhưng mất 5--13 điểm chuỗi dài & \FAILs\\
+D9 & GRPO, thưởng theo từng bước & chuỗi dài $+0.0$; đáp án bền hơn trước nhiễu & \FAILs\\
 \bottomrule
 \end{tabularx}
 \ghichu{R1--R4 là kết quả chẩn đoán (đo lường); R5, D1--D3 là kết quả can thiệp (làm cho mô hình trả lời đúng hơn). ``Thành công'' ở R1--R4 nghĩa là giả thuyết đã dự đoán được xác nhận.}
@@ -804,7 +808,7 @@ Nếu việc trích fact là nguyên nhân, cách 1 cũng phải tăng mạnh so
 \note{Đây là ablation quan trọng nhất về mặt nhân quả: cùng đầu vào, chỉ thay đúng bộ phận bị nghi ngờ.}
 \end{frame}
 
-\section{Fine-tune (D4--D5)}
+\section{Fine-tune (D4--D9)}
 %%@@D4d
 \begin{frame}[shrink]{D4 \textperiodcentered{} Thiết kế: dạy mô hình bằng bài giải mẫu, ba kiểu lời giải mẫu}
 \centering
@@ -955,6 +959,176 @@ Qwen-3B & 28.8 & 50.0 & \textbf{56.0} & 54.4\\
 \end{frame}
 
 
+%%@@D6
+\begin{frame}[shrink]{D6 \textperiodcentered{} Sau khi fine-tune, mô hình có thật sự \emph{dùng} các bước không?}
+\begin{columns}[T,onlytextwidth]
+\column{0.46\textwidth}
+\footnotesize
+\textbf{Thiết kế.} Lấy mô hình đã fine-tune (kiểu ``chuỗi thường'') và lặp lại đúng hai phép thử của R3 trên 120 câu chưa từng thấy:
+\begin{enumerate}
+  \setlength{\itemsep}{2pt}
+  \item \textbf{Che một bước quan hệ cùng chỗ nhắc lại nó}: đáp án đúng giảm bao nhiêu điểm?
+  \item \textbf{Thêm dòng đáp án SAI viết sẵn} sau các bước đúng: mô hình có chép theo không?
+\end{enumerate}
+\vspace{2pt}
+\begin{block}{Hai thuộc tính khác nhau}
+\scriptsize
+\textbf{``Dùng chuỗi''}: bỏ bước thì đáp án sai đi (phép thử 1).\par
+\textbf{``Không chép bừa''}: gặp dòng đáp án mâu thuẫn thì bác bỏ (phép thử 2).
+\end{block}
+\column{0.50\textwidth}
+\scriptsize
+\renewcommand{\arraystretch}{1.15}
+\begin{tabularx}{\linewidth}{@{}lQ{1.15cm}Q{1.15cm}Q{1.0cm}Q{1.0cm}@{}}
+\toprule
+ & \multicolumn{2}{c}{\textbf{Che bước: $\Delta$ (điểm)}} & \multicolumn{2}{c}{\textbf{Chép sai (\%)}}\\
+\cmidrule(lr){2-3}\cmidrule(l){4-5}
+\textbf{Mô hình} & \textbf{Chưa fine-tune} & \textbf{Đã fine-tune} & \textbf{Chưa} & \textbf{Đã}\\
+\midrule
+1.5B & $-1.5$ & 36--42 & 63.0 & 13--22\\
+3B & 7.3 & 41--44 & 47.7 & 26--32\\
+7B & 1.3 & 39 & 10.3 & \textbf{47.5}\\
+\bottomrule
+\end{tabularx}
+\ghichu{Chép sai: tỷ lệ chép đáp án sai trên các câu mô hình tự giải đúng ($n\approx110$). ``Chưa fine-tune'' lấy từ R3.}
+\end{columns}
+\par\vspace{3pt}
+\begin{exampleblock}{Cách đọc kết quả}
+\footnotesize Fine-tune \textbf{đổi cơ chế}: đáp án giờ phụ thuộc mạnh vào các bước (từ 1--7 lên khoảng 40 điểm), ở cả ba cỡ mô hình. Nhưng việc \textbf{chép đáp án sai vẫn còn}, và ở 7B còn \emph{tăng} (10\% $\to$ 47.5\%). ``Dùng chuỗi'' và ``không chép bừa'' là hai thuộc tính riêng.
+\end{exampleblock}
+\par\kern0pt
+\note{Đây là câu trả lời cho câu hỏi còn bỏ ngỏ ở vòng 10. Mô hình sau fine-tune thật sự dùng các bước. Nhưng chúng vẫn dễ chép đáp án sai viết sẵn, nhất là 7B.}
+\end{frame}
+
+%%@@D7
+\begin{frame}[shrink]{D7 \textperiodcentered{} Viết nháp có ích không? So sánh ``chỉ đáp án'' với ``chuỗi'' sau fine-tune}
+\begin{columns}[T,onlytextwidth]
+\column{0.44\textwidth}
+\footnotesize
+\textbf{Thiết kế.} Cùng 3000 bài, cùng cách fine-tune; chỉ khác \emph{lời giải mẫu}:
+\begin{itemize}
+  \setlength{\itemsep}{2pt}
+  \item \textbf{Chỉ đáp án}: \code{Đáp án: Clara là con gái của Anna.}
+  \item \textbf{Chuỗi}: \code{Bước 1 \ldots Bước 2 \ldots Đáp án}
+\end{itemize}
+Kiểm tra trên ba bộ đề chưa từng dạy: cùng loại 2--4 bước (C4), loại khác 2--4 bước (C6), loại khác 5--8 bước (C5).\par\vspace{3pt}
+\begin{block}{Câu hỏi}
+\scriptsize Nếu viết nháp không giúp, mô hình chỉ-đáp-án sẽ ngang chuỗi.
+\end{block}
+\column{0.52\textwidth}
+\scriptsize
+\renewcommand{\arraystretch}{1.15}
+\setlength{\tabcolsep}{3pt}
+\begin{tabularx}{\linewidth}{@{}lQ{0.8cm}Q{0.8cm}Q{0.8cm}Q{0.8cm}Q{0.8cm}Q{0.8cm}@{}}
+\toprule
+ & \multicolumn{2}{c}{\textbf{C4 (cùng loại)}} & \multicolumn{2}{c}{\textbf{C6 (loại khác)}} & \multicolumn{2}{c}{\textbf{C5 (dài 5--8)}}\\
+\cmidrule(lr){2-3}\cmidrule(lr){4-5}\cmidrule(l){6-7}
+\textbf{Mô hình} & \textbf{Đáp án} & \textbf{Chuỗi} & \textbf{Đáp án} & \textbf{Chuỗi} & \textbf{Đáp án} & \textbf{Chuỗi}\\
+\midrule
+1.5B & 77.7 & 83.0 & 54.4 & 60.1 & 38.0 & 47.0\\
+3B & 90.3 & 94.7 & 55.1 & 77.8 & 41.0 & 59.0\\
+7B & 95.0 & 95.0 & 63.9 & 81.0 & 47.5 & 58.5\\
+\bottomrule
+\end{tabularx}
+\ghichu{Độ chính xác (\%), seed 0. Hiệu C5 (chuỗi $-$ đáp án): 1.5B $+9.0\ \ci{1.0}{17.0}$; 3B $+18.0\ \ci{9.5}{26.5}$; 7B $+11.0\ \ci{2.5}{20.0}$. Seed 1 cho cùng kết luận.}
+\end{columns}
+\par\vspace{3pt}
+\begin{exampleblock}{Cách đọc kết quả}
+\footnotesize Trên đề \emph{cùng loại với lúc dạy}, chỉ-đáp-án gần ngang chuỗi (chênh 0--5 điểm). Nhưng trên đề \emph{loại khác} hoặc \emph{dài hơn}, viết chuỗi hơn \textbf{9 đến 23 điểm}. Viết nháp giúp mô hình \emph{tổng quát hoá}, không chỉ học thuộc. Tiêu chí đăng ký trước đạt. \OKs
+\end{exampleblock}
+\par\kern0pt
+\note{Mô hình chỉ-đáp-án trả lời rất tốt trên đề giống lúc dạy nhưng sụt mạnh khi đề lạ hoặc dài hơn. Viết chuỗi giữ được độ chính xác tốt hơn nhiều.}
+\end{frame}
+
+%%@@D8
+\begin{frame}[shrink]{D8 \textperiodcentered{} Dạy mô hình bác bỏ đáp án sai bằng cặp ``lời giải tốt / lời giải xấu'' (DPO)}
+\centering
+\begin{tikzpicture}[font=\scriptsize,node distance=0.2cm,
+  g/.style={draw=okc,fill=okc!10,rounded corners=2pt,align=left,inner sep=3pt,text width=3.9cm,minimum height=2.15cm,anchor=north west},
+  w/.style={draw=failc,fill=failc!8,rounded corners=2pt,align=left,inner sep=3pt,text width=2.45cm,minimum height=2.15cm,anchor=north west}]
+\node[g] (g0) at (0,0) {{\bfseries\color{okc}Lời giải TỐT (chosen)}\par\vspace{1pt}
+ \code{Bước 1: Ben là con trai của Anna.}\par\code{Bước 2: Clara là chị gái của Ben.}\par\code{Đáp án: con gái}};
+\node[w,right=0.25cm of g0.north east,anchor=north west] (w1) {{\bfseries\color{failc}XẤU 1 (40\%)}\par\vspace{1pt}
+ \code{Bước 1, 2 đúng}\par\code{\textcolor{failc}{Vậy Clara là cháu gái của Anna.}}\par\code{Đáp án: cháu gái}};
+\node[w,right=0.12cm of w1.north east,anchor=north west] (w2) {{\bfseries\color{failc}XẤU 2 (30\%)}\par\vspace{1pt}
+ \code{\textcolor{failc}{Bước 2 sai: Clara là mẹ của Ben}}\par\code{Đáp án: bà}};
+\node[w,right=0.12cm of w2.north east,anchor=north west] (w3) {{\bfseries\color{failc}XẤU 3 (30\%)}\par\vspace{1pt}
+ \code{Bước 1, 2 đúng}\par\code{\textcolor{failc}{Đáp án: mẹ}}};
+\end{tikzpicture}
+\par\vspace{3pt}
+\begin{columns}[T,onlytextwidth]
+\column{0.40\textwidth}
+\begin{block}{Cách dạy}
+\scriptsize
+DPO: mỗi lần cho mô hình xem một cặp (tốt, xấu) và \emph{tăng xác suất} của lời giải tốt so với lời giải xấu. 1500 cặp, dựng tự động từ 3000 bài. Dạng ``XẤU 1'' đúng là phép thử chép đáp án sai của R3.
+\end{block}
+\column{0.56\textwidth}
+\scriptsize
+\renewcommand{\arraystretch}{1.12}
+\setlength{\tabcolsep}{3pt}
+\begin{tabularx}{\linewidth}{@{}lQ{1.15cm}Q{1.15cm}Q{1.0cm}Q{1.0cm}@{}}
+\toprule
+\textbf{3B, 2 seed} & \textbf{Trước} & \textbf{Sau DPO} & \textbf{Trước} & \textbf{Sau DPO}\\
+ & \multicolumn{2}{c}{\textbf{Chép sai (\%)}} & \multicolumn{2}{c}{\textbf{C5 chuỗi dài (\%)}}\\
+\midrule
+Seed 0 & 26.7 & \textbf{4.5} & 57.5 & 44.5\\
+Seed 1 & 32.4 & \textbf{7.2} & 56.5 & 51.5\\
+\bottomrule
+\end{tabularx}
+\end{columns}
+\par\vspace{2pt}
+\begin{exampleblock}{Cách đọc kết quả}
+\footnotesize DPO \textbf{gần như xoá hẳn việc chép đáp án sai} (giảm 22--25 điểm, khoảng tin cậy loại trừ 0), và vẫn giữ mô hình dùng các bước (hiệu ứng che bước không đổi). \textbf{Nhưng} đổi lại mất 5--13 điểm trên chuỗi dài. Tiêu chí đăng ký trước yêu cầu không mất quá 2 điểm nên \emph{không đạt}. \FAILs
+\end{exampleblock}
+\par\kern0pt
+\note{DPO dạy mô hình ưa lời giải tốt hơn lời giải xấu. Nó chữa được việc chép đáp án sai nhưng làm giảm độ chính xác ở chuỗi dài. Đó là điểm đánh đổi cần cải thiện, ví dụ bằng cặp phản thực dài hơn.}
+\end{frame}
+
+%%@@D9
+\begin{frame}[shrink]{D9 \textperiodcentered{} Học tăng cường (GRPO) với phần thưởng chấm theo từng bước}
+\centering
+\begin{tikzpicture}[font=\scriptsize,node distance=0.3cm,
+  b/.style={draw=keyc,fill=keyc!6,rounded corners=2pt,align=center,inner sep=3pt,text width=2.15cm,minimum height=1.2cm},
+  r/.style={draw=okc,fill=okc!10,rounded corners=2pt,align=center,inner sep=3pt,text width=3.3cm,minimum height=1.2cm},
+  ar/.style={-{Stealth[length=2mm]},thick,nac}]
+\node[b] (a) at (0,0) {Một bài toán};
+\node[b,right=of a] (b) {Mô hình viết \textbf{8 lời giải} khác nhau};
+\node[r,right=of b] (c) {\textbf{Chấm điểm:} $+1$ nếu đáp án đúng; $+0.3\times$ tỷ lệ bước đúng; $-0.2$ nếu thiếu dòng đáp án};
+\node[b,right=of c] (d) {Tăng xác suất lời giải \textbf{điểm cao hơn trung bình nhóm}};
+\draw[ar] (a)--(b); \draw[ar] (b)--(c); \draw[ar] (c)--(d);
+\end{tikzpicture}
+\par\vspace{3pt}
+\begin{columns}[T,onlytextwidth]
+\column{0.40\textwidth}
+\begin{block}{Điểm đặc biệt}
+\scriptsize
+Phần thưởng \textbf{kiểm chứng được}, không cần mô hình chấm: đáp án đối chiếu nhãn, mỗi bước đối chiếu đồ thị gold. 200 bước cập nhật, mỗi bước 8 bài $\times$ 8 lời giải (theo DAPO: bỏ nhóm mà 8 lời giải cùng điểm).
+\end{block}
+\column{0.56\textwidth}
+\scriptsize
+\renewcommand{\arraystretch}{1.12}
+\setlength{\tabcolsep}{2.5pt}
+\begin{tabularx}{\linewidth}{@{}llQ{0.75cm}Q{0.75cm}Q{0.75cm}Q{0.95cm}@{}}
+\toprule
+\textbf{Mô hình} & \textbf{Nhánh} & \textbf{C4} & \textbf{C6} & \textbf{C5} & \textbf{Lật khi nhiễu}\\
+\midrule
+1.5B & Chỉ fine-tune & 84.3 & 59.5 & 47.0 & 51.9\\
+1.5B & + GRPO & 89.7 & 68.4 & 48.5 & 23.4\\
+3B & Chỉ fine-tune & 94.7 & 77.8 & 60.0 & 36.1\\
+3B & + GRPO & 96.0 & 81.0 & 60.0 & 22.2\\
+\bottomrule
+\end{tabularx}
+\ghichu{Độ chính xác (\%). ``Lật khi nhiễu'': \% câu đổi đáp án khi thêm câu gây nhiễu.}
+\end{columns}
+\par\vspace{2pt}
+\begin{exampleblock}{Cách đọc kết quả}
+\footnotesize Tiêu chí chính (chuỗi dài, 3B, hơn $\ge+2$): \textbf{không đạt} ($0.0\ \ci{-5.0}{5.0}$). GRPO giúp mô hình 1.5B ở bài ngắn và \textbf{làm đáp án ổn định hơn} trước nhiễu (lật 36\% $\to$ 22\% ở 3B), nhưng không cải thiện chuỗi dài. Tín hiệu học thưa: chỉ khoảng 1 trong 8 nhóm có lời giải khác điểm nhau, vì mô hình đã giải đúng $\sim$90\% bài ngắn. \FAILs
+\end{exampleblock}
+\par\kern0pt
+\note{GRPO là kỹ thuật học tăng cường đang phổ biến. Ở đây phần thưởng kiểm chứng được. Kết quả: không giúp chuỗi dài, nhưng làm đáp án bền hơn trước nhiễu. Một lần chạy, nên kết luận còn thận trọng.}
+\end{frame}
+
+
 \section{Hạn chế và kết luận}
 %% ============================================================================ Hạn chế
 \begin{frame}[shrink]{Hạn chế và những chỗ đã tự sửa}
@@ -1004,6 +1178,7 @@ Extract không giới tính $+6$--8 điểm & post hoc, xác nhận thất bại
   \item Tác hại của distractor đi qua chuỗi được sinh lại (R4), nên decoding ở bước đọc không sửa được (R5).
   \item Thực thi phép hợp thành ngoài mô hình tăng accuracy rất lớn, và ablation chứng minh bước hợp thành là nguyên nhân (D2, D3).
   \item \textbf{Fine-tune thường} trên chuỗi gold dạy được phép hợp thành (CLUTRR 3B: 36\% $\to$ 95\%, hơn D2) và chuyển sang văn bản thật (2Wiki: $+21$ đến $+30$ so với few-shot); thêm cấu trúc hay trích dẫn nguồn không thêm gì (D4, D5).
+  \item Sau fine-tune mô hình \textbf{thật sự dùng các bước} (hiệu ứng che bước 1--7 $\to$ $\sim$40 điểm) và viết chuỗi hơn chỉ-đáp-án 9--23 điểm ở đề lạ hoặc dài (D6, D7).
 \end{enumerate}
 \end{block}
 \column{0.465\textwidth}
@@ -1013,7 +1188,7 @@ Extract không giới tính $+6$--8 điểm & post hoc, xác nhận thất bại
   \setlength{\itemsep}{3pt}
   \item Một phương pháp \emph{decoding token} mới vượt self-consistency: HGCD, CAD, calibration, lọc bằng attention đều không đạt.
   \item Extract + rules mới đúng ở miền có luật đóng (CLUTRR).
-  \item Mô hình sau fine-tune có \emph{thật sự dùng chuỗi} (chưa đo bằng R3/R4).
+  \item Cách vừa chống chép đáp án sai vừa giữ độ chính xác chuỗi dài (DPO chưa đạt, GRPO chưa giúp).
   \item Tổng quát ngoài phân phối và sang MuSiQue (chưa chạy); chỉ mới kiểm tra 2Wiki cùng phân phối.
   \item Cấu trúc chuỗi có ích (tiêu chí chính không đạt).
 \end{itemize}
@@ -1035,7 +1210,7 @@ Extract không giới tính $+6$--8 điểm & post hoc, xác nhận thất bại
 \toprule
 \textbf{\#} & \textbf{Việc cần làm} & \textbf{Mục đích}\\
 \midrule
-1 & Đo mô hình đã fine-tune bằng giao thức R3/R4 (chép đáp án sai, $\dt$ lên các hop quan hệ, mediation); thêm nhánh chỉ huấn luyện đáp án & biết fine-tune có làm mô hình \emph{dùng chuỗi} hay chỉ học thuộc đáp án\\
+1 & Sửa DPO để không mất độ chính xác chuỗi dài (cặp phản thực dài hơn, hệ số nhỏ hơn); thử kết hợp DPO với GRPO (GRPO làm đáp án bền hơn) & vừa chống chép đáp án sai vừa giữ độ chính xác\\
 2 & MuSiQue (chưa chạy, hết hạn mức GPU) và câu hỏi ngoài phân phối của 2Wiki; thêm seed & chứng minh tính ứng dụng ngoài phân phối\\
 3 & Đối chứng công bằng: rules-in-prompt; bảng luật phủ toàn bộ chuỗi để kiểm tra giả thuyết ``cấu trúc có ích khi có đủ supervision'' & loại phản biện và kiểm tra phát hiện post hoc\\
 4 & DPO với cặp phản thực (chép đáp án sai vs hợp thành đúng) nếu bước 1 cho thấy mô hình vẫn chép & dạy mô hình bác bỏ tri thức sai\\
