@@ -127,7 +127,7 @@
 \begin{frame}[noframenumbering,shrink]{Nội dung trình bày}
 \small
 \begin{columns}[T,onlytextwidth]
-\column{0.5\textwidth}
+\column{0.470\textwidth}
 \begin{enumerate}
   \setlength{\itemsep}{0.5em}
   \item Vấn đề và câu hỏi nghiên cứu
@@ -135,7 +135,7 @@
   \item Bức tranh tổng thể: cái gì đúng, cái gì không
   \item Chẩn đoán: mô hình \emph{đọc} chứ không \emph{suy luận} (R1--R5)
 \end{enumerate}
-\column{0.5\textwidth}
+\column{0.470\textwidth}
 \begin{enumerate}
   \setcounter{enumi}{4}
   \setlength{\itemsep}{0.5em}
@@ -154,128 +154,174 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Vấn đề}
 %% ============================================================================ Vấn đề
-\begin{frame}[shrink]{Vấn đề: viết ra một bước có nghĩa là đã dùng bước đó?}
+\begin{frame}[shrink]{Vấn đề: lời giải nháp có thật sự được dùng để ra đáp án?}
 \begin{columns}[T,onlytextwidth]
-\column{0.56\textwidth}
+\column{0.50\textwidth}
 \footnotesize
-Chain-of-thought (CoT) yêu cầu mô hình viết các bước trung gian trước khi trả lời. Nhưng \textbf{viết} một bước chưa chắc là \textbf{dùng} bước đó.
-\begin{itemize}
-  \setlength{\itemsep}{2pt}
-  \item Nhiều nghiên cứu xoá hoặc sửa một bước rồi xem đáp án có đổi không. Điểm yếu chung: \textbf{không ai biết bước nào thật sự cần thiết}, nên không kiểm chứng được phương pháp đo nào đúng.
-  \item Với mô hình nhỏ (0.5B--7B), câu hỏi thực dụng hơn: \textbf{có cách nào làm chúng trả lời đúng hơn} khi câu hỏi cần nhiều bước (hỏi đáp trên nhiều tài liệu, quan hệ họ hàng, truy vấn có quan hệ)?
-  \item Hướng ban đầu của đề tài: chỉnh \emph{decoding} (cách chọn token) để khuếch đại phần đáp án ``do chuỗi gây ra''.
-\end{itemize}
-\column{0.41\textwidth}
-\begin{block}{Hai câu hỏi trung tâm}
-\footnotesize
+\textbf{Hình dung một học sinh làm toán.} Em viết các bước nháp rồi ghi đáp án. Có hai khả năng:
 \begin{enumerate}
   \setlength{\itemsep}{3pt}
-  \item Đáp án có \emph{phụ thuộc nhân quả} vào chuỗi suy luận không, và đi qua đường nào?
-  \item Từ câu trả lời đó, can thiệp ở đâu thì mô hình trả lời đúng hơn: ở bước \emph{đọc đáp án}, hay ở bước \emph{tạo chuỗi}?
+  \item Em \emph{tính} đáp án từ các bước nháp (bỏ một bước nháp thì đáp án sai).
+  \item Em đã biết hoặc đoán đáp án từ đầu, nháp chỉ để cho đẹp (bỏ nháp đi thì đáp án vẫn vậy).
 \end{enumerate}
+\vspace{3pt}
+Mô hình ngôn ngữ cũng ``viết nháp từng bước'' trước khi trả lời. Kỹ thuật này gọi là \textbf{chain-of-thought (CoT)}. Đề tài hỏi: \textbf{mô hình thuộc khả năng 1 hay 2?}
+\column{0.44\textwidth}
+\begin{block}{Vì sao câu hỏi này quan trọng}
+\footnotesize
+\begin{itemize}
+  \setlength{\itemsep}{3pt}
+  \item Nếu mô hình không dựa vào nháp, thì kiểm tra hay sửa nháp không giúp được gì.
+  \item Muốn làm mô hình trả lời đúng hơn, ta phải biết can thiệp vào \emph{chỗ nào}: lúc viết nháp, hay lúc chốt đáp án.
+  \item Mô hình nhỏ (0.5--7 tỷ tham số) rẻ, dễ triển khai, nhưng chưa rõ chúng suy luận ra sao.
+\end{itemize}
 \end{block}
 \end{columns}
 \par\kern0pt
-\note{Đây là hai câu hỏi xuyên suốt. Câu 1 là chẩn đoán, câu 2 là hành động. Kết quả của câu 1 quyết định câu 2.}
+\note{Dùng phép ví dụ học sinh làm toán. Khả năng 1 là suy luận thật, khả năng 2 là viết nháp trang trí. Toàn bộ nghiên cứu là cách phân biệt hai khả năng này một cách có kiểm chứng.}
 \end{frame}
 
 %% ============================================================================ hai loại câu hỏi
-\begin{frame}[shrink]{Hai loại câu hỏi nhiều bước dùng để tách ``đọc'' khỏi ``suy luận''}
+\begin{frame}[shrink]{Hai loại bài toán: một loại ``chép được'', một loại ``phải tính''}
 \begin{columns}[T,onlytextwidth]
-\column{0.49\textwidth}
-\begin{block}{Bridge (MuSiQue, Wikipedia)}
+\column{0.46\textwidth}
+\begin{block}{Loại A: đáp án nằm sẵn trong nháp (MuSiQue)}
 \scriptsize
 \textbf{Hỏi:} Vợ của đạo diễn phim X là ai?\par\vspace{2pt}
-\code{Hop 1: Đạo diễn phim X là ... $\Rightarrow$ Y}\\
-\code{Hop 2: Vợ của Y là ... $\Rightarrow$ Z}\par\vspace{2pt}
-Mỗi bước tìm một thực thể, bước sau dùng nó. Đáp án Z \textbf{được viết ra} ở bước cuối: chỉ cần đọc bước cuối là trả lời được.
+\code{Bước 1: Đạo diễn phim X là Y.}\\
+\code{Bước 2: Vợ của Y là Z.}\\
+\code{Đáp án: Z}\par\vspace{2pt}
+Mỗi bước tìm ra một thông tin, bước sau dùng nó. Chữ ``Z'' được \textbf{viết ra} ở bước cuối: chỉ cần \emph{đọc lại} bước cuối là có đáp án.
 \end{block}
-\column{0.49\textwidth}
-\begin{block}{Compositional (CLUTRR, quan hệ gia đình)}
+\column{0.50\textwidth}
+\begin{block}{Loại B: đáp án phải tự tính (CLUTRR, quan hệ họ hàng)}
 \scriptsize
-\textbf{Chuyện:} Anna đưa con trai Ben đi chơi; Ben và chị gái Clara nướng bánh. \textbf{Hỏi:} Clara là gì của Anna?\par\vspace{2pt}
-\code{Hop 1: Ben là con trai của Anna.}\\
-\code{Hop 2: Clara là chị gái của Ben.}\par\vspace{2pt}
-Đáp án ``\textbf{con gái}'' \textbf{không xuất hiện} trong chuỗi: phải tự \emph{tính} son $\circ$ sister $=$ daughter.
+\textbf{Chuyện:} Anna đưa con trai Ben đi chơi. Ben và chị gái Clara nướng bánh. \textbf{Hỏi:} Clara là gì của Anna?\par\vspace{2pt}
+\code{Bước 1: Ben là con trai của Anna.}\\
+\code{Bước 2: Clara là chị gái của Ben.}\\
+\code{Đáp án: con gái}\par\vspace{2pt}
+Chữ ``con gái'' \textbf{không có} trong các bước: phải tự \emph{tính} ``con trai + chị gái = con gái''.
 \end{block}
 \end{columns}
 \vspace{0.2cm}
-\begin{alertblock}{Ý tưởng then chốt}
+\begin{alertblock}{Dùng hai loại này để phân biệt}
 \footnotesize
-Nếu mô hình thật sự suy luận, chuỗi phải có tác dụng ở \emph{cả hai} loại. Nếu nó chỉ có tác dụng khi đáp án được viết sẵn (bridge) thì mô hình đang \textbf{đọc} chứ không \textbf{suy luận}.
+Nếu mô hình chỉ dựa vào nháp khi đáp án \emph{chép được} (loại A), và không dựa vào nháp khi đáp án \emph{phải tính} (loại B), thì nó đang \textbf{đọc lại} chứ không \textbf{suy luận}.
 \end{alertblock}
 \par\kern0pt
-\note{Đây là thiết kế cốt lõi. Hai loại bài toán giống nhau về hình thức nhưng khác nhau ở chỗ đáp án có nằm trong chuỗi hay không.}
+\note{Hai loại bài toán trông giống nhau nhưng khác ở chỗ đáp án có xuất hiện trong lời giải nháp hay không. Đó là chìa khoá của thiết kế.}
 \end{frame}
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Cách tiếp cận}
-%% ============================================================================ ground truth
-\begin{frame}[shrink]{Cách tiếp cận: tự tạo ground truth bằng can thiệp có đáp án biết trước}
+%% ============================================================================ can thiệp
+\begin{frame}[shrink]{Cách đo: ``rút một viên gạch'' rồi xem tòa nhà có đổ không}
 \centering
-\begin{tikzpicture}[font=\scriptsize,>=Stealth,
-  stp/.style={draw=keyc,fill=keyc!5,rounded corners=2pt,text width=3.05cm,minimum height=2.9cm,align=left,inner sep=4pt,anchor=north west}]
-\node[stp] (a) at (0,0) {{\footnotesize\bfseries\color{keyc}1. Chuỗi gold}\par\vspace{3pt}
-  Viết sẵn chuỗi đúng từ đường đi gold của dữ liệu (MuSiQue có phân rã, CLUTRR có đồ thị quan hệ).};
-\node[stp,right=0.2cm of a.north east,anchor=north west] (b) {{\footnotesize\bfseries\color{keyc}2. Bước thừa}\par\vspace{3pt}
-  Chèn một bước \emph{đúng sự thật nhưng không liên quan}. Mức cần thiết thật của nó \textbf{bằng 0}; một phép đo tốt phải chấm nó $\approx 0$.};
-\node[stp,right=0.2cm of b.north east,anchor=north west] (c) {{\footnotesize\bfseries\color{keyc}3. Can thiệp hiệu ứng 0}\par\vspace{3pt}
-  Đổi tên người, đổi thứ tự câu, thêm distractor, câu trung tính (placebo). Về logic, đáp án đúng không đổi.};
-\node[stp,right=0.2cm of c.north east,anchor=north west] (d) {{\footnotesize\bfseries\color{keyc}4. Mediation chính xác}\par\vspace{3pt}
-  Tự \emph{đặt} chuỗi vào mô hình, nhờ đó quan sát trực tiếp hiệu ứng trực tiếp và hiệu ứng qua chuỗi trên từng câu.};
+\begin{tikzpicture}[font=\scriptsize,node distance=0.3cm,
+  hb/.style={draw=keyc,fill=keyc!6,rounded corners=2pt,align=left,inner sep=3pt,text width=2.55cm},
+  hbm/.style={draw=failc,fill=failc!10,rounded corners=2pt,align=left,inner sep=3pt,text width=2.55cm,dashed},
+  an/.style={draw=okc,fill=okc!10,rounded corners=2pt,align=left,inner sep=3pt,text width=1.8cm},
+  ar/.style={-{Stealth[length=2mm]},thick,nac}]
+\node[anchor=west,font=\scriptsize\bfseries,text=keyc] at (0,0.95) {Nháp đầy đủ};
+\node[hb] (a1) at (0,0.1) {\textbf{Bước 1} Đạo diễn phim X là \textbf{Y}.};
+\node[hb,right=of a1] (a2) {\textbf{Bước 2} Vợ của \textbf{Y} là \textbf{Z}.};
+\node[an,right=0.55cm of a2] (a3) {\textbf{Đáp án} Z};
+\draw[ar] (a1)--(a2); \draw[ar] (a2)--(a3);
+\node[right=0.2cm of a3,font=\scriptsize\bfseries,text=okc] {tin $90\%$};
+\node[anchor=west,font=\scriptsize\bfseries,text=failc] at (0,-1.1) {Nháp bị can thiệp (che bước 1)};
+\node[hbm] (b1) at (0,-1.95) {\textbf{Bước 1} [ĐÃ ẨN]};
+\node[hb,right=of b1] (b2) {\textbf{Bước 2} Vợ của \textbf{Y} là \textbf{Z}.};
+\node[an,right=0.55cm of b2] (b3) {\textbf{Đáp án} Z};
+\draw[ar] (b1)--(b2); \draw[ar] (b2)--(b3);
+\node[right=0.2cm of b3,font=\scriptsize\bfseries,text=failc] {tin $20\%$};
 \end{tikzpicture}
-\vspace{0.1cm}
+\par\vspace{3pt}
 \begin{columns}[T,onlytextwidth]
-\column{0.5\textwidth}
+\column{0.46\textwidth}
+\begin{block}{Hai khái niệm}
 \scriptsize
-\textbf{Hai kiểu che một bước $j$:}
-\begin{itemize}
-  \setlength{\itemsep}{1pt}
-  \item $\dn$: che đúng bước $j$.
-  \item $\dt$: che bước $j$ \emph{và} mọi chỗ các bước sau nhắc lại kết quả của nó.
-\end{itemize}
-\column{0.5\textwidth}
+\textbf{Độ tin vào đáp án đúng} ($p$): xác suất (0--100\%) mô hình gán cho đáp án đúng.\par
+\textbf{Hiệu ứng} $\Delta$ = $p$(nháp đầy đủ) $-$ $p$(nháp đã sửa), tính bằng \emph{điểm phần trăm}. Ở ví dụ trên $\Delta = 90-20 = 70$ điểm.
+\end{block}
+\column{0.50\textwidth}
+\begin{exampleblock}{Cách đọc $\Delta$}
 \scriptsize
-\textbf{Các control kèm theo:} placebo (viết lại cùng nghĩa), mask-marker (chèn \code{[MASKED]} nhưng giữ nội dung), marker-tree (cùng số token mask trên cả nhánh).
+$\Delta$ \textbf{lớn}: đáp án \emph{phụ thuộc} vào bước bị che.\par
+$\Delta \approx 0$: bỏ bước đó đi, mô hình vẫn trả lời như cũ, tức là \emph{không dùng} bước đó.
+\end{exampleblock}
 \end{columns}
 \par\kern0pt
-\note{Vì có ground truth, ta kiểm chứng được cả các phương pháp đo trước khi dùng chúng để chẩn đoán mô hình.}
+\note{Phương pháp là can thiệp: sửa một chỗ trong nháp rồi đo độ tin vào đáp án đúng thay đổi bao nhiêu. Delta lớn nghĩa là đáp án phụ thuộc vào chỗ đó.}
+\end{frame}
+
+%% ============================================================================ ground truth
+\begin{frame}[shrink]{Làm sao biết phép đo đúng? Dùng đề có đáp án biết trước}
+\begin{columns}[T,onlytextwidth]
+\column{0.50\textwidth}
+\footnotesize
+\textbf{Vấn đề:} nhiều nghiên cứu đo ``bước nào quan trọng'' bằng cách che từng bước. Nhưng \emph{không ai biết bước nào thật sự quan trọng}, nên không kiểm chứng được phép đo.\par\vspace{4pt}
+\textbf{Cách giải quyết của đề tài:} tự tạo tình huống mà ta \emph{biết chắc} kết quả đúng.
+\vspace{3pt}
+\renewcommand{\arraystretch}{1.2}
+\scriptsize
+\begin{tabularx}{\linewidth}{@{}P{3.2cm}Y@{}}
+\toprule
+\textbf{Tình huống} & \textbf{Phép đo tốt phải báo}\\
+\midrule
+Chèn một câu \emph{đúng nhưng vô quan hệ} & $\approx 0$ (câu này thừa)\\
+Bước gold thật sự cần thiết & $\Delta$ lớn\\
+Đổi tên nhân vật (Anna $\to$ Lan) & $\approx 0$ (đáp án vẫn vậy)\\
+\bottomrule
+\end{tabularx}
+\column{0.44\textwidth}
+\begin{block}{Ví dụ: chèn một bước thừa}
+\scriptsize
+\code{Bước 1: Ben là con trai của Anna.}\\
+\code{Bước 2: Clara là chị gái của Ben.}\\
+\textcolor{failc}{\code{Bước 3: Anna thích bóng đá.}} \emph{(đúng, nhưng không liên quan)}\par\vspace{2pt}
+Mức cần thiết thật của bước 3 là \textbf{0}. Nếu một phép đo chấm bước 3 là ``quan trọng'' thì phép đo đó \textbf{sai}.
+\end{block}
+\begin{exampleblock}{AUC: một điểm số cho chất lượng phép đo}
+\scriptsize
+Xếp các bước theo điểm quan trọng. AUC $=$ xác suất bước cần thiết được xếp cao hơn bước thừa. $1.0$ là hoàn hảo, $0.5$ là đoán mò.
+\end{exampleblock}
+\end{columns}
+\par\kern0pt
+\note{Vì ta tự chèn bước thừa, ta biết chắc mức cần thiết thật của nó bằng không. Phép đo nào chấm bước thừa là quan trọng thì phép đo đó sai. AUC tóm tắt điều này bằng một con số.}
 \end{frame}
 
 %% ============================================================================ dữ liệu
-\begin{frame}[shrink]{Dữ liệu, mô hình và giao thức thống kê}
+\begin{frame}[shrink]{Dữ liệu, mô hình và quy tắc thí nghiệm}
 \begin{columns}[T,onlytextwidth]
-\column{0.55\textwidth}
+\column{0.50\textwidth}
 \scriptsize
 \renewcommand{\arraystretch}{1.18}
-\begin{tabularx}{\linewidth}{@{}P{2.0cm}Y@{}}
+\begin{tabularx}{\linewidth}{@{}P{1.9cm}Y@{}}
 \toprule
 \textbf{Mục} & \textbf{Chi tiết}\\
 \midrule
-CLUTRR & chuỗi quan hệ gia đình sạch, 11.708 train / 635 test; thêm một task \emph{chưa từng dùng} để kiểm chứng\\
-MuSiQue-Ans & câu hỏi Wikipedia thật, có phân rã gold; ngữ cảnh gồm đoạn đúng và 4 (hoặc 8) distractor\\
-Mô hình & Qwen2.5-0.5B/1.5B/3B/7B-Instruct, SmolLM2-1.7B; greedy, fp16\\
-Phần cứng & Kaggle T4 16GB; không fine-tune ở phần chẩn đoán\\
-Thống kê & bootstrap 95\% CI, so sánh cặp, McNemar\\
+CLUTRR & chuyện họ hàng, chuỗi 2--10 bước; 11.708 bài train, 635 bài test; thêm một task \emph{chưa từng dùng}\\
+MuSiQue & câu hỏi Wikipedia thật; ngữ cảnh gồm đoạn đúng và 4 (hoặc 8) đoạn gây nhiễu\\
+2WikiMultihop & câu hỏi họ hàng, quê quán, nghề nghiệp trên Wikipedia\\
+Mô hình & Qwen2.5-0.5B/1.5B/3B/7B, SmolLM2-1.7B\\
+Phần cứng & Kaggle GPU T4 16GB\\
 \bottomrule
 \end{tabularx}
-\column{0.42\textwidth}
-\begin{block}{Kỷ luật thí nghiệm}
+\column{0.44\textwidth}
+\begin{block}{Quy tắc để kết quả đáng tin}
 \scriptsize
 \begin{itemize}
   \setlength{\itemsep}{2pt}
-  \item \textbf{Đăng ký trước}: giả thuyết, ngưỡng go/no-go ghi vào \code{REVIEW.md} \emph{trước} khi chạy GPU.
-  \item Ngưỡng thành công: vượt baseline tốt nhất (CoT hoặc self-consistency \emph{cùng compute}) $\ge 2$ điểm, CI $>0$.
-  \item Phát hiện post hoc chỉ được chấp nhận sau khi xác nhận lại trên dữ liệu chưa dùng.
-  \item Mọi bảng sinh từ code, không gõ tay.
+  \item \textbf{Ghi giả thuyết và ngưỡng thành công trước khi chạy} (file \code{REVIEW.md}).
+  \item Ngưỡng: phải hơn phương pháp đối chứng mạnh nhất ít nhất 2 điểm, và khoảng tin cậy 95\% phải dương.
+  \item Đối chứng mạnh = CoT thường hoặc \textbf{self-consistency} (sinh nhiều lời giải rồi bỏ phiếu) \emph{cùng ngân sách tính toán}.
+  \item Phát hiện tình cờ phải được kiểm chứng lại trên dữ liệu chưa dùng.
 \end{itemize}
 \end{block}
 \end{columns}
 \par\kern0pt
-\note{Điểm khác với nhiều paper decoding là baseline luôn là self-consistency cùng compute, và ngưỡng được đặt trước khi chạy.}
+\note{Điểm khác nhiều paper decoding là đối chứng luôn mạnh và ngưỡng được đặt trước khi chạy.}
 \end{frame}
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Bức tranh tổng thể}
 %% ============================================================================ tổng quan
 \begin{frame}[shrink]{Tổng quan: cái gì đúng, cái gì không}
@@ -304,107 +350,193 @@ D5 & Fine-tune trên văn bản thật (2Wiki), chuỗi có/không nguồn & fin
 \note{Đây là slide quan trọng nhất. Chẩn đoán R1 đến R4 đều được xác nhận. Về can thiệp: chỉnh decoding ở bước đọc không giúp, lọc bằng attention không giúp, nhưng đưa phép hợp thành ra ngoài mô hình thì giúp rất nhiều.}
 \end{frame}
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 \section{Chẩn đoán (R1--R5)}
-%% ============================================================================ R1
-\begin{frame}[shrink]{R1 \textperiodcentered{} Che một bước đơn lẻ không thấy được bước cần thiết}
+%%@@R1d
+\begin{frame}[shrink]{R1 \textperiodcentered{} Thiết kế: che \emph{một} bước, hay che cả \emph{hệ quả} của nó?}
+\centering
+\begin{tikzpicture}[font=\scriptsize,node distance=0.22cm,
+  hb/.style={draw=keyc,fill=keyc!6,rounded corners=2pt,align=left,inner sep=3pt,text width=2.45cm},
+  hbm/.style={draw=failc,fill=failc!10,rounded corners=2pt,align=left,inner sep=3pt,text width=2.45cm,dashed},
+  an/.style={draw=okc,fill=okc!10,rounded corners=2pt,align=left,inner sep=3pt,text width=1.2cm},
+  lab/.style={align=left,text width=2.5cm,font=\scriptsize\bfseries},
+  ar/.style={-{Stealth[length=2mm]},thick,nac}]
+\node[lab,text=keyc] (l0) at (0,0.9) {Nháp gốc};
+\node[hb,right=0.1cm of l0] (a1) {\textbf{Bước 1} Đạo diễn X là \textbf{Y}.};
+\node[hb,right=of a1] (a2) {\textbf{Bước 2} Vợ của \textbf{Y} là \textbf{Z}.};
+\node[an,right=of a2] (a3) {\textbf{Đáp án} Z};
+\node[lab,text=partc] (l1) at (0,-0.35) {Cách A: che \emph{một} bước};
+\node[hbm,right=0.1cm of l1] (b1) {\textbf{Bước 1} [ẨN]};
+\node[hb,right=of b1] (b2) {\textbf{Bước 2} Vợ của \textbf{Y} là \textbf{Z}.};
+\node[an,right=of b2] (b3) {\textbf{Đáp án} Z};
+\node[lab,text=failc] (l2) at (0,-1.6) {Cách B: che bước 1 \emph{và} chỗ nhắc lại nó};
+\node[hbm,right=0.1cm of l2] (c1) {\textbf{Bước 1} [ẨN]};
+\node[hbm,right=of c1] (c2) {\textbf{Bước 2} Vợ của [ẨN] là [ẨN].};
+\node[an,right=of c2] (c3) {\textbf{Đáp án} Z};
+\end{tikzpicture}
+\par\vspace{3pt}
 \begin{columns}[T,onlytextwidth]
-\column{0.5\textwidth}
+\column{0.46\textwidth}
+\begin{block}{Ta biết chắc điều gì?}
 \scriptsize
-\textbf{Vì sao?} Bước sau đã chép lại kết quả của bước trước. Che Hop 1 nhưng Hop 2 vẫn ghi ``Y'' thì mô hình không mất thông tin: $\dn$ luôn báo ``không cần thiết'', \emph{kể cả khi Hop 1 cần thiết}. Đây là một đồng nhất thức (controlled direct effect), không phải nhiễu.\par\vspace{3pt}
-\textbf{Kiểm tra:} che một bước gold không phải bước cuối (MuSiQue); đo thay đổi xác suất đáp án đúng.\par\vspace{3pt}
-\renewcommand{\arraystretch}{1.1}
-\begin{tabularx}{\linewidth}{@{}YQ{1.3cm}Q{1.3cm}@{}}
+Bước 1 \textbf{chắc chắn cần thiết}: nếu không biết Y là ai thì không thể biết vợ của Y. Một phép đo đúng phải báo ``bước 1 quan trọng''.
+\end{block}
+\column{0.50\textwidth}
+\begin{exampleblock}{Dự đoán trước khi chạy}
+\scriptsize
+\textbf{Cách A:} bước 2 vẫn còn chữ ``Y'', mô hình không mất thông tin gì $\Rightarrow$ báo \textbf{``không cần''} (sai).\par
+\textbf{Cách B:} mô hình mất hẳn thông tin về Y $\Rightarrow$ báo \textbf{``cần''} (đúng).
+\end{exampleblock}
+\end{columns}
+\par\kern0pt
+\note{Đây là thiết kế của R1. Cùng một nháp, ta che theo hai cách. Cách A là cách phổ biến trong văn liệu. Ta dự đoán trước rằng cách A sẽ cho kết quả sai vì thông tin vẫn còn ở bước sau.}
+\end{frame}
+
+%%@@R1r
+\begin{frame}[shrink]{R1 \textperiodcentered{} Kết quả: che một bước gần như không thấy gì}
+\begin{columns}[T,onlytextwidth]
+\column{0.50\textwidth}
+\centering
+\begin{tikzpicture}
+\begin{axis}[ybar, width=\linewidth, height=4.6cm, bar width=7pt, ymin=-10, ymax=75,
+  symbolic x coords={0.5B,1.5B,Smol,3B,7B}, xtick=data, x tick label style={font=\tiny},
+  ylabel={$\Delta$ (điểm \%)}, ylabel style={font=\tiny}, y tick label style={font=\tiny},
+  legend style={at={(0.5,1.05)},anchor=south,legend columns=2,font=\tiny,draw=none},
+  enlarge x limits=0.12, ymajorgrids, grid style={black!10}]
+\addplot[fill=keyc,draw=none] coordinates {(0.5B,56.7)(1.5B,56.9)(Smol,66.8)(3B,49.1)(7B,41.3)};
+\addplot[fill=partc,draw=none] coordinates {(0.5B,-2.4)(1.5B,0.6)(Smol,-3.9)(3B,0.5)(7B,6.5)};
+\legend{Cách B (che cả hệ quả),Cách A (che một bước)}
+\end{axis}
+\end{tikzpicture}
+\par\tiny Trục ngang: kích thước mô hình. Dữ liệu: MuSiQue, bước gold không phải bước cuối.
+\column{0.44\textwidth}
+\scriptsize
+\renewcommand{\arraystretch}{1.15}
+\begin{tabularx}{\linewidth}{@{}YQ{1.2cm}Q{1.2cm}@{}}
 \toprule
-\textbf{AUC (0.5 = đoán mò)} & $\dt$ & $\dn$\\
+\textbf{AUC (1 = hoàn hảo)} & \textbf{Cách B} & \textbf{Cách A}\\
 \midrule
 Qwen-1.5B & 0.98 & 0.82\\
 Qwen-3B & 0.97 & 0.76\\
 Qwen-7B & 0.86 & 0.71\\
 \bottomrule
 \end{tabularx}
-\column{0.48\textwidth}
-\centering
-\begin{tikzpicture}
-\begin{axis}[ybar, width=\linewidth, height=5.0cm, bar width=7pt, ymin=-10, ymax=75,
-  symbolic x coords={0.5B,1.5B,Smol,3B,7B}, xtick=data, x tick label style={font=\tiny},
-  ylabel={$\Delta p(\text{gold})$, điểm}, ylabel style={font=\tiny}, y tick label style={font=\tiny},
-  legend style={at={(0.5,1.05)},anchor=south,legend columns=3,font=\tiny,draw=none},
-  enlarge x limits=0.12, ymajorgrids, grid style={black!10}]
-\addplot[fill=keyc,draw=none] coordinates {(0.5B,56.7)(1.5B,56.9)(Smol,66.8)(3B,49.1)(7B,41.3)};
-\addplot[fill=partc,draw=none] coordinates {(0.5B,-2.4)(1.5B,0.6)(Smol,-3.9)(3B,0.5)(7B,6.5)};
-\addplot[fill=nac,draw=none] coordinates {(0.5B,7.3)(1.5B,0.0)(Smol,2.3)(3B,-0.3)(7B,5.7)};
-\legend{$\dt$,$\dn$,marker-tree (control)}
-\end{axis}
-\end{tikzpicture}
-\end{columns}
-\begin{ketluan}
-\footnotesize Muốn đo một bước có cần thiết không phải can thiệp cả các bước phụ thuộc vào nó; phương pháp ``xoá một bước'' đánh giá thấp có hệ thống các bước trung gian. Placebo ở mức đoán mò (AUC $\approx 0.5$); marker-tree chỉ 0--7 điểm nên hiệu ứng lớn không phải do che nhiều chữ.
-\end{ketluan}
-\par\kern0pt
-\note{Cột xanh đậm là che kèm các bước phụ thuộc: 41 đến 67 điểm. Cột cam là che một bước: gần như bằng không. Cột xám là control cùng số token mask nhưng giữ nội dung: nhỏ, nên hiệu ứng lớn không phải do che nhiều chữ. Hệ quả: muốn đo một bước có cần không phải can thiệp cả các bước phụ thuộc.}
-\end{frame}
-
-%% ============================================================================ R2
-\begin{frame}[shrink]{R2 \textperiodcentered{} Resampling với baseline cố định bị lệch đúng bằng $1-r$}
-\begin{columns}[T,onlytextwidth]
-\column{0.5\textwidth}
-\footnotesize
-Phương pháp phổ biến: làm hỏng một bước, cho mô hình tự viết tiếp, xem tỷ lệ đúng giảm bao nhiêu.\par\vspace{3pt}
-\textbf{Vấn đề:} so với chuỗi gold gốc (luôn đúng), nhưng mô hình tự viết tiếp chỉ đúng với tỷ lệ $r<1$. Phần sai do mô hình \emph{viết tiếp kém} ($1-r$) bị tính nhầm là ``do bước bị hỏng''.\par\vspace{3pt}
-\begin{exampleblock}{Ví dụ}
-\scriptsize
-Nếu $r=0.3$ thì \emph{mọi} bước, kể cả bước hoàn toàn không liên quan, bị chấm ``cần thiết'' khoảng 70 điểm. Cách sửa: so với một baseline \emph{cũng được resample}.
-\end{exampleblock}
-\column{0.48\textwidth}
-\scriptsize
-\renewcommand{\arraystretch}{1.2}
-\begin{tabularx}{\linewidth}{@{}YQ{1.0cm}Q{1.0cm}@{}}
-\toprule
-\textbf{MuSiQue (điểm ``cần thiết'')} & \textbf{1.5B} & \textbf{3B}\\
-\midrule
-Cố định: bước cần thiết & 75.7 & 61.5\\
-Cố định: \textbf{bước thừa} & \textbf{76.3} & \textbf{56.3}\\
-Resample: bước cần thiết & 6.4 & 11.3\\
-Resample: bước thừa & $-0.3$ & 4.3\\
-AUC, cố định & 0.52 & 0.55\\
-AUC, resample & 0.67 & 0.64\\
-\bottomrule
-\end{tabularx}
-\ghichu{Mô hình chỉ tự viết tiếp đúng 22--44\% số lần, nên 56--78 chính là $1-r$.}
+\par\vspace{3pt}
+\textbf{Đối chứng:} chèn cùng số chữ ``[ẨN]'' nhưng \emph{giữ nội dung} chỉ gây 0--7 điểm, nên hiệu ứng lớn của cách B không phải do che nhiều chữ.
 \end{columns}
 \par\vspace{4pt}
-\begin{ketluan}
-\footnotesize Một số số đo ``step necessity'' đã công bố chủ yếu phản ánh việc mô hình viết tiếp kém, không phản ánh tầm quan trọng của bước. Resampling đo \emph{khôi phục được không}, còn $\dt$ đo \emph{bước viết ra có được dùng không}.
-\end{ketluan}
+\begin{exampleblock}{Cách đọc kết quả}
+\footnotesize Cách A cho $\Delta \approx 0$ ($-4$ đến $+6.5$ điểm) dù bước 1 \emph{chắc chắn cần thiết}; cách B cho 41--67 điểm. Kết luận: muốn đo một bước có cần không, phải che cả những chỗ nhắc lại nó. Đo bằng cách A sẽ đánh giá thấp các bước trung gian.
+\end{exampleblock}
 \par\kern0pt
-\note{Hai phương pháp trả lời hai câu hỏi khác nhau. Với baseline cố định, bước thừa và bước cần thiết gần như bằng nhau, AUC đoán mò.}
+\note{Cột xanh đậm là cách B, cột cam là cách A. Cách A gần như bằng không, đúng như dự đoán. Phép đối chứng cho thấy cách B không chỉ vì che nhiều chữ hơn.}
 \end{frame}
 
-%% ============================================================================ R3
-\begin{frame}[shrink]{R3 \textperiodcentered{} Kết quả chính: chuỗi được \emph{đọc}, không được \emph{suy luận}}
+%%@@R2
+\begin{frame}[shrink]{R2 \textperiodcentered{} Phép đo thứ hai: ``làm hỏng một bước rồi cho mô hình viết tiếp''}
+\centering
+\begin{tikzpicture}[font=\scriptsize,node distance=0.3cm,
+  b/.style={draw=keyc,fill=keyc!6,rounded corners=2pt,align=center,inner sep=3pt,text width=2.45cm,minimum height=0.95cm},
+  bm/.style={draw=failc,fill=failc!10,rounded corners=2pt,align=center,inner sep=3pt,text width=2.45cm,minimum height=0.95cm},
+  ar/.style={-{Stealth[length=2mm]},thick,nac}]
+\node[b] (n1) at (0,0) {Nháp gold\\(đúng)};
+\node[bm,right=of n1] (n2) {Làm hỏng\\bước $j$};
+\node[b,right=of n2] (n3) {Mô hình \emph{tự viết tiếp} phần còn lại};
+\node[b,right=of n3] (n4) {Trả lời đúng bao nhiêu \%?};
+\draw[ar] (n1)--(n2); \draw[ar] (n2)--(n3); \draw[ar] (n3)--(n4);
+\end{tikzpicture}
+\par\vspace{3pt}
 \begin{columns}[T,onlytextwidth]
-\column{0.5\textwidth}
+\column{0.50\textwidth}
+\footnotesize
+\textbf{Cách so sánh phổ biến:} lấy tỷ lệ đúng này so với 100\% (nháp gold luôn đúng). Độ giảm $=$ ``bước $j$ cần thiết''.\par\vspace{3pt}
+\begin{alertblock}{Lỗi của cách này, ví dụ bằng số}
+\scriptsize
+Giả sử mô hình tự viết tiếp chỉ đúng 30\% số lần \emph{ngay cả khi không hỏng gì}. Khi đó \emph{mọi} bước, kể cả bước vô dụng, đều bị chấm ``cần thiết'' $\approx 70$ điểm: phần sai do mô hình viết tiếp kém bị tính nhầm là ``do bước bị hỏng''.
+\end{alertblock}
+\column{0.44\textwidth}
+\scriptsize
+\textbf{Cách sửa:} so với mô hình viết tiếp từ nháp \emph{không bị hỏng} (cùng quy trình).\par\vspace{3pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabularx}{\linewidth}{@{}YQ{0.95cm}Q{0.95cm}@{}}
+\toprule
+\textbf{MuSiQue (điểm)} & \textbf{1.5B} & \textbf{3B}\\
+\midrule
+So với 100\%: bước cần & 75.7 & 61.5\\
+So với 100\%: \textbf{bước thừa} & \textbf{76.3} & \textbf{56.3}\\
+Cách sửa: bước cần & 6.4 & 11.3\\
+Cách sửa: bước thừa & $-0.3$ & 4.3\\
+\bottomrule
+\end{tabularx}
+\end{columns}
+\par\vspace{3pt}
+\begin{exampleblock}{Cách đọc kết quả}
+\footnotesize Với cách phổ biến, \textbf{bước thừa bị chấm ngang bước cần thiết} (56--78 so với 62--76): phép đo không phân biệt được. Cách sửa đưa bước thừa về $\approx 0$. Mô hình chỉ tự viết tiếp đúng 22--44\% số lần, đó là nguồn gây lệch.
+\end{exampleblock}
+\par\kern0pt
+\note{Thí nghiệm R2 kiểm tra phép đo thứ hai trong văn liệu. Lỗi nằm ở chỗ đem so với 100 phần trăm trong khi mô hình tự viết tiếp vốn không đạt 100 phần trăm.}
+\end{frame}
+
+%%@@R3d
+\begin{frame}[shrink]{R3 \textperiodcentered{} Thiết kế: ba phép thử để biết mô hình ``suy luận'' hay ``đọc lại''}
+\centering
+\begin{tikzpicture}[font=\scriptsize,node distance=0.2cm,
+  hb/.style={draw=keyc,fill=keyc!6,rounded corners=2pt,align=left,inner sep=3pt,text width=2.5cm},
+  hm/.style={draw=failc,fill=failc!10,rounded corners=2pt,align=left,inner sep=3pt,text width=2.5cm,dashed},
+  hg/.style={draw=okc,fill=okc!10,rounded corners=2pt,align=left,inner sep=3pt,text width=3.0cm},
+  hw/.style={draw=failc,fill=failc!12,rounded corners=2pt,align=left,inner sep=3pt,text width=3.0cm},
+  lab/.style={align=left,text width=1.55cm,font=\scriptsize\bfseries}]
+\node[lab,text=keyc] (l1) at (0,0.85) {Phép thử 1};
+\node[hm,right=0.05cm of l1] (a1) {Ben là con trai của Anna. \textbf{[ẨN một bước]}};
+\node[hb,right=of a1] (a2) {Clara là chị gái của Ben.};
+\node[lab,text=okc] (l2) at (0,-0.1) {Phép thử 2};
+\node[hb,right=0.05cm of l2] (b1) {Ben là con trai của Anna.};
+\node[hb,right=of b1] (b2) {Clara là chị gái của Ben.};
+\node[hg,right=of b2] (b3) {\textbf{Vậy Clara là con gái của Anna.} (đúng)};
+\node[lab,text=failc] (l3) at (0,-1.05) {Phép thử 3};
+\node[hb,right=0.05cm of l3] (c1) {Ben là con trai của Anna.};
+\node[hb,right=of c1] (c2) {Clara là chị gái của Ben.};
+\node[hw,right=of c2] (c3) {\textbf{Vậy Clara là cháu gái của Anna.} (SAI)};
+\end{tikzpicture}
+\par\vspace{2pt}
+\renewcommand{\arraystretch}{1.15}
+\scriptsize
+\begin{tabularx}{\textwidth}{@{}P{1.55cm}P{3.6cm}YY@{}}
+\toprule
+\textbf{Phép thử} & \textbf{Ta làm gì} & \textbf{Nếu mô hình thật sự suy luận} & \textbf{Nếu mô hình chỉ đọc lại}\\
+\midrule
+1 & che một bước quan hệ & đáp án đổi nhiều & đáp án gần như không đổi\\
+2 & thêm một dòng viết sẵn đáp án \emph{đúng} & dòng đó thừa, ít ảnh hưởng & bám vào dòng đó, các bước còn lại hết quan trọng\\
+3 & thêm một dòng viết sẵn đáp án \emph{sai} & phát hiện mâu thuẫn, bác bỏ & chép theo đáp án sai\\
+\bottomrule
+\end{tabularx}
+\par\kern0pt
+\note{Ba phép thử trên cùng một câu chuyện. Bảng cho biết mô hình suy luận thật thì sẽ thấy gì, và mô hình chỉ đọc lại thì sẽ thấy gì. Đây là thiết kế quan trọng nhất của đề tài.}
+\end{frame}
+
+%%@@R3r
+\begin{frame}[shrink]{R3 \textperiodcentered{} Kết quả: mô hình nhỏ ``đọc lại'', kể cả khi đáp án sai}
+\begin{columns}[T,onlytextwidth]
+\column{0.50\textwidth}
 \centering
 \begin{tikzpicture}
-\begin{axis}[ybar, width=\linewidth, height=4.5cm, bar width=8pt, ymin=-5, ymax=85,
+\begin{axis}[ybar, width=\linewidth, height=4.3cm, bar width=8pt, ymin=-5, ymax=85,
   symbolic x coords={0.5B,1.5B,Smol,3B,7B}, xtick=data, x tick label style={font=\tiny},
-  ylabel={$\Delta p(\text{gold})$, điểm}, ylabel style={font=\tiny}, y tick label style={font=\tiny},
-  legend style={at={(0.5,1.05)},anchor=south,legend columns=2,font=\tiny,draw=none},
+  ylabel={$\Delta$ (điểm \%)}, ylabel style={font=\tiny}, y tick label style={font=\tiny},
+  legend style={at={(0.5,1.05)},anchor=south,legend columns=1,font=\tiny,draw=none},
   enlarge x limits=0.12, ymajorgrids, grid style={black!10}]
 \addplot[fill=nac,draw=none] coordinates {(0.5B,0.1)(1.5B,-1.5)(Smol,1.8)(3B,7.3)(7B,1.3)};
 \addplot[fill=keyc,draw=none] coordinates {(0.5B,60.8)(1.5B,76.1)(Smol,69.5)(3B,77.0)(7B,51.9)};
-\legend{CLUTRR thường (phải tính),CLUTRR + đáp án viết sẵn}
+\legend{Phép thử 1: che một bước (phải tính),Phép thử 2: có dòng đáp án viết sẵn}
 \end{axis}
 \end{tikzpicture}
-\par\scriptsize Che một bước quan hệ: chỉ có tác dụng khi đáp án được \emph{viết sẵn}.
-\column{0.48\textwidth}
+\column{0.44\textwidth}
 \scriptsize
-\textbf{Phép thử $T_{\text{copy-wrong}}$:} thêm một bước cuối viết đáp án \emph{sai}, mâu thuẫn với các bước quan hệ. Mô hình có chép theo không?\par\vspace{2pt}
+\textbf{Phép thử 3: mô hình chép theo đáp án sai bao nhiêu \% số câu?}\par\vspace{2pt}
 \renewcommand{\arraystretch}{1.15}
-\begin{tabularx}{\linewidth}{@{}YQ{1.2cm}Q{1.55cm}@{}}
+\begin{tabularx}{\linewidth}{@{}YQ{1.0cm}Q{1.6cm}@{}}
 \toprule
- & \textbf{Chép sai} & \textbf{Khi tự giải đúng}\\
+ & \textbf{Tất cả} & \textbf{Câu mô hình tự giải đúng}\\
 \midrule
 Qwen-0.5B & 66.5\% & 70.8\%\\
 Qwen-1.5B & 58.2\% & 63.0\%\\
@@ -414,59 +546,77 @@ Qwen-7B & 22.9\% & \textbf{10.3\%}\\
 \end{tabularx}
 \end{columns}
 \par\vspace{3pt}
-\begin{ketluan}
-\footnotesize Đến 3B, mô hình chép đáp án sai \emph{như nhau} dù nó tự giải được câu đó (cột 2 $\approx$ cột 3): chữ viết sẵn \emph{đè lên} lời giải của chính nó. Ở 7B mới có bước chuyển (chỉ 10\%), nhưng các bước quan hệ vẫn không có hiệu ứng đo được.
-\end{ketluan}
+\begin{exampleblock}{Cách đọc kết quả}
+\footnotesize
+\textbf{Thử 1:} che một bước quan hệ gần như không làm đáp án đổi ($-1.5$ đến $+7.3$ điểm) $\Rightarrow$ giống ``chỉ đọc lại''. \textbf{Thử 2:} chỉ cần có dòng đáp án viết sẵn, các bước bỗng có hiệu ứng 52--77 điểm. \textbf{Thử 3:} đến 3B, mô hình chép đáp án sai gần như \emph{như nhau} dù nó tự giải đúng câu đó (cột 2 $\approx$ cột 3): chữ viết sẵn \emph{đè lên} lời giải của chính nó. Chỉ ở 7B mới có bước chuyển (10\%).
+\end{exampleblock}
 \par\kern0pt
-\note{Đây là kết quả trung tâm. Hai điều: một, sự phụ thuộc vào chuỗi chỉ xuất hiện khi có chữ để chép. Hai, mô hình nhỏ chép cả đáp án sai dù tự giải được. Mọi cách chỉnh decoding sau này đều bị giới hạn bởi điều này.}
+\note{Kết quả trung tâm: sự phụ thuộc vào nháp chỉ xuất hiện khi có chữ để chép. Mô hình nhỏ chép cả đáp án sai dù tự giải được câu đó.}
 \end{frame}
 
-%% ============================================================================ R4
-\begin{frame}[shrink]{R4 \textperiodcentered{} Distractor làm hại CoT thông qua chuỗi, không phải trực tiếp}
-\begin{columns}[T,onlytextwidth]
-\column{0.46\textwidth}
-\footnotesize
-Với mỗi câu hỏi chạy ba lần:
-\begin{enumerate}
-  \setlength{\itemsep}{1pt}
-  \item input gốc, chuỗi gốc;
-  \item input có thêm distractor, chuỗi \emph{sinh lại};
-  \item input có distractor, nhưng \textbf{ép dùng lại chuỗi gốc}.
-\end{enumerate}
-\scriptsize
-TE $=$ (2)$-$(1); NDE $=$ (3)$-$(1) (trực tiếp); TIE $=$ TE $-$ NDE (qua chuỗi). Vì tự đặt chuỗi nên các đại lượng được \emph{quan sát}, không cần giả định.\par\vspace{3pt}
-\ghichu{MuSiQue, 8 distractor, $n=500$, EM (điểm).}
-\column{0.52\textwidth}
+%%@@R4
+\begin{frame}[shrink]{R4 \textperiodcentered{} Đoạn gây nhiễu hại mô hình trực tiếp, hay qua việc viết nháp tệ?}
 \centering
-\begin{tikzpicture}
-\begin{axis}[ybar, width=\linewidth, height=4.5cm, bar width=8pt, ymin=-9, ymax=2.5,
-  symbolic x coords={1.5B Direct,1.5B CoT,3B Direct,3B CoT}, xtick=data, x tick label style={font=\tiny},
-  y tick label style={font=\tiny},
-  legend style={at={(0.5,1.05)},anchor=south,legend columns=2,font=\tiny,draw=none},
-  enlarge x limits=0.14, ymajorgrids, grid style={black!10}]
-\addplot[fill=partc,draw=none] coordinates {(1.5B Direct,-4.6)(1.5B CoT,1.0)(3B Direct,-3.8)(3B CoT,-0.6)};
-\addplot[fill=keyc,draw=none] coordinates {(1.5B Direct,-1.0)(1.5B CoT,-3.6)(3B Direct,-2.0)(3B CoT,-5.0)};
-\legend{NDE (trực tiếp),TIE (qua chuỗi)}
-\end{axis}
+\begin{tikzpicture}[font=\scriptsize,node distance=0.25cm,
+  b/.style={draw=keyc,fill=keyc!6,rounded corners=2pt,align=center,inner sep=3pt,text width=2.3cm,minimum height=0.8cm},
+  bm/.style={draw=failc,fill=failc!10,rounded corners=2pt,align=center,inner sep=3pt,text width=2.3cm,minimum height=0.8cm},
+  an/.style={draw=okc,fill=okc!10,rounded corners=2pt,align=center,inner sep=3pt,text width=1.5cm,minimum height=0.8cm},
+  lab/.style={align=left,text width=1.6cm,font=\scriptsize\bfseries},
+  ar/.style={-{Stealth[length=2mm]},thick,nac}]
+\node[lab,text=keyc] (l1) at (0,0.95) {Lần 1};
+\node[b,right=0.05cm of l1] (a1) {Đoạn đúng};
+\node[b,right=of a1] (a2) {Mô hình viết nháp \textbf{A}};
+\node[an,right=of a2] (a3) {Đáp án};
+\node[lab,text=failc] (l2) at (0,0) {Lần 2};
+\node[bm,right=0.05cm of l2] (b1) {+ đoạn nhiễu};
+\node[bm,right=of b1] (b2) {Mô hình viết nháp \textbf{B} (mới)};
+\node[an,right=of b2] (b3) {Đáp án};
+\node[lab,text=partc] (l3) at (0,-0.95) {Lần 3};
+\node[bm,right=0.05cm of l3] (c1) {+ đoạn nhiễu};
+\node[b,right=of c1] (c2) {\textbf{Ép dùng lại nháp A}};
+\node[an,right=of c2] (c3) {Đáp án};
+\foreach \a/\b in {a1/a2,a2/a3,b1/b2,b2/b3,c1/c2,c2/c3} \draw[ar] (\a)--(\b);
 \end{tikzpicture}
-\end{columns}
 \par\vspace{2pt}
-\begin{ketluan}
-\footnotesize Với CoT, giữ chuỗi cũ thì distractor gần như vô hại (NDE $\approx 0$); toàn bộ tác hại đến từ việc mô hình viết ra \emph{chuỗi khác}. Với Direct và CAD thì ngược lại. Vì vậy các phương pháp tương phản ở bước đọc đáp án (CAD) \emph{nhắm sai chỗ} đối với CoT. Độ lớn thật chỉ 3--6 điểm; pilot 120 câu từng báo $\approx 10$ điểm và đã được sửa.
-\end{ketluan}
-\par\kern0pt
-\note{Hệ quả thực dụng: nếu muốn chống distractor cho CoT thì phải can thiệp trước hoặc trong lúc sinh chuỗi, không phải ở bước đọc đáp án.}
-\end{frame}
-
-%% ============================================================================ R5
-\begin{frame}[shrink]{R5 \textperiodcentered{} Decoding ở bước đọc đáp án (HGCD) không giúp}
 \begin{columns}[T,onlytextwidth]
-\column{0.5\textwidth}
-\footnotesize
-\textbf{HGCD} là phương pháp của đề xuất ban đầu: cộng vào xác suất mỗi đáp án một lượng $\alpha\times$ (hiệu ứng nhân quả trung bình của các bước liên quan, tính bằng $\dt$) để khuếch đại phần ``do chuỗi gây ra''.\par\vspace{4pt}
+\column{0.50\textwidth}
 \scriptsize
-\renewcommand{\arraystretch}{1.2}
-\begin{tabularx}{\linewidth}{@{}YQ{0.9cm}Q{1.0cm}Q{1.35cm}@{}}
+\textbf{Phép trừ:}\par
+(Lần 2) $-$ (Lần 1) $=$ \textbf{tổng tác hại} của nhiễu.\par
+(Lần 3) $-$ (Lần 1) $=$ tác hại \textbf{trực tiếp} (nháp giữ nguyên).\par
+Phần còn lại $=$ tác hại \textbf{qua nháp} (nháp bị viết tệ đi).\par\vspace{3pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabularx}{\linewidth}{@{}lYQ{1.1cm}Q{1.1cm}@{}}
+\toprule
+\textbf{Qwen-3B} & & \textbf{Trực tiếp} & \textbf{Qua nháp}\\
+\midrule
+Có CoT & & $-0.6$ & $\mathbf{-5.0}$\\
+Trả lời thẳng & & $-3.8$ & $-2.0$\\
+\bottomrule
+\end{tabularx}
+\column{0.44\textwidth}
+\begin{exampleblock}{Cách đọc kết quả}
+\scriptsize
+Khi mô hình viết nháp (CoT): nếu \emph{giữ nguyên nháp cũ}, đoạn nhiễu gần như vô hại ($-0.6$). Toàn bộ tác hại đến từ việc mô hình \emph{viết nháp khác} khi có nhiễu ($-5.0$).\par\vspace{2pt}
+Khi trả lời thẳng (không nháp): tác hại là trực tiếp.\par\vspace{2pt}
+\textbf{Hệ quả:} muốn chống nhiễu cho CoT phải can thiệp \emph{trước hoặc trong lúc viết nháp}, không phải ở bước chốt đáp án. (Đơn vị: điểm EM, MuSiQue, 500 câu, 8 đoạn nhiễu.)
+\end{exampleblock}
+\end{columns}
+\par\kern0pt
+\note{Ba lần chạy cho phép tách tác hại của đoạn nhiễu thành hai đường: trực tiếp và qua nháp. Vì ta tự đặt nháp vào mô hình ở lần 3, các đại lượng này quan sát được chứ không phải ước lượng.}
+\end{frame}
+%%@@R5
+\begin{frame}[shrink]{R5 \textperiodcentered{} Chỉnh ở bước ``chốt đáp án'' (HGCD) không giúp}
+\begin{columns}[T,onlytextwidth]
+\column{0.50\textwidth}
+\footnotesize
+\textbf{Ý tưởng ban đầu của đề tài (HGCD).} Sau khi mô hình viết xong nháp, ta chấm lại từng đáp án ứng viên:\par\vspace{2pt}
+\centering\scriptsize
+\fcolorbox{keyc}{keyc!6}{\parbox{0.9\linewidth}{\centering điểm(đáp án) $=$ xác suất mô hình gán $+$ $\alpha\times$ (đáp án đó \emph{phụ thuộc} vào các bước nháp bao nhiêu)}}\par\vspace{3pt}
+\raggedright
+Mức phụ thuộc đo bằng cách che từng bước như ở R1. Hy vọng: đáp án nào ``do nháp tạo ra'' được cộng điểm.\par\vspace{4pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabularx}{\linewidth}{@{}YQ{0.8cm}Q{0.9cm}Q{1.35cm}@{}}
 \toprule
 \textbf{Accuracy (\%)} & \textbf{CoT} & \textbf{HGCD} & \textbf{Calibration}\\
 \midrule
@@ -476,54 +626,61 @@ MuSiQue, Qwen-1.5B & 20.8 & 22.5 & --\\
 MuSiQue, SmolLM2 & 15.0 & 15.8 & --\\
 \bottomrule
 \end{tabularx}
-\column{0.47\textwidth}
-\begin{block}{Vì sao thất bại: R3 đã dự đoán}
-\footnotesize
-HGCD chỉ khuếch đại một sự phụ thuộc \emph{có thật} và tác động \emph{sau khi} chuỗi đã sinh. Nhưng đáp án không phụ thuộc vào nội dung suy luận của chuỗi (R3) và tác hại của distractor không nằm ở bước đọc (R4).
+\column{0.44\textwidth}
+\begin{block}{Vì sao thất bại (R3 đã dự đoán)}
+\scriptsize
+Với bài ``phải tính'', đáp án gần như \emph{không phụ thuộc} vào nội dung nháp. Không có sự phụ thuộc thì không có gì để khuếch đại. Cộng thêm một đại lượng $\approx 0$ không đổi được thứ hạng đáp án.
 \end{block}
 \begin{itemize}
   \setlength{\itemsep}{2pt}
   \scriptsize
-  \item HGCD $=$ CoT ($|\Delta|\le 1.7$, mọi $p\ge0.6$).
-  \item Calibration có tăng, nhưng không dùng thông tin từ chuỗi và mong manh (đổi input trung tính làm SmolLM2 giảm 5 điểm); sau kiểm tra nó $\approx$ sinh đáp án tự do.
+  \item HGCD $=$ CoT: chênh $\le 1.7$ điểm, $p\ge 0.6$.
+  \item Calibration (trừ thiên lệch khi không có nội dung) có tăng, nhưng không dùng thông tin từ nháp và mong manh: đổi câu nhập trung tính thì giảm 5 điểm.
 \end{itemize}
 \end{columns}
 \par\kern0pt
-\note{Thất bại này không ngẫu nhiên mà được giải thích bởi R3 và R4: đó là điểm làm cho thất bại có giá trị khoa học.}
+\note{Đây là phương pháp ban đầu của đề xuất. Thất bại của nó không ngẫu nhiên: R3 đã dự đoán rằng đáp án không phụ thuộc vào nội dung nháp nên không có gì để khuếch đại.}
 \end{frame}
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Decoding (D1--D3)}
-%% ============================================================================ D1
-\begin{frame}[shrink]{D1 \textperiodcentered{} MuSiQue: lọc distractor trước khi sinh chuỗi không giúp}
+%%@@D1
+\begin{frame}[shrink]{D1 \textperiodcentered{} Bỏ bớt đoạn gây nhiễu trước khi mô hình viết nháp (MuSiQue)}
+\centering
+\begin{tikzpicture}[font=\tiny,node distance=0.12cm,
+  p/.style={draw=nac,fill=black!4,minimum width=0.85cm,minimum height=0.55cm,inner sep=1pt},
+  k/.style={draw=okc,fill=okc!15,minimum width=0.85cm,minimum height=0.55cm,inner sep=1pt},
+  g/.style={draw=failc,fill=failc!12,minimum width=0.85cm,minimum height=0.55cm,inner sep=1pt}]
+\node[anchor=west,font=\scriptsize\bfseries] at (-0.2,0.85) {8 đoạn văn trong đề (trong đó có 2 đoạn \textcolor{failc}{CẦN} cho đáp án)};
+\foreach \i/\s in {1/p,2/g,3/p,4/p,5/g,6/p,7/p,8/p} \node[\s] (q\i) at (\i*1.0,0) {Đoạn \i};
+\node[anchor=west,font=\scriptsize,text width=12.4cm] at (-0.2,-0.75) {Mô hình chấm ``đoạn nào liên quan câu hỏi'' bằng \textbf{attention} (nó nhìn vào đâu khi đọc câu hỏi). Giữ 4 đoạn điểm cao nhất, bỏ 4 đoạn còn lại:};
+\foreach \i/\s in {1/p,2/k,3/k,4/p,5/g,6/k,7/k,8/p} \node[\s] (r\i) at (\i*1.0,-1.75) {Đoạn \i};
+\node[anchor=west,font=\scriptsize\bfseries,text=failc,text width=12.4cm] at (-0.2,-2.5) {Rủi ro: chọn nhầm thì đoạn CẦN (đoạn 5) bị bỏ $\Rightarrow$ mô hình không thể trả lời đúng.};
+\end{tikzpicture}
+\par\vspace{2pt}
 \begin{columns}[T,onlytextwidth]
-\column{0.53\textwidth}
+\column{0.55\textwidth}
 \scriptsize
-\textbf{Ý tưởng:} nếu distractor hại qua chuỗi (R4), hãy bỏ chúng \emph{trước} khi mô hình viết. Bộ chọn: attention hiệu chỉnh kiểu ICR (top-4 hoặc xếp lại thứ tự), hoặc để mô hình tự chọn.\par\vspace{3pt}
-\renewcommand{\arraystretch}{1.15}
-\begin{tabularx}{\linewidth}{@{}lYcccccc@{}}
+\renewcommand{\arraystretch}{1.12}
+\setlength{\tabcolsep}{2pt}
+\begin{tabularx}{\linewidth}{@{}llQ{0.62cm}Q{0.62cm}Q{0.65cm}Q{0.7cm}Q{0.62cm}@{}}
 \toprule
-\textbf{Dist.} & \textbf{Mô hình} & \textbf{CoT} & \textbf{SC$_5$} & \textbf{Top-4} & \textbf{Rerank} & \textbf{Tự chọn} & \textbf{Gold}\\
+\textbf{Nhiễu} & \textbf{Mô hình} & \textbf{CoT} & \textbf{SC$_5$} & \textbf{Top-4} & \textbf{Xếp lại} & \textbf{Trần}\\
 \midrule
-4 & 1.5B & 24.8 & \textbf{28.4} & 23.6 & 23.0 & 13.2 & 34.8\\
-4 & 3B & 38.8 & \textbf{41.4} & 33.8 & 37.4 & 29.6 & 48.6\\
-8 & 1.5B & 22.2 & \textbf{25.0} & 22.0 & 22.2 & 13.2 & 31.4\\
-8 & 3B & 31.6 & \textbf{35.6} & 27.4 & 33.6 & 24.8 & 45.6\\
+4 & 1.5B & 24.8 & \textbf{28.4} & 23.6 & 23.0 & 34.8\\
+4 & 3B & 38.8 & \textbf{41.4} & 33.8 & 37.4 & 48.6\\
+8 & 1.5B & 22.2 & \textbf{25.0} & 22.0 & 22.2 & 31.4\\
+8 & 3B & 31.6 & \textbf{35.6} & 27.4 & 33.6 & 45.6\\
 \bottomrule
 \end{tabularx}
-\ghichu{EM (\%), $n=500$. ``Gold'' là trần lý thuyết (chỉ giữ đoạn đúng), không phải phương pháp.}
-\column{0.44\textwidth}
-\footnotesize
-\begin{itemize}
-  \setlength{\itemsep}{3pt}
-  \item Có chỗ để cải thiện: trần Gold cao hơn CoT 9--14 điểm.
-  \item Nhưng attention của mô hình $\le$3B chọn chưa đủ chính xác: top-4 giữ đủ đoạn gold chỉ 77--86\%, mất một đoạn gold là accuracy giảm một nửa.
-  \item Self-consistency vẫn là baseline mạnh nhất. Kết luận: \FAILs
-  \item \textbf{Bug đã bắt được:} attention fp16 bị tràn số làm ``top-4'' luôn là 4 đoạn đầu (500/500 câu); đã sửa và chạy lại, số 7B bị loại.
-\end{itemize}
+\ghichu{EM (\%), 500 câu. Top-4 = giữ 4 đoạn điểm cao; Xếp lại = giữ cả 8 đoạn nhưng đổi thứ tự; Trần = giữ đúng các đoạn cần (lý tưởng, không phải phương pháp). SC$_5$ = bỏ phiếu 5 lời giải.}
+\column{0.40\textwidth}
+\begin{exampleblock}{Cách đọc kết quả}
+\scriptsize
+Có chỗ để cải thiện (trần cao hơn CoT 9--14 điểm). Nhưng attention của mô hình nhỏ chọn chưa đủ chính xác: giữ đủ đoạn cần chỉ 77--86\% số câu, và mất một đoạn cần là sai. Kết quả: \textbf{giữ top-4 kém hơn CoT}; self-consistency vẫn tốt nhất. \FAILs
+\end{exampleblock}
 \end{columns}
 \par\kern0pt
-\note{Lọc bằng attention là hướng hợp lý trên giấy, nhưng ở mô hình nhỏ attention chưa đủ chính xác. Chi tiết bug được ghi lại để minh bạch.}
+\note{Ý tưởng: bỏ đoạn gây nhiễu trước khi viết. Rủi ro: bỏ nhầm đoạn cần. Với mô hình nhỏ, attention chưa đủ chính xác nên cách này không thắng self-consistency. Đã sửa một lỗi tràn số fp16 làm kết quả 7B không dùng được.}
 \end{frame}
 
 %% ============================================================================ D2 pipeline
@@ -545,10 +702,10 @@ HGCD chỉ khuếch đại một sự phụ thuộc \emph{có thật} và tác �
 \end{tikzpicture}
 \par\vspace{4pt}
 \begin{columns}[T,onlytextwidth]
-\column{0.5\textwidth}
+\column{0.470\textwidth}
 \scriptsize
 \textbf{Ý tưởng:} R3 cho thấy mô hình \emph{đọc} tốt nhưng \emph{không hợp thành}. Vậy để mô hình chỉ làm phần nó giỏi (trích fact), giao phép hợp thành cho bảng luật. Về nhân quả, đây là \emph{thực thi} structural equation của đồ thị suy luận.
-\column{0.48\textwidth}
+\column{0.451\textwidth}
 \scriptsize
 \textbf{Chi tiết:} bảng luật tự induce từ tập train (126 luật, đúng 95\% trên chuỗi gold); nếu không có đường đi thì quay về CoT; SC$_5$ cho bước trích fact. Baseline cùng compute: SC$_{10}$.
 \end{columns}
@@ -559,7 +716,7 @@ HGCD chỉ khuếch đại một sự phụ thuộc \emph{có thật} và tác �
 %% ============================================================================ D2 kết quả
 \begin{frame}[shrink]{D2 \textperiodcentered{} Kết quả: hơn self-consistency cùng compute $+21$ đến $+37$ điểm}
 \begin{columns}[T,onlytextwidth]
-\column{0.56\textwidth}
+\column{0.526\textwidth}
 \centering
 \begin{tikzpicture}
 \begin{axis}[ybar, width=\linewidth, height=5.1cm, bar width=5.5pt, ymin=0, ymax=90,
@@ -575,7 +732,7 @@ HGCD chỉ khuếch đại một sự phụ thuộc \emph{có thật} và tác �
 \end{axis}
 \end{tikzpicture}
 \ghichu{V: validation, chuỗi 2--4 bước; S: task chưa thấy, 2--4 bước; L: task chưa thấy, \textbf{5--8 bước} (mô hình chỉ gặp chuỗi $\le 4$ lúc phát triển).}
-\column{0.41\textwidth}
+\column{0.385\textwidth}
 \scriptsize
 \renewcommand{\arraystretch}{1.12}
 \begin{tabularx}{\linewidth}{@{}lYR{2.1cm}@{}}
@@ -601,26 +758,33 @@ L & 7B & $\mathbf{+24.0}\ \ci{17.0}{31.5}$\\
 \note{Trên chuỗi ngắn, accuracy gần như gấp đôi ở mọi cỡ mô hình. Trên chuỗi dài, mức tăng tăng theo kích thước mô hình vì mô hình lớn trích fact đầy đủ hơn.}
 \end{frame}
 
-%% ============================================================================ D3
-\begin{frame}[shrink]{D3 \textperiodcentered{} Ablation nhân quả: mô hình có đủ thông tin nhưng không tự hợp thành được}
+%%@@D3
+\begin{frame}[shrink]{D3 \textperiodcentered{} Đối chứng: mô hình hay bảng luật ghép thông tin đúng hơn?}
+\centering
+\begin{tikzpicture}[font=\scriptsize,node distance=0.3cm,
+  b/.style={draw=keyc,fill=keyc!6,rounded corners=2pt,align=center,inner sep=3pt,text width=2.5cm,minimum height=1.0cm},
+  bo/.style={draw=partc,fill=partc!15,rounded corners=2pt,align=center,inner sep=3pt,text width=2.7cm,minimum height=1.0cm},
+  bg/.style={draw=okc,fill=okc!15,rounded corners=2pt,align=center,inner sep=3pt,text width=2.7cm,minimum height=1.0cm},
+  ar/.style={-{Stealth[length=2mm]},thick,nac}]
+\node[b] (s) at (0,0) {Câu chuyện};
+\node[b,right=of s] (f) {Mô hình \textbf{trích các fact} (giữ nguyên, chạy một lần)};
+\node[bo,above right=-0.05cm and 0.5cm of f] (c1) {\textbf{Cách 1:} chính mô hình ghép các fact thành đáp án};
+\node[bg,below right=-0.05cm and 0.5cm of f] (c2) {\textbf{Cách 2:} bảng luật ghép các fact thành đáp án};
+\draw[ar] (s)--(f); \draw[ar] (f.east)--++(0.2,0)|-(c1.west); \draw[ar] (f.east)--++(0.2,0)|-(c2.west);
+\end{tikzpicture}
+\par\vspace{2pt}
 \begin{columns}[T,onlytextwidth]
-\column{0.46\textwidth}
-\footnotesize
-\textbf{Câu hỏi:} mức tăng ở D2 có thể chỉ vì việc ``trích fact'' giúp sắp xếp thông tin?\par\vspace{3pt}
-\textbf{Thiết kế:} giữ \emph{nguyên} các fact mà mô hình đã trích, chỉ đổi \emph{bên làm phép hợp thành}:
-\begin{itemize}
-  \setlength{\itemsep}{2pt}
-  \item \textbf{LLM hợp thành}: đưa lại các fact đó cho chính mô hình.
-  \item \textbf{Luật hợp thành}: bảng luật như D2.
-\end{itemize}
-Input giống hệt nhau, chỉ cơ chế tính đáp án khác nhau.
+\column{0.44\textwidth}
+\scriptsize
+\textbf{Câu hỏi:} mức tăng của D2 có thể chỉ do việc ``trích fact'' giúp sắp xếp thông tin? Để biết, giữ nguyên các fact đã trích, \emph{chỉ đổi người ghép}. Đầu vào giống hệt nhau, chỉ cách tính đáp án khác nhau.\par\vspace{3pt}
+Nếu việc trích fact là nguyên nhân, cách 1 cũng phải tăng mạnh so với CoT.
 \column{0.52\textwidth}
 \scriptsize
-\renewcommand{\arraystretch}{1.12}
+\renewcommand{\arraystretch}{1.1}
 \setlength{\tabcolsep}{3pt}
-\begin{tabularx}{\linewidth}{@{}llQ{0.8cm}Q{0.95cm}Q{0.95cm}R{1.9cm}@{}}
+\begin{tabularx}{\linewidth}{@{}llQ{0.75cm}Q{0.9cm}Q{0.9cm}Q{1.0cm}@{}}
 \toprule
-\textbf{Chuỗi} & \textbf{Mô hình} & \textbf{CoT} & \textbf{LLM} & \textbf{Luật} & \textbf{Luật$-$LLM}\\
+\textbf{Chuỗi} & \textbf{Mô hình} & \textbf{CoT} & \textbf{Cách 1} & \textbf{Cách 2} & \textbf{C2$-$C1}\\
 \midrule
 2--4 & 1.5B & 31.6 & 32.9 & 46.2 & $+13.3$\\
  & 3B & 30.4 & 28.5 & 54.4 & $+25.9$\\
@@ -633,19 +797,55 @@ Input giống hệt nhau, chỉ cơ chế tính đáp án khác nhau.
 \end{tabularx}
 \end{columns}
 \par\vspace{3pt}
-\begin{ketluan}
-\footnotesize Được đưa đúng các fact mình vừa viết, LLM vẫn chỉ $\approx$ CoT; bảng luật trên \emph{cùng} các fact đó cao hơn 13--35 điểm. Vậy mức tăng đến từ \textbf{bước hợp thành}, không phải bước trích fact: đúng như R3 chẩn đoán. Đây là bằng chứng can thiệp khép vòng giữa chẩn đoán và hành động.
-\end{ketluan}
+\begin{exampleblock}{Cách đọc kết quả}
+\footnotesize Được đưa đúng các fact mình vừa viết ra, mô hình vẫn chỉ \emph{ngang CoT}. Bảng luật trên \emph{cùng} các fact đó cao hơn 13--35 điểm. Vậy mức tăng đến từ \textbf{bước ghép}, không phải bước trích fact: đúng như R3 chẩn đoán.
+\end{exampleblock}
 \par\kern0pt
-\note{Đây là ablation quan trọng nhất về mặt nhân quả: cùng input, thay đúng bộ phận bị nghi ngờ.}
+\note{Đây là ablation quan trọng nhất về mặt nhân quả: cùng đầu vào, chỉ thay đúng bộ phận bị nghi ngờ.}
 \end{frame}
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Đang chạy và kế hoạch}
-%% ============================================================================ Vòng 10
-\begin{frame}[shrink]{D4 \textperiodcentered{} Fine-tune trên chuỗi gold: bản thường đã đủ, cấu trúc không thêm gì}
+\section{Fine-tune (D4--D5)}
+%%@@D4d
+\begin{frame}[shrink]{D4 \textperiodcentered{} Thiết kế: dạy mô hình bằng bài giải mẫu, ba kiểu lời giải mẫu}
+\centering
+\begin{tikzpicture}[font=\scriptsize,node distance=0.2cm,
+  bx/.style={draw=keyc,fill=keyc!5,rounded corners=2pt,align=left,inner sep=4pt,text width=3.55cm,minimum height=3.25cm,anchor=north west}]
+\node[bx] (a) at (0,0) {{\bfseries\color{keyc}Kiểu 1: chỉ đáp án}\par\vspace{2pt}
+  \code{Đáp án: Clara là con gái của Anna.}\par\vspace{3pt}
+  {\color{nac}Mô hình tự nhẩm, không viết nháp.}};
+\node[bx,right=0.2cm of a.north east,anchor=north west] (b) {{\bfseries\color{keyc}Kiểu 2: chuỗi thường}\par\vspace{2pt}
+  \code{Bước 1: Ben là con trai của Anna.}\par
+  \code{Bước 2: Clara là chị gái của Ben.}\par
+  \code{Đáp án: Clara là con gái của Anna.}\par\vspace{2pt}
+  {\color{nac}Viết các bước, rồi chốt đáp án.}};
+\node[bx,right=0.2cm of b.north east,anchor=north west] (c) {{\bfseries\color{keyc}Kiểu 3: chuỗi + quan hệ tích luỹ}\par\vspace{2pt}
+  \code{Bước 1: Ben là con trai của Anna.}\par
+  \code{\textcolor{partc}{Vậy Ben là con trai của Anna.}}\par
+  \code{Bước 2: Clara là chị gái của Ben.}\par
+  \code{\textcolor{partc}{Vậy Clara là con gái của Anna.}}\par
+  \code{Đáp án: Clara là con gái của Anna.}};
+\end{tikzpicture}
+\par\vspace{3pt}
 \begin{columns}[T,onlytextwidth]
-\column{0.55\textwidth}
+\column{0.46\textwidth}
+\begin{block}{Cách dạy (giống nhau cho cả ba kiểu)}
+\scriptsize
+Lấy 3000 bài trong bộ dữ liệu, mỗi bài kèm lời giải mẫu theo kiểu đang thử. Fine-tune bằng \textbf{LoRA} (chỉ cập nhật một số ma trận nhỏ, không đổi toàn bộ mô hình), 10--17 phút trên một GPU. Chỉ dạy bài có \textbf{2--4 bước}.
+\end{block}
+\column{0.50\textwidth}
+\begin{exampleblock}{Cách kiểm tra}
+\scriptsize
+Ba bộ đề \emph{chưa từng dạy}: (1) cùng loại, 2--4 bước; (2) loại đề khác, 2--4 bước; (3) loại đề khác, \textbf{5--8 bước} (dài hơn mọi bài đã học). Bộ (3) kiểm tra mô hình có \emph{tổng quát hoá} chứ không chỉ học thuộc.
+\end{exampleblock}
+\end{columns}
+\par\kern0pt
+\note{Cùng 3000 bài, chỉ khác kiểu lời giải mẫu. Kiểu 1 hỏi: nháp có cần không. Kiểu 3 là giả thuyết của đề tài: nếu mỗi bước chỉ là phép tra cứu thì mô hình nhỏ sẽ làm tốt hơn.}
+\end{frame}
+
+%% ============================================================================ Vòng 10
+\begin{frame}[shrink]{D4 \textperiodcentered{} Kết quả: fine-tune thường đã đủ, cấu trúc không thêm gì}
+\begin{columns}[T,onlytextwidth]
+\column{0.517\textwidth}
 \scriptsize
 \textbf{Thí nghiệm:} LoRA trên 3000 chuỗi CLUTRR (chỉ 2--4 bước), $\sim$10--17 phút trên 1 GPU T4; đánh giá trên tập validation, task chưa thấy, và chuỗi dài 5--8 bước (chỉ gặp lúc đánh giá). S\_struct thêm một dòng ``quan hệ tích luỹ'' sau mỗi hop.\par\vspace{2pt}
 \renewcommand{\arraystretch}{1.12}
@@ -665,7 +865,7 @@ Input giống hệt nhau, chỉ cơ chế tính đáp án khác nhau.
 \bottomrule
 \end{tabularx}
 \ghichu{Seed 0; seed 1 cho cùng kết luận (3B: S\_plain 94.7 / 74.7 / 58.5; S\_struct 89.3 / 70.9 / 55.5). Độ chính xác (\%), greedy.}
-\column{0.42\textwidth}
+\column{0.395\textwidth}
 \footnotesize
 \begin{block}{Kết quả đối chiếu với tiêu chí đăng ký trước}
 \scriptsize
@@ -683,10 +883,43 @@ Chuỗi 5--8 bước, 3B: S\_struct $-$ tốt nhất của (S\_plain, CoT, SC) $
 \note{Kết quả đáo nghịch: tiêu chí đăng ký trước không đạt, cấu trúc chuỗi không thêm gì so với fine-tune thường. Nhưng fine-tune thường rất mạnh: nó hơn cả pipeline rule-based D2. Vì vậy câu chuyện thay đổi: mô hình KHÔNG THỂ hợp thành chỉ đúng với mô hình được prompt; fine-tune trên chuỗi gold dạy được việc đó. Cần kiểm tra thêm xem mô hình sau fine-tune có thật sự dùng chuỗi hay không.}
 \end{frame}
 
-%% ============================================================================ D5
-\begin{frame}[shrink]{D5 \textperiodcentered{} Văn bản thật (2WikiMultihopQA): fine-tune là yếu tố quyết định}
+%%@@D5d
+\begin{frame}[shrink]{D5 \textperiodcentered{} Thiết kế: cùng ý tưởng trên văn bản Wikipedia thật (2WikiMultihopQA)}
 \begin{columns}[T,onlytextwidth]
-\column{0.54\textwidth}
+\column{0.50\textwidth}
+\begin{block}{Một bài mẫu}
+\scriptsize
+\textbf{Hỏi:} Ông nội bên cha của Charles Bretagne Marie de La Trémoille là ai?\par\vspace{2pt}
+\textbf{Bằng chứng gold (do bộ dữ liệu cung cấp):}\par
+\code{Bước 1: cha của Charles là Jean.} \emph{[đoạn: Charles\ldots]}\par
+\code{Bước 2: cha của Jean là Charles Armand.} \emph{[đoạn: Jean\ldots]}\par\vspace{2pt}
+\textbf{Đáp án:} Charles Armand René de La Trémoille.\par\vspace{2pt}
+Từ bằng chứng gold ta \emph{tự động} dựng được lời giải mẫu, không cần viết tay. Có 80\,860 bài như vậy; mỗi lần dạy chỉ dùng 1500--2000 bài.
+\end{block}
+\column{0.46\textwidth}
+\scriptsize
+\renewcommand{\arraystretch}{1.18}
+\begin{tabularx}{\linewidth}{@{}P{1.55cm}Y@{}}
+\toprule
+\textbf{Nhánh} & \textbf{Mô hình được dạy trả lời thế nào}\\
+\midrule
+Few-shot & không dạy; chỉ cho 1 ví dụ trong lời nhắc\\
+Chỉ đáp án & \code{Đáp án: \ldots}\\
+Chuỗi thường & \code{Bước 1 \ldots Bước 2 \ldots Đáp án}\\
+Chuỗi + nguồn & như trên, thêm \code{[từ: tên đoạn văn]} sau mỗi bước\\
+\bottomrule
+\end{tabularx}
+\par\vspace{4pt}
+\textbf{Câu hỏi:} (1) dạy có giúp không? (2) viết chuỗi có hơn chỉ trả lời đáp án không? (3) ghi rõ đoạn nguồn có giúp không?
+\end{columns}
+\par\kern0pt
+\note{Cùng thiết kế như D4 nhưng trên văn bản thật. Lời giải mẫu được dựng tự động từ bằng chứng gold mà bộ dữ liệu có sẵn.}
+\end{frame}
+
+%% ============================================================================ D5
+\begin{frame}[shrink]{D5 \textperiodcentered{} Kết quả: fine-tune là yếu tố quyết định}
+\begin{columns}[T,onlytextwidth]
+\column{0.508\textwidth}
 \scriptsize
 \textbf{Thí nghiệm:} câu hỏi compositional và inference (ví dụ: ``ông nội bên cha của X là ai?''), văn bản Wikipedia thật, 500 câu validation. Chuỗi huấn luyện tự dựng từ evidence gold; 1500--2000 câu train, LoRA.\par\vspace{2pt}
 \renewcommand{\arraystretch}{1.15}
@@ -703,7 +936,7 @@ Qwen-3B & 28.8 & 50.0 & \textbf{56.0} & 54.4\\
 \bottomrule
 \end{tabularx}
 \ghichu{Đáp án = fine-tune chỉ đáp án; Chuỗi = chuỗi thường; +Nguồn = chuỗi có trích dẫn đoạn. Một seed. Train và eval cùng phân phối (in-distribution); prompt few-shot chỉ có một ví dụ nên là baseline prompting yếu.}
-\column{0.43\textwidth}
+\column{0.404\textwidth}
 \begin{block}{Đối chiếu với tiêu chí đăng ký trước}
 \scriptsize
 3B: chuỗi có nguồn $-$ chuỗi thường $=-1.6\ \ci{-4.6}{1.4}$; cần $\ge+2$ với CI $>0$: \FAILs\ (1.5B: $+1.2$, n.s.).
@@ -721,12 +954,12 @@ Qwen-3B & 28.8 & 50.0 & \textbf{56.0} & 54.4\\
 \note{Cùng quy luật với CLUTRR: yếu tố quyết định là huấn luyện trên chuỗi có nhãn, không phải cấu trúc thêm vào. Viết chuỗi có ích ở mô hình 3B. Cần nhớ đây là in-distribution và một seed.}
 \end{frame}
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 \section{Hạn chế và kết luận}
 %% ============================================================================ Hạn chế
 \begin{frame}[shrink]{Hạn chế và những chỗ đã tự sửa}
 \begin{columns}[T,onlytextwidth]
-\column{0.5\textwidth}
+\column{0.470\textwidth}
 \begin{block}{Hạn chế}
 \scriptsize
 \begin{enumerate}
@@ -739,7 +972,7 @@ Qwen-3B & 28.8 & 50.0 & \textbf{56.0} & 54.4\\
   \item Chỉ hai miền; chưa kết luận gì cho math hay code; chưa chạy mô hình $>$7B.
 \end{enumerate}
 \end{block}
-\column{0.48\textwidth}
+\column{0.451\textwidth}
 \scriptsize
 \renewcommand{\arraystretch}{1.1}
 \begin{tabularx}{\linewidth}{@{}YY@{}}
@@ -761,7 +994,7 @@ Extract không giới tính $+6$--8 điểm & post hoc, xác nhận thất bại
 %% ============================================================================ Kết luận
 \begin{frame}[shrink]{Kết luận: chứng minh được gì, chưa chứng minh được gì}
 \begin{columns}[T,onlytextwidth]
-\column{0.5\textwidth}
+\column{0.495\textwidth}
 \begin{block}{Chứng minh được}
 \scriptsize
 \begin{enumerate}
@@ -773,7 +1006,7 @@ Extract không giới tính $+6$--8 điểm & post hoc, xác nhận thất bại
   \item \textbf{Fine-tune thường} trên chuỗi gold dạy được phép hợp thành (CLUTRR 3B: 36\% $\to$ 95\%, hơn D2) và chuyển sang văn bản thật (2Wiki: $+21$ đến $+30$ so với few-shot); thêm cấu trúc hay trích dẫn nguồn không thêm gì (D4, D5).
 \end{enumerate}
 \end{block}
-\column{0.47\textwidth}
+\column{0.465\textwidth}
 \begin{block}{Chưa chứng minh được}
 \scriptsize
 \begin{itemize}
@@ -833,7 +1066,7 @@ Extract không giới tính $+6$--8 điểm & post hoc, xác nhận thất bại
 %% ============================================================================ Thuật ngữ
 \begin{frame}[shrink]{Phụ lục \textperiodcentered{} Thuật ngữ}
 \begin{columns}[T,onlytextwidth]
-\column{0.49\textwidth}
+\column{0.461\textwidth}
 \scriptsize
 \begin{description}
   \setlength{\itemsep}{1pt}
@@ -845,7 +1078,7 @@ Extract không giới tính $+6$--8 điểm & post hoc, xác nhận thất bại
   \item[AUC] khả năng phân biệt bước cần thiết với bước thừa (0.5 là đoán mò).
   \item[PS $=1$] câu hỏi mà mô hình tự giải đúng từ chuỗi gold.
 \end{description}
-\column{0.48\textwidth}
+\column{0.451\textwidth}
 \scriptsize
 \begin{description}
   \setlength{\itemsep}{1pt}
