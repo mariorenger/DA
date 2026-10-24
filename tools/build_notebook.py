@@ -332,6 +332,18 @@ NOTEBOOKS = {
                 "--rl_minutes", "100", "--bs", "8", "--seed", "0", "--max_minutes", "560"))],
     },
 }""",
+    # relaunch after the p_think NameError (covered not imported); p_think moved last so SFT results are not lost
+    "R12_q3_8b_b": """{
+    "q8": {"0,1": [("qwen3-8b", "Qwen/Qwen3-8B", "cfrl",
+                    ("--arms", "s_plain", "s_ans", "p_think", "--device_map", "auto", "--mb", "1", "--accum", "16",
+                     "--bs", "8", "--think_n", "60", "--think_tokens", "1500", "--seed", "0", "--max_minutes", "560"))]},
+}""",
+    "R12_q3_4b": """{
+    "q4": {"0,1": [("qwen3-4b", "Qwen/Qwen3-4B", "cfrl",
+                    ("--arms", "p_fs", "s_plain", "s_ans", "s_grpo", "p_think", "--rl_hard", "1", "--rl_steps", "250",
+                     "--rl_minutes", "120", "--bs", "8", "--think_n", "100", "--think_tokens", "1500", "--seed", "0",
+                     "--max_minutes", "560"))]},
+}""",
     "R12_star": """{
     "star": {"0,1": [("qwen3-4b", "Qwen/Qwen3-4B", "cfrl",
                       ("--arms", "s_plain", "s_star", "--teacher", "Qwen/Qwen3-8B", "--teacher_device_map", "auto",

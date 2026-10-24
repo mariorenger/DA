@@ -706,3 +706,9 @@ Qwen3-8B (fp16 split over 2 GPUs), Qwen3-4B, Qwen3-1.7B (one GPU each).
 **Declared limits.** One seed; thinking mode on a subset with a token cap (truncation counts as an error and is reported as `finished`);
 fp16 for bf16-trained Qwen3 weights (a finite-logits check aborts a run that overflows); teacher traces filtered by answer correctness only;
 Qwen3-8B arms use pipeline-split fp16 (batch 1 x 16 accumulation).
+
+### Round 12 execution note (before any Qwen3 result was analysed)
+The first launch of the notebooks contained a bug (`covered` not imported in `eval_think`), so the `p_think` arm crashed after `p_fs`.
+Qwen3-8B `p_fs` finished (kept: results/cfrl/r12_8b_pfs; C4 52.7, C6 37.3, C5 27.5). Relaunched with `p_think` moved last:
+`hgcd-r12-q3-8b-b` (s_plain, s_ans, p_think) and `hgcd-r12-q3-4b` (p_fs, s_plain, s_ans, s_grpo, p_think). The 1.7B job inside
+`hgcd-r12-q3-small` and the distillation job `hgcd-r12-star` are unaffected (they never call `p_think`). Endpoints unchanged.
