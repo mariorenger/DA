@@ -1,0 +1,20 @@
+{
+ "s_plain": {
+  "steps": 188,
+  "final_loss": 0.002685446757823229,
+  "n_train": 3000,
+  "minutes": 20.330071413516997
+ },
+ "s_star": {
+  "steps": 52,
+  "final_loss": 0.08477302219253033,
+  "n_train": 825,
+  "minutes": 5.606113354365031,
+  "star": {
+   "teacher_sample_acc": 0.4583333333333333,
+   "questions": 1500,
+   "kept": 825,
+   "kept_frac": 0.55
+  }
+ }
+}

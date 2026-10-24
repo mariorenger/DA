@@ -712,3 +712,16 @@ The first launch of the notebooks contained a bug (`covered` not imported in `ev
 Qwen3-8B `p_fs` finished (kept: results/cfrl/r12_8b_pfs; C4 52.7, C6 37.3, C5 27.5). Relaunched with `p_think` moved last:
 `hgcd-r12-q3-8b-b` (s_plain, s_ans, p_think) and `hgcd-r12-q3-4b` (p_fs, s_plain, s_ans, s_grpo, p_think). The 1.7B job inside
 `hgcd-r12-q3-small` and the distillation job `hgcd-r12-star` are unaffected (they never call `p_think`). Endpoints unchanged.
+
+### Round 12 results, part 1 (Qwen3-1.7B and the 8B-teacher distillation; 4B/8B thinking runs still pending)
+Tool: `tools/analyze_r12.py` -> results/cfrl/r12_analysis.csv (paired bootstrap, 95% CI). One seed.
+* **H-H (chain matters), exploratory at 1.7B** (4B/8B pending): s_plain - s_ans = +3.0 [-1.3, 7.3] (C4), +10.1 [3.2, 17.1] (C6), +10.0 [3.0, 17.0] (C5). Same direction as Qwen2.5 (round 11).
+* **H-G, 1.7B**: s_plain - p_fs = +58.3 / +37.3 / +24.0 (all CI > 0). Qwen3-1.7B few-shot is 31.3 / 36.1 / 22.0, so a newer model does NOT remove the need for fine-tuning here.
+  Qwen3-8B few-shot (non-thinking): 52.7 / 37.3 / 27.5, Qwen3-4B 45.7 / 38.0 / 27.5 (C4/C6/C5) - no better than Qwen2.5-3B few-shot (round 10).
+  The formal H-G (4B, thinking comparison) awaits the relaunched runs.
+* **H-I (distillation without gold chains), 4B student, 8B teacher: NO-GO.** Teacher non-thinking sample accuracy on k=2-3 training questions was only 45.8%;
+  825/1500 questions kept (55%). Student s_star = 62.7 / 51.3 / 33.5 vs s_plain 94.3 / 78.5 / 59.0: difference -31.7 [-37.3, -26.0], -27.2 [-35.4, -19.0], -25.5 [-33.0, -18.0],
+  far outside the non-inferiority margin (-6). The failure is the teacher's weak, answer-filtered traces (correct answers can have wrong hops, and only short easy questions survive), not the student.
+* **H-J (hard-prompt GRPO), exploratory at 1.7B (the pre-registered test is at 4B, pending): NO-GO direction.** Hard pool 193/500 prompts; training accuracy rose 0.66 -> 0.92 but held-out
+  s_grpo - SFT = -3.0 [-6.0, 0.0] (C4), -0.6 [-5.1, 3.2] (C6), -6.0 [-12.0, 0.0] (C5). Wrong-copy follow fell 37.5% -> 30.8% (n=120, not significant); the dynamic filter kept <1/8 groups late in training (reward saturation).
+* Descriptive: after SFT Qwen3-1.7B has wrong-copy follow 37.5% and do_total effect of non-final hops 30 pts; 4B 50.0% and 40 pts (same mechanism change as Qwen2.5).
