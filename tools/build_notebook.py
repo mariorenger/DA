@@ -315,6 +315,28 @@ NOTEBOOKS = {
                 "--train_types", "compositional", "--eval_types", "inference", "--max_minutes", "560"))],
     },
 }""",
+    # round 12 (see REVIEW.md, pre-registered): Qwen3, thinking mode, teacher distillation, hard-prompt RL
+    "R12_q3_8b": """{
+    "q8": {"0,1": [("qwen3-8b", "Qwen/Qwen3-8B", "cfrl",
+                    ("--arms", "p_fs", "p_think", "s_plain", "s_ans", "--device_map", "auto", "--mb", "1", "--accum", "16",
+                     "--bs", "8", "--think_n", "60", "--think_tokens", "1500", "--seed", "0", "--max_minutes", "560"))]},
+}""",
+    "R12_q3_small": """{
+    "q3": {
+        "0": [("qwen3-4b", "Qwen/Qwen3-4B", "cfrl",
+               ("--arms", "p_fs", "p_think", "s_plain", "s_ans", "s_grpo", "--rl_hard", "1", "--rl_steps", "250",
+                "--rl_minutes", "120", "--bs", "8", "--think_n", "100", "--think_tokens", "1500", "--seed", "0",
+                "--max_minutes", "560"))],
+        "1": [("qwen3-1.7b", "Qwen/Qwen3-1.7B", "cfrl",
+               ("--arms", "p_fs", "s_plain", "s_ans", "s_grpo", "--rl_hard", "1", "--rl_steps", "250",
+                "--rl_minutes", "100", "--bs", "8", "--seed", "0", "--max_minutes", "560"))],
+    },
+}""",
+    "R12_star": """{
+    "star": {"0,1": [("qwen3-4b", "Qwen/Qwen3-4B", "cfrl",
+                      ("--arms", "s_plain", "s_star", "--teacher", "Qwen/Qwen3-8B", "--teacher_device_map", "auto",
+                       "--star_n", "1500", "--star_k", "2", "--bs", "8", "--seed", "0", "--max_minutes", "560"))]},
+}""",
     "M_select_orig": """{
     "orig": {
         "0": [("qwen-1.5b", "Qwen/Qwen2.5-1.5B-Instruct", "causaldec_musique",

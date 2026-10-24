@@ -675,3 +675,34 @@ after SFT is still 13-32% at 1.5B/3B and **47.5% at 7B** (PS=1 subsets, n=104-11
 DPO removes the copying (to 2-7%) and leaves the do_total effect unchanged (-0.9 to +0.9 points).
 **Caveats.** One GRPO run; DPO two seeds; follow rates have n~110 (CIs are unpaired normal approximations); programmatic counterfactuals;
 7B only SFT arms; s_ans vs s_plain pairs come from separately trained models of the same seed.
+
+---
+## Round 12 (pre-registered before any GPU run): newer base models (Qwen3), thinking mode, teacher distillation, hard-prompt RL
+
+**Why.** Rounds 10-11 used Qwen2.5 (prompted CoT vs fine-tuning). Question from the user: do newer / larger / reasoning-native models
+(Qwen3, which has a built-in thinking mode) change the picture, and do stronger 2025-26 recipes help?
+**Literature consulted (search snippets only).** Qwen3 technical report (arXiv 2505.09388: one model with thinking and non-thinking
+modes, thinking budget); GRPO family (DAPO dynamic sampling, Dr. GRPO removes length/std normalisation, GSPO sequence-level ratio; one 2025 study
+found a stricter accuracy filter gave no significant gain over GRPO, so hard-prompt filtering is a hypothesis, not an expectation);
+verified rejection-sampling distillation of teacher traces (STaR-style; curriculum distillation, EMNLP 2025).
+Not run: GSPO (our update is on-policy so the ratio is 1), s1-style budget forcing, process reward models.
+
+**Models and arms** (hgcd/cfrl.py; LoRA r=16, 3000 CLUTRR chains k<=4; same evaluation sets C4/C6/C5 as rounds 10-11):
+Qwen3-8B (fp16 split over 2 GPUs), Qwen3-4B, Qwen3-1.7B (one GPU each).
+* p_fs      base model, non-thinking, few-shot plain chain (the round-9 prompt).
+* p_think   base model in native thinking mode, up to 1500-1800 new tokens, answer read after </think>; random subset of
+            60-100 questions of C6 and of C5 (unfinished generations count as wrong).
+* s_plain / s_ans   as in round 10-11 (gold chains / answer only).
+* s_grpo    SFT then GRPO as in round 11 but with hard-prompt filtering (500 candidate prompts, 4 samples each, keep pass rate < 1) and 250 steps.
+* s_star    STUDENT Qwen3-4B trained on chains written by the teacher Qwen3-8B (non-thinking, zero-shot, T=0.8, 2 samples/question, 1500 questions),
+            keeping the first sample whose final answer is correct. NO gold chains are used.
+**Endpoints (paired bootstrap, 95% CI).**
+* H-G newer base (Qwen3-4B, C5): does fine-tuning still help? acc(s_plain) - max(acc p_fs, acc p_think on the same uids) >= +2 with CI > 0.
+  Descriptive: p_fs, p_think and s_plain of Qwen3-1.7B/4B/8B vs the Qwen2.5 rows of rounds 10-11.
+* H-H chain matters on Qwen3 (4B, C5): acc(s_plain) - acc(s_ans) >= +2 with CI > 0.
+* H-I distillation without gold chains (student 4B): non-inferiority to gold-chain SFT, acc(s_star) - acc(s_plain) lower CI bound > -6 on C5 and on C6,
+  AND acc(s_star) - acc(p_fs) >= +2 with CI > 0 on C5.
+* H-J hard-prompt GRPO (Qwen3-4B, C5): acc(s_grpo) - acc(its stage-1 SFT) >= +2 with CI > 0 (primary); C4/C6 not lower by more than 2.
+**Declared limits.** One seed; thinking mode on a subset with a token cap (truncation counts as an error and is reported as `finished`);
+fp16 for bf16-trained Qwen3 weights (a finite-logits check aborts a run that overflows); teacher traces filtered by answer correctness only;
+Qwen3-8B arms use pipeline-split fp16 (batch 1 x 16 accumulation).

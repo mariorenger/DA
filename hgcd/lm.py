@@ -51,8 +51,11 @@ class LM:
         return max(1, min(chunk, int(self.mem_budget // max(1, kv + logits))))
 
     # ------------------------------------------------------------------ prompts
-    def prompt(self, messages: List[dict], assistant_prefix: str = "") -> str:
-        p = self.tok.apply_chat_template(messages, tokenize=False, add_generation_prompt=True)
+    def prompt(self, messages: List[dict], assistant_prefix: str = "", thinking: bool = False) -> str:
+        kw = {}
+        if "enable_thinking" in (getattr(self.tok, "chat_template", None) or ""):   # Qwen3 family
+            kw["enable_thinking"] = bool(thinking)
+        p = self.tok.apply_chat_template(messages, tokenize=False, add_generation_prompt=True, **kw)
         return p + assistant_prefix
 
     def _enc(self, texts: Sequence[str]):

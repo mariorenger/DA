@@ -32,11 +32,11 @@ import torch
 from . import chain as C
 from . import data as D
 from .causaldec import _first_rel, induce_table, parse_triples
-from .cftrain import (LORA_TARGETS, SETS, _tokenize, chain_text, evaluate, extend_table, msgs_zero,
+from .cftrain import (LORA_TARGETS, SETS, _tokenize, chain_text, covered, evaluate, extend_table, msgs_zero,
                       summarize, train_sft)
 from .experiments import _dist
 from .lm import LM
-from .prompts import CLUTRR_SYSTEM
+from .prompts import CLUTRR_SYSTEM, clutrr_messages
 
 T0 = time.time()
 ANS_SYSTEM = ("You solve family-relation puzzles. Reply with the final answer only, in the form "
@@ -170,6 +170,24 @@ def reward_fn(e: D.ClutrrExample, text: str, vocab: List[str]) -> Tuple[float, f
     return correct + 0.3 * fid - (0.0 if m else 0.2), correct
 
 
+def hard_pool(lm: LM, sample: List[D.ClutrrExample], vocab: List[str], args) -> List[D.ClutrrExample]:
+    """Keep prompts the SFT model does not always solve (pass rate < 1 over 4 samples): where RL has signal."""
+    rng = random.Random(args.seed + 9)
+    cand = rng.sample(sample, min(args.rl_hard_n, len(sample)))
+    prompts = [lm.prompt(msgs_zero(CLUTRR_SYSTEM, e)) for e in cand]
+    outs = []
+    for k in sorted(set(e.k for e in cand)):
+        idx = [i for i, e in enumerate(cand) if e.k == k]
+        o = lm.generate([prompts[i] for i in idx], max_new_tokens=26 * (k + 2) + 30, do_sample=True, n=4,
+                        temperature=1.0, batch_size=max(1, args.bs // 2), stop="<|im_end|>")
+        for t, i in enumerate(idx):
+            outs.append((i, [reward_fn(cand[i], x, vocab)[1] for x in o[t * 4:(t + 1) * 4]]))
+    hard = [cand[i] for i, r in outs if np.mean(r) < 1.0]
+    _log(f"  hard pool: {len(hard)}/{len(cand)} prompts with pass rate < 1 "
+         f"(mean pass {np.mean([np.mean(r) for _, r in outs]):.2f})")
+    return hard if len(hard) >= 16 else cand
+
+
 def train_grpo(lm: LM, sample: List[D.ClutrrExample], vocab: List[str], args) -> Dict:
     """On-policy group-relative policy gradient (one update per rollout batch, so the importance ratio is 1)
     with token-level loss, no KL term and dynamic sampling of groups with non-zero reward variance."""
@@ -186,7 +204,9 @@ def train_grpo(lm: LM, sample: List[D.ClutrrExample], vocab: List[str], args) ->
     opt = torch.optim.AdamW(params, lr=args.rl_lr, weight_decay=0.0)
     scaler = torch.amp.GradScaler("cuda", enabled=cuda)
     rng = random.Random(args.seed + 2)
-    by_k = {k: [e for e in sample if e.k == k] for k in (2, 3, 4)}
+    if args.rl_hard:
+        sample = hard_pool(lm, sample, vocab, args)
+    by_k = {k: [e for e in sample if e.k == k] or [e for e in sample] for k in (2, 3, 4)}
     gen_eos = lm.model.generation_config.eos_token_id
     stop_ids = {tok.eos_token_id, tok.pad_token_id} | set(gen_eos if isinstance(gen_eos, (list, tuple)) else [gen_eos])
     stop_ids.discard(None)
@@ -299,6 +319,70 @@ def causal_extras(lm: LM, arm: str, rels: List[str], n: int, seed: int = 7) -> L
     return out
 
 
+def sanity(lm: LM):
+    enc = lm._enc([lm.prompt([{"role": "user", "content": "Say hello."}])])
+    with torch.no_grad():
+        lg = lm.model(**enc).logits
+    if not torch.isfinite(lg).all():
+        raise RuntimeError("non-finite logits in fp16: this model cannot be run in fp16 on this GPU")
+
+
+def eval_think(lm: LM, arm: str, vocab: List[str], args, table) -> List[Dict]:
+    """Native thinking mode (Qwen3): long generation, answer read after </think>; a random subset of each set."""
+    rows = []
+    for name in ("c6", "c5"):
+        task, split, ks, npk, seed = SETS[name]
+        pool = D.load_clutrr(split, task=task)
+        base = D.sample_by_k(pool, ks, npk, seed)
+        random.Random(1).shuffle(base)
+        ex = base[:args.think_n]
+        prompts = [lm.prompt(msgs_zero(ANS_SYSTEM, e), thinking=True) for e in ex]
+        outs = lm.generate(prompts, max_new_tokens=args.think_tokens, batch_size=args.bs, stop="<|im_end|>")
+        fin = 0
+        for e, o in zip(ex, outs):
+            done = "</think>" in o
+            fin += done
+            tail = o.split("</think>")[-1] if done else ""
+            m = re.search(r"Answer:\s*(.*)", tail)
+            pred = _first_rel(m.group(1) if m else tail, vocab) if done else None
+            rows.append(dict(arm=arm, set=name, cond="orig", uid=e.uid, k=e.k, pred=pred, gold=e.answer,
+                             correct=float(pred == e.answer), hop_fidelity=float("nan"), step_acc=float("nan"),
+                             last_step_ok=float("nan"), covered=int(covered(e, table)), chain=o[-600:],
+                             finished=float(done)))
+        acc = np.mean([r["correct"] for r in rows if r["set"] == name])
+        _log(f"  [{arm}] {name}: n={len(ex)} finished={fin / len(ex):.2f} acc={100 * acc:.1f}")
+    return rows
+
+
+def star_data(args, sample: List[D.ClutrrExample], vocab: List[str]) -> Tuple[List[Tuple[str, str]], Dict]:
+    """Rejection-sampled chains from a teacher (no gold chains used): keep the first sample whose answer is right."""
+    teacher = LM(args.teacher, device_map=args.teacher_device_map)
+    exs = sample[:args.star_n]
+    prompts = [teacher.prompt(msgs_zero(CLUTRR_SYSTEM, e)) for e in exs]
+    outs = []
+    for k in sorted(set(e.k for e in exs)):
+        idx = [i for i, e in enumerate(exs) if e.k == k]
+        o = teacher.generate([prompts[i] for i in idx], max_new_tokens=26 * (k + 2) + 30, do_sample=True,
+                             n=args.star_k, temperature=0.8, batch_size=max(1, args.bs // 2), stop="<|im_end|>")
+        for t, i in enumerate(idx):
+            outs.append((i, o[t * args.star_k:(t + 1) * args.star_k]))
+        _log(f"  teacher k={k}: {len(idx)} questions")
+    data, ok_any, ok_all = [], 0, []
+    for i, cands in outs:
+        res = [reward_fn(exs[i], c, vocab)[1] for c in cands]
+        ok_all += res
+        good = [c for c, r in zip(cands, res) if r == 1.0 and "Answer:" in c and "Hop" in c]
+        if good:
+            ok_any += 1
+            data.append((i, good[0].strip()))
+    info = dict(teacher_sample_acc=float(np.mean(ok_all)), questions=len(exs), kept=len(data),
+                kept_frac=len(data) / len(exs))
+    del teacher
+    gc.collect()
+    torch.cuda.empty_cache()
+    return data, info, exs
+
+
 # ----------------------------------------------------------------------------- main
 
 def main():
@@ -332,6 +416,15 @@ def main():
     ap.add_argument("--rl_mb", type=int, default=8)
     ap.add_argument("--rl_lr", type=float, default=2e-5)
     ap.add_argument("--rl_minutes", type=float, default=150.0)
+    ap.add_argument("--rl_hard", type=int, default=0)
+    ap.add_argument("--rl_hard_n", type=int, default=500)
+    # Qwen3 / distillation
+    ap.add_argument("--teacher", default=None)
+    ap.add_argument("--teacher_device_map", default="auto")
+    ap.add_argument("--star_n", type=int, default=1500)
+    ap.add_argument("--star_k", type=int, default=2)
+    ap.add_argument("--think_n", type=int, default=100)
+    ap.add_argument("--think_tokens", type=int, default=1800)
     args = ap.parse_args()
     os.makedirs(args.outdir, exist_ok=True)
     json.dump(vars(args), open(os.path.join(args.outdir, "config.json"), "w"), indent=1)
@@ -361,8 +454,26 @@ def main():
             _log(f"[{arm}] SKIPPED: past max_minutes")
             continue
         _log(f"=== arm {arm}")
+        star_info = None
+        if arm == "s_star":
+            star, star_info, star_exs = star_data(args, sample, vocab_l)
+            if not star:
+                raise SystemExit('s_star: teacher produced no verified chains')
         lm = LM(args.model, device_map=args.device_map)
-        if arm == "s_ans":
+        sanity(lm)
+        if arm == "p_fs":
+            all_rows += evaluate(lm, arm, lambda e: clutrr_messages(e.story_text, e.source, e.target), args,
+                                 table, vocab_l, args.sets, bool(args.robust), plain_mx)
+            info[arm] = {}
+        elif arm == "p_think":
+            all_rows += eval_think(lm, arm, vocab_l, args, table)
+            info[arm] = {}
+        elif arm == "s_star":
+            data = [(lm.prompt(zero(star_exs[i])), t) for i, t in star]
+            info[arm] = train_sft(lm, data, args)
+            info[arm]["star"] = star_info
+            all_rows += evaluate(lm, arm, zero, args, table, vocab_l, args.sets, bool(args.robust), plain_mx)
+        elif arm == "s_ans":
             data = [(lm.prompt(msgs_zero(ANS_SYSTEM, e)), ans_text(e)) for e in sample]
             info[arm] = train_sft(lm, data, args)
             all_rows += evaluate(lm, arm, lambda e: msgs_zero(ANS_SYSTEM, e), args, table, vocab_l, args.sets,
