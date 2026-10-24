@@ -222,6 +222,8 @@ def main():
     ap.add_argument("--bs", type=int, default=6)
     ap.add_argument("--seed", type=int, default=0)
     ap.add_argument("--conds", nargs="+", default=["orig"])
+    ap.add_argument("--train_types", nargs="+", default=["compositional", "inference"])
+    ap.add_argument("--eval_types", nargs="+", default=["compositional", "inference"])
     ap.add_argument("--device_map", default=None)
     ap.add_argument("--max_minutes", type=float, default=600.0)
     args = ap.parse_args()
@@ -236,8 +238,8 @@ def main():
                           replace=False)
         evals = {c: [v[i] for i in pick] for c, v in dev.items()}
     else:
-        train = load_wiki2_qa("train")
-        val = load_wiki2_qa("validation")
+        train = load_wiki2_qa("train", tuple(args.train_types))
+        val = load_wiki2_qa("validation", tuple(args.eval_types))
         pick = np.random.default_rng(3).choice(len(val), min(args.n_eval, len(val)), replace=False)
         evals = {"orig": [val[i] for i in pick]}
     _log(f"{args.dataset}: {len(train)} train, eval {[len(v) for v in evals.values()]}")

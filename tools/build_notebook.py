@@ -13,7 +13,7 @@ import nbformat as nbf
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 MODULES = ["__init__", "data", "chain", "prompts", "lm", "decoding", "experiments", "metrics",
-           "report", "pipeline", "causaldec", "cftrain", "egen"]
+           "report", "pipeline", "causaldec", "cftrain", "egen", "cfrl"]
 
 INTRO = """# Read, not reasoned? Kaggle run-all
 
@@ -52,7 +52,9 @@ def run_job(label, model, preset, extra, gpus):
     env = dict(os.environ, CUDA_VISIBLE_DEVICES=gpus)
     out = f"{OUT}/{preset}_{label}"
     with open(out + ".log", "w") as log:
-        cmd = ([sys.executable, "-m", "hgcd.egen", "--model", model, "--outdir", out, *extra]
+        cmd = ([sys.executable, "-m", "hgcd.cfrl", "--model", model, "--outdir", out, *extra]
+               if preset.startswith("cfrl") else
+               [sys.executable, "-m", "hgcd.egen", "--model", model, "--outdir", out, *extra]
                if preset.startswith("egen") else
                [sys.executable, "-m", "hgcd.cftrain", "--model", model, "--outdir", out, *extra]
                if preset.startswith("cftrain") else
@@ -263,6 +265,54 @@ NOTEBOOKS = {
         "1": [("qwen-3b", "Qwen/Qwen2.5-3B-Instruct", "egen",
                ("--dataset", "wiki2", "--arms", "p0", "s_ans", "s_plain", "s_struct", "--n_train", "1500",
                 "--max_minutes", "560"))],
+    },
+}""",
+    # round 11 (see REVIEW.md, pre-registered): causal training methods on CLUTRR, 7B, OOD type shift
+    "CF3_dpo_s0": """{
+    "cf3": {
+        "0": [("qwen-1.5b", "Qwen/Qwen2.5-1.5B-Instruct", "cfrl",
+               ("--arms", "s_ans", "s_dpo", "--seed", "0", "--max_minutes", "540"))],
+        "1": [("qwen-3b", "Qwen/Qwen2.5-3B-Instruct", "cfrl",
+               ("--arms", "s_ans", "s_dpo", "--seed", "0", "--max_minutes", "540"))],
+    },
+}""",
+    "CF3_dpo_s1": """{
+    "cf3": {
+        "0": [("qwen-1.5b", "Qwen/Qwen2.5-1.5B-Instruct", "cfrl",
+               ("--arms", "s_ans", "s_dpo", "--seed", "1", "--max_minutes", "540"))],
+        "1": [("qwen-3b", "Qwen/Qwen2.5-3B-Instruct", "cfrl",
+               ("--arms", "s_ans", "s_dpo", "--seed", "1", "--max_minutes", "540"))],
+    },
+}""",
+    "CF3_grpo": """{
+    "cf3": {
+        "0": [("qwen-1.5b", "Qwen/Qwen2.5-1.5B-Instruct", "cfrl",
+               ("--arms", "s_grpo", "--seed", "0", "--rl_steps", "200", "--rl_minutes", "120", "--max_minutes", "540"))],
+        "1": [("qwen-3b", "Qwen/Qwen2.5-3B-Instruct", "cfrl",
+               ("--arms", "s_grpo", "--seed", "0", "--rl_steps", "200", "--rl_minutes", "150", "--max_minutes", "540"))],
+    },
+}""",
+    "CF4_7b": """{
+    "7b": {"0,1": [("qwen-7b", "Qwen/Qwen2.5-7B-Instruct", "cfrl",
+                    ("--arms", "s_plain", "s_ans", "--device_map", "auto", "--mb", "1", "--accum", "16",
+                     "--bs", "4", "--seed", "0", "--max_minutes", "560"))]},
+}""",
+    "EG2_musique_ood": """{
+    "eg1": {
+        "0": [("qwen-1.5b", "Qwen/Qwen2.5-1.5B-Instruct", "egen",
+               ("--dataset", "musique", "--arms", "p0", "s_ans", "s_plain", "s_struct", "--n_train", "2000",
+                "--conds", "orig", "dist8", "--max_minutes", "420"))],
+        "1": [("qwen-3b", "Qwen/Qwen2.5-3B-Instruct", "egen",
+               ("--dataset", "musique", "--arms", "s_ans", "s_plain", "s_struct", "--n_train", "1500",
+                "--conds", "orig", "dist8", "--max_minutes", "420"))],
+    },
+    "ood": {
+        "0": [("qwen-1.5b", "Qwen/Qwen2.5-1.5B-Instruct", "egen",
+               ("--dataset", "wiki2", "--arms", "s_ans", "s_plain", "--n_train", "2000",
+                "--train_types", "compositional", "--eval_types", "inference", "--max_minutes", "560"))],
+        "1": [("qwen-3b", "Qwen/Qwen2.5-3B-Instruct", "egen",
+               ("--dataset", "wiki2", "--arms", "s_ans", "s_plain", "--n_train", "1500",
+                "--train_types", "compositional", "--eval_types", "inference", "--max_minutes", "560"))],
     },
 }""",
     "M_select_orig": """{

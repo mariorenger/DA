@@ -261,6 +261,8 @@ def evaluate(lm: LM, arm: str, msg_fn, args, table: Dict, vocab_l: List[str], se
             chains: List[str] = [""] * len(ex)
             for k in sorted(set(e.k for e in ex)):
                 idx = [i for i, e in enumerate(ex) if e.k == k]
+                if max_new_fn(k) <= 0:       # answer-only models write no chain
+                    continue
                 out = lm.generate([prompts[i] for i in idx], max_new_tokens=max_new_fn(k),
                                   batch_size=args.bs)
                 for t, i in enumerate(idx):

@@ -595,3 +595,52 @@ single MuSiQue shot (weak prompting baseline); the chains are built from gold ev
 one seed; s_struct trains on fewer questions (those with an identifiable source paragraph).
 Not tested: MuSiQue (open-domain bridge questions), out-of-distribution question types, mediation/reliance of the
 fine-tuned models (do they use the chain?).
+
+---
+## Round 11 (pre-registered before any GPU run): causal training methods, scale, natural text
+
+**Why.** Round 10 / 10b: fine-tuning on gold chains is the main lever (CLUTRR 3B 36 -> 95% val; 2Wiki +21..+30 EM);
+structure and citations add nothing. Open: does the chain matter after fine-tuning, does the model *use* it,
+is it robust, can RL / counterfactual preference training improve it, does it scale and transfer?
+
+**Literature consulted (search snippets/abstracts only; numbers not verified against the papers).**
+FRODO (Paul et al., EMNLP 2024 Findings: DPO on counterfactual rationales + indirect-effect / margin / counterfactual
+losses; reports +2-3 accuracy and +4.5 robustness over SFT), interchange-intervention training and causal
+distillation (Geiger et al. ICML 2022; Wu et al. NAACL 2022), step-necessity rewards for faithful CoT (CoSR,
+arXiv 2603.22816, which also cites RLVR lowering faithfulness), CASE / counterfactual simulation training /
+information-flow faithfulness (2026 preprints), DISCO and dually self-improved counterfactual augmentation,
+GRPO/DAPO (token-level loss, dynamic sampling), "GRPO is secretly a process reward model", LoRA variants
+(DoRA, PiSSA, rsLoRA; a 2026 paper shows batch size alone flips their rankings, so we keep plain LoRA r=16 and
+fixed batch/lr). Not implemented: interchange-intervention training (needs internal alignment search), CoSR-style
+ablation reward (planned if GRPO shows signal).
+
+**Arms and implementation** (hgcd/cfrl.py, hgcd/egen.py; Qwen2.5, LoRA r=16, 3000 CLUTRR chains k<=4):
+* s_ans   SFT on the answer only.            * s_plain SFT on gold chains (round-10 control).
+* s_dpo   SFT, then DPO (beta 0.1, lr 2e-5, 1 epoch, 1500 pairs, +0.2 NLL on chosen) with programmatic counterfactual
+          rejected chains: 40% gold hops + a hop stating a WRONG answer (the T_copy-wrong form), 30% one corrupted
+          hop with a consistent wrong answer, 30% right hops + wrong answer. Reference = the SFT model.
+* s_grpo  SFT, then GRPO (P=8 prompts x G=8 samples, T=1, lr 2e-5, <=200 steps / 150 min, token-level loss, no KL,
+          dynamic sampling of groups with reward variance) with reward = correct answer + 0.3 x hop fidelity
+          (fraction of generated hops that are gold triples) - 0.2 if no "Answer:" line.
+* 7B: s_plain and s_ans, fp16 split over 2 GPUs (batch 1 x accum 16).
+* MuSiQue (4 arms, round-10b design) and 2Wiki type shift (train compositional only, test inference only).
+Extra causal measurements on every chain-writing model (120 unseen k=2-4 questions): wrong-copy follow rate
+(round-3 protocol, scored over the relation set) overall and given PS=1, and the mean do_total effect of non-final
+gold hops on p(gold).
+
+**Endpoints (paired bootstrap, 95% CI; GO needs the stated effect AND the stated non-inferiority).**
+* H-A chain matters (CLUTRR, 3B, C5): acc(s_plain) - acc(s_ans) >= +2 points with CI > 0 (round-10 s_plain seeds vs
+  the new s_ans, joined on uid; also reported at 1.5B and 7B).
+* H-B counterfactual DPO (3B): wrong-copy follow rate given PS=1 drops by >= 10 points (CI upper bound < 0) relative to
+  the stage-1 SFT model of the same run, AND accuracy on C5 and C6 does not fall by more than 2 points (lower CI bound
+  > -5). Secondary: distractor flip rate drops >= 5 points; C5 accuracy.
+* H-C GRPO with verifiable process reward (3B): C5 accuracy(s_grpo) - accuracy(stage-1 SFT) >= +2 with CI > 0, and C4/C6
+  not lower by more than 2. Secondary: hop fidelity, reward curve, wrong-copy follow.
+* H-D scale (descriptive): 7B s_plain vs 3B s_plain on C4/C6/C5; 7B s_plain - s_ans on C5.
+* H-E MuSiQue (3B, orig): EM(s_struct) - max(EM s_plain, s_ans, p0, SC5 from rounds 9) >= +2, CI > 0 (as in 10b);
+  secondary s_plain - s_ans.
+* H-F type shift (2Wiki, 3B): on inference questions, EM(s_plain) - EM(s_ans) >= +2 with CI > 0 when training saw only
+  compositional questions.
+**Declared limits.** One or two seeds (DPO also seed 1); RL on k<=4 prompts only; labels from gold annotations;
+programmatic counterfactuals (not LLM-written); causal measures on 120 questions; 7B only SFT arms; mario123475's token
+is no longer valid, so runs use m81extend, nguyenpn and ngpnguyen.
