@@ -644,3 +644,34 @@ gold hops on p(gold).
 **Declared limits.** One or two seeds (DPO also seed 1); RL on k<=4 prompts only; labels from gold annotations;
 programmatic counterfactuals (not LLM-written); causal measures on 120 questions; 7B only SFT arms; mario123475's token
 is no longer valid, so runs use m81extend, nguyenpn and ngpnguyen.
+
+---
+## Round 11 results, part 1 (CLUTRR; tools/analyze_cfrl.py; results/cfrl/). MuSiQue + 2Wiki type shift still running.
+Four notebooks finished normally (DPO seeds 0/1 at 1.5B and 3B, GRPO, 7B). Paired bootstrap, 95% CI.
+
+**H-A chain matters after fine-tuning: GO.** acc(s_plain) - acc(s_ans), C5 (k=5-8): 3B **+18.0 [9.5, 26.5]** (seed 0),
+**+12.5 [5.0, 20.0]** (seed 1); 1.5B +9.0 [1.0, 17.0] / +10.5 [2.5, 18.5]; 7B +11.0 [2.5, 20.0]. Unseen k=2-4 (C6): 3B +22.8 / +19.6,
+7B +17.1, 1.5B +5.7 / +15.8. In distribution (C4) the gap is small (3B +4.3 / +7.0, 7B 0.0). Answer-only models reach 90-95% on C4
+but fall to 47-60% on C6/C5, so the chain buys out-of-distribution accuracy, not in-distribution accuracy.
+
+**H-B counterfactual DPO: effect met, non-inferiority failed -> NO-GO as pre-registered.** Wrong-copy follow rate given PS=1
+(3B): 26.7% -> 4.5% (-22.3 [-31.2, -13.3], seed 0) and 32.4% -> 7.2% (-25.2 [-35.2, -15.3], seed 1); 1.5B 22.5 -> 5.4 and 13.3 -> 1.8.
+But accuracy on the long set falls: C5 3B -13.0 [-19.5, -6.5] / -5.0 [-11.5, 1.0]; 1.5B -13.0 / -9.0; C6 3B -0.6 / -2.5 (n.s.), 1.5B +10.8 / +11.4
+(improves). The pre-registered requirement was no loss > 2 points (lower CI bound > -5), violated on C5 in all four runs. Secondary
+(distractor flip rate -5): 3B 36.7 -> 29.1 (seed 0) but 31.6 -> 35.4 (seed 1): not met. Hypothesis (untested): DPO on k<=4 pairs
+shifts long-chain behaviour; a longer-chain pair set or a smaller beta may keep robustness without the C5 loss.
+
+**H-C GRPO with verifiable process reward: NO-GO.** C5 3B: **0.0 [-5.0, 5.0]** (SFT 60.0 vs GRPO 60.0). C4 +1.3, C6 +3.2 (both n.s.).
+1.5B: C4 +5.3 [1.3, 9.3], C6 +8.9 [2.5, 15.2], C5 +1.5 (n.s.). Training signal was thin: only 0.7-1.9 of 8 prompt groups per step had reward
+variance (the SFT model already solves ~90-95% of k<=4 prompts). Wrong-copy follow unchanged at 3B (25.9 -> 25.9) and +8.9 (n.s.) at 1.5B.
+Exploratory: GRPO lowers the distractor flip rate (3B 36.1 -> 22.2, 1.5B 51.9 -> 23.4) without a long-chain gain.
+
+**H-D scale (descriptive).** 7B s_plain: C4 95.0, C6 81.0, C5 58.5 vs 3B 94.7 / 77.8 (74.7) / 59.0 (58.5): no gain from 3B to 7B on this task.
+
+**Causal measurements (exploratory, answer the open question of round 10).** Mean do_total effect of non-final hops on p(gold), points:
+prompted base models 3.1-10.6 (round-3 R3) vs fine-tuned 1.5B 36-42, 3B 41-44, 7B 39. Fine-tuning on gold chains turns the model from a reader
+that ignores relational hops into one whose answer depends strongly on them. Wrong-copy follow rate (stated wrong answer after the gold hops)
+after SFT is still 13-32% at 1.5B/3B and **47.5% at 7B** (PS=1 subsets, n=104-118): the model uses the hops AND still copies a stated answer;
+DPO removes the copying (to 2-7%) and leaves the do_total effect unchanged (-0.9 to +0.9 points).
+**Caveats.** One GRPO run; DPO two seeds; follow rates have n~110 (CIs are unpaired normal approximations); programmatic counterfactuals;
+7B only SFT arms; s_ans vs s_plain pairs come from separately trained models of the same seed.

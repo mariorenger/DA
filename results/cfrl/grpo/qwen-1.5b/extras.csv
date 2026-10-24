@@ -1,0 +1,9 @@
+arm,metric,value,n
+sft_before_grpo,wrong_copy_follow_all,0.21666666666666667,120
+sft_before_grpo,wrong_copy_follow_given_ps1,0.20909090909090908,110
+sft_before_grpo,ps_plain_chain,0.9166666666666666,120
+sft_before_grpo,do_total_effect_nonfinal_hops,0.41094048095483127,252
+s_grpo,wrong_copy_follow_all,0.30833333333333335,120
+s_grpo,wrong_copy_follow_given_ps1,0.2980769230769231,104
+s_grpo,ps_plain_chain,0.8666666666666667,120
+s_grpo,do_total_effect_nonfinal_hops,0.3692543299083353,252

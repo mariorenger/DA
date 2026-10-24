@@ -1,0 +1,13 @@
+arm,set,cond,n,acc,lo,hi,hop_fidelity,step_acc,last_step_ok,flip_rate
+s_grpo,c4,orig,300,89.667,86.0,93.0,0.947,,,
+s_grpo,c5,orig,200,48.5,41.5,55.5,0.845,,,
+s_grpo,c6,distract,158,55.063,46.835,62.658,0.759,,,0.234
+s_grpo,c6,order,158,68.354,60.759,75.316,0.816,,,0.177
+s_grpo,c6,orig,158,68.354,60.759,75.316,0.804,,,
+s_grpo,c6,rename,158,68.354,60.759,75.316,0.829,,,0.196
+sft_before_grpo,c4,orig,300,84.333,80.0,88.333,0.909,,,
+sft_before_grpo,c5,orig,200,47.0,40.5,53.5,0.594,,,
+sft_before_grpo,c6,distract,158,32.278,24.684,39.873,0.451,,,0.519
+sft_before_grpo,c6,order,158,56.962,48.734,63.94,0.75,,,0.222
+sft_before_grpo,c6,orig,158,59.494,51.899,66.472,0.759,,,
+sft_before_grpo,c6,rename,158,61.392,53.797,68.987,0.775,,,0.291

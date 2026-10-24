@@ -1,0 +1,36 @@
+{
+ "model": "Qwen/Qwen2.5-3B-Instruct",
+ "outdir": "/kaggle/working/results/cfrl_qwen-3b",
+ "arms": [
+  "s_ans",
+  "s_dpo"
+ ],
+ "sets": [
+  "c4",
+  "c6",
+  "c5"
+ ],
+ "n_train": 3000,
+ "epochs": 1.0,
+ "lr": 0.0002,
+ "mb": 2,
+ "accum": 8,
+ "bs": 8,
+ "seed": 0,
+ "eval_scale": 1.0,
+ "robust": 1,
+ "extras_n": 120,
+ "device_map": null,
+ "max_minutes": 540.0,
+ "dpo_pairs": 1500,
+ "dpo_beta": 0.1,
+ "dpo_lr": 2e-05,
+ "dpo_accum": 8,
+ "dpo_nll": 0.2,
+ "rl_steps": 200,
+ "rl_p": 8,
+ "rl_g": 8,
+ "rl_mb": 8,
+ "rl_lr": 2e-05,
+ "rl_minutes": 150.0
+}

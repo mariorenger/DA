@@ -1,0 +1,5 @@
+arm,metric,value,n
+s_plain,wrong_copy_follow_all,0.475,120
+s_plain,wrong_copy_follow_given_ps1,0.4745762711864407,118
+s_plain,ps_plain_chain,0.9833333333333333,120
+s_plain,do_total_effect_nonfinal_hops,0.3916647683601592,252
