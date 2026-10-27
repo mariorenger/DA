@@ -753,3 +753,29 @@ Pending: Qwen3-4B (`hgcd-r12-q3-4b`: s_grpo, p_think) for the formal H-J and H-G
   but the pre-registered rule needs both.
 **Round 12 conclusion.** Newer models (Qwen3 1.7B/4B/8B), native thinking, teacher-filtered distillation and hard-prompt GRPO do not replace or beat plain fine-tuning on automatically built gold chains;
 the chain supervision is what generalises (new task, longer chains, new question type). Caveats: one seed, Qwen3 in fp16, thinking on a capped subset.
+
+---
+## Round 13 (pre-registered before any GPU run): context-faithful answering and abstention (hallucination control, RAG-like)
+
+**Why.** Rounds 9-12: late decoding interventions do not help; fine-tuning on chains is the working lever; the remaining failure the user cares about is
+the model *answering when the context does not support it* or *ignoring the context* (hallucination in a RAG setting). Literature consulted (search snippets, abstracts only):
+Finetune-RAG (arXiv 2505.10792, SFT to resist misleading passages), Binary Retrieval-Augmented Reward (arXiv 2510.17733, RL with a binary evidence-check reward, reports -39% hallucination and learned "I don't know"),
+TruthRL (ICML 2026; ternary reward correct / abstain / hallucinate, reports -28.9% hallucination), TIAR (arXiv 2605.25850, dynamic abstention reward), VeriFY (arXiv 2602.02018, self-verification abstention),
+hidden-state probing for hallucination risk (HALP, FactCheckMate arXiv 2410.02899), CoVe (verification questions). Not run here: self-verification/CoVe (extra inference cost), retrieval-time fixes, knowledge editing.
+
+**Setting** (hgcd/hall.py, MuSiQue answerable split, Qwen2.5-3B-Instruct primary; LoRA r=16; 2000 SFT examples, 1 epoch).
+Conditions built by intervention on the context, each with a known ideal behaviour:
+`ans` (gold + 4 distractors; ideal = gold answer), `unans` = do(remove one gold paragraph) (ideal = "unanswerable"; kept only if the gold answer string no longer occurs in the context),
+`conflict` = counterfactual context (gold answer replaced everywhere by another same-kind answer; ideal = follow the context; `follow_param` records the memorised answer instead).
+Eval: 300 dev questions per condition. Arms: p_inst (base + abstain instruction), s_plain (answerable chains only), s_abs (70% ans / 30% unans chains), s_abs_cf (60/25/15 incl. conflict),
+s_dpo (s_abs_cf then DPO on 800 programmatic pairs: abstain>hallucinate, answer>over-abstain, context>memorised), s_rl (s_abs_cf then GRPO, 120 steps, ternary reward:
+ans +1 correct / -1 wrong / -0.5 abstain; unans +1 abstain / -1 answer; -0.5 malformed). Stage-1 SFT model of s_dpo/s_rl is evaluated as `sft_before_dpo/rl` (paired reference).
+utility = mean reward over ans+unans questions; hallucination_among_answered = wrong or unsupported answers / all answers on ans+unans.
+**Endpoints (paired bootstrap over questions, 95% CI).**
+* H-K abstention SFT: abstain_on_unans(s_abs) - abstain_on_unans(s_plain) >= +30 pts with CI>0, AND em_ans(s_abs) - em_ans(s_plain) has CI lower bound > -5 pts.
+* H-L counterfactual-context SFT: follow_ctx(s_abs_cf) - follow_ctx(s_abs) >= +10 pts, CI>0, AND em_ans lower CI bound > -5 vs s_abs AND abstain_on_unans not lower by more than 5.
+* H-M preference/RL beyond SFT: utility(s_dpo) - utility(sft_before_dpo) >= +0.05 with CI>0; same for s_rl vs sft_before_rl (two tests, reported separately; multiplicity noted).
+* H-N probe: a linear probe on the last prompt token of the s_plain model (600 train examples) detects unanswerable contexts with AUROC >= 0.85 on the eval set (descriptive: gate recall/false-abstain at threshold 0.5, AUROC for correctness of answerable items).
+* Replication: same contrasts for Qwen3-4B (seed 0) and Qwen2.5-3B (seed 1); a finding counts as consistent if the sign agrees and CI>0 in >= 2 of the 3 runs.
+**Declared limits.** Unanswerable labels are by construction (a question can still be answerable from memory: counted as hallucination, by design); conflict substitutions can be semantically odd;
+single dataset (MuSiQue), EM metric, 120 RL steps, one seed per model except the replication; no human check of the labels beyond the string filters.

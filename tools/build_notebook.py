@@ -13,7 +13,7 @@ import nbformat as nbf
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 MODULES = ["__init__", "data", "chain", "prompts", "lm", "decoding", "experiments", "metrics",
-           "report", "pipeline", "causaldec", "cftrain", "egen", "cfrl"]
+           "report", "pipeline", "causaldec", "cftrain", "egen", "cfrl", "hall"]
 
 INTRO = """# Read, not reasoned? Kaggle run-all
 
@@ -54,6 +54,8 @@ def run_job(label, model, preset, extra, gpus):
     with open(out + ".log", "w") as log:
         cmd = ([sys.executable, "-m", "hgcd.cfrl", "--model", model, "--outdir", out, *extra]
                if preset.startswith("cfrl") else
+               [sys.executable, "-m", "hgcd.hall", "--model", model, "--outdir", out, *extra]
+               if preset.startswith("hall") else
                [sys.executable, "-m", "hgcd.egen", "--model", model, "--outdir", out, *extra]
                if preset.startswith("egen") else
                [sys.executable, "-m", "hgcd.cftrain", "--model", model, "--outdir", out, *extra]
@@ -348,6 +350,31 @@ NOTEBOOKS = {
     "star": {"0,1": [("qwen3-4b", "Qwen/Qwen3-4B", "cfrl",
                       ("--arms", "s_plain", "s_star", "--teacher", "Qwen/Qwen3-8B", "--teacher_device_map", "auto",
                        "--star_n", "1500", "--star_k", "2", "--bs", "8", "--seed", "0", "--max_minutes", "560"))]},
+}""",
+    # round 13 (see REVIEW.md, pre-registered): context-faithful answering and abstention on MuSiQue
+    "R13_q25_3b": """{
+    "h": {
+        "0": [("qwen-3b-a", "Qwen/Qwen2.5-3B-Instruct", "hall",
+               ("--arms", "p_inst", "s_plain", "s_abs", "s_abs_cf", "--bs", "6", "--seed", "0", "--max_minutes", "600"))],
+        "1": [("qwen-3b-b", "Qwen/Qwen2.5-3B-Instruct", "hall",
+               ("--arms", "s_dpo", "s_rl", "--bs", "6", "--seed", "0", "--max_minutes", "600"))],
+    },
+}""",
+    "R13_q3_4b": """{
+    "h": {
+        "0": [("qwen3-4b-a", "Qwen/Qwen3-4B", "hall",
+               ("--arms", "p_inst", "s_plain", "s_abs", "s_abs_cf", "--bs", "6", "--seed", "0", "--max_minutes", "600"))],
+        "1": [("qwen3-4b-b", "Qwen/Qwen3-4B", "hall",
+               ("--arms", "s_dpo", "s_rl", "--bs", "6", "--seed", "0", "--max_minutes", "600"))],
+    },
+}""",
+    "R13_q25_3b_s1": """{
+    "h": {
+        "0": [("qwen-3b-s1-a", "Qwen/Qwen2.5-3B-Instruct", "hall",
+               ("--arms", "s_plain", "s_abs", "s_abs_cf", "--bs", "6", "--seed", "1", "--max_minutes", "600"))],
+        "1": [("qwen-3b-s1-b", "Qwen/Qwen2.5-3B-Instruct", "hall",
+               ("--arms", "s_dpo", "s_rl", "--bs", "6", "--seed", "1", "--max_minutes", "600"))],
+    },
 }""",
     "M_select_orig": """{
     "orig": {
