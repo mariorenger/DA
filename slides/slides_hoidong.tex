@@ -138,7 +138,7 @@
 \begin{itemize}
   \setlength{\itemsep}{0.45em}
   \item \textbf{Phương pháp đo.} Chỉ ra độ lệch hệ thống của các thước đo tầm quan trọng của bước suy luận hiện có \citeref{Lanham et al., 2023; Tutek et al., EMNLP 2025}; đề xuất phép can thiệp toàn phần $\dt$ được kiểm chuẩn bằng nhãn biết trước, đạt $\text{AUROC}$ tới $0.98$.
-  \item \textbf{Chẩn đoán cơ chế.} Xác lập phát hiện thực nghiệm \emph{``Read, Not Reasoned''} trên mô hình $0.5$B--$7$B và phân rã tác động của nhiễu bằng phân tích trung gian nhân quả \citeref{Pearl, 2001; Vig et al., NeurIPS 2020}.
+  \item \textbf{Chẩn đoán cơ chế.} Xác lập phát hiện thực nghiệm \emph{``Read, Not Reasoned''} trên mô hình $0.5$B--$7$B và phân rã tác động của nhiễu bằng phân tích trung gian nhân quả.
   \item \textbf{Vị trí can thiệp.} Cho thấy can thiệp giải mã muộn không hiệu quả trong phạm vi khảo sát; định lượng hiệu quả của thực thi quy tắc lai (Neuro-Symbolic) và của tinh chỉnh SFT/DPO/GRPO.
 \end{itemize}
 \end{columns}
@@ -154,7 +154,7 @@
 \begin{columns}[T,onlytextwidth]
 \column{0.52\textwidth}
 \textbf{\color{keyc}Bối cảnh nghiên cứu}\par\vspace{3pt}
-Kỹ thuật \textbf{Chain-of-Thought (CoT)} cải thiện hiệu năng suy luận bằng cách sinh chuỗi bước trung gian $Z = (z_1, \dots, z_k)$ từ ngữ cảnh $X$ trước khi đưa ra đáp án $Y$. Nhiều nghiên cứu gần đây đặt vấn đề về \textbf{tính trung thực (faithfulness)} của $Z$ \citeref{Lanham et al., 2023; Turpin et al., NeurIPS 2023; Paul et al., Findings of EMNLP 2024}. Có hai cơ chế đối lập:
+Kỹ thuật \textbf{Chain-of-Thought (CoT)} cải thiện hiệu năng suy luận bằng cách sinh chuỗi bước trung gian $Z = (z_1, \dots, z_k)$ từ ngữ cảnh $X$ trước khi đưa ra đáp án $Y$. Nhiều nghiên cứu gần đây đặt vấn đề về \textbf{tính trung thực (faithfulness)} của $Z$ \citeref{Lanham et al., 2023; Paul et al., Findings of EMNLP 2024}. Có hai cơ chế đối lập:
 \begin{enumerate}
   \setlength{\itemsep}{4pt}
   \item \textbf{Suy diễn nhân quả ($X \to Z \to Y$):} đáp án $Y$ là kết quả tính toán từ các bước $z_i$; thay đổi $z_i$ kéo theo thay đổi $Y$.
@@ -172,7 +172,7 @@ Kỹ thuật \textbf{Chain-of-Thought (CoT)} cải thiện hiệu năng suy lu�
 \end{columns}
 \takeaway{Luận văn xây dựng khung kiểm định nhân quả có nhãn chuẩn nhằm làm rõ cơ chế vận hành của mô hình ngôn ngữ nhỏ và xác định vị trí can thiệp phù hợp.}
 \par\kern0pt
-\note{Các nghiên cứu gần đây của Lanham, Turpin và Paul cho thấy chuỗi CoT không phải lúc nào cũng phản ánh quá trình tính toán thật của mô hình. Tuy nhiên cộng đồng vẫn thiếu bộ nhãn chuẩn để biết phép đo nào đúng, phép đo nào lệch.}
+\note{Các nghiên cứu gần đây của Lanham và Paul cho thấy chuỗi CoT không phải lúc nào cũng phản ánh quá trình tính toán thật của mô hình. Tuy nhiên cộng đồng vẫn thiếu bộ nhãn chuẩn để biết phép đo nào đúng, phép đo nào lệch.}
 \end{frame}
 
 %% ============================================================================ hai loại tác vụ
@@ -305,7 +305,7 @@ Thước đo lý tưởng đạt $\text{AUROC} \to 1.0$; thước đo không có
 CLUTRR & Suy luận hợp thành quan hệ (độ dài $k \in [2, 10]$); 11.708 mẫu huấn luyện; tập kiểm thử cùng phân phối (ID) và ngoài phân phối (OOD).\\
 MuSiQue-Ans & Hỏi đáp bắc cầu 2--4 bước trên Wikipedia; ngữ cảnh gồm các đoạn chuẩn trộn với 4 hoặc 8 đoạn nhiễu.\\
 2WikiMultihopQA & Hỏi đáp dạng Compositional và Inference trên văn bản Wikipedia tự nhiên.\\
-Mô hình (SLM) & Qwen2.5 (0.5B, 1.5B, 3B, 7B) \citeref{Qwen Team, 2024} và SmolLM2-1.7B.\\
+Mô hình (SLM) & Qwen2.5 (0.5B, 1.5B, 3B, 7B) và SmolLM2-1.7B.\\
 Tài nguyên tính toán & GPU 16GB VRAM (môi trường triển khai hạn chế tài nguyên).\\
 \bottomrule
 \end{tabularx}
@@ -457,7 +457,7 @@ Chèn cùng số token \code{[ẨN]} vào vị trí tương ứng nhưng \emph{g
 \begin{columns}[T,onlytextwidth]
 \column{0.50\textwidth}
 \textbf{\color{keyc}Dẫn xuất độ lệch}\par\vspace{2pt}
-Lấy mẫu lại là hướng được đề xuất để diễn giải chuỗi suy luận \citeref{Bogdan et al., 2025; Macar et al., ICLR 2026}. Phiên bản dùng mốc cố định so sánh với chuỗi chuẩn hoàn hảo $p(Y^* \mid Z_{\text{gold}}) \approx 1$:
+Phiên bản lấy mẫu lại dùng mốc cố định so sánh với chuỗi chuẩn hoàn hảo $p(Y^* \mid Z_{\text{gold}}) \approx 1$:
 $$\Delta_{\text{fixed}}(j) = p(Y^* \mid Z_{\text{gold}}) - \mathbb{E}_{\tilde{z}_{>j}}\big[p(Y^* \mid z_{<j}, \tilde{z}_j, \tilde{z}_{>j})\big]$$
 Ngay cả khi $\tilde{z}_j = z_j$ hoặc $z_j$ là bước dư thừa, mô hình nhỏ khi tự sinh tiếp $\tilde{z}_{>j}$ chỉ đạt độ chính xác cơ sở $b(j) \in [22\%, 44\%]$. Vì vậy $\Delta_{\text{fixed}}(j)$ bị cộng thêm sai số dương tính giả xấp xỉ $1 - b(j) \approx 56\%\text{--}78\%$.
 
@@ -587,7 +587,7 @@ Với các mô hình $\le 3\text{B}$, ngay cả trên tập con câu hỏi mà m
 \footnotesize
 \begin{columns}[T,onlytextwidth]
 \column{0.50\textwidth}
-\textbf{\color{keyc}Phân rã hiệu ứng trực tiếp và gián tiếp} \citeref{Pearl, 2001; Vig et al., NeurIPS 2020}\par\vspace{2pt}
+\textbf{\color{keyc}Phân rã hiệu ứng trực tiếp và gián tiếp}\par\vspace{2pt}
 \begin{itemize}
   \setlength{\itemsep}{2pt}
   \item \textbf{Hiệu ứng trực tiếp ($\text{NDE}$):} $\mathbb{E}[Y(x_1, z_0) - Y(x_0, z_0)]$, tức tác hại của đoạn nhiễu khi giữ nguyên chuỗi sạch $z_0$.
@@ -724,7 +724,7 @@ Việc HGCD không cải thiện ($|\Delta| \le 1.7$ điểm, $p \ge 0.6$) phù 
 \textbf{\color{keyc}Nguyên lý thiết kế từ chẩn đoán nhân quả}\par\vspace{2pt}
 Tác vụ hợp thành được mô tả bởi hai hàm:
 $$E = f_{\text{extract}}(X), \qquad Y = f_{\text{compose}}(E)$$
-R3 cho thấy mô hình nhỏ thực hiện được $f_{\text{extract}}$ (đọc bề mặt) nhưng không thực hiện được $f_{\text{compose}}$ \citeref{Dziri et al., NeurIPS 2023}. Theo hướng các hệ thống Neuro-Symbolic \citeref{Olausson et al., EMNLP 2023; Lyu et al., IJCNLP-AACL 2023}, $f_{\text{extract}}$ được giao cho mô hình ngôn ngữ còn $f_{\text{compose}}$ được thực thi bằng bộ giải đại số quan hệ tất định. Hướng này cũng phù hợp với quan sát gần đây rằng khi quyết định cuối được tính bằng công cụ ngoài từ cấu trúc trung gian thì hiện tượng không cập nhật theo can thiệp giảm đáng kể \citeref{Somov et al., 2026}.
+R3 cho thấy mô hình nhỏ thực hiện được $f_{\text{extract}}$ (đọc bề mặt) nhưng không thực hiện được $f_{\text{compose}}$ \citeref{Dziri et al., NeurIPS 2023}. Theo hướng các hệ thống Neuro-Symbolic, $f_{\text{extract}}$ được giao cho mô hình ngôn ngữ còn $f_{\text{compose}}$ được thực thi bằng bộ giải đại số quan hệ tất định. Hướng này cũng phù hợp với quan sát gần đây rằng khi quyết định cuối được tính bằng công cụ ngoài từ cấu trúc trung gian thì hiện tượng không cập nhật theo can thiệp giảm đáng kể \citeref{Somov et al., 2026}.
 
 \column{0.48\textwidth}
 \textbf{\color{keyc}Thiết lập so sánh cùng chi phí}\par\vspace{2pt}
@@ -1028,7 +1028,7 @@ Phép thử của R3 được áp dụng lại cho mô hình \code{S\_plain} tr�
 \begin{columns}[T,onlytextwidth]
 \column{0.50\textwidth}
 \textbf{\color{keyc}Thiết kế}\par\vspace{2pt}
-Để xử lý hiện tượng sao chép kết luận sai ở D6, DPO được huấn luyện trên 1.500 cặp đối chiếu $(Z_{\text{chosen}}, Z_{\text{rejected}})$. Mẫu bị từ chối chứa các bước tiền đề đúng nhưng gắn kết luận cuối mâu thuẫn. Hướng dùng phản hồi phản thực để hình thành suy luận cũng được khảo sát trong \citeref{Hüyük et al., ICLR 2025}.\par\vspace{6pt}
+Để xử lý hiện tượng sao chép kết luận sai ở D6, DPO được huấn luyện trên 1.500 cặp đối chiếu $(Z_{\text{chosen}}, Z_{\text{rejected}})$. Mẫu bị từ chối chứa các bước tiền đề đúng nhưng gắn kết luận cuối mâu thuẫn.\par\vspace{6pt}
 \textbf{\color{keyc}Nhận xét}\par\vspace{2pt}
 \begin{itemize}
   \setlength{\itemsep}{3pt}
@@ -1063,8 +1063,8 @@ Seed 1 & 32.4\% & \textbf{7.2\%} & 56.5 & 51.5\\
 \begin{columns}[T,onlytextwidth]
 \column{0.38\textwidth}
 \textbf{\color{keyc}Thiết kế}\par\vspace{2pt}
-GRPO \citeref{Shao et al., 2024; DeepSeek-AI, 2025} được áp dụng với phần thưởng kiểm chứng được: $+1.0$ cho đáp án đúng và $+0.3 \times$ (tỷ lệ bước khớp đồ thị chuẩn).\par\vspace{3pt}
-Một hướng liên quan là thưởng theo mức cần thiết của từng bước \citeref{arXiv:2603.22816, 2026}. Luận văn không dùng hướng này vì phép che đơn lẻ không đo được vai trò của bước trung gian (R1).\par\vspace{6pt}
+GRPO được áp dụng với phần thưởng kiểm chứng được: $+1.0$ cho đáp án đúng và $+0.3 \times$ (tỷ lệ bước khớp đồ thị chuẩn).\par\vspace{3pt}
+\par\vspace{6pt}
 \textbf{\color{keyc}Nhận xét}\par\vspace{2pt}
 \begin{itemize}
   \setlength{\itemsep}{3pt}
@@ -1182,39 +1182,17 @@ Lược bỏ giới tính khi trích xuất sự kiện giúp tăng $+6\%\text{-
 \section{Phụ lục}
 %% ============================================================================ Tài liệu tham khảo & Ký hiệu
 \begin{frame}[shrink]{Phụ lục \textperiodcentered{} Tài liệu tham khảo chính}
-\scriptsize
-\begin{columns}[T,onlytextwidth]
-\column{0.49\textwidth}
-\textbf{\color{keyc}Tính trung thực và phép đo nhân quả của CoT}\par\vspace{2pt}
-\begin{itemize}
-  \setlength{\itemsep}{2pt}
+\footnotesize
+\begin{enumerate}
+  \setlength{\itemsep}{6pt}
   \item Lanham et al. \emph{Measuring Faithfulness in Chain-of-Thought Reasoning}. arXiv:2307.13702, 2023.
-  \item Turpin, Michael, Perez, Bowman. \emph{Language Models Don't Always Say What They Think: Unfaithful Explanations in Chain-of-Thought Prompting}. NeurIPS 2023.
+  \item Dziri et al. \emph{Faith and Fate: Limits of Transformers on Compositionality}. NeurIPS 2023.
   \item Paul, West, Bosselut, Faltings. \emph{Making Reasoning Matter: Measuring and Improving Faithfulness of Chain-of-Thought Reasoning}. Findings of EMNLP 2024.
   \item Tutek, Hashemi Chaleshtori, Marasovi\'c, Belinkov. \emph{Measuring Chain of Thought Faithfulness by Unlearning Reasoning Steps}. EMNLP 2025.
-  \item Bogdan, Macar, Nanda, Conmy. \emph{Thought Anchors: Which LLM Reasoning Steps Matter?} arXiv:2506.19143, 2025.
-  \item Macar, Bogdan, Rajamanoharan, Nanda. \emph{Thought Branches: Interpreting LLM Reasoning Requires Resampling}. ICLR 2026.
   \item Somov, Chaichuk, Seleznyov, Panchenko, Tutubalina. \emph{Breaking the Chain: A Causal Analysis of LLM Faithfulness to Intermediate Structures}. arXiv:2603.16475, 2026.
-  \item \emph{Measuring and Curing Reasoning Rigidity: From Decorative Chain-of-Thought to Genuine Faithfulness}. arXiv:2603.22816, 2026.
-\end{itemize}
-
-\column{0.49\textwidth}
-\textbf{\color{keyc}Suy diễn hợp thành, Neuro-Symbolic, huấn luyện và nền tảng}\par\vspace{2pt}
-\begin{itemize}
-  \setlength{\itemsep}{2pt}
-  \item Dziri et al. \emph{Faith and Fate: Limits of Transformers on Compositionality}. NeurIPS 2023.
-  \item Olausson et al. \emph{LINC: A Neurosymbolic Approach for Logical Reasoning by Combining Language Models with First-Order Logic Provers}. EMNLP 2023.
-  \item Lyu et al. \emph{Faithful Chain-of-Thought Reasoning}. IJCNLP-AACL 2023.
-  \item Pearl. \emph{Direct and Indirect Effects}. UAI 2001.
-  \item Vig et al. \emph{Investigating Gender Bias in Language Models Using Causal Mediation Analysis}. NeurIPS 2020.
-  \item H\"uy\"uk et al. \emph{Reasoning Elicitation in Language Models via Counterfactual Feedback}. ICLR 2025.
-  \item Shao et al. \emph{DeepSeekMath: Pushing the Limits of Mathematical Reasoning in Open Language Models} (GRPO). arXiv:2402.03300, 2024.
-  \item DeepSeek-AI. \emph{DeepSeek-R1: Incentivizing Reasoning Capability in LLMs via Reinforcement Learning}. arXiv:2501.12948, 2025.
-  \item Qwen Team. \emph{Qwen2.5 Technical Report}. arXiv:2412.15115, 2024.
-\end{itemize}
-\end{columns}
+\end{enumerate}
 \par\kern0pt
-\note{Slide phụ lục liệt kê các tài liệu tham khảo chính, gồm các công trình nền tảng và các công trình năm 2025 đến 2026 về phép đo nhân quả của chuỗi suy luận.}
+\note{Năm tài liệu tham khảo chính: hai công trình nền tảng về tính trung thực và suy diễn hợp thành, hai công trình về phép đo tầm quan trọng của bước suy luận, và một công trình năm 2026 về can thiệp nhân quả có đáp án xác định.}
 \end{frame}
 
 \begin{frame}[shrink]{Phụ lục \textperiodcentered{} Bảng ký hiệu toán học}
