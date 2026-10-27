@@ -1,0 +1,1268 @@
+%% ============================================================================
+%% Read, Not Reasoned? -- Bản trình bày tóm tắt kết quả nghiên cứu (bản văn phong báo cáo).
+%% Học viên: Nguyễn Nam Hán | GVHD: PGS.TS. Nguyễn Thị Kim Anh
+%% Biên dịch: pdfLaTeX (hoặc tectonic), chạy 2 lần.
+%% Nếu có beamerthemehust.sty cùng thư mục thì dùng theme HUST, nếu không dùng theme dự phòng.
+%% ============================================================================
+\documentclass[aspectratio=169,t]{beamer}
+\usepackage[utf8]{inputenc}
+\usepackage[vietnamese]{babel}
+\usepackage{amsmath,amssymb}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{tabularx}
+\usepackage{multirow}
+\usepackage{makecell}
+\usepackage{graphicx}
+\usepackage{tikz}
+\usetikzlibrary{positioning,calc,decorations.pathreplacing,arrows.meta}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.17}
+% \usepackage{pgfpages}
+% \setbeameroption{show notes on second screen=bottom}
+
+\definecolor{okc}{HTML}{1E7B34}
+\definecolor{partc}{HTML}{B7791F}
+\definecolor{failc}{HTML}{B91C1C}
+\definecolor{nac}{HTML}{64748B}
+\definecolor{keyc}{HTML}{14284B}
+\definecolor{softc}{HTML}{F2F4F8}
+\definecolor{accentc}{HTML}{A6192E}
+
+\newif\ifhusttheme
+\IfFileExists{beamerthemehust.sty}{\hustthemetrue}{\hustthemefalse}
+\ifhusttheme
+  \usetheme{hust}
+\else
+  \usetheme{default}
+  \setbeamercolor{structure}{fg=keyc}
+  \setbeamercolor{normal text}{fg=black!90}
+  \setbeamercolor{frametitle}{fg=white,bg=accentc}
+  \setbeamercolor{title}{fg=accentc}
+  \setbeamercolor{subtitle}{fg=keyc}
+  \setbeamercolor{foot}{fg=black!60,bg=black!5}
+  \setbeamertemplate{itemize items}[circle]
+  \setbeamertemplate{enumerate items}[default]
+  \setbeamerfont{frametitle}{size=\large,series=\bfseries}
+  \setbeamerfont{title}{size=\LARGE,series=\bfseries}
+  \setbeamertemplate{frametitle}{%
+    \nointerlineskip
+    \begin{beamercolorbox}[wd=\paperwidth,ht=0.85cm,dp=0.3cm,leftskip=0.35cm,rightskip=0.35cm]{frametitle}%
+      \usebeamerfont{frametitle}\insertframetitle
+    \end{beamercolorbox}\vspace{1.5mm}}
+  \setbeamertemplate{footline}{%
+    \leavevmode\hbox{%
+    \begin{beamercolorbox}[wd=.34\paperwidth,ht=2.3ex,dp=0.9ex,leftskip=0.35cm]{foot}\tiny\insertshorttitle\ \textperiodcentered\ \insertshortauthor\end{beamercolorbox}%
+    \begin{beamercolorbox}[wd=.50\paperwidth,ht=2.3ex,dp=0.9ex,center]{foot}\tiny\insertsection\end{beamercolorbox}%
+    \begin{beamercolorbox}[wd=.16\paperwidth,ht=2.3ex,dp=0.9ex,right,rightskip=0.35cm]{foot}\tiny\insertframenumber\,/\,\inserttotalframenumber\end{beamercolorbox}}}
+  \setbeamertemplate{title page}{%
+    \vspace*{0.5cm}
+    {\usebeamercolor[fg]{title}\usebeamerfont{title}\inserttitle\par}
+    \vspace{0.25cm}
+    {\usebeamercolor[fg]{subtitle}\large\insertsubtitle\par}
+    \vspace{0.3cm}{\color{accentc}\rule{0.92\textwidth}{1.2pt}}\par
+    \vspace{0.45cm}
+    {\small\insertauthor\par}
+    \vspace{0.35cm}
+    {\small\color{black!60}\insertdate\par}}
+  \makeatletter\define@key{beamerframe}{Title}[true]{}\makeatother
+\fi
+\setbeamertemplate{caption}[numbered]
+\beamertemplatenavigationsymbolsempty
+\setbeamertemplate{note page}{%
+  \vspace*{4mm}\noindent\begin{minipage}[t]{\textwidth}
+    {\small\bfseries\color{accentc}Lời thoại gợi ý}\par\vspace{2mm}
+    {\small\insertnote\par}
+  \end{minipage}}
+
+\newcolumntype{Y}{>{\raggedright\arraybackslash}X}
+\newcolumntype{P}[1]{>{\raggedright\arraybackslash}p{#1}}
+\newcolumntype{Q}[1]{>{\centering\arraybackslash}p{#1}}
+\newcolumntype{R}[1]{>{\raggedleft\arraybackslash}p{#1}}
+
+% Khoảng cách cột mặc định cho mọi bảng (tránh các cột dính sát nhau)
+\setlength{\tabcolsep}{5pt}
+
+% Nhãn học thuật tinh gọn
+\newcommand{\nhanS}[2]{{\setlength{\fboxsep}{1.0pt}\colorbox{#1}{\tiny\bfseries\color{white}\rule[-1.1pt]{0pt}{5.6pt}\,#2\,}}}
+\newcommand{\OKs}{\nhanS{okc}{XÁC NHẬN}}
+\newcommand{\PARTs}{\nhanS{partc}{ĐÁNH ĐỔI}}
+\newcommand{\FAILs}{\nhanS{failc}{BÁC BỎ}}
+
+% Định dạng trích dẫn và dòng tổng kết phẳng (không dùng box màu)
+\newcommand{\citeref}[1]{{\scriptsize\color{nac}[#1]}}
+\newcommand{\ghichu}[1]{\par\vspace{2pt}{\tiny\color{nac}#1\par}}
+\newcommand{\takeaway}[1]{\par\vspace{4pt}\noindent{\color{keyc!40}\rule{\linewidth}{0.6pt}}\par\vspace{2pt}\noindent{\footnotesize\textbf{\color{accentc}Kết luận thực nghiệm:} #1}}
+\newcommand{\code}[1]{\texttt{#1}}
+\newcommand{\ci}[2]{{\tiny[#1,\,#2]}}
+\newcommand{\dn}{\mathrm{do}_{\text{naive}}}
+\newcommand{\dt}{\mathrm{do}_{\text{total}}}
+
+\title[Read, Not Reasoned?]{Read, Not Reasoned?}
+\subtitle{Phân tích can thiệp nhân quả có nhãn chuẩn đối với chuỗi suy luận nhiều bước trên mô hình ngôn ngữ nhỏ}
+\author[Nguyễn Nam Hán]{\texorpdfstring{%
+    \begin{tabular}{rl}
+        \textbf{Học viên thực hiện:} & Nguyễn Nam Hán \\[0.3em]
+        \textbf{Giảng viên hướng dẫn:} & PGS.TS. Nguyễn Thị Kim Anh
+    \end{tabular}}{Nguyễn Nam Hán}%
+}
+\date{Năm 2026}
+
+\begin{document}
+%% ============================================================================ Bìa
+\begin{frame}[noframenumbering,Title]
+  \titlepage
+  \note{Kính chào các thầy cô trong hội đồng. Em là Nguyễn Nam Hán, học viên cao học dưới sự hướng dẫn của PGS.TS. Nguyễn Thị Kim Anh. Hôm nay em xin trình bày kết quả nghiên cứu với chủ đề: Phân tích can thiệp nhân quả có nhãn chuẩn đối với chuỗi suy luận nhiều bước trên mô hình ngôn ngữ nhỏ.}
+\par\kern0pt
+\end{frame}
+
+%% ============================================================================ Nội dung
+\begin{frame}[noframenumbering,shrink]{Cấu trúc bài trình bày và ba đóng góp chính}
+\footnotesize
+\begin{columns}[T,onlytextwidth]
+\column{0.48\textwidth}
+\textbf{\color{keyc}Cấu trúc nội dung}
+\begin{enumerate}
+  \setlength{\itemsep}{0.35em}
+  \item Đặt vấn đề và cơ sở lý thuyết
+  \item Phương pháp luận: mô hình nhân quả cấu trúc (SCM) có nhãn chuẩn
+  \item Tổng quan các kết quả thực nghiệm
+  \item Chẩn đoán cơ chế: trích xuất bề mặt và suy diễn hợp thành (R1--R5)
+  \item Can thiệp ở giai đoạn giải mã (D1--D3)
+  \item Can thiệp ở giai đoạn huấn luyện: SFT, DPO, GRPO (D4--D9)
+  \item Hạn chế, thảo luận và hướng phát triển
+\end{enumerate}
+
+\column{0.48\textwidth}
+\textbf{\color{accentc}Ba đóng góp của luận văn}
+\begin{itemize}
+  \setlength{\itemsep}{0.45em}
+  \item \textbf{Phương pháp đo.} Chỉ ra độ lệch hệ thống của các thước đo tầm quan trọng của bước suy luận hiện có \citeref{Lanham et al., 2023; Tutek et al., EMNLP 2025}; đề xuất phép can thiệp toàn phần $\dt$ được kiểm chuẩn bằng nhãn biết trước, đạt $\text{AUROC}$ tới $0.98$.
+  \item \textbf{Chẩn đoán cơ chế.} Xác lập phát hiện thực nghiệm \emph{``Read, Not Reasoned''} trên mô hình $0.5$B--$7$B và phân rã tác động của nhiễu bằng phân tích trung gian nhân quả \citeref{Pearl, 2001; Vig et al., NeurIPS 2020}.
+  \item \textbf{Vị trí can thiệp.} Cho thấy can thiệp giải mã muộn không hiệu quả trong phạm vi khảo sát; định lượng hiệu quả của thực thi quy tắc lai (Neuro-Symbolic) và của tinh chỉnh SFT/DPO/GRPO.
+\end{itemize}
+\end{columns}
+\par\kern0pt
+\note{Bài trình bày xoay quanh ba đóng góp. Thứ nhất là khắc phục độ lệch của các thước đo nhân quả hiện có. Thứ hai là chẩn đoán cơ chế đọc bề mặt của mô hình nhỏ. Thứ ba là so sánh hiệu quả giữa can thiệp ở giai đoạn giải mã và can thiệp ở giai đoạn huấn luyện.}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Đặt vấn đề}
+%% ============================================================================ Vấn đề
+\begin{frame}[shrink]{Đặt vấn đề: tính trung thực nhân quả của chuỗi suy luận}
+\footnotesize
+\begin{columns}[T,onlytextwidth]
+\column{0.52\textwidth}
+\textbf{\color{keyc}Bối cảnh nghiên cứu}\par\vspace{3pt}
+Kỹ thuật \textbf{Chain-of-Thought (CoT)} cải thiện hiệu năng suy luận bằng cách sinh chuỗi bước trung gian $Z = (z_1, \dots, z_k)$ từ ngữ cảnh $X$ trước khi đưa ra đáp án $Y$. Nhiều nghiên cứu gần đây đặt vấn đề về \textbf{tính trung thực (faithfulness)} của $Z$ \citeref{Lanham et al., 2023; Turpin et al., NeurIPS 2023; Paul et al., Findings of EMNLP 2024}. Có hai cơ chế đối lập:
+\begin{enumerate}
+  \setlength{\itemsep}{4pt}
+  \item \textbf{Suy diễn nhân quả ($X \to Z \to Y$):} đáp án $Y$ là kết quả tính toán từ các bước $z_i$; thay đổi $z_i$ kéo theo thay đổi $Y$.
+  \item \textbf{Hợp thức hóa hậu nghiệm ($X \to Y$):} mô hình dự đoán dựa trên lối tắt thống kê hoặc chỉ sao chép thực thể ở bước cuối, còn $Z$ chỉ là phần diễn giải đi kèm.
+\end{enumerate}
+
+\column{0.44\textwidth}
+\textbf{\color{keyc}Khoảng trống nghiên cứu}\par\vspace{3pt}
+\begin{itemize}
+  \setlength{\itemsep}{4pt}
+  \item \textbf{Thiếu nhãn chuẩn.} Các công trình trước đo tầm quan trọng của $z_i$ trên chuỗi tự sinh nhưng không biết giá trị thực để kiểm chuẩn thước đo. Hướng dùng tác vụ có hàm xác định, trong đó mỗi can thiệp có đúng một kết quả, mới được áp dụng cho cấu trúc trung gian dạng schema \citeref{Somov et al., 2026}.
+  \item \textbf{Chưa tách hai năng lực.} Năng lực \emph{đọc trích xuất} và năng lực \emph{hợp thành quan hệ} thường bị gộp chung \citeref{Dziri et al., NeurIPS 2023}.
+  \item \textbf{Vị trí can thiệp.} Với mô hình nhỏ ($0.5$B--$7$B), chưa rõ nên can thiệp ở bước giải mã hay ở bước huấn luyện.
+\end{itemize}
+\end{columns}
+\takeaway{Luận văn xây dựng khung kiểm định nhân quả có nhãn chuẩn nhằm làm rõ cơ chế vận hành của mô hình ngôn ngữ nhỏ và xác định vị trí can thiệp phù hợp.}
+\par\kern0pt
+\note{Các nghiên cứu gần đây của Lanham, Turpin và Paul cho thấy chuỗi CoT không phải lúc nào cũng phản ánh quá trình tính toán thật của mô hình. Tuy nhiên cộng đồng vẫn thiếu bộ nhãn chuẩn để biết phép đo nào đúng, phép đo nào lệch.}
+\end{frame}
+
+%% ============================================================================ hai loại tác vụ
+\begin{frame}[shrink]{Phân loại tác vụ: bắc cầu trích xuất và hợp thành quan hệ}
+\footnotesize
+\begin{columns}[T,onlytextwidth]
+\column{0.47\textwidth}
+\textbf{\color{keyc}Loại A: bắc cầu trích xuất (MuSiQue)}\par\vspace{3pt}
+\textbf{Câu hỏi:} Vợ của đạo diễn bộ phim X là ai?\par\vspace{3pt}
+\code{Bước 1 ($z_1$): Đạo diễn bộ phim X là Y.}\\
+\code{Bước 2 ($z_2$): Vợ của Y là Z.}\\
+\code{Đáp án ($Y$): Z}\par\vspace{4pt}
+\begin{itemize}
+  \setlength{\itemsep}{2pt}
+  \item Mỗi bước là một phép truy xuất thực thể từ văn bản.
+  \item Thực thể đích ``Z'' \textbf{xuất hiện tường minh} ở bước cuối $z_2$, nên khi dự đoán $Y$ mô hình chỉ cần \emph{sao chép bề mặt} từ $z_2$.
+\end{itemize}
+
+\column{0.48\textwidth}
+\textbf{\color{keyc}Loại B: hợp thành quan hệ (CLUTRR)}\par\vspace{3pt}
+\textbf{Ngữ cảnh:} Anna đưa con trai Ben đi chơi. Ben và chị gái Clara nướng bánh. \textbf{Câu hỏi:} Clara là gì của Anna?\par\vspace{3pt}
+\code{Bước 1 ($z_1$): Ben là con trai của Anna.}\\
+\code{Bước 2 ($z_2$): Clara là chị gái của Ben.}\\
+\code{Đáp án ($Y$): con gái}\par\vspace{4pt}
+\begin{itemize}
+  \setlength{\itemsep}{2pt}
+  \item Nhãn đáp án ``con gái'' \textbf{không xuất hiện} trong $z_1, z_2$.
+  \item Để trả lời đúng, mô hình phải thực hiện phép hợp thành quan hệ ẩn: $r_1 \circ r_2 = \text{con trai} \circ \text{chị gái} = \text{con gái}$ \citeref{Dziri et al., NeurIPS 2023}.
+\end{itemize}
+\end{columns}
+\takeaway{So sánh mức phụ thuộc nhân quả giữa Loại A và Loại B cho phép tách hành vi \textbf{trích xuất bề mặt (Read)} khỏi năng lực \textbf{suy diễn hợp thành (Reason)}.}
+\par\kern0pt
+\note{Để tách việc đọc bề mặt khỏi suy diễn thực sự, em đối chiếu hai tác vụ chuẩn. Ở MuSiQue, đáp án được viết sẵn ở bước cuối. Ở CLUTRR, các bước chỉ liệt kê quan hệ thành phần, mô hình phải tự hợp thành các quan hệ đó.}
+\end{frame}
+
+\section{Phương pháp luận}
+%% ============================================================================ can thiệp
+\begin{frame}[shrink]{Phương pháp đo: can thiệp nhân quả trên đồ thị suy luận (SCM)}
+\centering
+\begin{tikzpicture}[font=\scriptsize,node distance=0.3cm,
+  hb/.style={draw=keyc,fill=keyc!4,rounded corners=2pt,align=left,inner sep=3pt,text width=2.65cm},
+  hbm/.style={draw=failc,fill=failc!6,rounded corners=2pt,align=left,inner sep=3pt,text width=2.65cm,dashed},
+  an/.style={draw=okc,fill=okc!6,rounded corners=2pt,align=left,inner sep=3pt,text width=1.8cm},
+  ar/.style={-{Stealth[length=2mm]},thick,nac}]
+\node[anchor=west,font=\scriptsize\bfseries,text=keyc] at (0,0.9) {Chuỗi chuẩn nguyên vẹn $Z$};
+\node[hb] (a1) at (0,0.1) {\textbf{Bước $z_1$:} Đạo diễn phim X là \textbf{Y}.};
+\node[hb,right=of a1] (a2) {\textbf{Bước $z_2$:} Vợ của \textbf{Y} là \textbf{Z}.};
+\node[an,right=0.55cm of a2] (a3) {\textbf{Đáp án $Y$:} Z};
+\draw[ar] (a1)--(a2); \draw[ar] (a2)--(a3);
+\node[right=0.2cm of a3,font=\scriptsize\bfseries,text=okc] {$p(Y^* \mid X, Z) = 0.90$};
+\node[anchor=west,font=\scriptsize\bfseries,text=failc] at (0,-1.05) {Chuỗi sau can thiệp $\mathrm{do}(z_1 = \varnothing)$};
+\node[hbm] (b1) at (0,-1.85) {\textbf{Bước $z_1$:} [ĐÃ ẨN]};
+\node[hb,right=of b1] (b2) {\textbf{Bước $z_2$:} Vợ của \textbf{Y} là \textbf{Z}.};
+\node[an,right=0.55cm of b2] (b3) {\textbf{Đáp án $Y$:} Z};
+\draw[ar] (b1)--(b2); \draw[ar] (b2)--(b3);
+\node[right=0.2cm of b3,font=\scriptsize\bfseries,text=failc] {$p(Y^* \mid X, \mathrm{do}(z_1)) = 0.20$};
+\end{tikzpicture}
+\par\vspace{4pt}
+\footnotesize
+\begin{columns}[T,onlytextwidth]
+\column{0.48\textwidth}
+\textbf{\color{keyc}Định nghĩa hiệu ứng can thiệp}\par\vspace{2pt}
+Gọi $Y^*$ là đáp án chuẩn. Hiệu ứng nhân quả của bước $z_i$ lên dự đoán cuối được định nghĩa bằng mức giảm xác suất:
+$$\Delta_i = p(Y^* \mid X, Z) - p\big(Y^* \mid X, \mathrm{do}(z_i = \varnothing)\big)$$
+và được biểu diễn theo điểm phần trăm.
+
+\column{0.48\textwidth}
+\textbf{\color{keyc}Diễn giải}\par\vspace{2pt}
+\begin{itemize}
+  \setlength{\itemsep}{3pt}
+  \item $\Delta_i \gg 0$: bước $z_i$ là \emph{nguyên nhân thực sự} của $Y^*$ trong quá trình tính toán.
+  \item $\Delta_i \approx 0$: mô hình không sử dụng thông tin tại $z_i$ khi đưa ra $Y^*$.
+\end{itemize}
+\end{columns}
+\par\kern0pt
+\note{Trên mô hình nhân quả cấu trúc, hiệu ứng Delta của bước thứ i là hiệu số xác suất gán cho đáp án đúng trước và sau khi thực hiện toán tử do(z_i) để xóa thông tin của bước đó.}
+\end{frame}
+
+%% ============================================================================ ground truth
+\begin{frame}[shrink]{Kiểm chuẩn thước đo bằng nhãn chuẩn nhân quả}
+\footnotesize
+\begin{columns}[T,onlytextwidth]
+\column{0.50\textwidth}
+\textbf{\color{keyc}Hạn chế của các thước đo hiện hành}\par\vspace{2pt}
+Các nghiên cứu trước áp dụng phép xóa hoặc làm nhiễu bước suy luận \citeref{Lanham et al., 2023; Paul et al., Findings of EMNLP 2024; Tutek et al., EMNLP 2025} nhưng không thể định lượng độ chính xác của chính phép đo vì thiếu nhãn chuẩn. Luận văn áp dụng ý tưởng can thiệp có đáp án xác định \citeref{Somov et al., 2026} cho chuỗi suy luận tự do.\par\vspace{4pt}
+\textbf{\color{keyc}Thiết kế kiểm chuẩn có nhãn biết trước}\par\vspace{2pt}
+Chuỗi $Z$ được cấu trúc sao cho hiệu ứng nhân quả lý thuyết của từng thành phần đã biết:
+\vspace{2pt}
+\renewcommand{\arraystretch}{1.2}
+\scriptsize
+\begin{tabularx}{\linewidth}{@{}P{3.3cm}Y@{}}
+\toprule
+\textbf{Phép biến đổi có kiểm soát} & \textbf{Nhãn chuẩn lý thuyết}\\
+\midrule
+Chèn bước $z_{\text{irr}}$ đúng sự thật nhưng độc lập nhân quả với $Y^*$ & $\Delta_{\text{true}}(z_{\text{irr}}) = 0$\\
+Bước chuẩn $z_{\text{gold}}$ nằm trên đường đi ngắn nhất tới $Y^*$ & $\Delta_{\text{true}}(z_{\text{gold}}) > 0$\\
+Biến đổi bảo toàn cấu trúc (đổi tên thực thể) & $\Delta_{\text{true}} = 0$\\
+\bottomrule
+\end{tabularx}
+
+\column{0.46\textwidth}
+\textbf{\color{keyc}Minh họa phép thử bước dư thừa ($z_{\text{irr}}$)}\par\vspace{2pt}
+\scriptsize
+\code{Bước 1 ($z_{\text{gold}}$): Ben là con trai của Anna.}\\
+\code{Bước 2 ($z_{\text{gold}}$): Clara là chị gái của Ben.}\\
+\textcolor{failc}{\code{Bước 3 ($z_{\text{irr}}$): Anna thích môn bóng đá.}}\par\vspace{4pt}
+\footnotesize
+Thước đo nào gán $\Delta(z_{\text{irr}}) \gg 0$ đều mắc \textbf{sai số dương tính giả}.\par\vspace{6pt}
+\textbf{\color{keyc}Đánh giá định lượng bằng AUROC}\par\vspace{2pt}
+Xét bài toán phân loại nhị phân giữa tập bước thiết yếu $\{z_{\text{gold}}\}$ và tập bước dư thừa $\{z_{\text{irr}}\}$ dựa trên điểm $\Delta$:
+$$\text{AUROC} = \Pr\big(\Delta(z_{\text{gold}}) > \Delta(z_{\text{irr}})\big)$$
+Thước đo lý tưởng đạt $\text{AUROC} \to 1.0$; thước đo không có thông tin đạt $0.5$.
+\end{columns}
+\par\kern0pt
+\note{Để biết một thước đo nhân quả có lệch hay không, em chèn các bước đúng ngữ pháp nhưng độc lập nhân quả với câu hỏi. Vì hiệu ứng thật của các bước này bằng 0, một thước đo chuẩn phải tách được điểm số của bước cần thiết và bước dư thừa, thể hiện bằng AUROC tiến về 1.}
+\end{frame}
+
+%% ============================================================================ dữ liệu
+\begin{frame}[shrink]{Thiết lập thực nghiệm, bộ dữ liệu và giao thức kiểm định}
+\footnotesize
+\begin{columns}[T,onlytextwidth]
+\column{0.52\textwidth}
+\textbf{\color{keyc}Bộ dữ liệu và mô hình khảo sát}\par\vspace{3pt}
+\scriptsize
+\renewcommand{\arraystretch}{1.25}
+\begin{tabularx}{\linewidth}{@{}P{2.2cm}Y@{}}
+\toprule
+\textbf{Thành phần} & \textbf{Đặc tả kỹ thuật}\\
+\midrule
+CLUTRR & Suy luận hợp thành quan hệ (độ dài $k \in [2, 10]$); 11.708 mẫu huấn luyện; tập kiểm thử cùng phân phối (ID) và ngoài phân phối (OOD).\\
+MuSiQue-Ans & Hỏi đáp bắc cầu 2--4 bước trên Wikipedia; ngữ cảnh gồm các đoạn chuẩn trộn với 4 hoặc 8 đoạn nhiễu.\\
+2WikiMultihopQA & Hỏi đáp dạng Compositional và Inference trên văn bản Wikipedia tự nhiên.\\
+Mô hình (SLM) & Qwen2.5 (0.5B, 1.5B, 3B, 7B) \citeref{Qwen Team, 2024} và SmolLM2-1.7B.\\
+Tài nguyên tính toán & GPU 16GB VRAM (môi trường triển khai hạn chế tài nguyên).\\
+\bottomrule
+\end{tabularx}
+
+\column{0.44\textwidth}
+\textbf{\color{keyc}Giao thức kiểm định thống kê}\par\vspace{3pt}
+\begin{itemize}
+  \setlength{\itemsep}{4pt}
+  \item \textbf{Tiền đăng ký giả thuyết.} Ngưỡng chấp nhận của mỗi phương pháp được ghi trong biên bản thiết kế trước khi đánh giá trên tập kiểm thử.
+  \item \textbf{Tiêu chuẩn bác bỏ $H_0$.} Phương pháp đề xuất phải vượt đường cơ sở mạnh nhất tối thiểu $+2.0$ điểm tuyệt đối, với khoảng tin cậy $95\%$ (paired bootstrap) không chứa giá trị $0$.
+  \item \textbf{Đối chứng cùng chi phí.} Phương pháp giải mã tốn $k$ lượt chạy được so sánh với Self-Consistency ($\text{SC}_k$) có cùng ngân sách sinh token.
+\end{itemize}
+\end{columns}
+\par\kern0pt
+\note{Toàn bộ thực nghiệm được thực hiện trên ba bộ dữ liệu chuẩn và các mô hình ngôn ngữ nhỏ từ 0.5B đến 7B tham số. Em áp dụng giao thức tiền đăng ký giả thuyết và kiểm định bootstrap ghép cặp để mọi kết luận đều có cơ sở thống kê.}
+\end{frame}
+
+\section{Tổng quan kết quả}
+%% ============================================================================ tổng quan
+\begin{frame}[shrink]{Tổng quan kết quả thực nghiệm (R1--R5 và D1--D9)}
+\scriptsize
+\renewcommand{\arraystretch}{1.08}
+\setlength{\tabcolsep}{5pt}
+\begin{tabularx}{\textwidth}{@{}P{0.85cm}YP{3.7cm}P{1.95cm}@{}}
+\toprule
+\textbf{Mã} & \textbf{Giả thuyết / phương pháp can thiệp} & \textbf{Kết quả định lượng chính} & \textbf{Kiểm định}\\
+\midrule
+R1 & Phép che đơn lẻ ($\dn$) bỏ sót phụ thuộc bắc cầu; phép che toàn phần ($\dt$) khắc phục được & $\dn$: $-4$ đến $+6.5$; $\dt$: 41--67 điểm & \OKs\\
+R2 & Lấy mẫu lại với mốc cố định gán nhầm bước dư thừa là quan trọng & Bước thừa: 56--78 điểm; sau hiệu chỉnh: $\le 4$ & \OKs\\
+R3 & \textbf{Mô hình nhỏ trích xuất bề mặt thay vì suy diễn hợp thành} & CLUTRR: $-1.5$ đến $+7.3$; có đáp án: 52--77 & \OKs\\
+R4 & Nhiễu ngữ cảnh làm giảm hiệu năng gián tiếp qua việc làm hỏng chuỗi CoT ($\text{TIE}$) & $\text{NDE} \approx 0$; $\text{TIE} = -3.6$ đến $-5.0$ & \OKs\\
+R5 & Tái trọng số giải mã tại bước kết xuất đáp án (HGCD) cải thiện độ chính xác & $|\Delta|\le1.7$, $p\ge0.6$ so với CoT & \FAILs\\
+\midrule
+D1 & Lọc đoạn văn nhiễu bằng điểm Attention trước khi sinh chuỗi (MuSiQue) & Thấp hơn $\text{SC}_5$; làm mất đoạn bắc cầu & \FAILs\\
+D2 & Giao phép hợp thành cho bộ giải quy tắc (Neuro-Symbolic Extract + Rules) & Vượt $\text{SC}_{10}$ cùng chi phí $+21$ đến $+37$ điểm & \OKs\\
+D3 & Ablation: cố định sự kiện đầu vào, cô lập vai trò của bộ hợp thành & Bảng luật vượt LLM $+13$ đến $+35$ điểm & \OKs\\
+D4 & SFT trên chuỗi chuẩn so với chuỗi ghi trạng thái quan hệ tích lũy & SFT chuẩn (3B): 95/78/59\%; cấu trúc: $-3$ đến $-7$ & \FAILs\ (cấu trúc)\\
+D5 & SFT trên văn bản tự nhiên (2WikiMultihopQA) kèm nhãn trích dẫn nguồn & SFT $+21$ đến $+30$ so với few-shot; nguồn: $-1.6$ & \PARTs\\
+D6 & SFT hình thành sự phụ thuộc nhân quả vào các bước trung gian & $\Delta(\dt)$ tăng từ 1--7 lên $\sim$40 điểm; chép sai 13--48\% & \OKs\\
+D7 & Sinh chuỗi sau SFT tổng quát hóa ngoài phân phối tốt hơn dự đoán trực tiếp & Có chuỗi hơn chỉ đáp án $+9$ đến $+23$ điểm (OOD) & \OKs\\
+D8 & DPO phản thực giảm hành vi chép kết luận sai & Chép sai giảm 22--25 điểm; chuỗi dài giảm 5--13 điểm & \PARTs\\
+D9 & GRPO với phần thưởng kiểm chứng theo từng bước & Chuỗi dài $+0.0$; lật đáp án giảm từ 36\% xuống 22\% & \PARTs\\
+\bottomrule
+\end{tabularx}
+\ghichu{R1--R4 là các giả thuyết chẩn đoán nhân quả; R5 và D1--D9 là các phương pháp can thiệp nhằm nâng hiệu năng.}
+\par\kern0pt
+\note{Bảng tổng hợp cho thấy bốn giả thuyết chẩn đoán R1 đến R4 đều được xác nhận. Các can thiệp nông ở bước giải mã như R5 và D1 không hiệu quả, trong khi can thiệp đúng vào điểm nghẽn hợp thành ở D2, D3, D4, D6 và D7 cho mức cải thiện đáng kể.}
+\end{frame}
+
+
+\section{Chẩn đoán nhân quả (R1--R5)}
+%%@@R1d
+\begin{frame}[shrink]{R1 \textperiodcentered{} Phép che đơn lẻ ($\dn$) và can thiệp toàn phần ($\dt$)}
+\centering
+\begin{tikzpicture}[font=\scriptsize,node distance=0.22cm,
+  hb/.style={draw=keyc,fill=keyc!4,rounded corners=2pt,align=left,inner sep=3pt,text width=2.55cm},
+  hbm/.style={draw=failc,fill=failc!6,rounded corners=2pt,align=left,inner sep=3pt,text width=2.55cm,dashed},
+  an/.style={draw=okc,fill=okc!6,rounded corners=2pt,align=left,inner sep=3pt,text width=1.2cm},
+  lab/.style={align=left,text width=2.6cm,font=\scriptsize\bfseries}]
+\node[lab,text=keyc] (l0) at (0,0.85) {Chuỗi chuẩn gốc $Z$};
+\node[hb,right=0.1cm of l0] (a1) {\textbf{Bước $z_1$:} Đạo diễn X là \textbf{Y}.};
+\node[hb,right=of a1] (a2) {\textbf{Bước $z_2$:} Vợ của \textbf{Y} là \textbf{Z}.};
+\node[an,right=of a2] (a3) {\textbf{Đáp án:} Z};
+\node[lab,text=partc] (l1) at (0,-0.35) {Can thiệp đơn lẻ ($\dn$)};
+\node[hbm,right=0.1cm of l1] (b1) {\textbf{Bước $z_1$:} [ẨN]};
+\node[hb,right=of b1] (b2) {\textbf{Bước $z_2$:} Vợ của \textbf{Y} là \textbf{Z}.};
+\node[an,right=of b2] (b3) {\textbf{Đáp án:} Z};
+\node[lab,text=failc] (l2) at (0,-1.55) {Can thiệp toàn phần ($\dt$)};
+\node[hbm,right=0.1cm of l2] (c1) {\textbf{Bước $z_1$:} [ẨN]};
+\node[hbm,right=of c1] (c2) {\textbf{Bước $z_2$:} Vợ của [ẨN] là [ẨN].};
+\node[an,right=of c2] (c3) {\textbf{Đáp án:} Z};
+\end{tikzpicture}
+\par\vspace{5pt}
+\footnotesize
+\begin{columns}[T,onlytextwidth]
+\column{0.48\textwidth}
+\textbf{\color{keyc}Phân tích trên đồ thị suy luận có hướng (DRG)}\par\vspace{2pt}
+Trong chuỗi bắc cầu $z_1 \to z_2 \to Y$, thực thể trung gian $e_1 = \text{``Y''}$ là đầu ra của $z_1$ và được dùng lại làm đầu vào của $z_2$.
+\begin{itemize}
+  \setlength{\itemsep}{2pt}
+  \item Khi che đơn lẻ $\dn(z_1)$ \citeref{Lanham et al., 2023}, thực thể $e_1$ và kết quả $e_2 = \text{``Z''}$ vẫn còn nguyên trong $z_2$.
+  \item Cơ chế attention của mô hình tự hồi quy đọc thẳng $z_2$ để xuất đáp án, nên $\Delta_{\text{naive}}(z_1) \approx 0$ (sai số âm tính giả).
+\end{itemize}
+
+\column{0.48\textwidth}
+\textbf{\color{keyc}Đề xuất toán tử can thiệp toàn phần ($\dt$)}\par\vspace{2pt}
+Dựng đồ thị suy luận có hướng $\mathcal{G} = (V, E)$, trong đó cạnh $(i \to j) \in E$ tồn tại nếu thực thể kết quả của bước $z_i$ xuất hiện trong tiền đề của bước $z_j$.\par\vspace{2pt}
+Phép can thiệp toàn phần $\dt(z_i)$ che đồng thời $z_i$ và toàn bộ tập đỉnh hậu duệ $\mathrm{desc}_{\mathcal{G}}(i)$ trên $\mathcal{G}$, nhờ đó cắt đứt mọi đường truyền thông tin từ $z_i$ tới đáp án.
+\end{columns}
+\par\kern0pt
+\note{Slide này giải thích vì sao phép che từng bước đơn lẻ trong văn liệu cho kết quả lệch. Trên đồ thị suy luận có hướng, bước 2 phụ thuộc vào kết quả của bước 1. Nếu chỉ xóa bước 1 mà không xóa các đỉnh hậu duệ, thông tin vẫn còn trong bước 2.}
+\end{frame}
+
+%%@@R1r
+\begin{frame}[shrink]{R1 \textperiodcentered{} Kết quả: $\dt$ khôi phục tầm quan trọng của bước trung gian}
+\begin{columns}[T,onlytextwidth]
+\column{0.50\textwidth}
+\centering
+\begin{tikzpicture}
+\begin{axis}[ybar, width=\linewidth, height=4.5cm, bar width=7pt, ymin=-10, ymax=75,
+  symbolic x coords={0.5B,1.5B,Smol,3B,7B}, xtick=data, x tick label style={font=\tiny},
+  ylabel={$\Delta$ (điểm \%)}, ylabel style={font=\tiny}, y tick label style={font=\tiny},
+  legend style={at={(0.5,1.05)},anchor=south,legend columns=2,font=\tiny,draw=none},
+  enlarge x limits=0.12, ymajorgrids, grid style={black!10}]
+\addplot[fill=keyc,draw=none] coordinates {(0.5B,56.7)(1.5B,56.9)(Smol,66.8)(3B,49.1)(7B,41.3)};
+\addplot[fill=partc,draw=none] coordinates {(0.5B,-2.4)(1.5B,0.6)(Smol,-3.9)(3B,0.5)(7B,6.5)};
+\legend{Can thiệp toàn phần ($\dt$),Can thiệp đơn lẻ ($\dn$)}
+\end{axis}
+\end{tikzpicture}
+\par\tiny Dữ liệu: MuSiQue (đánh giá trên các bước chuẩn không phải bước cuối).
+\column{0.46\textwidth}
+\scriptsize
+\textbf{\color{keyc}Khả năng phân biệt bước chuẩn và bước dư thừa (AUROC)}\par\vspace{2pt}
+\renewcommand{\arraystretch}{1.2}
+\begin{tabularx}{\linewidth}{@{}YQ{1.5cm}Q{1.5cm}@{}}
+\toprule
+\textbf{Mô hình} & \textbf{AUROC ($\dt$)} & \textbf{AUROC ($\dn$)}\\
+\midrule
+Qwen2.5-1.5B & \textbf{0.98} & 0.82\\
+Qwen2.5-3B & \textbf{0.97} & 0.76\\
+Qwen2.5-7B & \textbf{0.86} & 0.71\\
+\bottomrule
+\end{tabularx}
+\par\vspace{5pt}
+\footnotesize
+\textbf{\color{keyc}Đối chứng giả dược định dạng (marker control):}\par
+Chèn cùng số token \code{[ẨN]} vào vị trí tương ứng nhưng \emph{giữ nguyên chuỗi thực thể cầu nối} chỉ làm $\Delta$ biến thiên $0.0$--$7.0$ điểm. Do đó hiệu ứng $41$--$67$ điểm của $\dt$ đến từ việc cắt đứt dòng thông tin nhân quả, không phải từ thay đổi định dạng.
+\end{columns}
+\takeaway{Phép che đơn lẻ $\dn$ gần như không phát hiện được vai trò của các bước trung gian ($\Delta \in [-3.9, +6.5]$). Toán tử $\dt$ khắc phục rò rỉ thông tin hạ lưu và đạt $\text{AUROC}$ tới $0.98$. \OKs}
+\par\kern0pt
+\note{Kết quả trên năm mô hình khớp với phân tích lý thuyết: phép che đơn lẻ màu cam cho hiệu ứng gần bằng 0, phép che toàn phần màu xanh đạt từ 41 đến 67 điểm, và AUROC đạt tới 0.98.}
+\end{frame}
+
+%%@@R2
+\begin{frame}[shrink]{R2 \textperiodcentered{} Độ lệch đường cơ sở của phương pháp lấy mẫu lại}
+\centering
+\begin{tikzpicture}[font=\scriptsize,node distance=0.3cm,
+  b/.style={draw=keyc,fill=keyc!4,rounded corners=2pt,align=center,inner sep=3pt,text width=2.5cm,minimum height=0.9cm},
+  bm/.style={draw=failc,fill=failc!6,rounded corners=2pt,align=center,inner sep=3pt,text width=2.5cm,minimum height=0.9cm},
+  ar/.style={-{Stealth[length=2mm]},thick,nac}]
+\node[b] (n1) at (0,0) {Tiền tố chuẩn\\$z_{1..j-1}$};
+\node[bm,right=of n1] (n2) {Can thiệp làm nhiễu\\bước $z_j \to \tilde{z}_j$};
+\node[b,right=of n2] (n3) {Mô hình tự sinh tiếp\\$\tilde{z}_{j+1..k} \sim p_\theta(\cdot \mid z_{<j}, \tilde{z}_j)$};
+\node[b,right=of n3] (n4) {Đánh giá xác suất\\đáp án đúng $p(Y^*)$};
+\draw[ar] (n1)--(n2); \draw[ar] (n2)--(n3); \draw[ar] (n3)--(n4);
+\end{tikzpicture}
+\par\vspace{4pt}
+\footnotesize
+\begin{columns}[T,onlytextwidth]
+\column{0.50\textwidth}
+\textbf{\color{keyc}Dẫn xuất độ lệch}\par\vspace{2pt}
+Lấy mẫu lại là hướng được đề xuất để diễn giải chuỗi suy luận \citeref{Bogdan et al., 2025; Macar et al., ICLR 2026}. Phiên bản dùng mốc cố định so sánh với chuỗi chuẩn hoàn hảo $p(Y^* \mid Z_{\text{gold}}) \approx 1$:
+$$\Delta_{\text{fixed}}(j) = p(Y^* \mid Z_{\text{gold}}) - \mathbb{E}_{\tilde{z}_{>j}}\big[p(Y^* \mid z_{<j}, \tilde{z}_j, \tilde{z}_{>j})\big]$$
+Ngay cả khi $\tilde{z}_j = z_j$ hoặc $z_j$ là bước dư thừa, mô hình nhỏ khi tự sinh tiếp $\tilde{z}_{>j}$ chỉ đạt độ chính xác cơ sở $b(j) \in [22\%, 44\%]$. Vì vậy $\Delta_{\text{fixed}}(j)$ bị cộng thêm sai số dương tính giả xấp xỉ $1 - b(j) \approx 56\%\text{--}78\%$.
+
+\column{0.46\textwidth}
+\textbf{\color{keyc}Kết quả sau hiệu chỉnh theo vị trí}\par\vspace{2pt}
+Định nghĩa $\Delta_{\text{cal}}(j) = b(j) - \mathbb{E}_{\tilde{z}_{>j}}[p(Y^* \mid z_{<j}, \tilde{z}_j, \tilde{z}_{>j})]$:\par\vspace{3pt}
+\scriptsize
+\renewcommand{\arraystretch}{1.2}
+\begin{tabularx}{\linewidth}{@{}YQ{1.1cm}Q{1.1cm}@{}}
+\toprule
+\textbf{Điểm $\Delta$ trên MuSiQue} & \textbf{1.5B} & \textbf{3B}\\
+\midrule
+$\Delta_{\text{fixed}}$ (mốc cố định): bước chuẩn & 75.7 & 61.5\\
+$\Delta_{\text{fixed}}$ (mốc cố định): \textbf{bước dư thừa} & \textbf{76.3} & \textbf{56.3}\\
+\midrule
+$\Delta_{\text{cal}}$ (có hiệu chỉnh): bước chuẩn & \textbf{6.4} & \textbf{11.3}\\
+$\Delta_{\text{cal}}$ (có hiệu chỉnh): \textbf{bước dư thừa} & $\mathbf{-0.3}$ & $\mathbf{4.3}$\\
+\bottomrule
+\end{tabularx}
+\end{columns}
+\takeaway{Mốc cố định gán nhầm mọi bước dư thừa thành bước quan trọng ($56$--$76$ điểm). Hiệu chỉnh đường cơ sở theo vị trí $b(j)$ loại bỏ phần lớn độ lệch này. \OKs}
+\par\kern0pt
+\note{Ở R2, em dẫn xuất vì sao phương pháp lấy mẫu lại với mốc cố định bị lệch. Vì năng lực tự sinh tiếp của mô hình nhỏ chỉ đạt 22 đến 44 phần trăm, việc so với mốc 100 phần trăm khiến cả bước dư thừa cũng bị cộng thêm 56 đến 78 điểm. Khi trừ đường cơ sở tại vị trí j, điểm của bước dư thừa về gần 0.}
+\end{frame}
+
+%%@@R3d
+\begin{frame}[shrink]{R3 \textperiodcentered{} Thiết kế kiểm định: trích xuất bề mặt và suy diễn hợp thành}
+\centering
+\begin{tikzpicture}[font=\scriptsize,node distance=0.2cm,
+  hb/.style={draw=keyc,fill=keyc!4,rounded corners=2pt,align=left,inner sep=3pt,text width=2.5cm},
+  hm/.style={draw=failc,fill=failc!6,rounded corners=2pt,align=left,inner sep=3pt,text width=2.5cm,dashed},
+  hg/.style={draw=okc,fill=okc!6,rounded corners=2pt,align=left,inner sep=3pt,text width=3.1cm},
+  hw/.style={draw=failc,fill=failc!8,rounded corners=2pt,align=left,inner sep=3pt,text width=3.1cm},
+  lab/.style={align=left,text width=1.65cm,font=\scriptsize\bfseries}]
+\node[lab,text=keyc] (l1) at (0,0.85) {Điều kiện C1};
+\node[hm,right=0.05cm of l1] (a1) {Ben là con trai Anna. \textbf{[ẨN 1 bước]}};
+\node[hb,right=of a1] (a2) {Clara là chị gái của Ben.};
+\node[lab,text=okc] (l2) at (0,-0.1) {Điều kiện C2};
+\node[hb,right=0.05cm of l2] (b1) {Ben là con trai của Anna.};
+\node[hb,right=of b1] (b2) {Clara là chị gái của Ben.};
+\node[hg,right=of b2] (b3) {\textbf{Vậy Clara là con gái Anna.} (đúng)};
+\node[lab,text=failc] (l3) at (0,-1.05) {Điều kiện C3};
+\node[hb,right=0.05cm of l3] (c1) {Ben là con trai của Anna.};
+\node[hb,right=of c1] (c2) {Clara là chị gái của Ben.};
+\node[hw,right=of c2] (c3) {\textbf{Vậy Clara là cháu gái Anna.} (mâu thuẫn)};
+\end{tikzpicture}
+\par\vspace{4pt}
+\renewcommand{\arraystretch}{1.2}
+\scriptsize
+\begin{tabularx}{\textwidth}{@{}P{1.8cm}P{3.5cm}YY@{}}
+\toprule
+\textbf{Điều kiện} & \textbf{Cấu hình chuỗi trên CLUTRR} & \textbf{Dự đoán của giả thuyết suy diễn ($H_{\text{reason}}$)} & \textbf{Dự đoán của giả thuyết đọc bề mặt ($H_{\text{read}}$)}\\
+\midrule
+\textbf{C1} ($\dt$) & Chuỗi chỉ chứa các bước quan hệ thành phần; ẩn 1 bước & $\Delta \gg 0$: mất một mắt xích làm thay đổi kết quả hợp thành & $\Delta \approx 0$: mô hình vốn không tính được phép hợp thành từ các bước này\\
+\textbf{C2} (explicit) & Bổ sung câu kết luận \emph{đúng} vào cuối chuỗi & Câu kết luận dư thừa, hiệu ứng che thay đổi ít & $\Delta \gg 0$: mô hình chuyển sang đọc trực tiếp nhãn quan hệ vừa được viết ra\\
+\textbf{C3} (conflict) & Bổ sung câu kết luận \emph{sai}, mâu thuẫn với các bước trên & Bác bỏ câu sai vì mâu thuẫn với phép hợp thành $r_1 \circ r_2$ & Sao chép nhãn sai ($T_{\text{copy-wrong}} \gg 0$) do ưu tiên vị trí cuối\\
+\bottomrule
+\end{tabularx}
+\par\kern0pt
+\note{Để phân xử giữa hai giả thuyết suy diễn hợp thành và đọc bề mặt, em thiết kế ba điều kiện C1, C2, C3 trên CLUTRR, với các dự đoán đối lập nhau như trong bảng.}
+\end{frame}
+
+%%@@R3r
+\begin{frame}[shrink]{R3 \textperiodcentered{} Kết quả: xác nhận ``Read, Not Reasoned'' trên mô hình nhỏ}
+\begin{columns}[T,onlytextwidth]
+\column{0.50\textwidth}
+\centering
+\begin{tikzpicture}
+\begin{axis}[ybar, width=\linewidth, height=4.4cm, bar width=8pt, ymin=-5, ymax=85,
+  symbolic x coords={0.5B,1.5B,Smol,3B,7B}, xtick=data, x tick label style={font=\tiny},
+  ylabel={$\Delta$ (điểm \%)}, ylabel style={font=\tiny}, y tick label style={font=\tiny},
+  legend style={at={(0.5,1.05)},anchor=south,legend columns=1,font=\tiny,draw=none},
+  enlarge x limits=0.12, ymajorgrids, grid style={black!10}]
+\addplot[fill=nac,draw=none] coordinates {(0.5B,0.1)(1.5B,-1.5)(Smol,1.8)(3B,7.3)(7B,1.3)};
+\addplot[fill=keyc,draw=none] coordinates {(0.5B,60.8)(1.5B,76.1)(Smol,69.5)(3B,77.0)(7B,51.9)};
+\legend{C1: chỉ có các bước thành phần (phải tự hợp thành),C2: có câu kết luận ghi tường minh ở cuối chuỗi}
+\end{axis}
+\end{tikzpicture}
+\column{0.46\textwidth}
+\scriptsize
+\textbf{\color{keyc}Điều kiện C3: tỷ lệ sao chép kết luận mâu thuẫn ($T_{\text{copy-wrong}}$)}\par\vspace{2pt}
+\renewcommand{\arraystretch}{1.2}
+\begin{tabularx}{\linewidth}{@{}YQ{1.3cm}Q{2.0cm}@{}}
+\toprule
+\textbf{Mô hình} & \textbf{Toàn tập} & \textbf{Tập mô hình tự giải đúng}\\
+\midrule
+Qwen2.5-0.5B & 66.5\% & 70.8\%\\
+Qwen2.5-1.5B & 58.2\% & 63.0\%\\
+Qwen2.5-3B & 46.2\% & 47.7\%\\
+Qwen2.5-7B & 22.9\% & \textbf{10.3\%}\\
+\bottomrule
+\end{tabularx}
+\par\vspace{4pt}
+\footnotesize
+\textbf{\color{keyc}Phân tích:}\par
+Với các mô hình $\le 3\text{B}$, ngay cả trên tập con câu hỏi mà mô hình \emph{tự giải đúng từ chuỗi C1}, việc chèn thêm một câu kết luận sai khiến mô hình sao chép theo trong $47.7\%\text{--}70.8\%$ trường hợp.
+\end{columns}
+\takeaway{Khi chưa tinh chỉnh, mô hình nhỏ hầu như không thực hiện phép hợp thành trên chuỗi ($\Delta_{\text{C1}} \in [-1.5, +7.3]$) và chỉ phụ thuộc vào chuỗi khi đáp án xuất hiện trên bề mặt văn bản ($\Delta_{\text{C2}} \in [51.9, 77.0]$). \OKs}
+\par\kern0pt
+\note{Số liệu khớp với giả thuyết đọc bề mặt: ở C1 hiệu ứng gần bằng 0, ở C2 hiệu ứng tăng lên 52 đến 77 điểm, và ở C3 các mô hình từ 3B trở xuống sao chép câu kết luận sai trong khoảng 46 đến 71 phần trăm số lần, kể cả khi trước đó tự giải đúng.}
+\end{frame}
+
+%%@@R4
+\begin{frame}[shrink]{R4 \textperiodcentered{} Phân tích trung gian nhân quả: tác động của nhiễu qua chuỗi}
+\centering
+\begin{tikzpicture}[font=\scriptsize,node distance=0.25cm,
+  b/.style={draw=keyc,fill=keyc!4,rounded corners=2pt,align=center,inner sep=3pt,text width=2.3cm,minimum height=0.75cm},
+  bm/.style={draw=failc,fill=failc!6,rounded corners=2pt,align=center,inner sep=3pt,text width=2.3cm,minimum height=0.75cm},
+  an/.style={draw=okc,fill=okc!6,rounded corners=2pt,align=center,inner sep=3pt,text width=1.5cm,minimum height=0.75cm},
+  lab/.style={align=left,text width=1.8cm,font=\scriptsize\bfseries},
+  ar/.style={-{Stealth[length=2mm]},thick,nac}]
+\node[lab,text=keyc] (l1) at (0,0.9) {Trạng thái $(x_0, z_0)$};
+\node[b,right=0.05cm of l1] (a1) {Ngữ cảnh sạch $x_0$};
+\node[b,right=of a1] (a2) {Sinh chuỗi sạch $z_0$};
+\node[an,right=of a2] (a3) {$Y(x_0, z_0)$};
+\node[lab,text=failc] (l2) at (0,0) {Trạng thái $(x_1, z_1)$};
+\node[bm,right=0.05cm of l2] (b1) {Ngữ cảnh nhiễu $x_1$};
+\node[bm,right=of b1] (b2) {Sinh chuỗi nhiễu $z_1$};
+\node[an,right=of b2] (b3) {$Y(x_1, z_1)$};
+\node[lab,text=partc] (l3) at (0,-0.9) {Phản thực $(x_1, z_0)$};
+\node[bm,right=0.05cm of l3] (c1) {Ngữ cảnh nhiễu $x_1$};
+\node[b,right=of c1] (c2) {\textbf{Ép cố định chuỗi $z_0$}};
+\node[an,right=of c2] (c3) {$Y(x_1, z_0)$};
+\foreach \a/\b in {a1/a2,a2/a3,b1/b2,b2/b3,c1/c2,c2/c3} \draw[ar] (\a)--(\b);
+\end{tikzpicture}
+\par\vspace{4pt}
+\footnotesize
+\begin{columns}[T,onlytextwidth]
+\column{0.50\textwidth}
+\textbf{\color{keyc}Phân rã hiệu ứng trực tiếp và gián tiếp} \citeref{Pearl, 2001; Vig et al., NeurIPS 2020}\par\vspace{2pt}
+\begin{itemize}
+  \setlength{\itemsep}{2pt}
+  \item \textbf{Hiệu ứng trực tiếp ($\text{NDE}$):} $\mathbb{E}[Y(x_1, z_0) - Y(x_0, z_0)]$, tức tác hại của đoạn nhiễu khi giữ nguyên chuỗi sạch $z_0$.
+  \item \textbf{Hiệu ứng gián tiếp ($\text{TIE}$):} $\mathbb{E}[Y(x_1, z_1) - Y(x_1, z_0)]$, tức tác hại do nhiễu làm suy giảm chất lượng chuỗi $z_1$.
+\end{itemize}
+\vspace{2pt}
+\scriptsize
+\renewcommand{\arraystretch}{1.2}
+\begin{tabularx}{\linewidth}{@{}YQ{1.4cm}Q{1.4cm}@{}}
+\toprule
+\textbf{Qwen2.5-3B (MuSiQue, $n=500$)} & \textbf{NDE} & \textbf{TIE}\\
+\midrule
+Giải mã có chuỗi suy luận (CoT) & $-0.6$ & $\mathbf{-5.0}$\\
+Dự đoán trực tiếp (direct prompting) & $-3.8$ & $-2.0$\\
+\bottomrule
+\end{tabularx}
+
+\column{0.46\textwidth}
+\textbf{\color{keyc}Hệ quả đối với thiết kế can thiệp}\par\vspace{2pt}
+\begin{itemize}
+  \setlength{\itemsep}{3pt}
+  \item Ở chế độ CoT, $\text{NDE} = -0.6$ (không khác $0$ có ý nghĩa thống kê): chuỗi $Z$ đóng vai trò \textbf{nút thắt thông tin}, che bước dự đoán cuối khỏi ngữ cảnh $X$.
+  \item Phần suy giảm hiệu năng còn lại nằm ở $\text{TIE} = -5.0$: đoạn văn nhiễu làm chệch quá trình sinh chuỗi từ $z_0$ sang $z_1$.
+\end{itemize}
+\end{columns}
+\takeaway{Vì tác hại của nhiễu truyền qua biến trung gian $Z$ ($\text{TIE}$), can thiệp chỉ chỉnh sửa bước đọc đáp án sau khi $Z$ đã sinh xong không xử lý được nguyên nhân gốc. \OKs}
+\par\kern0pt
+\note{R4 áp dụng phân tích trung gian nhân quả. Số liệu cho thấy một khi chuỗi CoT đã được viết ra, nó đóng vai trò nút thắt: nhiễu không tác động trực tiếp lên bước đọc đáp án (NDE bằng âm 0.6) mà tác động lên quá trình viết chuỗi (TIE bằng âm 5.0).}
+\end{frame}
+
+%%@@R5
+\begin{frame}[shrink]{R5 \textperiodcentered{} Can thiệp giải mã tại bước kết xuất đáp án (HGCD) không hiệu quả}
+\footnotesize
+\begin{columns}[T,onlytextwidth]
+\column{0.50\textwidth}
+\textbf{\color{keyc}Giải mã tương phản neo theo bước (HGCD)}\par\vspace{3pt}
+Sau khi sinh chuỗi $Z$, các đáp án ứng viên $y$ được tái trọng số theo mức phụ thuộc nhân quả của chúng vào các bước $z_i$:
+$$\text{Score}_{\text{HGCD}}(y) = \log p_\theta(y \mid X, Z) + \alpha \sum_{i=1}^{k} \Delta_i(y)$$
+\vspace{2pt}
+\scriptsize
+\renewcommand{\arraystretch}{1.2}
+\begin{tabularx}{\linewidth}{@{}YQ{1.0cm}Q{1.0cm}Q{1.6cm}@{}}
+\toprule
+\textbf{Độ chính xác (\%)} & \textbf{CoT} & \textbf{HGCD} & \textbf{Calibration}\\
+\midrule
+CLUTRR, Qwen2.5-1.5B & 18.1 & 18.1 & 23.9\\
+CLUTRR, SmolLM2-1.7B & 21.4 & 21.0 & 24.8\\
+MuSiQue, Qwen2.5-1.5B & 20.8 & 22.5 & --\\
+MuSiQue, SmolLM2-1.7B & 15.0 & 15.8 & --\\
+\bottomrule
+\end{tabularx}
+
+\column{0.46\textwidth}
+\textbf{\color{keyc}Giải thích dựa trên R3 và R4}\par\vspace{3pt}
+Việc HGCD không cải thiện ($|\Delta| \le 1.7$ điểm, $p \ge 0.6$) phù hợp với hai phát hiện trước:
+\begin{enumerate}
+  \setlength{\itemsep}{4pt}
+  \item \textbf{Trên CLUTRR (từ R3).} Mô hình không thực hiện phép hợp thành nên $\Delta_i(y) \approx 0$ với mọi ứng viên $y$; tổng $\sum_i \Delta_i(y)$ chỉ chứa nhiễu ngẫu nhiên và không đổi được thứ hạng xác suất.
+  \item \textbf{Trên MuSiQue (từ R4).} Khi mô hình trả lời sai, nguyên nhân thường là chuỗi $Z$ đã truy xuất sai thực thể cầu nối (thành phần $\text{TIE}$). Tái trọng số trên một chuỗi đã sai không thể khôi phục đáp án đúng.
+\end{enumerate}
+\end{columns}
+\takeaway{Trong phạm vi khảo sát, can thiệp giải mã muộn không sửa được lỗi suy luận nhiều bước: điều chỉnh phân phối token ở bước đọc cuối không thay thế được việc sửa chuỗi hoặc sửa phép hợp thành. \FAILs}
+\par\kern0pt
+\note{R5 kiểm chứng hệ quả của R3 và R4. Khi áp dụng giải mã tương phản HGCD ở bước chốt đáp án, độ chính xác gần như giữ nguyên so với CoT. Kết quả này đóng lại hướng can thiệp giải mã muộn và chuyển trọng tâm sang can thiệp ở bước tạo chuỗi hoặc bước hợp thành.}
+\end{frame}
+
+\section{Can thiệp giải mã (D1--D3)}
+%%@@D1
+\begin{frame}[shrink]{D1 \textperiodcentered{} Lọc đoạn văn nhiễu bằng attention trước khi sinh chuỗi}
+\centering
+\begin{tikzpicture}[font=\tiny,node distance=0.12cm,
+  p/.style={draw=nac,fill=black!3,minimum width=0.85cm,minimum height=0.5cm,inner sep=1pt},
+  k/.style={draw=okc,fill=okc!12,minimum width=0.85cm,minimum height=0.5cm,inner sep=1pt},
+  g/.style={draw=failc,fill=failc!10,minimum width=0.85cm,minimum height=0.5cm,inner sep=1pt}]
+\node[anchor=west,font=\scriptsize\bfseries,text=keyc] at (-0.2,0.75) {Ngữ cảnh $X$ gồm 8 đoạn văn (Đoạn 2 và Đoạn 5 là bằng chứng bắc cầu \textcolor{failc}{BẮT BUỘC}):};
+\foreach \i/\s in {1/p,2/g,3/p,4/p,5/g,6/p,7/p,8/p} \node[\s] (q\i) at (\i*1.0,0) {Đoạn \i};
+\node[anchor=west,font=\scriptsize,text width=12.4cm] at (-0.2,-0.65) {Giữ $K=4$ đoạn có tổng trọng số attention từ câu hỏi cao nhất $\Rightarrow$ \textcolor{failc}{\textbf{bỏ sót Đoạn 5 (bước bắc cầu thứ hai)}}:};
+\foreach \i/\s in {1/p,2/k,3/k,4/p,5/g,6/k,7/k,8/p} \node[\s] (r\i) at (\i*1.0,-1.45) {Đoạn \i};
+\end{tikzpicture}
+\par\vspace{4pt}
+\footnotesize
+\begin{columns}[T,onlytextwidth]
+\column{0.56\textwidth}
+\scriptsize
+\renewcommand{\arraystretch}{1.2}
+\setlength{\tabcolsep}{2.5pt}
+\begin{tabularx}{\linewidth}{@{}P{1.0cm}P{1.6cm}Q{0.65cm}Q{0.65cm}Q{0.7cm}Q{0.75cm}Q{0.7cm}@{}}
+\toprule
+\textbf{Số nhiễu} & \textbf{Mô hình} & \textbf{CoT} & \textbf{SC$_5$} & \textbf{Top-4} & \textbf{Xếp lại} & \textbf{Oracle}\\
+\midrule
+4 đoạn & Qwen-1.5B & 24.8 & \textbf{28.4} & 23.6 & 23.0 & 34.8\\
+4 đoạn & Qwen-3B & 38.8 & \textbf{41.4} & 33.8 & 37.4 & 48.6\\
+8 đoạn & Qwen-1.5B & 22.2 & \textbf{25.0} & 22.0 & 22.2 & 31.4\\
+8 đoạn & Qwen-3B & 31.6 & \textbf{35.6} & 27.4 & 33.6 & 45.6\\
+\bottomrule
+\end{tabularx}
+\ghichu{Chỉ số Exact Match (EM, \%), $n=500$. Oracle: chỉ giữ các đoạn chuẩn (trần lý thuyết).}
+
+\column{0.40\textwidth}
+\textbf{\color{keyc}Phân tích điểm nghẽn truy xuất đa bước}\par\vspace{2pt}
+\begin{itemize}
+  \setlength{\itemsep}{3pt}
+  \item Khoảng cách giữa Oracle và CoT ($+9$ đến $+14$ điểm) phù hợp với R4: loại bỏ nhiễu đầu vào giúp chất lượng sinh chuỗi tăng đáng kể.
+  \item Tuy nhiên, đoạn bắc cầu thứ hai (Đoạn 5) chỉ liên quan tới thực thể trung gian $e_1$ chưa xuất hiện trong câu hỏi, nên có điểm attention trực tiếp từ câu hỏi thấp.
+  \item Độ phủ (Recall@4) chỉ đạt $77\%\text{--}86\%$; việc cắt mất đoạn chuẩn thứ hai khiến nhánh Top-4 thấp hơn CoT.
+\end{itemize}
+\end{columns}
+\takeaway{Trọng số attention trước khi sinh chuỗi của mô hình nhỏ không nhận diện được đoạn bắc cầu ẩn; phương pháp lấy mẫu nhiều chuỗi $\text{SC}_5$ vẫn tốt hơn. \FAILs}
+\par\kern0pt
+\note{Theo gợi ý của R4 rằng cần giảm nhiễu trước khi viết chuỗi, ở D1 em thử lọc đoạn văn bằng điểm attention. Tuy nhiên đoạn thứ hai chứa thông tin về thực thể trung gian chưa xuất hiện trong câu hỏi nên bị chấm điểm thấp và bị loại nhầm.}
+\end{frame}
+
+%% ============================================================================ D2 pipeline
+\begin{frame}[shrink]{D2 \textperiodcentered{} Kiến trúc lai Neuro-Symbolic: tách trích xuất và hợp thành}
+\centering
+\begin{tikzpicture}[font=\scriptsize,node distance=0.3cm,
+  b/.style={draw,rounded corners=2pt,align=center,minimum height=1.35cm,text width=2.05cm,inner sep=3pt},
+  ar/.style={-{Stealth[length=2mm]},thick}]
+\node[b,fill=keyc!6,draw=keyc] (s) {Văn bản tự nhiên\\$X$};
+\node[b,fill=partc!12,draw=partc,right=of s] (e) {\textbf{SLM ($\text{SC}_5$)}\\Trích xuất cạnh \& giới tính};
+\node[b,fill=black!4,right=of e] (g) {Đồ thị tri thức cục bộ\\$\mathcal{G}_X +$ cạnh nghịch đảo};
+\node[b,fill=black!4,right=of g] (p) {Tìm đường đi BFS\\$u_{\text{src}} \leadsto v_{\text{tgt}}$};
+\node[b,fill=okc!12,draw=okc,right=of p] (r) {\textbf{Thực thi đại số}\\Bảng 126 luật $r_i \circ r_j$};
+\draw[ar] (s)--(e); \draw[ar] (e)--(g); \draw[ar] (g)--(p); \draw[ar] (p)--(r);
+\node[below=0.25cm of e,text width=2.6cm,align=center,font=\tiny] {\code{Anna's son is Ben.}\\\code{Ben's sister is Clara.}\\\code{Genders: Anna=F,\ldots}};
+\node[below=0.25cm of g,text width=2.2cm,align=center,font=\tiny] {Ben $\xrightarrow{\text{mother}}$ Anna\\(bổ sung cạnh ngược)};
+\node[below=0.25cm of p,text width=2.2cm,align=center,font=\tiny] {Anna $\xrightarrow{\text{son}}$ Ben $\xrightarrow{\text{sister}}$ Clara};
+\node[below=0.25cm of r,text width=2.2cm,align=center,font=\tiny] {$\text{son} \circ \text{sister} = \mathbf{daughter}$};
+\end{tikzpicture}
+\par\vspace{5pt}
+\footnotesize
+\begin{columns}[T,onlytextwidth]
+\column{0.48\textwidth}
+\textbf{\color{keyc}Nguyên lý thiết kế từ chẩn đoán nhân quả}\par\vspace{2pt}
+Tác vụ hợp thành được mô tả bởi hai hàm:
+$$E = f_{\text{extract}}(X), \qquad Y = f_{\text{compose}}(E)$$
+R3 cho thấy mô hình nhỏ thực hiện được $f_{\text{extract}}$ (đọc bề mặt) nhưng không thực hiện được $f_{\text{compose}}$ \citeref{Dziri et al., NeurIPS 2023}. Theo hướng các hệ thống Neuro-Symbolic \citeref{Olausson et al., EMNLP 2023; Lyu et al., IJCNLP-AACL 2023}, $f_{\text{extract}}$ được giao cho mô hình ngôn ngữ còn $f_{\text{compose}}$ được thực thi bằng bộ giải đại số quan hệ tất định. Hướng này cũng phù hợp với quan sát gần đây rằng khi quyết định cuối được tính bằng công cụ ngoài từ cấu trúc trung gian thì hiện tượng không cập nhật theo can thiệp giảm đáng kể \citeref{Somov et al., 2026}.
+
+\column{0.48\textwidth}
+\textbf{\color{keyc}Thiết lập so sánh cùng chi phí}\par\vspace{2pt}
+\begin{itemize}
+  \setlength{\itemsep}{2pt}
+  \item Bảng $126$ luật hợp thành $r_1 \circ r_2 \to r_3$ được quy nạp tự động từ nhãn tập huấn luyện (chính xác $95\%$ trên chuỗi chuẩn).
+  \item $\text{SC}_5$ được dùng để bỏ phiếu đa số trên tập cạnh trích xuất; nếu đồ thị $\mathcal{G}_X$ không nối được hai thực thể đích, hệ thống dùng dự đoán CoT.
+  \item Đối chứng trực tiếp với $\text{SC}_{10}$, có tổng số token sinh ra không nhỏ hơn toàn bộ pipeline D2.
+\end{itemize}
+\end{columns}
+\par\kern0pt
+\note{Từ chẩn đoán R3, bài toán gồm hai hàm: trích xuất sự kiện và hợp thành quan hệ. Vì mô hình nhỏ chỉ hỏng ở hàm hợp thành, em thiết kế kiến trúc lai D2: mô hình ngôn ngữ trích xuất các cạnh quan hệ, còn thuật toán đồ thị kèm bảng luật thực hiện phép hợp thành.}
+\end{frame}
+
+%% ============================================================================ D2 kết quả
+\begin{frame}[shrink]{D2 \textperiodcentered{} Kết quả: vượt Self-Consistency cùng chi phí $+21$ đến $+37$ điểm}
+\begin{columns}[T,onlytextwidth]
+\column{0.52\textwidth}
+\centering
+\begin{tikzpicture}
+\begin{axis}[ybar, width=\linewidth, height=4.8cm, bar width=5.5pt, ymin=0, ymax=90,
+  symbolic x coords={V 1.5B,V 3B,V 7B,S 1.5B,S 3B,S 7B,L 1.5B,L 3B,L 7B}, xtick=data,
+  x tick label style={font=\tiny,rotate=30,anchor=east}, y tick label style={font=\tiny},
+  ylabel={Độ chính xác (\%)}, ylabel style={font=\tiny},
+  legend style={at={(0.5,1.05)},anchor=south,legend columns=3,font=\tiny,draw=none},
+  enlarge x limits=0.07, ymajorgrids, grid style={black!10}]
+\addplot[fill=nac,draw=none] coordinates {(V 1.5B,25.7)(V 3B,36.3)(V 7B,39.7)(S 1.5B,31.6)(S 3B,30.4)(S 7B,39.2)(L 1.5B,34.5)(L 3B,26.0)(L 7B,26.0)};
+\addplot[fill=partc,draw=none] coordinates {(V 1.5B,28.7)(V 3B,38.0)(V 7B,43.3)(S 1.5B,31.0)(S 3B,32.3)(S 7B,40.5)(L 1.5B,29.5)(L 3B,29.0)(L 7B,28.5)};
+\addplot[fill=okc,draw=none] coordinates {(V 1.5B,60.7)(V 3B,70.0)(V 7B,80.0)(S 1.5B,52.5)(S 3B,59.5)(S 7B,74.1)(L 1.5B,33.5)(L 3B,38.5)(L 7B,52.5)};
+\legend{CoT chuẩn,SC$_{10}$ (cùng chi phí),Extract+Rules (D2)}
+\end{axis}
+\end{tikzpicture}
+\ghichu{V: tập validation (2--4 bước); S: cấu trúc mới OOD (2--4 bước); L: chuỗi dài OOD (\textbf{5--8 bước}).}
+
+\column{0.44\textwidth}
+\scriptsize
+\textbf{\color{keyc}Chênh lệch hiệu năng ($\text{D2} - \text{SC}_{10}$)}\par\vspace{2pt}
+\renewcommand{\arraystretch}{1.2}
+\begin{tabularx}{\linewidth}{@{}lYR{2.3cm}@{}}
+\toprule
+\textbf{Tập} & \textbf{Quy mô} & \textbf{$\Delta$ [KTC 95\%]}\\
+\midrule
+V (ID) & 1.5B / 3B / 7B & $+32.0$ / $+32.0$ / $+36.7$\\
+S (OOD) & 1.5B / 3B / 7B & $+20.9$ / $+27.2$ / $+33.5$\\
+L (5--8) & Qwen2.5-1.5B & $-1.0$ (không có ý nghĩa)\\
+L (5--8) & Qwen2.5-3B & $+9.5\ \ci{3.5}{15.5}$\\
+L (5--8) & Qwen2.5-7B & $\mathbf{+24.0}\ \ci{17.0}{31.5}$\\
+\bottomrule
+\end{tabularx}
+\par\vspace{4pt}
+\footnotesize
+\begin{itemize}
+  \setlength{\itemsep}{2pt}
+  \item Trên chuỗi ngắn (2--4 bước), D2 tăng gấp đôi độ chính xác ở mọi kích thước mô hình.
+  \item Trên chuỗi dài OOD (5--8 bước), mức cải thiện tăng theo khả năng trích xuất đủ các cạnh của mô hình nền ($+24.0$ điểm ở 7B).
+\end{itemize}
+\end{columns}
+\takeaway{Giao phép hợp thành cho bộ giải quy tắc giúp mô hình 1.5B (60.7\%) vượt mô hình 7B chạy Self-Consistency 10 mẫu (43.3\%) trên tập validation. \OKs}
+\par\kern0pt
+\note{Một mô hình 1.5B khi kết hợp với bảng luật đạt độ chính xác 60.7 phần trăm trên tập validation, cao hơn mô hình 7B chạy Self-Consistency 10 mẫu, chỉ đạt 43.3 phần trăm.}
+\end{frame}
+
+%%@@D3
+\begin{frame}[shrink]{D3 \textperiodcentered{} Ablation: cô lập vai trò của bộ hợp thành}
+\centering
+\begin{tikzpicture}[font=\scriptsize,node distance=0.3cm,
+  b/.style={draw=keyc,fill=keyc!4,rounded corners=2pt,align=center,inner sep=3pt,text width=2.6cm,minimum height=0.95cm},
+  bo/.style={draw=partc,fill=partc!12,rounded corners=2pt,align=center,inner sep=3pt,text width=2.8cm,minimum height=0.95cm},
+  bg/.style={draw=okc,fill=okc!12,rounded corners=2pt,align=center,inner sep=3pt,text width=2.8cm,minimum height=0.95cm},
+  ar/.style={-{Stealth[length=2mm]},thick,nac}]
+\node[b] (s) at (0,0) {Văn bản câu chuyện $X$};
+\node[b,right=of s] (f) {Tập sự kiện $\hat{E} = f_{\text{extract}}(X)$\\(giữ cố định 100\%)};
+\node[bo,above right=-0.05cm and 0.5cm of f] (c1) {\textbf{Nhánh 1 ($f_{\text{LLM}}$):} đưa $\hat{E}$ vào lại SLM để tự suy diễn đáp án};
+\node[bg,below right=-0.05cm and 0.5cm of f] (c2) {\textbf{Nhánh 2 ($f_{\text{rule}}$):} đưa $\hat{E}$ vào bảng luật để hợp thành đáp án};
+\draw[ar] (s)--(f); \draw[ar] (f.east)--++(0.2,0)|-(c1.west); \draw[ar] (f.east)--++(0.2,0)|-(c2.west);
+\end{tikzpicture}
+\par\vspace{4pt}
+\footnotesize
+\begin{columns}[T,onlytextwidth]
+\column{0.40\textwidth}
+\textbf{\color{keyc}Kiểm soát biến gây nhiễu}\par\vspace{2pt}
+Một giải thích thay thế cho kết quả của D2 là bước trích xuất $\hat{E}$ đã tóm tắt và loại các câu nhiễu trong câu chuyện $X$, nên độ chính xác tăng không phải nhờ bộ hợp thành.\par\vspace{3pt}
+Để kiểm tra, ta giữ nguyên đầu ra trích xuất $\hat{E}$ cho từng mẫu và chỉ thay hàm hợp thành: $f_{\text{LLM}}(\hat{E})$ so với $f_{\text{rule}}(\hat{E})$.
+
+\column{0.56\textwidth}
+\scriptsize
+\renewcommand{\arraystretch}{1.2}
+\setlength{\tabcolsep}{3pt}
+\begin{tabularx}{\linewidth}{@{}P{1.1cm}P{1.45cm}Q{0.7cm}Q{0.85cm}Q{0.85cm}Q{1.3cm}@{}}
+\toprule
+\textbf{Độ dài} & \textbf{Mô hình} & \textbf{CoT} & \textbf{Nhánh 1} & \textbf{Nhánh 2} & \textbf{N2 $-$ N1}\\
+\midrule
+2--4 bước & Qwen-1.5B & 31.6 & 32.9 & \textbf{46.2} & $+13.3$\\
+ & Qwen-3B & 30.4 & 28.5 & \textbf{54.4} & $+25.9$\\
+ & Qwen-7B & 39.2 & 36.1 & \textbf{71.5} & $+35.4$\\
+\midrule
+5--8 bước & Qwen-1.5B & 34.5 & 29.0 & 33.0 & $+4.0$ (n.s.)\\
+ & Qwen-3B & 26.0 & 27.0 & 32.0 & $+5.0$ (n.s.)\\
+ & Qwen-7B & 26.0 & 33.0 & \textbf{46.0} & $+13.0$\\
+\bottomrule
+\end{tabularx}
+\end{columns}
+\takeaway{Khi đã có sẵn danh sách sự kiện sạch $\hat{E}$, bản thân mô hình ngôn ngữ (Nhánh 1) không cải thiện so với CoT. Thay bước hợp thành bằng bảng luật (Nhánh 2) cho mức tăng $+13$ đến $+35$ điểm trên chuỗi ngắn. \OKs}
+\par\kern0pt
+\note{Ablation D3 là bằng chứng nhân quả trực tiếp nhất cho phần giải mã. Khi đưa lại đúng danh sách sự kiện đã làm sạch cho chính mô hình ngôn ngữ tự suy luận, độ chính xác vẫn gần như khi đọc văn bản dài. Chỉ khi thay bộ hợp thành bằng bảng luật thì độ chính xác mới tăng đáng kể.}
+\end{frame}
+
+\section{Can thiệp huấn luyện (D4--D9)}
+%%@@D4d
+\begin{frame}[shrink]{D4 \textperiodcentered{} SFT: thiết kế ba định dạng chuỗi giám sát}
+\centering
+\begin{tikzpicture}[font=\scriptsize,node distance=0.2cm,
+  bx/.style={draw=keyc,fill=keyc!3,rounded corners=2pt,align=left,inner sep=4pt,text width=3.55cm,minimum height=3.0cm,anchor=north west}]
+\node[bx] (a) at (0,0) {{\bfseries\color{keyc}1. Chỉ đáp án (answer-only)}\par\vspace{3pt}
+  \code{Đáp án: Clara là con gái của Anna.}\par\vspace{4pt}
+  {\color{nac}Mô hình học ánh xạ trực tiếp $X \to Y$ trong không gian ẩn, không có chuỗi trung gian $Z$.}};
+\node[bx,right=0.2cm of a.north east,anchor=north west] (b) {{\bfseries\color{keyc}2. Chuỗi chuẩn tự nhiên (S\_plain)}\par\vspace{3pt}
+  \code{Bước 1: Ben là con trai của Anna.}\par
+  \code{Bước 2: Clara là chị gái của Ben.}\par
+  \code{Đáp án: Clara là con gái của Anna.}\par\vspace{3pt}
+  {\color{nac}Liệt kê các cạnh quan hệ trên đường đi, hợp thành ở dòng cuối.}};
+\node[bx,right=0.2cm of b.north east,anchor=north west] (c) {{\bfseries\color{keyc}3. Chuỗi trạng thái tích lũy (S\_struct)}\par\vspace{3pt}
+  \code{Bước 1: Ben là con trai của Anna.}\par
+  \code{\textcolor{partc}{$\to$ Tích lũy: Ben là con trai Anna.}}\par
+  \code{Bước 2: Clara là chị gái của Ben.}\par
+  \code{\textcolor{partc}{$\to$ Tích lũy: Clara là con gái Anna.}}\par
+  \code{Đáp án: Clara là con gái của Anna.}};
+\end{tikzpicture}
+\par\vspace{5pt}
+\footnotesize
+\begin{columns}[T,onlytextwidth]
+\column{0.48\textwidth}
+\textbf{\color{keyc}Mục tiêu nghiên cứu}\par\vspace{2pt}
+Khi không dùng bộ giải quy tắc ngoài như D2, tinh chỉnh có giám sát (LoRA SFT trên $3.000$ mẫu có độ dài \textbf{chỉ từ 2--4 bước}) có giúp mô hình nhỏ nội tâm hóa phép hợp thành $r_1 \circ r_2$ hay không.
+
+\column{0.48\textwidth}
+\textbf{\color{keyc}Giả thuyết về định dạng cấu trúc (S\_struct)}\par\vspace{2pt}
+Nhánh \code{S\_struct} yêu cầu mô hình ghi tường minh kết quả hợp thành trung gian sau mỗi bước, tức đưa bài toán chuỗi dài về chuỗi các phép hợp thành hai bước. Giả thuyết là định dạng này giúp tổng quát hóa sang chuỗi \textbf{5--8 bước} tốt hơn \code{S\_plain}.
+\end{columns}
+\par\kern0pt
+\note{Sang phần can thiệp huấn luyện, mục tiêu là kiểm tra xem có thể dạy mô hình nhỏ tự thực hiện phép hợp thành mà không cần bảng luật bên ngoài hay không. Em thử ba định dạng SFT trên bài toán 2 đến 4 bước, sau đó kiểm tra trên bài toán 5 đến 8 bước chưa xuất hiện trong huấn luyện.}
+\end{frame}
+
+%% ============================================================================ Vòng 10
+\begin{frame}[shrink]{D4 \textperiodcentered{} Kết quả SFT: chuỗi chuẩn hình thành năng lực hợp thành}
+\begin{columns}[T,onlytextwidth]
+\column{0.58\textwidth}
+\scriptsize
+\textbf{\color{keyc}Độ chính xác (\%) sau khi huấn luyện trên mẫu 2--4 bước}\par\vspace{2pt}
+\renewcommand{\arraystretch}{1.2}
+\setlength{\tabcolsep}{3.5pt}
+\begin{tabularx}{\linewidth}{@{}P{0.75cm}YQ{1.0cm}Q{1.0cm}Q{1.0cm}@{}}
+\toprule
+\textbf{SLM} & \textbf{Phương pháp} & \textbf{Val 2--4} & \textbf{OOD 2--4} & \textbf{OOD 5--8}\\
+\midrule
+3B & CoT (few-shot) & 36.3 & 30.4 & 26.0\\
+3B & D2: Extract+Rules & 70.0 & 59.5 & 38.5\\
+3B & Prompt cấu trúc & 28.3 & 27.9 & 23.5\\
+3B & \textbf{SFT chuỗi chuẩn (S\_plain)} & \textbf{94.7} & \textbf{77.8} & \textbf{59.0}\\
+3B & SFT cấu trúc (S\_struct) & 89.3 & 72.2 & 52.5\\
+\midrule
+1.5B & \textbf{SFT chuỗi chuẩn (S\_plain)} & \textbf{83.0} & \textbf{60.1} & \textbf{47.0}\\
+1.5B & SFT cấu trúc (S\_struct) & 83.3 & 60.8 & 42.5\\
+\bottomrule
+\end{tabularx}
+\ghichu{Số liệu seed 0; seed 1 nhất quán (3B S\_plain: 94.7 / 74.7 / 58.5).}
+
+\column{0.38\textwidth}
+\footnotesize
+\textbf{\color{keyc}Hai phát hiện chính}\par\vspace{2pt}
+\begin{enumerate}
+  \setlength{\itemsep}{4pt}
+  \item \textbf{Cấu trúc phụ trợ không cải thiện.} Trên tập OOD 5--8 bước, $\text{S\_struct} - \text{S\_plain} = -6.5$ điểm (seed 0) và $-3.0$ điểm (seed 1). Chuỗi dài hơn có thể làm tăng tích lũy lỗi tự hồi quy.
+  \item \textbf{SFT chuỗi chuẩn hiệu quả.} Chỉ với 3.000 mẫu ngắn (2--4 bước), \code{S\_plain} đưa mô hình 3B từ $36.3\%$ lên $\mathbf{94.7\%}$ (ID) và đạt $\mathbf{59.0\%}$ trên chuỗi 5--8 bước, cao hơn kiến trúc lai D2 ($38.5\%$) vì không phụ thuộc vào độ phủ của bước trích xuất đồ thị.
+\end{enumerate}
+\end{columns}
+\takeaway{Việc mô hình không hợp thành được quan hệ ở R3 phản ánh hạn chế của cách gợi ý (prompting) chứ không phải giới hạn dung lượng của mô hình; tinh chỉnh trên chuỗi chuẩn \code{S\_plain} khắc phục hạn chế này. \FAILs\ (cấu trúc)}
+\par\kern0pt
+\note{Kết quả D4 cho thấy việc ép mô hình viết thêm dòng quan hệ tích lũy làm chuỗi dài hơn và không cải thiện kết quả. Ngược lại, chỉ cần tinh chỉnh trên chuỗi tự nhiên, mô hình 3B tăng từ 36 lên 94.7 phần trăm và đạt 59 phần trăm trên chuỗi 5 đến 8 bước, cao hơn phương pháp bảng luật D2.}
+\end{frame}
+
+%%@@D5d
+\begin{frame}[shrink]{D5 \textperiodcentered{} Kiểm chứng SFT trên văn bản Wikipedia (2WikiMultihopQA)}
+\footnotesize
+\begin{columns}[T,onlytextwidth]
+\column{0.50\textwidth}
+\textbf{\color{keyc}Thiết lập thực nghiệm trên dữ liệu mở}\par\vspace{2pt}
+Để kiểm tra kết luận ở D4 có bị giới hạn trong miền bán tổng hợp (CLUTRR) hay không, SFT được thực hiện trên \textbf{2WikiMultihopQA} (nhóm câu hỏi \emph{Compositional} và \emph{Inference}).\par\vspace{3pt}
+\scriptsize
+\textbf{Ví dụ chuỗi huấn luyện được dựng từ bằng chứng chuẩn:}\par\vspace{2pt}
+\code{Hỏi: Ông nội của Charles Bretagne Marie là ai?}\\
+\code{Bước 1: Cha của Charles là Jean.} \textcolor{nac}{\code{[Đoạn: Charles... ]}}\\
+\code{Bước 2: Cha của Jean là Charles Armand.} \textcolor{nac}{\code{[Đoạn: Jean...]}}\\
+\code{Đáp án: Charles Armand René de La Trémoille}\par\vspace{4pt}
+\footnotesize
+Bốn nhánh được so sánh: \textbf{few-shot}, \textbf{SFT chỉ đáp án}, \textbf{SFT chuỗi chuẩn} và \textbf{SFT chuỗi kèm trích dẫn nguồn}.
+
+\column{0.46\textwidth}
+\scriptsize
+\textbf{\color{keyc}Exact Match (\%) trên 500 mẫu kiểm thử}\par\vspace{2pt}
+\renewcommand{\arraystretch}{1.2}
+\setlength{\tabcolsep}{4pt}
+\begin{tabularx}{\linewidth}{@{}YQ{1.0cm}Q{0.9cm}Q{0.85cm}Q{1.0cm}@{}}
+\toprule
+\textbf{Cấu hình} & \textbf{Few-shot} & \textbf{Đáp án} & \textbf{Chuỗi} & \textbf{+Nguồn}\\
+\midrule
+Qwen2.5-1.5B (tổng) & 21.6 & 49.8 & 51.2 & \textbf{52.4}\\
+Qwen2.5-3B (tổng) & 28.8 & 50.0 & \textbf{56.0} & 54.4\\
+\midrule
+3B, nhóm Inference (91) & 7.7 & 34.1 & \textbf{41.8} & 40.7\\
+3B, nhóm Compositional (409) & 33.5 & 53.5 & \textbf{59.2} & 57.5\\
+\bottomrule
+\end{tabularx}
+\par\vspace{4pt}
+\footnotesize
+\begin{itemize}
+  \setlength{\itemsep}{2pt}
+  \item \textbf{Hiệu ứng SFT:} tăng $+21$ đến $+30$ điểm EM so với few-shot (3B: $+25.6\ \ci{20.4}{30.6}$).
+  \item \textbf{Vai trò của chuỗi:} ở 3B, sinh chuỗi hơn chỉ đáp án $+6.0\ \ci{2.0}{10.0}$ điểm, rõ nhất ở nhóm \emph{Inference}.
+  \item \textbf{Trích dẫn nguồn:} độ chính xác trích dẫn $93\%\text{--}95\%$ nhưng không cải thiện EM của đáp án cuối ($-1.6$ điểm ở 3B).
+\end{itemize}
+\end{columns}
+\takeaway{Quy luật trên văn bản Wikipedia tự nhiên nhất quán với CLUTRR: tinh chỉnh có giám sát trên chuỗi chuẩn là yếu tố quyết định hiệu năng, còn việc gắn nhãn trích dẫn không đem lại lợi ích bổ sung. \PARTs}
+\par\kern0pt
+\note{Mở rộng sang văn bản Wikipedia thật trên 2WikiMultihopQA, quy luật lặp lại: SFT tăng 21 đến 30 điểm EM, sinh chuỗi giúp mô hình 3B hơn chỉ đoán đáp án, còn việc yêu cầu trích dẫn tên đoạn văn không tăng thêm độ chính xác.}
+\end{frame}
+
+
+%%@@D6
+\begin{frame}[shrink]{D6 \textperiodcentered{} Sau SFT: phụ thuộc nhân quả vào các bước trung gian}
+\footnotesize
+\begin{columns}[T,onlytextwidth]
+\column{0.56\textwidth}
+\textbf{\color{keyc}Đo lại độ phụ thuộc nhân quả ($\dt$) sau SFT}\par\vspace{2pt}
+Phép thử của R3 được áp dụng lại cho mô hình \code{S\_plain} trên 120 mẫu kiểm thử độc lập:\par\vspace{4pt}
+\scriptsize
+\renewcommand{\arraystretch}{1.25}
+\setlength{\tabcolsep}{5pt}
+\begin{tabularx}{\linewidth}{@{}lQ{1.3cm}Q{1.5cm}Q{1.3cm}Q{1.5cm}@{}}
+\toprule
+ & \multicolumn{2}{c}{\textbf{Hiệu ứng che bước $\Delta$}} & \multicolumn{2}{c}{\textbf{Chép sai $T_{\text{copy-wrong}}$}}\\
+\cmidrule(lr){2-3}\cmidrule(l){4-5}
+\textbf{SLM} & \textbf{Trước SFT} & \textbf{Sau SFT} & \textbf{Trước SFT} & \textbf{Sau SFT}\\
+\midrule
+1.5B & $-1.5$ & \textbf{36.0--42.0} & 63.0\% & 13.0--22.0\%\\
+3B & $7.3$ & \textbf{41.0--44.0} & 47.7\% & 26.0--32.0\%\\
+7B & $1.3$ & \textbf{39.0} & 10.3\% & \textbf{47.5\%}\\
+\bottomrule
+\end{tabularx}
+
+\column{0.40\textwidth}
+\textbf{\color{keyc}Nhận xét}\par\vspace{2pt}
+\begin{itemize}
+  \setlength{\itemsep}{4pt}
+  \item \textbf{Chuyển dịch cơ chế:} $\Delta(\dt)$ tăng từ mức nhiễu ($1$--$7$ điểm) lên $\sim \mathbf{40}$ \textbf{điểm}, nghĩa là mô hình sau SFT \emph{sử dụng các bước trung gian} để tính đáp án.
+  \item \textbf{Tác dụng phụ:} mô hình 7B sau SFT sao chép kết luận sai nhiều hơn ($47.5\%$ so với $10.3\%$), cho thấy nó tin vào dòng kết luận cuối theo quy ước định dạng.
+\end{itemize}
+\end{columns}
+\takeaway{SFT biến chuỗi CoT từ phần diễn giải đi kèm thành mạch tính toán có phụ thuộc nhân quả ($\Delta \approx 40$ điểm); đồng thời làm xuất hiện xu hướng tin vào dòng kết luận cuối ở mô hình 7B. \OKs}
+\par\kern0pt
+\note{Phép đo nhân quả cho thấy mô hình sau SFT thực sự dựa vào các bước trung gian, Delta tăng từ mức nhiễu lên khoảng 40 điểm. Tác dụng phụ là mô hình 7B sao chép kết luận sai nhiều hơn.}
+\end{frame}
+
+%%@@D7
+\begin{frame}[shrink]{D7 \textperiodcentered{} Vai trò của chuỗi đối với tổng quát hóa ngoài phân phối}
+\footnotesize
+\begin{columns}[T,onlytextwidth]
+\column{0.58\textwidth}
+\textbf{\color{keyc}SFT chỉ đáp án (Ans) so với SFT chuỗi chuẩn (Chain), độ chính xác \%}\par\vspace{4pt}
+\scriptsize
+\renewcommand{\arraystretch}{1.25}
+\setlength{\tabcolsep}{5pt}
+\begin{tabularx}{\linewidth}{@{}lQ{0.9cm}Q{0.9cm}Q{0.9cm}Q{0.9cm}Q{0.9cm}Q{0.9cm}@{}}
+\toprule
+ & \multicolumn{2}{c}{\textbf{ID (2--4)}} & \multicolumn{2}{c}{\textbf{OOD (2--4)}} & \multicolumn{2}{c}{\textbf{OOD (5--8)}}\\
+\cmidrule(lr){2-3}\cmidrule(lr){4-5}\cmidrule(l){6-7}
+\textbf{SLM} & \textbf{Ans} & \textbf{Chain} & \textbf{Ans} & \textbf{Chain} & \textbf{Ans} & \textbf{Chain}\\
+\midrule
+1.5B & 77.7 & \textbf{83.0} & 54.4 & \textbf{60.1} & 38.0 & \textbf{47.0}\\
+3B & 90.3 & \textbf{94.7} & 55.1 & \textbf{77.8} & 41.0 & \textbf{59.0}\\
+7B & 95.0 & \textbf{95.0} & 63.9 & \textbf{81.0} & 47.5 & \textbf{58.5}\\
+\bottomrule
+\end{tabularx}
+
+\column{0.38\textwidth}
+\textbf{\color{keyc}Nhận xét}\par\vspace{2pt}
+\begin{itemize}
+  \setlength{\itemsep}{4pt}
+  \item Trên tập cùng phân phối, học thẳng đáp án đạt $90.3\%\text{--}95.0\%$ do ghi nhớ các ánh xạ quen thuộc.
+  \item Với tổ hợp quan hệ mới hoặc chuỗi dài 5--8 bước, nhánh chỉ đáp án giảm mạnh; nhánh sinh chuỗi hơn từ $\mathbf{+9.0}$ đến $\mathbf{+22.7}$ điểm.
+\end{itemize}
+\end{columns}
+\takeaway{Việc sinh chuỗi trung gian đi cùng với khả năng tổng quát hóa tốt hơn ngoài phân phối so với chỉ học đáp án ($+9$ đến $+23$ điểm). \OKs}
+\par\kern0pt
+\note{Việc viết chuỗi trung gian giúp mô hình tổng quát hóa sang đề mới và dài hơn tốt hơn tới 23 điểm so với chỉ học đáp án.}
+\end{frame}
+
+%%@@D8
+\begin{frame}[shrink]{D8 \textperiodcentered{} DPO phản thực giảm hành vi sao chép kết luận sai}
+\footnotesize
+\begin{columns}[T,onlytextwidth]
+\column{0.50\textwidth}
+\textbf{\color{keyc}Thiết kế}\par\vspace{2pt}
+Để xử lý hiện tượng sao chép kết luận sai ở D6, DPO được huấn luyện trên 1.500 cặp đối chiếu $(Z_{\text{chosen}}, Z_{\text{rejected}})$. Mẫu bị từ chối chứa các bước tiền đề đúng nhưng gắn kết luận cuối mâu thuẫn. Hướng dùng phản hồi phản thực để hình thành suy luận cũng được khảo sát trong \citeref{Hüyük et al., ICLR 2025}.\par\vspace{6pt}
+\textbf{\color{keyc}Nhận xét}\par\vspace{2pt}
+\begin{itemize}
+  \setlength{\itemsep}{3pt}
+  \item DPO giảm mạnh hành vi sao chép kết luận sai ($22\text{--}25$ điểm, còn $4.5\%\text{--}7.2\%$).
+  \item Đổi lại, độ chính xác trên chuỗi dài OOD 5--8 bước giảm $5\text{--}13$ điểm.
+\end{itemize}
+
+\column{0.46\textwidth}
+\scriptsize
+\textbf{\color{keyc}Kết quả trên Qwen2.5-3B}\par\vspace{3pt}
+\renewcommand{\arraystretch}{1.3}
+\setlength{\tabcolsep}{3pt}
+\begin{tabularx}{\linewidth}{@{}lQ{1.1cm}Q{1.1cm}Q{1.1cm}Q{1.1cm}@{}}
+\toprule
+ & \multicolumn{2}{c}{\textbf{Chép sai $T_{\text{copy-wrong}}$}} & \multicolumn{2}{c}{\textbf{OOD 5--8 bước (\%)}}\\
+\cmidrule(lr){2-3}\cmidrule(l){4-5}
+ & \textbf{Trước DPO} & \textbf{Sau DPO} & \textbf{Trước DPO} & \textbf{Sau DPO}\\
+\midrule
+Seed 0 & 26.7\% & \textbf{4.5\%} & 57.5 & 44.5\\
+Seed 1 & 32.4\% & \textbf{7.2\%} & 56.5 & 51.5\\
+\bottomrule
+\end{tabularx}
+\end{columns}
+\takeaway{DPO phản thực loại bỏ phần lớn hành vi sao chép kết luận sai nhưng làm giảm độ chính xác trên chuỗi dài; đây là một đánh đổi chứ không phải cải thiện thuần. \PARTs}
+\par\kern0pt
+\note{DPO giúp giảm tật chép kết luận sai xuống còn 4.5 đến 7 phần trăm nhưng làm giảm độ chính xác trên chuỗi dài từ 5 đến 13 điểm, nên em đánh giá ở mức đánh đổi.}
+\end{frame}
+
+%%@@D9
+\begin{frame}[shrink]{D9 \textperiodcentered{} GRPO với phần thưởng theo từng bước}
+\footnotesize
+\begin{columns}[T,onlytextwidth]
+\column{0.38\textwidth}
+\textbf{\color{keyc}Thiết kế}\par\vspace{2pt}
+GRPO \citeref{Shao et al., 2024; DeepSeek-AI, 2025} được áp dụng với phần thưởng kiểm chứng được: $+1.0$ cho đáp án đúng và $+0.3 \times$ (tỷ lệ bước khớp đồ thị chuẩn).\par\vspace{3pt}
+Một hướng liên quan là thưởng theo mức cần thiết của từng bước \citeref{arXiv:2603.22816, 2026}. Luận văn không dùng hướng này vì phép che đơn lẻ không đo được vai trò của bước trung gian (R1).\par\vspace{6pt}
+\textbf{\color{keyc}Nhận xét}\par\vspace{2pt}
+\begin{itemize}
+  \setlength{\itemsep}{3pt}
+  \item GRPO tăng $+8.9$ điểm trên OOD 2--4 bước (1.5B) và giảm gần một nửa tỷ lệ lật đáp án khi chèn câu nhiễu.
+  \item Chuỗi 5--8 bước chưa cải thiện vì tập huấn luyện RL chỉ gồm mẫu 2--4 bước, nơi mô hình SFT đã giải đúng khoảng $90\%$ nên tín hiệu phương sai trong nhóm thưa.
+\end{itemize}
+
+\column{0.58\textwidth}
+\scriptsize
+\textbf{\color{keyc}Độ chính xác (\%) và tỷ lệ lật đáp án do nhiễu}\par\vspace{3pt}
+\renewcommand{\arraystretch}{1.3}
+\setlength{\tabcolsep}{4.5pt}
+\begin{tabularx}{\linewidth}{@{}lP{1.8cm}Q{0.75cm}Q{1.1cm}Q{1.1cm}Q{1.3cm}@{}}
+\toprule
+\textbf{SLM} & \textbf{Phương pháp} & \textbf{ID} & \textbf{OOD 2--4} & \textbf{OOD 5--8} & \textbf{Lật do nhiễu}\\
+\midrule
+1.5B & Chỉ SFT & 84.3 & 59.5 & 47.0 & 51.9\%\\
+1.5B & SFT + GRPO & \textbf{89.7} & \textbf{68.4} & \textbf{48.5} & \textbf{23.4\%}\\
+3B & Chỉ SFT & 94.7 & 77.8 & 60.0 & 36.1\%\\
+3B & SFT + GRPO & \textbf{96.0} & \textbf{81.0} & 60.0 & \textbf{22.2\%}\\
+\bottomrule
+\end{tabularx}
+\end{columns}
+\takeaway{GRPO tăng độ bền trước nhiễu ngữ cảnh ($51.9\% \to 23.4\%$ ở 1.5B) và cải thiện chuỗi ngắn, nhưng chưa cải thiện chuỗi dài 5--8 bước. \PARTs}
+\par\kern0pt
+\note{GRPO giúp giảm gần một nửa tỷ lệ bị lật đáp án khi gặp nhiễu và cải thiện chuỗi ngắn, nhưng chưa cải thiện chuỗi dài vì tập huấn luyện RL chỉ gồm mẫu ngắn.}
+\end{frame}
+
+
+\section{Thảo luận và kết luận}
+%% ============================================================================ Hạn chế
+\begin{frame}[shrink]{Thảo luận: phạm vi hiệu lực, hạn chế và tính minh bạch}
+\footnotesize
+\begin{columns}[T,onlytextwidth]
+\column{0.48\textwidth}
+\textbf{\color{keyc}Giới hạn phạm vi và các mối đe dọa tới tính giá trị}\par\vspace{3pt}
+\begin{enumerate}
+  \setlength{\itemsep}{3pt}
+  \item \textbf{Đặc thù miền bài toán.} Bảng luật trong D2 hiệu quả nhất ở các miền có không gian quan hệ đóng (như CLUTRR). Trên văn bản mở (2WikiMultihopQA), hướng SFT (D5) khả thi và tổng quát hơn.
+  \item \textbf{Độ phủ của đồ thị suy luận tự động (DRG).} Thuật toán nối cạnh dựa trên đối sánh thực thể bề mặt hiện chỉ đạt đồ thị liên thông đầy đủ trên $25\%\text{--}36\%$ chuỗi sinh tự do; các trường hợp đồng tham chiếu ẩn cần mô hình phân giải thực thể mạnh hơn.
+  \item \textbf{Quy mô và miền tác vụ.} Các kết luận được xác lập cho mô hình $0.5\text{B}\text{--}7\text{B}$ trên suy luận quan hệ và hỏi đáp đa bước; cần kiểm chứng thêm trên suy luận toán học hình thức và mô hình lớn hơn $14\text{B}$. Phần lớn kết quả dùng một seed.
+\end{enumerate}
+
+\column{0.48\textwidth}
+\textbf{\color{keyc}Nhật ký hiệu chỉnh khi mở rộng cỡ mẫu}\par\vspace{3pt}
+Mọi kết quả âm tính và hiệu chỉnh đều được báo cáo:\par\vspace{3pt}
+\scriptsize
+\renewcommand{\arraystretch}{1.25}
+\begin{tabularx}{\linewidth}{@{}YY@{}}
+\toprule
+\textbf{Giả thuyết / quan sát sơ bộ} & \textbf{Kết luận sau kiểm chứng quy mô lớn}\\
+\midrule
+Nhiễu làm CoT giảm $\sim 10\%$ ở thử nghiệm thăm dò ($n=120$) & Với $n=500$: mức giảm thực tế ổn định ở $3\%\text{--}6\%$.\\
+``CoT nhạy cảm với nhiễu hơn dự đoán trực tiếp'' & Khoảng tin cậy 95\% giao nhau; không đủ bằng chứng cho sự khác biệt.\\
+Hiệu chỉnh tiên nghiệm (calibration) như một phương pháp độc lập & Tương đương giải mã tự do; chỉ dùng làm đường cơ sở.\\
+Lược bỏ giới tính khi trích xuất sự kiện giúp tăng $+6\%\text{--}8\%$ & Phân tích hậu nghiệm không lặp lại được trên tập độc lập; giữ bản gốc.\\
+\bottomrule
+\end{tabularx}
+\end{columns}
+\par\kern0pt
+\note{Slide này tổng hợp các giới hạn của nghiên cứu và quá trình kiểm chứng chéo để loại bỏ các nhận định dựa trên cỡ mẫu nhỏ.}
+\end{frame}
+
+%% ============================================================================ Kết luận
+\begin{frame}[shrink]{Kết luận chung và định hướng phát triển}
+\footnotesize
+\begin{columns}[T,onlytextwidth]
+\column{0.50\textwidth}
+\textbf{\color{keyc}Tổng kết các đóng góp đã kiểm chứng}\par\vspace{3pt}
+\begin{enumerate}
+  \setlength{\itemsep}{3.5pt}
+  \item \textbf{Chuẩn hóa phép đo nhân quả CoT (R1, R2).} Phép che đơn lẻ ($\dn$) và lấy mẫu lại với mốc cố định cho kết quả lệch hệ thống; toán tử che toàn phần ($\dt$) và hiệu chỉnh theo vị trí đạt $\text{AUROC} = 0.86\text{--}0.98$.
+  \item \textbf{Giải mã cơ chế của mô hình nhỏ (R3, R4, R5).} Khi chưa tinh chỉnh, mô hình chủ yếu \emph{trích xuất bề mặt} thay vì \emph{suy diễn hợp thành}; nhiễu tác động gián tiếp qua quá trình sinh chuỗi ($\text{TIE}$), nên can thiệp giải mã muộn (HGCD) không hiệu quả.
+  \item \textbf{Hai lộ trình can thiệp hiệu quả (D2--D9).}
+  \begin{itemize}
+    \scriptsize
+    \item \emph{Không huấn luyện:} tách trích xuất và hợp thành bằng kiến trúc lai Neuro-Symbolic (D2, D3), tăng $+21\text{--}37$ điểm so với $\text{SC}_{10}$.
+    \item \emph{Có huấn luyện:} SFT trên chuỗi chuẩn (D4--D7) hình thành mạch suy diễn có phụ thuộc nhân quả ($\Delta \approx 40$), tổng quát hóa vượt độ dài ($+9\text{--}23$ điểm OOD); DPO/GRPO bổ sung độ bền vững với đánh đổi đã nêu.
+  \end{itemize}
+\end{enumerate}
+
+\column{0.46\textwidth}
+\textbf{\color{keyc}Định hướng nghiên cứu tiếp theo}\par\vspace{3pt}
+\scriptsize
+\renewcommand{\arraystretch}{1.25}
+\begin{tabularx}{\linewidth}{@{}P{0.45cm}Y@{}}
+\toprule
+\textbf{\#} & \textbf{Nội dung triển khai}\\
+\midrule
+1 & \textbf{Tối ưu đa mục tiêu DPO + GRPO.} Đưa mẫu chuỗi dài (5--8 bước) vào tập huấn luyện RL/DPO để giảm hành vi chép sai mà không làm giảm hiệu năng OOD.\\
+2 & \textbf{Đồ thị suy luận ngữ nghĩa (Semantic DRG).} Thay phép so khớp chuỗi trong $\dt$ bằng mô hình nhúng thực thể để tăng độ phủ liên thông trên văn bản tự do.\\
+3 & \textbf{Mở rộng quy mô và miền tác vụ.} Áp dụng bộ công cụ kiểm định nhân quả ($\dt$, $T_{\text{copy-wrong}}$) cho các mô hình suy luận chuyên biệt (14B--32B) trên bài toán toán học và lập trình.\\
+\bottomrule
+\end{tabularx}
+\end{columns}
+\takeaway{Chẩn đoán nhân quả giúp xác định đúng vị trí can thiệp: thay vì điều chỉnh ở bước chọn token cuối, cần tác động vào điểm nghẽn hợp thành quan hệ.}
+\par\kern0pt
+\note{Em xin tóm tắt kết luận chung và ba hướng phát triển. Thông điệp chính là chẩn đoán nhân quả giúp tránh những cải tiến bề mặt không hiệu quả và tập trung đúng vào điểm nghẽn hợp thành của mô hình.}
+\end{frame}
+
+%% ============================================================================ Cảm ơn
+\begin{frame}[c,noframenumbering]
+\centering
+{\Huge\bfseries\color{accentc}XIN TRÂN TRỌNG CẢM ƠN!\par}
+\vspace{0.4cm}
+{\large Kính mong nhận được ý kiến đóng góp của Quý Thầy Cô trong Hội đồng\par}
+\vspace{0.6cm}
+{\footnotesize\color{nac}Học viên: Nguyễn Nam Hán \textperiodcentered{} GVHD: PGS.TS. Nguyễn Thị Kim Anh\par}
+\par\kern0pt
+\note{Em xin chân thành cảm ơn các thầy cô trong hội đồng đã lắng nghe. Em rất mong nhận được các câu hỏi và ý kiến chỉ dẫn của thầy cô.}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\appendix
+\section{Phụ lục}
+%% ============================================================================ Tài liệu tham khảo & Ký hiệu
+\begin{frame}[shrink]{Phụ lục \textperiodcentered{} Tài liệu tham khảo chính}
+\scriptsize
+\begin{columns}[T,onlytextwidth]
+\column{0.49\textwidth}
+\textbf{\color{keyc}Tính trung thực và phép đo nhân quả của CoT}\par\vspace{2pt}
+\begin{itemize}
+  \setlength{\itemsep}{2pt}
+  \item Lanham et al. \emph{Measuring Faithfulness in Chain-of-Thought Reasoning}. arXiv:2307.13702, 2023.
+  \item Turpin, Michael, Perez, Bowman. \emph{Language Models Don't Always Say What They Think: Unfaithful Explanations in Chain-of-Thought Prompting}. NeurIPS 2023.
+  \item Paul, West, Bosselut, Faltings. \emph{Making Reasoning Matter: Measuring and Improving Faithfulness of Chain-of-Thought Reasoning}. Findings of EMNLP 2024.
+  \item Tutek, Hashemi Chaleshtori, Marasovi\'c, Belinkov. \emph{Measuring Chain of Thought Faithfulness by Unlearning Reasoning Steps}. EMNLP 2025.
+  \item Bogdan, Macar, Nanda, Conmy. \emph{Thought Anchors: Which LLM Reasoning Steps Matter?} arXiv:2506.19143, 2025.
+  \item Macar, Bogdan, Rajamanoharan, Nanda. \emph{Thought Branches: Interpreting LLM Reasoning Requires Resampling}. ICLR 2026.
+  \item Somov, Chaichuk, Seleznyov, Panchenko, Tutubalina. \emph{Breaking the Chain: A Causal Analysis of LLM Faithfulness to Intermediate Structures}. arXiv:2603.16475, 2026.
+  \item \emph{Measuring and Curing Reasoning Rigidity: From Decorative Chain-of-Thought to Genuine Faithfulness}. arXiv:2603.22816, 2026.
+\end{itemize}
+
+\column{0.49\textwidth}
+\textbf{\color{keyc}Suy diễn hợp thành, Neuro-Symbolic, huấn luyện và nền tảng}\par\vspace{2pt}
+\begin{itemize}
+  \setlength{\itemsep}{2pt}
+  \item Dziri et al. \emph{Faith and Fate: Limits of Transformers on Compositionality}. NeurIPS 2023.
+  \item Olausson et al. \emph{LINC: A Neurosymbolic Approach for Logical Reasoning by Combining Language Models with First-Order Logic Provers}. EMNLP 2023.
+  \item Lyu et al. \emph{Faithful Chain-of-Thought Reasoning}. IJCNLP-AACL 2023.
+  \item Pearl. \emph{Direct and Indirect Effects}. UAI 2001.
+  \item Vig et al. \emph{Investigating Gender Bias in Language Models Using Causal Mediation Analysis}. NeurIPS 2020.
+  \item H\"uy\"uk et al. \emph{Reasoning Elicitation in Language Models via Counterfactual Feedback}. ICLR 2025.
+  \item Shao et al. \emph{DeepSeekMath: Pushing the Limits of Mathematical Reasoning in Open Language Models} (GRPO). arXiv:2402.03300, 2024.
+  \item DeepSeek-AI. \emph{DeepSeek-R1: Incentivizing Reasoning Capability in LLMs via Reinforcement Learning}. arXiv:2501.12948, 2025.
+  \item Qwen Team. \emph{Qwen2.5 Technical Report}. arXiv:2412.15115, 2024.
+\end{itemize}
+\end{columns}
+\par\kern0pt
+\note{Slide phụ lục liệt kê các tài liệu tham khảo chính, gồm các công trình nền tảng và các công trình năm 2025 đến 2026 về phép đo nhân quả của chuỗi suy luận.}
+\end{frame}
+
+\begin{frame}[shrink]{Phụ lục \textperiodcentered{} Bảng ký hiệu toán học}
+\footnotesize
+\begin{columns}[T,onlytextwidth]
+\column{0.48\textwidth}
+\begin{description}
+  \setlength{\itemsep}{3pt}
+  \item[$X, Z, Y$] Ngữ cảnh đầu vào, chuỗi suy luận $Z=(z_1,\dots,z_k)$ và đáp án.
+  \item[$\mathcal{G}=(V,E)$] Đồ thị suy luận có hướng (Directed Reasoning Graph, DRG).
+  \item[$\dn(z_i)$] Phép can thiệp che đơn lẻ bước $z_i$.
+  \item[$\dt(z_i)$] Phép can thiệp che toàn phần $z_i$ cùng tập hậu duệ $\mathrm{desc}_{\mathcal{G}}(i)$.
+\end{description}
+\column{0.48\textwidth}
+\begin{description}
+  \setlength{\itemsep}{3pt}
+  \item[$\text{TE}, \text{NDE}, \text{TIE}$] Hiệu ứng nhân quả tổng, trực tiếp và gián tiếp qua chuỗi.
+  \item[$T_{\text{copy-wrong}}$] Tỷ lệ sao chép kết luận sai mâu thuẫn với tiền đề.
+  \item[$\text{SC}_k$] Self-Consistency với $k$ chuỗi lấy mẫu độc lập.
+  \item[ID / OOD] Đánh giá cùng phân phối / ngoài phân phối huấn luyện.
+\end{description}
+\end{columns}
+\par\kern0pt
+\note{Bảng ký hiệu toán học dùng trong luận văn.}
+\end{frame}
+
+%% ============================================================================ Nguồn
+\begin{frame}[shrink]{Phụ lục \textperiodcentered{} Cấu trúc mã nguồn và dữ liệu thực nghiệm tái lập}
+\scriptsize
+\renewcommand{\arraystretch}{1.25}
+\begin{tabularx}{\textwidth}{@{}P{4.8cm}Y@{}}
+\toprule
+\textbf{Hạng mục nghiên cứu} & \textbf{Đường dẫn trong kho mã nguồn (repository)}\\
+\midrule
+Bản thảo bài báo tiếng Anh & \code{paper/main.pdf}\\
+Báo cáo toàn văn tiếng Việt & \code{paper/baocao\_vi.pdf}\\
+Biên bản tiền đăng ký giả thuyết & \code{REVIEW.md}\\
+Thực nghiệm R1--R3 (độ phụ thuộc chuỗi, kiểm chuẩn AUROC) & \code{results/reliance\_v2/}\\
+Thực nghiệm R4 (phân tích trung gian nhân quả, $n=500$) & \code{results/mediation\_n500/}\\
+Thực nghiệm R5 (giải mã tương phản HGCD) & \code{results/decoding/}\\
+Thực nghiệm D1--D3 (giải mã nhân quả, kiến trúc lai D2) & \code{results/causaldec/} (C4, C5, C6, C7\_ablate, M\_select*)\\
+Thực nghiệm D4, D6--D9 (SFT, DPO, GRPO trên CLUTRR) & \code{hgcd/cftrain.py}, \code{hgcd/cfrl.py}, \code{results/cftrain/}, \code{results/cfrl/}\\
+Thực nghiệm D5 (SFT mở rộng trên 2WikiMultihopQA) & \code{hgcd/egen.py}, \code{results/egen/}\\
+Tài liệu thiết kế và biên bản thực nghiệm & \code{docs/research\_notes.md}\\
+\bottomrule
+\end{tabularx}
+\par\kern0pt
+\note{Slide cuối cung cấp cấu trúc thư mục mã nguồn và dữ liệu để phục vụ việc kiểm tra và tái lập kết quả.}
+\end{frame}
+
+\end{document}
