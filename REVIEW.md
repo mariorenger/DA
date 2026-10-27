@@ -779,3 +779,9 @@ utility = mean reward over ans+unans questions; hallucination_among_answered = w
 * Replication: same contrasts for Qwen3-4B (seed 0) and Qwen2.5-3B (seed 1); a finding counts as consistent if the sign agrees and CI>0 in >= 2 of the 3 runs.
 **Declared limits.** Unanswerable labels are by construction (a question can still be answerable from memory: counted as hallucination, by design); conflict substitutions can be semantically odd;
 single dataset (MuSiQue), EM metric, 120 RL steps, one seed per model except the replication; no human check of the labels beyond the string filters.
+
+### Round 13 execution note
+First launch: the Qwen3-4B run hit CUDA OOM in the hidden-state probe (full-vocabulary logits over 1.5k-token prompts) and in DPO (same cause), losing the `s_plain` decisions (only its log lines survive: ans 58.3 / unans abstain 0.0 / conflict-follow 29.7)
+and the DPO arm. Both functions were fixed (LM head applied only to the needed positions; probe wrapped so it can no longer discard an evaluation; verified the DPO loss is unchanged on a CPU test) and the missing Qwen3-4B arms were relaunched
+(`hgcd-r13-q3-4b-fix`: s_plain, s_abs, s_dpo, s_rl; RL batch reduced to 2 prompts x 6 samples for memory). Kept from the first launch: p_inst and the stage-1 SFT model of s_dpo (= the `s_abs_cf` recipe) in results/hall/q3_4b_run1.
+The Qwen2.5-3B runs (mario, ngpnguyen) still run the original code and may hit the same OOM in the probe/DPO; any arm they lose will be rerun. Endpoints unchanged.

@@ -376,6 +376,16 @@ NOTEBOOKS = {
                ("--arms", "s_dpo", "s_rl", "--bs", "6", "--seed", "1", "--max_minutes", "600"))],
     },
 }""",
+    # relaunch of the Qwen3-4B part after CUDA OOM in the probe / DPO of the first launch (fixed in hall.py / cfrl.py)
+    "R13_q3_4b_fix": """{
+    "h": {
+        "0": [("qwen3-4b-fa", "Qwen/Qwen3-4B", "hall",
+               ("--arms", "s_plain", "s_abs", "--bs", "6", "--seed", "0", "--max_minutes", "600"))],
+        "1": [("qwen3-4b-fb", "Qwen/Qwen3-4B", "hall",
+               ("--arms", "s_dpo", "s_rl", "--bs", "6", "--seed", "0", "--rl_p", "2", "--rl_mb", "1",
+                "--rl_steps", "150", "--max_minutes", "600"))],
+    },
+}""",
     "M_select_orig": """{
     "orig": {
         "0": [("qwen-1.5b", "Qwen/Qwen2.5-1.5B-Instruct", "causaldec_musique",

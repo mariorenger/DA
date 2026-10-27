@@ -363,11 +363,11 @@ def dpo_pairs(lm: LM, train: List[dict], answers: List[str], args, start: int) -
 # ----------------------------------------------------------------------------- hidden-state probe
 
 @torch.no_grad()
-def hidden(lm: LM, items: List[Item], layers: List[int], bs: int = 4) -> np.ndarray:
+def hidden(lm: LM, items: List[Item], layers: List[int], bs: int = 2) -> np.ndarray:
     feats = []
     for s in range(0, len(items), bs):
         enc = lm._enc([lm.prompt(msgs(e)) for e in items[s:s + bs]])
-        out = lm.model(**enc, output_hidden_states=True)
+        out = lm.model.model(**enc, output_hidden_states=True)      # transformer only: no LM head over 1.5k tokens
         feats.append(torch.cat([out.hidden_states[l][:, -1].float().cpu() for l in layers], 1).numpy())
     return np.concatenate(feats)
 
@@ -480,10 +480,15 @@ def main():
                 info[arm]["rl"] = train_grpo(lm, items, args)
         rows = evaluate(lm, arm, evals, args)
         all_rows += rows
-        if arm == "s_plain" and args.probe:
-            info[arm]["probe"] = probe(lm, train, evals, rows, args, start=len(train) // 3)
-            _log(f"  probe: {info[arm]['probe']}")
         flush()
+        if arm == "s_plain" and args.probe:
+            try:
+                info[arm]["probe"] = probe(lm, train, evals, rows, args, start=len(train) // 3)
+                _log(f"  probe: {info[arm]['probe']}")
+            except Exception as ex:                      # never lose the evaluation because of the probe
+                info[arm]["probe"] = {"error": repr(ex)[:300]}
+                torch.cuda.empty_cache()
+            flush()
         del lm
         gc.collect()
         torch.cuda.empty_cache()

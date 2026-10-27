@@ -81,13 +81,21 @@ def cf_pair(e: D.ClutrrExample, rels: List[str], rng: random.Random) -> Tuple[st
 # ----------------------------------------------------------------------------- DPO
 
 def _seq_logp(pm, ids, lab, att, cuda):
+    """Sum of token log-probs of the labelled positions. The LM head is applied only to those positions
+    (long prompts x 150k-token vocabularies otherwise exhaust a 15 GB GPU)."""
+    inner = pm.get_base_model() if hasattr(pm, "get_base_model") else pm
     with torch.autocast("cuda", dtype=torch.float16, enabled=cuda):
-        logits = pm(input_ids=ids, attention_mask=att).logits
-    lp = torch.log_softmax(logits[:, :-1].float(), -1)
+        h = inner.model(input_ids=ids, attention_mask=att).last_hidden_state
     tgt = lab[:, 1:]
-    tok_lp = lp.gather(-1, tgt.clamp(min=0).unsqueeze(-1)).squeeze(-1)
-    m = (tgt != -100).float()
-    return (tok_lp * m).sum(-1), m.sum(-1)
+    sums, cnts = [], []
+    for i in range(ids.shape[0]):
+        sel = tgt[i] != -100
+        with torch.autocast("cuda", dtype=torch.float16, enabled=cuda):
+            logits = inner.lm_head(h[i, :-1][sel])
+        lp = torch.log_softmax(logits.float(), -1)
+        sums.append(lp.gather(-1, tgt[i][sel].unsqueeze(-1)).squeeze(-1).sum())
+        cnts.append(sel.sum().float())
+    return torch.stack(sums), torch.stack(cnts)
 
 
 def _pad(batch, pad_id, dev):
