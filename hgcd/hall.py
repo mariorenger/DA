@@ -312,9 +312,11 @@ def train_grpo(lm: LM, items: List[Item], args) -> Dict:
             for s0 in range(0, len(keep), args.rl_mb):
                 idx = keep[s0:s0 + args.rl_mb]
                 ids = g[idx].to(lm.device)
-                with torch.autocast("cuda", dtype=torch.float16, enabled=cuda):
-                    logits = pm(input_ids=ids, attention_mask=attn[idx].to(lm.device)).logits
-                lp = torch.log_softmax(logits[:, Lp - 1:-1].float(), -1)
+                inner = pm.get_base_model()
+                with torch.autocast("cuda", dtype=torch.float16, enabled=cuda):   # LM head only on completion positions
+                    hs = inner.model(input_ids=ids, attention_mask=attn[idx].to(lm.device)).last_hidden_state
+                    logits = inner.lm_head(hs[:, Lp - 1:-1])
+                lp = torch.log_softmax(logits.float(), -1)
                 tl = lp.gather(-1, comp[idx].to(lm.device).unsqueeze(-1)).squeeze(-1)
                 adv = torch.tensor(A[idx], dtype=torch.float32, device=lm.device).unsqueeze(1)
                 loss = -(adv * tl * mask[idx].to(lm.device)).sum() / n_tok.to(lm.device)

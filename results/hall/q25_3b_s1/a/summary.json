@@ -1,0 +1,38 @@
+{
+ "s_plain": {
+  "sft": {
+   "steps": 125,
+   "final_loss": 0.250497645419091,
+   "n_train": 2000,
+   "minutes": 65.64459492365519
+  },
+  "probe": {
+   "layers": [
+    24,
+    36
+   ],
+   "auc_unans": 0.6710777777777778,
+   "auc_correct_on_ans": 0.49524107422136826,
+   "gate_recall_unans": 0.49,
+   "gate_false_abstain_ans": 0.24333333333333335,
+   "n_train": 600,
+   "n_eval": 600
+  }
+ },
+ "s_abs": {
+  "sft": {
+   "steps": 125,
+   "final_loss": 0.22936592251062393,
+   "n_train": 2000,
+   "minutes": 65.11386112769445
+  }
+ },
+ "s_abs_cf": {
+  "sft": {
+   "steps": 125,
+   "final_loss": 0.23417435735464096,
+   "n_train": 2000,
+   "minutes": 65.21875473658244
+  }
+ }
+}

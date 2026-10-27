@@ -386,6 +386,17 @@ NOTEBOOKS = {
                 "--rl_steps", "150", "--max_minutes", "600"))],
     },
 }""",
+    # RL arm only, after CUDA OOM in the first launch (GRPO now applies the LM head to completion positions only)
+    "R13_rl_s0": """{
+    "h": {"0": [("qwen-3b-rl-s0", "Qwen/Qwen2.5-3B-Instruct", "hall",
+                 ("--arms", "s_rl", "--bs", "6", "--seed", "0", "--rl_p", "2", "--rl_mb", "1", "--rl_steps", "150",
+                  "--max_minutes", "600"))]},
+}""",
+    "R13_rl_s1": """{
+    "h": {"0": [("qwen-3b-rl-s1", "Qwen/Qwen2.5-3B-Instruct", "hall",
+                 ("--arms", "s_rl", "--bs", "6", "--seed", "1", "--rl_p", "2", "--rl_mb", "1", "--rl_steps", "150",
+                  "--max_minutes", "600"))]},
+}""",
     "M_select_orig": """{
     "orig": {
         "0": [("qwen-1.5b", "Qwen/Qwen2.5-1.5B-Instruct", "causaldec_musique",

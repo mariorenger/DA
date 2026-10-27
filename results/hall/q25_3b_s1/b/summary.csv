@@ -1,0 +1,4 @@
+arm,em_ans,abstain_on_ans,wrong_on_ans,abstain_on_unans,follow_ctx,follow_param,hallucination_among_answered,utility
+s_dpo,45.0,5.0,50.0,33.333,45.0,1.667,72.165,-0.202
+sft_before_dpo,41.333,18.667,40.0,64.333,44.0,1.333,64.672,0.104
+sft_before_rl,40.333,16.667,43.0,65.333,46.0,1.333,65.819,0.099

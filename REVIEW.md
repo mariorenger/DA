@@ -785,3 +785,16 @@ First launch: the Qwen3-4B run hit CUDA OOM in the hidden-state probe (full-voca
 and the DPO arm. Both functions were fixed (LM head applied only to the needed positions; probe wrapped so it can no longer discard an evaluation; verified the DPO loss is unchanged on a CPU test) and the missing Qwen3-4B arms were relaunched
 (`hgcd-r13-q3-4b-fix`: s_plain, s_abs, s_dpo, s_rl; RL batch reduced to 2 prompts x 6 samples for memory). Kept from the first launch: p_inst and the stage-1 SFT model of s_dpo (= the `s_abs_cf` recipe) in results/hall/q3_4b_run1.
 The Qwen2.5-3B runs (mario, ngpnguyen) still run the original code and may hit the same OOM in the probe/DPO; any arm they lose will be rerun. Endpoints unchanged.
+
+### Round 13 results, part 1 (Qwen2.5-3B, two seeds; RL arm and Qwen3-4B relaunches pending)
+Tool: `tools/analyze_hall.py` -> results/hall/analysis.csv; paired bootstrap over questions, 95% CI; 300 questions per condition. Values for seed 0 / seed 1.
+* **H-K (abstention SFT): primary effect GO, guardrail NO-GO -> conjunction NO-GO.** Abstain on unanswerable contexts: s_plain 0% -> s_abs 61.7% / 59.3% (diff +61.7 [56.3, 67.0] / +59.3 [54.0, 64.7]).
+  But EM on answerable questions falls: -7.7 [-12.7, -2.7] / -4.3 [-8.7, 0.0]; the pre-registered guardrail (CI lower bound > -5) fails in both seeds. The model also abstains on 19% / 14% of answerable questions.
+* **H-L (counterfactual-context SFT): primary effect GO, guardrails mixed -> conjunction NO-GO.** Following a counterfactual context: s_abs_cf - s_abs = +21.7 [16.0, 27.3] / +24.0 [18.3, 29.7] pts (s_abs 21.0 / 19.7 -> s_abs_cf 42.7 / 43.7; memorised-answer rate 2-3%).
+  Guardrails: EM on answerable +2.3 [-3.0, 7.7] (seed 0, passes) but -6.3 [-11.3, -1.3] (seed 1, fails); abstain on unanswerable -6.0 [-11.0, -1.0] (seed 0, misses the -5 limit) and +3.7 (seed 1). The context-following gain itself replicates in both seeds.
+* **H-M (preference optimisation): DPO NO-GO.** utility(s_dpo) - utility(stage-1 SFT) = -0.28 [-0.34, -0.21] / -0.31 [-0.37, -0.24]; DPO makes the model answer more (abstain on unanswerable 52.3 -> 25.0 / 64.3 -> 33.3) with EM +1.7 / +3.7:
+  the over-abstain rejected pairs (40% of pairs) overshoot. DPO logged some NaN-loss steps (fp16, skipped by the scaler). GRPO: first launch OOM; relaunched (verdict pending).
+* **H-N (hidden-state probe): NO-GO.** AUROC for detecting an unanswerable context from the last prompt token of the s_plain model: 0.662 / 0.671 (< 0.85); AUROC for the correctness of its own answers 0.53 / 0.50 (chance).
+* Descriptive: the share of answered questions that are wrong or unsupported ("hallucination among answered", ans+unans mix) drops only from 74.0% / 73.2% (s_plain) to 62.7% / 61.1% (s_abs) because answerable-question accuracy itself is only 44-54%.
+  Base model with an abstain instruction (p_inst): EM 29.3, abstains on 35.7% of unanswerable but also on 17.7% of answerable questions.
+* Qwen3-4B first launch (single seed, from logs and saved decisions): s_plain 58.3 / 0.0 abstain / 29.7 follow-context; the s_abs_cf recipe 58.0 EM / 70.0 abstain on unanswerable / 53.7 follow-context, over-abstain 12.3% on answerable.
