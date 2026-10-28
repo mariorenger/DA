@@ -1,0 +1,30 @@
+{
+ "s_plain": {
+  "sft": {
+   "steps": 125,
+   "final_loss": 0.22171187959611416,
+   "n_train": 2000,
+   "minutes": 114.06994695266089
+  },
+  "probe": {
+   "layers": [
+    24,
+    36
+   ],
+   "auc_unans": 0.7703666666666669,
+   "auc_correct_on_ans": 0.5276122182901843,
+   "gate_recall_unans": 0.45,
+   "gate_false_abstain_ans": 0.11666666666666667,
+   "n_train": 600,
+   "n_eval": 600
+  }
+ },
+ "s_abs": {
+  "sft": {
+   "steps": 125,
+   "final_loss": 0.35185326021164653,
+   "n_train": 2000,
+   "minutes": 113.32247464259466
+  }
+ }
+}

@@ -805,3 +805,16 @@ Tool: `tools/analyze_hall.py` -> results/hall/analysis.csv; paired bootstrap ove
   Wrong-or-unsupported share among answered: 64.4 -> 54.5 / 66.4 -> 53.1. Precision of the answers that are given (correct / (correct + wrong) on answerable questions) 55.0 -> 58.1 / 48.0 -> 59.2: the policy mostly moves along the risk-coverage curve (answers less often, a little more accurately); it does not add knowledge or reasoning.
   The training reward (abstain on answerable -0.5 vs wrong -1.0) determines where on that curve the model ends up; the endpoint is reached by construction of the reward, which is a limitation of "utility" as the only criterion.
 * DPO vs GRPO on the same task: DPO NO-GO (answers more, utility -0.3); GRPO GO (abstains more, utility +0.2..+0.3) - the two preference-based methods move in opposite directions because of how the pairs / reward weigh over-abstention.
+
+### Round 13 results, part 3 (Qwen3-4B, one seed; all arms completed in `hgcd-r13-q3-4b-fix`; stage-1 SFT of the DPO run stands in for s_abs_cf) and final verdicts
+* **H-K (Qwen3-4B):** abstain on unanswerable 0 -> 70.7% (+70.7 [65.7, 75.7]); EM on answerable -4.0 [-8.7, 0.3] (guardrail CI lower bound > -5 fails again); over-abstention on answerable 12.3%.
+* **H-L (Qwen3-4B):** follow-context +20.7 [15.3, 26.3] (32.0 -> 52.7); EM on answerable +0.7 [-4.0, 5.3]; abstain on unanswerable 0.0 [-4.7, 4.7]: all three conditions pass here.
+* **H-M (Qwen3-4B):** DPO utility -0.18 [-0.24, -0.13] (NO-GO; answers more); GRPO (stopped by its 80-minute budget at step 125) utility +0.13 [0.08, 0.19] (GO) with EM on answerable -10.7 [-14.7, -6.7], abstain on answerable 10.3 -> 32.3%, abstain on unanswerable 71.0 -> 89.7%, wrong-or-unsupported share among answered 49.7 -> 37.2%.
+* **H-N (Qwen3-4B probe):** AUROC for unanswerable-context detection 0.770 (< 0.85, NO-GO); AUROC for correctness of its own answers 0.53.
+**Final verdicts for Round 13 (consistency rule: pre-registered conditions must hold in >= 2 of the 3 runs: Qwen2.5-3B seeds 0/1, Qwen3-4B).**
+* H-K: **NO-GO as registered** - the abstention effect replicates in 3/3 runs (+59..+71 pts) but the accuracy guardrail fails in 3/3 (EM -4.0..-7.7 pts, lower CI bounds -8.7..-12.7).
+* H-L: **NO-GO as registered, main effect robust** - context-following +20.7..+24.0 pts in 3/3 runs; the registered guardrails hold in only 1/3 runs (Qwen3-4B), the others miss by 1-1.3 pts (abstention on unanswerable -6.0 vs limit -5, seed 0) or by -6.3 pts EM (seed 1).
+* H-M: **DPO NO-GO in 3/3; GRPO GO in 3/3** with a systematic cost (answerable EM -7.3..-10.7 pts, over-abstention up to 44%): it moves along the risk-coverage curve.
+* H-N: **NO-GO in 3/3** (AUROC 0.66, 0.67, 0.77).
+**What this round establishes.** Counterfactual-context and unanswerable-context data make a small model both abstain and follow the context (large, replicated effects), at a cost of a few points of answerable accuracy; a preference/RL stage can trade coverage for precision as the reward dictates.
+It does not raise the base accuracy of the answers (44-61% on answerable questions), which is why a large share of the remaining answers is still wrong or unsupported. Limits as declared: MuSiQue only, constructed labels, one seed per model besides the Qwen2.5 replication.

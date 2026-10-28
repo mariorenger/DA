@@ -23,3 +23,15 @@ q25_3b_s1,H-M,utility: s_rl - sft_before_rl,0.21,0.15,0.28,600,0.3,0.08
 q25_3b_s1,H-M,abstain on unanswerable (pts): s_rl - sft_before_rl [unans],21.67,17.0,26.67,300,85.33,63.67
 q25_3b_s1,H-M,EM on answerable (pts): s_rl - sft_before_rl [ans],-7.33,-12.0,-2.67,300,33.33,40.67
 q25_3b_s1,descr,utility: s_abs - s_plain,0.58,0.5,0.67,600,0.12,-0.46
+q3_4b_s0,H-K,abstain on unanswerable (pts): s_abs - s_plain [unans],70.67,65.67,75.67,300,70.67,0.0
+q3_4b_s0,H-K,EM on answerable (pts): s_abs - s_plain [ans],-4.0,-8.67,0.33,300,56.67,60.67
+q3_4b_s0,H-L,follow context (pts): s_abs_cf - s_abs [conflict],20.67,15.33,26.33,300,52.67,32.0
+q3_4b_s0,H-L,EM on answerable (pts): s_abs_cf - s_abs [ans],0.67,-4.0,5.33,300,57.33,56.67
+q3_4b_s0,H-L,abstain on unanswerable (pts): s_abs_cf - s_abs [unans],0.0,-4.67,4.67,300,70.67,70.67
+q3_4b_s0,H-M,utility: s_dpo - sft_before_dpo,-0.18,-0.24,-0.13,600,0.12,0.31
+q3_4b_s0,H-M,abstain on unanswerable (pts): s_dpo - sft_before_dpo [unans],-18.33,-23.0,-14.0,300,52.33,70.67
+q3_4b_s0,H-M,EM on answerable (pts): s_dpo - sft_before_dpo [ans],1.33,-1.67,4.33,300,58.67,57.33
+q3_4b_s0,H-M,utility: s_rl - sft_before_rl,0.13,0.08,0.19,600,0.47,0.33
+q3_4b_s0,H-M,abstain on unanswerable (pts): s_rl - sft_before_rl [unans],18.67,14.0,23.0,300,89.67,71.0
+q3_4b_s0,H-M,EM on answerable (pts): s_rl - sft_before_rl [ans],-10.67,-14.67,-6.67,300,49.0,59.67
+q3_4b_s0,descr,utility: s_abs - s_plain,0.7,0.61,0.79,600,0.3,-0.39

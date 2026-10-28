@@ -1,6 +1,6 @@
 # Ghi chú nghiên cứu (bản tra cứu nhanh)
 
-Cập nhật: 2026-10-24. Nhánh `claude/funny-cori-rt5wrv` của `mariorenger/DA`. Nhật ký đầy đủ của các cuộc trao đổi:
+Cập nhật: 2026-10-28. Nhánh `claude/funny-cori-rt5wrv` của `mariorenger/DA`. Nhật ký đầy đủ của các cuộc trao đổi:
 `docs/conversation_log.md` (xuất tự động, đã che token; tìm bằng `grep -n "từ khoá" docs/conversation_log.md`).
 Tạo lại: `python tools/export_transcript.py <session.jsonl> docs/conversation_log.md`.
 
@@ -22,6 +22,7 @@ Tạo lại: `python tools/export_transcript.py <session.jsonl> docs/conversatio
 | Round 10b (2Wiki xong; MuSiQue chưa chạy do hết hạn mức GPU tuần của tài khoản nguyenpn) | Tổng quát hoá: fine-tune trên chuỗi dựng tự động | 2Wiki 3B: few-shot 28.8, chỉ đáp án 50.0, chuỗi thường 56.0, chuỗi+nguồn 54.4. Tiêu chí chính NO-GO (−1.6 [−4.6, 1.4]); hiệu ứng chính là fine-tune (+21..+30) |
 | Round 11 (phần 2) | MuSiQue và 2Wiki chuyển loại câu hỏi (Qwen2.5 1.5B/3B) | MuSiQue: cấu trúc không hơn chuỗi thường (NO-GO), hiệu ứng chính là fine-tune (+20 so với few-shot). 2Wiki train compositional→test inference: chuỗi hơn chỉ-đáp-án +18.0 EM (3B), +8.0 (1.5B): GO. Mất dữ liệu từng câu của MuSiQue do ghi đè thư mục |
 | Round 12 (Qwen3 1.7B/4B/8B) | Mô hình mới, thinking mode, distillation từ teacher 8B, GRPO lọc prompt khó | Fine-tune chuỗi vẫn hơn few-shot +33..+49 và hơn thinking +19..+39 (4B). Chuỗi hơn chỉ-đáp-án +21 (C5, 4B). Distillation không chuỗi gold: −25..−32 (NO-GO). GRPO lọc khó: C5 −8.5 (NO-GO) |
+| Round 13 (hallucination kiểu RAG, MuSiQue) | Điều kiện can thiệp ngữ cảnh: ans / unans (bỏ đoạn bằng chứng) / conflict (thay đáp án); SFT từ chối, SFT mâu thuẫn, DPO, GRPO ba mức, probe trạng thái ẩn (Qwen2.5-3B 2 seed, Qwen3-4B) | Từ chối khi thiếu bằng chứng 0→60–71% (3/3 lần chạy) nhưng độ đúng giảm 4–8 điểm; bám ngữ cảnh mâu thuẫn +21..+24 điểm (3/3); DPO làm xấu (tiện ích −0.2..−0.3); GRPO tăng tiện ích +0.13..+0.26 bằng cách từ chối nhiều hơn (EM −7..−11); probe AUROC 0.66–0.77 (<0.85). Độ đúng gốc 44–61% vẫn là nguồn hallucination chính |
 
 ## 3. Số liệu chính (xem paper/main.tex, paper/baocao_vi.pdf)
 - CLUTRR extract+rules SC5 so với baseline tốt nhất: validation k2–4 +32.0/+32.0/+36.7 (1.5B/3B/7B); task chưa thấy k2–4 +20.9/+27.2/+33.5; k5–8 −1.0/+9.5/+24.0 (7B là kiểm định chính đăng ký trước, GO).
