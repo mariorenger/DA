@@ -21,12 +21,12 @@ def boot(x, n=4000, seed=0):
 
 
 def load_run(run_dirs):
-    ds = [pd.read_csv(f) for d in run_dirs for f in glob.glob(os.path.join(R, d, "*", "decisions.csv"))]
+    ds = [pd.read_csv(f) for d in run_dirs for f in sorted(glob.glob(os.path.join(R, d, "*", "decisions.csv")))]   # later folders win
     return pd.concat(ds, ignore_index=True) if ds else None
 
 
 def vec(d, arm, cond, col):
-    g = d[(d.arm == arm) & (d.cond == cond)].drop_duplicates("uid").set_index("uid")
+    g = d[(d.arm == arm) & (d.cond == cond)].drop_duplicates("uid", keep="last").set_index("uid")
     return g[col]
 
 
@@ -42,7 +42,7 @@ def contrast(rows, run, endpoint, d, a, b, cond, col, label, scale=100.0):
 
 def utility(rows, run, endpoint, d, a, b):
     def u(arm):
-        g = d[(d.arm == arm) & d.cond.isin(["ans", "unans"])].drop_duplicates(["cond", "uid"])
+        g = d[(d.arm == arm) & d.cond.isin(["ans", "unans"])].drop_duplicates(["cond", "uid"], keep="last")
         return g.set_index(["cond", "uid"]).reward
     x, y = u(a), u(b)
     ids = x.index.intersection(y.index)

@@ -798,3 +798,10 @@ Tool: `tools/analyze_hall.py` -> results/hall/analysis.csv; paired bootstrap ove
 * Descriptive: the share of answered questions that are wrong or unsupported ("hallucination among answered", ans+unans mix) drops only from 74.0% / 73.2% (s_plain) to 62.7% / 61.1% (s_abs) because answerable-question accuracy itself is only 44-54%.
   Base model with an abstain instruction (p_inst): EM 29.3, abstains on 35.7% of unanswerable but also on 17.7% of answerable questions.
 * Qwen3-4B first launch (single seed, from logs and saved decisions): s_plain 58.3 / 0.0 abstain / 29.7 follow-context; the s_abs_cf recipe 58.0 EM / 70.0 abstain on unanswerable / 53.7 follow-context, over-abstain 12.3% on answerable.
+
+### Round 13 results, part 2 (GRPO with the ternary truthfulness reward, Qwen2.5-3B, two seeds; the RL arm was rerun after the OOM fix, 150 steps, 2 prompts x 6 samples)
+* **H-M (RL): GO on the pre-registered endpoint, with a cost.** utility(s_rl) - utility(its stage-1 SFT) = +0.26 [0.19, 0.32] (seed 0) and +0.21 [0.15, 0.28] (seed 1); both CIs > 0 and >= +0.05.
+  How it is obtained: abstain on unanswerable 51.0 -> 80.7 / 63.7 -> 85.3 (+29.7 [24.7, 35.0] / +21.7 [17.0, 26.7]) but EM on answerable falls -9.0 [-13.0, -5.3] / -7.3 [-12.0, -2.7] and abstention on answerable questions rises 9.7 -> 30.0 / 15.3 -> 43.7.
+  Wrong-or-unsupported share among answered: 64.4 -> 54.5 / 66.4 -> 53.1. Precision of the answers that are given (correct / (correct + wrong) on answerable questions) 55.0 -> 58.1 / 48.0 -> 59.2: the policy mostly moves along the risk-coverage curve (answers less often, a little more accurately); it does not add knowledge or reasoning.
+  The training reward (abstain on answerable -0.5 vs wrong -1.0) determines where on that curve the model ends up; the endpoint is reached by construction of the reward, which is a limitation of "utility" as the only criterion.
+* DPO vs GRPO on the same task: DPO NO-GO (answers more, utility -0.3); GRPO GO (abstains more, utility +0.2..+0.3) - the two preference-based methods move in opposite directions because of how the pairs / reward weigh over-abstention.

@@ -1,0 +1,31 @@
+{
+ "model": "Qwen/Qwen2.5-3B-Instruct",
+ "outdir": "/kaggle/working/results/hall_qwen-3b-rl-s0",
+ "arms": [
+  "s_rl"
+ ],
+ "n_train": 2000,
+ "n_eval": 300,
+ "max_prompt_tokens": 1500,
+ "epochs": 1.0,
+ "lr": 0.0002,
+ "mb": 1,
+ "accum": 16,
+ "bs": 6,
+ "seed": 0,
+ "device_map": null,
+ "max_minutes": 600.0,
+ "probe": 1,
+ "n_probe": 600,
+ "n_pairs": 800,
+ "dpo_lr": 5e-06,
+ "dpo_beta": 0.1,
+ "dpo_accum": 8,
+ "dpo_nll": 0.2,
+ "rl_steps": 150,
+ "rl_minutes": 100.0,
+ "rl_lr": 1e-05,
+ "rl_p": 2,
+ "rl_g": 6,
+ "rl_mb": 1
+}
