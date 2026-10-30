@@ -531,7 +531,7 @@ $\Delta_{\text{cal}}$ (có hiệu chỉnh): \textbf{bước dư thừa} & $\math
 \node[lab,text=failc] (l3) at (0,-1.05) {Điều kiện C3};
 \node[hb,right=0.05cm of l3] (c1) {Ben là con trai của Anna.};
 \node[hb,right=of c1] (c2) {Clara là chị gái của Ben.};
-\node[hw,right=of c2] (c3) {\textbf{Vậy Clara là cháu gái Anna.} (mâu thuẫn)};
+\node[hw,right=of c2] (c3) {\textbf{Vậy Clara là mẹ của Anna.} (mâu thuẫn)};
 \end{tikzpicture}
 \par\vspace{4pt}
 \renewcommand{\arraystretch}{1.2}
@@ -542,7 +542,7 @@ $\Delta_{\text{cal}}$ (có hiệu chỉnh): \textbf{bước dư thừa} & $\math
 \midrule
 \textbf{C1} ($\dt$) & Chuỗi chỉ chứa các bước quan hệ thành phần; ẩn 1 bước & $\Delta \gg 0$: mất một mắt xích làm thay đổi kết quả hợp thành & $\Delta \approx 0$: mô hình vốn không tính được phép hợp thành từ các bước này\\
 \textbf{C2} (explicit) & Bổ sung câu kết luận \emph{đúng} vào cuối chuỗi & Câu kết luận dư thừa, hiệu ứng che thay đổi ít & $\Delta \gg 0$: mô hình chuyển sang đọc trực tiếp nhãn quan hệ vừa được viết ra\\
-\textbf{C3} (conflict) & Bổ sung câu kết luận \emph{sai}, mâu thuẫn với các bước trên & Bác bỏ câu sai vì mâu thuẫn với phép hợp thành $r_1 \circ r_2$ & Sao chép nhãn sai ($T_{\text{copy-wrong}} \gg 0$) do ưu tiên vị trí cuối\\
+\textbf{C3} (conflict) & Bổ sung câu kết luận \emph{sai}: một nhãn quan hệ khác, chọn ngẫu nhiên (mỗi cặp người chỉ có đúng một nhãn đúng) & Bác bỏ câu sai vì mâu thuẫn với phép hợp thành $r_1 \circ r_2$ & Sao chép nhãn sai ($T_{\text{copy-wrong}} \gg 0$) do ưu tiên vị trí cuối\\
 \bottomrule
 \end{tabularx}
 \par\kern0pt
@@ -582,7 +582,7 @@ Qwen2.5-7B & 22.9\% & \textbf{10.3\%}\\
 \par\vspace{4pt}
 \footnotesize
 \textbf{\color{keyc}Phân tích:}\par
-Với các mô hình $\le 3\text{B}$, ngay cả trên tập con câu hỏi mà mô hình \emph{tự giải đúng từ chuỗi C1}, việc chèn thêm một câu kết luận sai khiến mô hình sao chép theo trong $47.7\%\text{--}70.8\%$ trường hợp.
+Với các mô hình $\le 3\text{B}$, ngay cả trên những câu mô hình \emph{trả lời đúng khi chuỗi chưa có câu kết luận}, việc chèn thêm một câu kết luận sai khiến mô hình chép theo trong $47.7\%\text{--}70.8\%$ trường hợp: mô hình ưu tiên dòng kết luận viết sẵn hơn kết quả nó tự tính được.
 \end{columns}
 \takeaway{Khi chưa tinh chỉnh, mô hình nhỏ hầu như không thực hiện phép hợp thành trên chuỗi ($\Delta_{\text{C1}} \in [-1.5, +7.3]$) và chỉ phụ thuộc vào chuỗi khi đáp án xuất hiện trên bề mặt văn bản ($\Delta_{\text{C2}} \in [51.9, 77.0]$). \OKs}
 \tieptheo{mô hình chỉ đọc; R4 hỏi tiếp nhiễu gây hại qua đường nào.}
