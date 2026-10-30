@@ -94,6 +94,9 @@
 \newcommand{\ghichu}[1]{\par\vspace{2pt}{\tiny\color{nac}#1\par}}
 \newcommand{\takeaway}[1]{\par\vspace{4pt}\noindent{\color{keyc!40}\rule{\linewidth}{0.6pt}}\par\vspace{2pt}\noindent{\footnotesize\textbf{\color{accentc}Kết luận thực nghiệm:} #1}}
 \newcommand{\code}[1]{\texttt{#1}}
+% Mở đầu và chuyển tiếp của mỗi thí nghiệm (đi theo lộ trình thực hiện)
+\newcommand{\cauhoi}[1]{\par{\raggedright\noindent{\footnotesize\textbf{\color{accentc}Câu hỏi:} #1}\par}\vspace{3pt}}
+\newcommand{\tieptheo}[1]{\par\vspace{2pt}{\raggedright\noindent{\scriptsize\color{nac}\textbf{$\rightarrow$ Bước tiếp:} #1}\par}}
 \newcommand{\ci}[2]{{\tiny[#1,\,#2]}}
 \newcommand{\dn}{\mathrm{do}_{\text{naive}}}
 \newcommand{\dt}{\mathrm{do}_{\text{total}}}
@@ -124,22 +127,23 @@
 \textbf{\color{keyc}Cấu trúc nội dung}
 \begin{enumerate}
   \setlength{\itemsep}{0.35em}
-  \item Đặt vấn đề và cơ sở lý thuyết
-  \item Phương pháp luận: mô hình nhân quả cấu trúc (SCM) có nhãn chuẩn
-  \item Tổng quan các kết quả thực nghiệm
-  \item Chẩn đoán cơ chế: trích xuất bề mặt và suy diễn hợp thành (R1--R5)
-  \item Can thiệp ở giai đoạn giải mã (D1--D3)
-  \item Can thiệp ở giai đoạn huấn luyện: SFT, DPO, GRPO (D4--D9)
-  \item Hạn chế, thảo luận và hướng phát triển
+  \item Đặt vấn đề, phương pháp đo và lộ trình nghiên cứu
+  \item Bước 1 -- Đo đúng: phép che bước và lấy mẫu lại (R1--R2)
+  \item Bước 2 -- Chẩn đoán: mô hình suy luận hay chỉ đọc (R3--R4)
+  \item Bước 3 -- Sửa ở giai đoạn giải mã (R5, D1--D3)
+  \item Bước 4 -- Sửa ở giai đoạn huấn luyện: SFT, DPO, GRPO (D4--D9)
+  \item Bước 5 -- Kiểm chứng trên mô hình mới (Qwen3)
+  \item Bước 6 -- Ứng dụng: giảm hallucination khi trả lời từ tài liệu
+  \item Tổng hợp, hạn chế và hướng phát triển
 \end{enumerate}
 
 \column{0.48\textwidth}
 \textbf{\color{accentc}Ba đóng góp của luận văn}
 \begin{itemize}
   \setlength{\itemsep}{0.45em}
-  \item \textbf{Phương pháp đo.} Chỉ ra độ lệch hệ thống của các thước đo tầm quan trọng của bước suy luận hiện có \citeref{Lanham et al., 2023; Tutek et al., EMNLP 2025}; đề xuất phép can thiệp toàn phần $\dt$ được kiểm chuẩn bằng nhãn biết trước, đạt $\text{AUROC}$ tới $0.98$.
+  \item \textbf{Phương pháp đo.} Chỉ ra độ lệch hệ thống của các thước đo tầm quan trọng của bước suy luận hiện có \citeref{Lanham et al., 2023; Tutek et al., EMNLP 2025}; chỉ ra phép che đơn lẻ không phát hiện được bước bắc cầu (AUROC $0.46$--$0.71$) và dùng đối chứng có nhãn biết trước để diễn giải đúng phép che toàn phần $\dt$.
   \item \textbf{Chẩn đoán cơ chế.} Xác lập phát hiện thực nghiệm \emph{``Read, Not Reasoned''} trên mô hình $0.5$B--$7$B và phân rã tác động của nhiễu bằng phân tích trung gian nhân quả.
-  \item \textbf{Vị trí can thiệp.} Cho thấy can thiệp giải mã muộn không hiệu quả trong phạm vi khảo sát; định lượng hiệu quả của thực thi quy tắc lai (Neuro-Symbolic) và của tinh chỉnh SFT/DPO/GRPO.
+  \item \textbf{Vị trí can thiệp.} Cho thấy can thiệp giải mã muộn không hiệu quả trong phạm vi khảo sát; định lượng hiệu quả của thực thi quy tắc lai (Neuro-Symbolic), của tinh chỉnh SFT/DPO/GRPO, và áp dụng cho kiểm soát hallucination khi trả lời từ tài liệu.
 \end{itemize}
 \end{columns}
 \par\kern0pt
@@ -284,7 +288,8 @@ Thước đo nào gán $\Delta(z_{\text{irr}}) \gg 0$ đều mắc \textbf{sai s
 \textbf{\color{keyc}Đánh giá định lượng bằng AUROC}\par\vspace{2pt}
 Xét bài toán phân loại nhị phân giữa tập bước thiết yếu $\{z_{\text{gold}}\}$ và tập bước dư thừa $\{z_{\text{irr}}\}$ dựa trên điểm $\Delta$:
 $$\text{AUROC} = \Pr\big(\Delta(z_{\text{gold}}) > \Delta(z_{\text{irr}})\big)$$
-Thước đo lý tưởng đạt $\text{AUROC} \to 1.0$; thước đo không có thông tin đạt $0.5$.
+Thước đo lý tưởng đạt $\text{AUROC} \to 1.0$; thước đo không có thông tin đạt $0.5$.\par\vspace{3pt}
+{\scriptsize\color{nac}AUROC chỉ là kiểm tra nhất quán của thước đo. R1 dùng thêm đối chứng (chỉ che bước cuối, bỏ cả chuỗi) để biết phép che thực chất đang đo điều gì.}
 \end{columns}
 \par\kern0pt
 \note{Để biết một thước đo nhân quả có lệch hay không, em chèn các bước đúng ngữ pháp nhưng độc lập nhân quả với câu hỏi. Vì hiệu ứng thật của các bước này bằng 0, một thước đo chuẩn phải tách được điểm số của bước cần thiết và bước dư thừa, thể hiện bằng AUROC tiến về 1.}
@@ -323,124 +328,145 @@ Tài nguyên tính toán & GPU 16GB VRAM (môi trường triển khai hạn ch�
 \note{Toàn bộ thực nghiệm được thực hiện trên ba bộ dữ liệu chuẩn và các mô hình ngôn ngữ nhỏ từ 0.5B đến 7B tham số. Em áp dụng giao thức tiền đăng ký giả thuyết và kiểm định bootstrap ghép cặp để mọi kết luận đều có cơ sở thống kê.}
 \end{frame}
 
-\section{Tổng quan kết quả}
-%% ============================================================================ tổng quan
-\begin{frame}[shrink]{Tổng quan kết quả thực nghiệm (R1--R5 và D1--D9)}
-\scriptsize
-\renewcommand{\arraystretch}{1.08}
-\setlength{\tabcolsep}{5pt}
-\begin{tabularx}{\textwidth}{@{}P{0.85cm}YP{3.7cm}P{1.95cm}@{}}
-\toprule
-\textbf{Mã} & \textbf{Giả thuyết / phương pháp can thiệp} & \textbf{Kết quả định lượng chính} & \textbf{Kiểm định}\\
-\midrule
-R1 & Phép che đơn lẻ ($\dn$) bỏ sót phụ thuộc bắc cầu; phép che toàn phần ($\dt$) khắc phục được & $\dn$: $-4$ đến $+6.5$; $\dt$: 41--67 điểm & \OKs\\
-R2 & Lấy mẫu lại với mốc cố định gán nhầm bước dư thừa là quan trọng & Bước thừa: 56--78 điểm; sau hiệu chỉnh: $\le 4$ & \OKs\\
-R3 & \textbf{Mô hình nhỏ trích xuất bề mặt thay vì suy diễn hợp thành} & CLUTRR: $-1.5$ đến $+7.3$; có đáp án: 52--77 & \OKs\\
-R4 & Nhiễu ngữ cảnh làm giảm hiệu năng gián tiếp qua việc làm hỏng chuỗi CoT ($\text{TIE}$) & $\text{NDE} \approx 0$; $\text{TIE} = -3.6$ đến $-5.0$ & \OKs\\
-R5 & Tái trọng số giải mã tại bước kết xuất đáp án (HGCD) cải thiện độ chính xác & $|\Delta|\le1.7$, $p\ge0.6$ so với CoT & \FAILs\\
-\midrule
-D1 & Lọc đoạn văn nhiễu bằng điểm Attention trước khi sinh chuỗi (MuSiQue) & Thấp hơn $\text{SC}_5$; làm mất đoạn bắc cầu & \FAILs\\
-D2 & Giao phép hợp thành cho bộ giải quy tắc (Neuro-Symbolic Extract + Rules) & Vượt $\text{SC}_{10}$ cùng chi phí $+21$ đến $+37$ điểm & \OKs\\
-D3 & Ablation: cố định sự kiện đầu vào, cô lập vai trò của bộ hợp thành & Bảng luật vượt LLM $+13$ đến $+35$ điểm & \OKs\\
-D4 & SFT trên chuỗi chuẩn so với chuỗi ghi trạng thái quan hệ tích lũy & SFT chuẩn (3B): 95/78/59\%; cấu trúc: $-3$ đến $-7$ & \FAILs\ (cấu trúc)\\
-D5 & SFT trên văn bản tự nhiên (2WikiMultihopQA) kèm nhãn trích dẫn nguồn & SFT $+21$ đến $+30$ so với few-shot; nguồn: $-1.6$ & \PARTs\\
-D6 & SFT hình thành sự phụ thuộc nhân quả vào các bước trung gian & $\Delta(\dt)$ tăng từ 1--7 lên $\sim$40 điểm; chép sai 13--48\% & \OKs\\
-D7 & Sinh chuỗi sau SFT tổng quát hóa ngoài phân phối tốt hơn dự đoán trực tiếp & Có chuỗi hơn chỉ đáp án $+9$ đến $+23$ điểm (OOD) & \OKs\\
-D8 & DPO phản thực giảm hành vi chép kết luận sai & Chép sai giảm 22--25 điểm; chuỗi dài giảm 5--13 điểm & \PARTs\\
-D9 & GRPO với phần thưởng kiểm chứng theo từng bước & Chuỗi dài $+0.0$; lật đáp án giảm từ 36\% xuống 22\% & \PARTs\\
-\bottomrule
-\end{tabularx}
-\ghichu{R1--R4 là các giả thuyết chẩn đoán nhân quả; R5 và D1--D9 là các phương pháp can thiệp nhằm nâng hiệu năng.}
+\section{Lộ trình nghiên cứu}
+%% ============================================================================ lộ trình
+\begin{frame}[shrink]{Lộ trình nghiên cứu: mỗi bước trả lời một câu hỏi và dẫn tới bước sau}
+\centering
+\begin{tikzpicture}[font=\scriptsize,
+  st/.style={draw=keyc,fill=keyc!4,rounded corners=3pt,align=left,inner sep=4pt,text width=4.1cm,minimum height=2.15cm,anchor=north west},
+  ar/.style={-{Stealth[length=2.2mm]},thick,accentc}]
+\node[st] (b1) at (0,0) {{\bfseries\color{keyc}1. Đo đúng (R1--R2)}\par\vspace{2pt}
+  \textit{Che một bước có đo được bước đó quan trọng không?}\par\vspace{2pt}
+  Che đơn lẻ bị mù với bước bắc cầu; lấy mẫu lại cần mốc so sánh đúng.};
+\node[st] (b2) at (4.75,0) {{\bfseries\color{keyc}2. Chẩn đoán (R3--R4)}\par\vspace{2pt}
+  \textit{Mô hình suy luận qua chuỗi hay chỉ đọc?}\par\vspace{2pt}
+  Chỉ đọc đáp án viết sẵn; nhiễu gây hại qua việc làm hỏng chuỗi.};
+\node[st] (b3) at (9.5,0) {{\bfseries\color{keyc}3. Sửa ở giải mã (R5, D1--D3)}\par\vspace{2pt}
+  \textit{Can thiệp lúc sinh có sửa được không?}\par\vspace{2pt}
+  Chỉnh token cuối: không. Giao phép hợp thành cho bộ luật: có (miền đóng).};
+\node[st] (b4) at (0,-2.75) {{\bfseries\color{keyc}4. Sửa ở huấn luyện (D4--D9)}\par\vspace{2pt}
+  \textit{Dạy mô hình tự hợp thành được không?}\par\vspace{2pt}
+  SFT trên chuỗi thường tốt nhất; DPO/GRPO chỉ đánh đổi.};
+\node[st] (b5) at (4.75,-2.75) {{\bfseries\color{keyc}5. Mô hình mới (Qwen3)}\par\vspace{2pt}
+  \textit{Thinking và mô hình lớn hơn có thay thế fine-tune?}\par\vspace{2pt}
+  Không: SFT chuỗi vẫn hơn rõ rệt.};
+\node[st] (b6) at (9.5,-2.75) {{\bfseries\color{keyc}6. Ứng dụng RAG}\par\vspace{2pt}
+  \textit{Giảm bịa khi trả lời từ tài liệu?}\par\vspace{2pt}
+  Từ chối và bám tài liệu học được, đổi lại mất vài điểm độ đúng.};
+\draw[ar] (b1.east) -- (b2.west);
+\draw[ar] (b2.east) -- (b3.west);
+\draw[ar] (b3.south) -- ++(0,-0.3) -| (b4.north);
+\draw[ar] (b4.east) -- (b5.west);
+\draw[ar] (b5.east) -- (b6.west);
+\end{tikzpicture}
+\par\vspace{6pt}
+\footnotesize Mỗi thí nghiệm trong phần sau được trình bày theo cùng một khung: \textbf{câu hỏi} $\rightarrow$ \textbf{thiết kế} $\rightarrow$ \textbf{kết quả} $\rightarrow$ \textbf{kết luận} $\rightarrow$ \textbf{bước tiếp}.
 \par\kern0pt
-\note{Bảng tổng hợp cho thấy bốn giả thuyết chẩn đoán R1 đến R4 đều được xác nhận. Các can thiệp nông ở bước giải mã như R5 và D1 không hiệu quả, trong khi can thiệp đúng vào điểm nghẽn hợp thành ở D2, D3, D4, D6 và D7 cho mức cải thiện đáng kể.}
+\note{Đây là lộ trình nghiên cứu. Em bắt đầu bằng việc kiểm tra xem các phép đo có đúng không, sau đó dùng phép đo đúng để chẩn đoán mô hình, rồi thử sửa ở giai đoạn giải mã, sau đó ở giai đoạn huấn luyện, kiểm chứng lại trên mô hình mới, và cuối cùng áp dụng vào bài toán thực tế là giảm hallucination khi trả lời từ tài liệu. Mỗi bước trả lời một câu hỏi và kết quả của nó dẫn tới câu hỏi của bước sau.}
 \end{frame}
 
 
-\section{Chẩn đoán nhân quả (R1--R5)}
+\section{Bước 1: Đo đúng (R1--R2)}
 %%@@R1d
-\begin{frame}[shrink]{R1 \textperiodcentered{} Phép che đơn lẻ ($\dn$) và can thiệp toàn phần ($\dt$)}
+\begin{frame}[shrink]{R1 \textperiodcentered{} Thiết kế: che một bước và che cả nhánh hậu duệ}
+\cauhoi{Che một bước của chuỗi có đo được bước đó quan trọng không, và phép che toàn phần thực chất đo điều gì?}
 \centering
 \begin{tikzpicture}[font=\scriptsize,node distance=0.22cm,
-  hb/.style={draw=keyc,fill=keyc!4,rounded corners=2pt,align=left,inner sep=3pt,text width=2.55cm},
-  hbm/.style={draw=failc,fill=failc!6,rounded corners=2pt,align=left,inner sep=3pt,text width=2.55cm,dashed},
-  an/.style={draw=okc,fill=okc!6,rounded corners=2pt,align=left,inner sep=3pt,text width=1.2cm},
-  lab/.style={align=left,text width=2.6cm,font=\scriptsize\bfseries}]
-\node[lab,text=keyc] (l0) at (0,0.85) {Chuỗi chuẩn gốc $Z$};
-\node[hb,right=0.1cm of l0] (a1) {\textbf{Bước $z_1$:} Đạo diễn X là \textbf{Y}.};
-\node[hb,right=of a1] (a2) {\textbf{Bước $z_2$:} Vợ của \textbf{Y} là \textbf{Z}.};
-\node[an,right=of a2] (a3) {\textbf{Đáp án:} Z};
-\node[lab,text=partc] (l1) at (0,-0.35) {Can thiệp đơn lẻ ($\dn$)};
-\node[hbm,right=0.1cm of l1] (b1) {\textbf{Bước $z_1$:} [ẨN]};
-\node[hb,right=of b1] (b2) {\textbf{Bước $z_2$:} Vợ của \textbf{Y} là \textbf{Z}.};
-\node[an,right=of b2] (b3) {\textbf{Đáp án:} Z};
-\node[lab,text=failc] (l2) at (0,-1.55) {Can thiệp toàn phần ($\dt$)};
-\node[hbm,right=0.1cm of l2] (c1) {\textbf{Bước $z_1$:} [ẨN]};
-\node[hbm,right=of c1] (c2) {\textbf{Bước $z_2$:} Vợ của [ẨN] là [ẨN].};
-\node[an,right=of c2] (c3) {\textbf{Đáp án:} Z};
+  cx/.style={draw=nac,fill=black!4,rounded corners=2pt,align=left,inner sep=3pt,text width=2.3cm},
+  hb/.style={draw=keyc,fill=keyc!4,rounded corners=2pt,align=left,inner sep=3pt,text width=2.45cm},
+  hbm/.style={draw=failc,fill=failc!6,rounded corners=2pt,align=left,inner sep=3pt,text width=2.45cm,dashed},
+  an/.style={draw=okc,fill=okc!6,rounded corners=2pt,align=left,inner sep=3pt,text width=1.25cm},
+  lab/.style={align=left,text width=2.2cm,font=\scriptsize\bfseries}]
+\node[lab,text=keyc] (l0) at (0,0.85) {Chuỗi gốc};
+\node[cx,right=0.05cm of l0] (x0) {\textbf{Ngữ cảnh $X$:} các đoạn văn, có chứa Y và Z};
+\node[hb,right=of x0] (a1) {\textbf{$z_1$:} Đạo diễn X là \textbf{Y}.};
+\node[hb,right=of a1] (a2) {\textbf{$z_2$:} Vợ của \textbf{Y} là \textbf{Z}.};
+\node[an,right=of a2] (a3) {\textbf{Đáp án:} ?};
+\node[lab,text=partc] (l1) at (0,-0.35) {$\dn(z_1)$: che $z_1$};
+\node[cx,right=0.05cm of l1] (x1) {\textbf{Ngữ cảnh $X$} (giữ nguyên)};
+\node[hbm,right=of x1] (b1) {\textbf{$z_1$:} [ẨN]};
+\node[hb,right=of b1] (b2) {\textbf{$z_2$:} Vợ của \textbf{Y} là \textbf{Z}.};
+\node[an,right=of b2] (b3) {\textbf{Đáp án:} ?};
+\node[lab,text=failc] (l2) at (0,-1.55) {$\dt(z_1)$: che $z_1$ và hậu duệ};
+\node[cx,right=0.05cm of l2] (x2) {\textbf{Ngữ cảnh $X$} (giữ nguyên)};
+\node[hbm,right=of x2] (c1) {\textbf{$z_1$:} [ẨN]};
+\node[hbm,right=of c1] (c2) {\textbf{$z_2$:} Vợ của [ẨN] là [ẨN].};
+\node[an,right=of c2] (c3) {\textbf{Đáp án:} ?};
 \end{tikzpicture}
 \par\vspace{5pt}
 \footnotesize
 \begin{columns}[T,onlytextwidth]
 \column{0.48\textwidth}
-\textbf{\color{keyc}Phân tích trên đồ thị suy luận có hướng (DRG)}\par\vspace{2pt}
-Trong chuỗi bắc cầu $z_1 \to z_2 \to Y$, thực thể trung gian $e_1 = \text{``Y''}$ là đầu ra của $z_1$ và được dùng lại làm đầu vào của $z_2$.
+\textbf{\color{keyc}Hai cách che}\par\vspace{2pt}
 \begin{itemize}
   \setlength{\itemsep}{2pt}
-  \item Khi che đơn lẻ $\dn(z_1)$ \citeref{Lanham et al., 2023}, thực thể $e_1$ và kết quả $e_2 = \text{``Z''}$ vẫn còn nguyên trong $z_2$.
-  \item Cơ chế attention của mô hình tự hồi quy đọc thẳng $z_2$ để xuất đáp án, nên $\Delta_{\text{naive}}(z_1) \approx 0$ (sai số âm tính giả).
+  \item $\dn(z_1)$ \citeref{Lanham et al., 2023}: chỉ che $z_1$. Bước cuối $z_2$ vẫn ghi sẵn đáp án Z, nên mô hình vẫn chép được Z.
+  \item $\dt(z_1)$: che $z_1$ và mọi bước nhận kết quả của $z_1$ (đồ thị hậu duệ). Trên MuSiQue, bước cuối là hậu duệ, nên đáp án Z cũng biến mất khỏi chuỗi.
+  \item Ngữ cảnh $X$ \textbf{luôn giữ nguyên}: đáp án Z vẫn đọc được từ các đoạn văn.
 \end{itemize}
 
 \column{0.48\textwidth}
-\textbf{\color{keyc}Đề xuất toán tử can thiệp toàn phần ($\dt$)}\par\vspace{2pt}
-Dựng đồ thị suy luận có hướng $\mathcal{G} = (V, E)$, trong đó cạnh $(i \to j) \in E$ tồn tại nếu thực thể kết quả của bước $z_i$ xuất hiện trong tiền đề của bước $z_j$.\par\vspace{2pt}
-Phép can thiệp toàn phần $\dt(z_i)$ che đồng thời $z_i$ và toàn bộ tập đỉnh hậu duệ $\mathrm{desc}_{\mathcal{G}}(i)$ trên $\mathcal{G}$, nhờ đó cắt đứt mọi đường truyền thông tin từ $z_i$ tới đáp án.
+\textbf{\color{keyc}Hai đối chứng để diễn giải đúng}\par\vspace{2pt}
+\begin{itemize}
+  \setlength{\itemsep}{2pt}
+  \item \textbf{Chỉ che bước cuối:} đo riêng tác động của việc đáp án biến mất khỏi chuỗi.
+  \item \textbf{Bỏ cả chuỗi:} $p(Y^* \mid X, Z) - p(Y^* \mid X)$, đo mức mô hình lấy đáp án từ chuỗi thay vì từ $X$.
+\end{itemize}
+\par\vspace{2pt}
+Nếu $\dt(z_1) \approx$ hai đối chứng này thì $\dt$ đang đo ``đáp án có nằm trong chuỗi hay không'', không đo riêng vai trò của $z_1$.
 \end{columns}
 \par\kern0pt
-\note{Slide này giải thích vì sao phép che từng bước đơn lẻ trong văn liệu cho kết quả lệch. Trên đồ thị suy luận có hướng, bước 2 phụ thuộc vào kết quả của bước 1. Nếu chỉ xóa bước 1 mà không xóa các đỉnh hậu duệ, thông tin vẫn còn trong bước 2.}
+\note{Mô hình luôn được đọc ngữ cảnh X, trong đó có cả đáp án. Che đơn lẻ z1 không làm mất gì vì bước cuối vẫn ghi đáp án. Che cả nhánh hậu duệ thì đáp án biến mất khỏi chuỗi. Vì vậy em thêm hai đối chứng: chỉ che bước cuối, và bỏ cả chuỗi, để biết phép che toàn phần thực chất đang đo điều gì.}
 \end{frame}
 
 %%@@R1r
-\begin{frame}[shrink]{R1 \textperiodcentered{} Kết quả: $\dt$ khôi phục tầm quan trọng của bước trung gian}
-\begin{columns}[T,onlytextwidth]
-\column{0.50\textwidth}
-\centering
-\begin{tikzpicture}
-\begin{axis}[ybar, width=\linewidth, height=4.5cm, bar width=7pt, ymin=-10, ymax=75,
-  symbolic x coords={0.5B,1.5B,Smol,3B,7B}, xtick=data, x tick label style={font=\tiny},
-  ylabel={$\Delta$ (điểm \%)}, ylabel style={font=\tiny}, y tick label style={font=\tiny},
-  legend style={at={(0.5,1.05)},anchor=south,legend columns=2,font=\tiny,draw=none},
-  enlarge x limits=0.12, ymajorgrids, grid style={black!10}]
-\addplot[fill=keyc,draw=none] coordinates {(0.5B,56.7)(1.5B,56.9)(Smol,66.8)(3B,49.1)(7B,41.3)};
-\addplot[fill=partc,draw=none] coordinates {(0.5B,-2.4)(1.5B,0.6)(Smol,-3.9)(3B,0.5)(7B,6.5)};
-\legend{Can thiệp toàn phần ($\dt$),Can thiệp đơn lẻ ($\dn$)}
-\end{axis}
-\end{tikzpicture}
-\par\tiny Dữ liệu: MuSiQue (đánh giá trên các bước chuẩn không phải bước cuối).
-\column{0.46\textwidth}
+\begin{frame}[shrink]{R1 \textperiodcentered{} Kết quả: che đơn lẻ bị mù; đáp án được đọc từ chuỗi}
 \scriptsize
-\textbf{\color{keyc}Khả năng phân biệt bước chuẩn và bước dư thừa (AUROC)}\par\vspace{2pt}
-\renewcommand{\arraystretch}{1.2}
-\begin{tabularx}{\linewidth}{@{}YQ{1.5cm}Q{1.5cm}@{}}
+\textbf{\color{keyc}MuSiQue, điểm phần trăm (bước chuẩn không phải bước cuối)}\par\vspace{3pt}
+\renewcommand{\arraystretch}{1.25}
+\setlength{\tabcolsep}{4pt}
+\begin{tabularx}{\textwidth}{@{}YQ{1.0cm}Q{1.0cm}Q{1.45cm}Q{1.2cm}Q{1.45cm}Q{0.95cm}Q{0.95cm}@{}}
 \toprule
-\textbf{Mô hình} & \textbf{AUROC ($\dt$)} & \textbf{AUROC ($\dn$)}\\
+ & \multicolumn{2}{c}{\textbf{$\Delta$ (điểm)}} & \multicolumn{2}{c}{\textbf{Đối chứng}} & & \multicolumn{2}{c}{\textbf{AUROC}}\\
+\cmidrule(lr){2-3}\cmidrule(lr){4-5}\cmidrule(l){7-8}
+\textbf{Mô hình} & $\dn$ & $\dt$ & \textbf{Chỉ che bước cuối} & \textbf{Bỏ cả chuỗi} & \textbf{Đúng khi chỉ đọc $X$} & $\dn$ & $\dt$\\
 \midrule
-Qwen2.5-1.5B & \textbf{0.98} & 0.82\\
-Qwen2.5-3B & \textbf{0.97} & 0.76\\
-Qwen2.5-7B & \textbf{0.86} & 0.71\\
+Qwen2.5-0.5B & $-2.4$ & 56.7 & 67.2 & 52.6 & 30\% & 0.57 & 0.93\\
+Qwen2.5-1.5B & $0.6$ & 56.9 & 69.7 & 55.2 & 41\% & 0.71 & 0.97\\
+SmolLM2-1.7B & $-3.9$ & 66.8 & 73.5 & 61.0 & 20\% & 0.46 & 0.98\\
+Qwen2.5-3B & $0.5$ & 49.1 & 55.0 & 50.6 & 45\% & 0.64 & 0.97\\
+Qwen2.5-7B & $6.5$ & 41.3 & 34.8 & 37.7 & 38\% & 0.63 & 0.88\\
 \bottomrule
 \end{tabularx}
-\par\vspace{5pt}
+\ghichu{$\Delta$: mức giảm xác suất gán cho đáp án đúng. AUROC: phân biệt bước chuẩn \emph{không phải bước cuối} với bước dư thừa chèn thêm (cùng tập với cột $\Delta$). ``Đúng khi không có chuỗi'' = xác suất trung bình gán cho đáp án đúng khi chỉ đọc ngữ cảnh $X$. Nguồn: \code{results/reliance\_v2/r1\_triviality.csv}.}
+\par\vspace{4pt}
 \footnotesize
-\textbf{\color{keyc}Đối chứng giả dược định dạng (marker control):}\par
-Chèn cùng số token \code{[ẨN]} vào vị trí tương ứng nhưng \emph{giữ nguyên chuỗi thực thể cầu nối} chỉ làm $\Delta$ biến thiên $0.0$--$7.0$ điểm. Do đó hiệu ứng $41$--$67$ điểm của $\dt$ đến từ việc cắt đứt dòng thông tin nhân quả, không phải từ thay đổi định dạng.
+\begin{columns}[T,onlytextwidth]
+\column{0.48\textwidth}
+\textbf{\color{keyc}Đọc bảng}\par\vspace{2pt}
+\begin{itemize}
+  \setlength{\itemsep}{2pt}
+  \item $\dn$ trên bước giữa $\approx 0$ và AUROC gần ngẫu nhiên ($0.46$--$0.71$): che đơn lẻ không phát hiện được bước bắc cầu.
+  \item $\dt \approx$ chỉ che bước cuối $\approx$ bỏ cả chuỗi: $\dt$ trên MuSiQue đo việc đáp án nằm trong chuỗi, không đo riêng vai trò của $z_1$. AUROC cao của $\dt$ là kiểm tra nhất quán của đồ thị, không phải bằng chứng mô hình suy luận qua $z_1$.
+\end{itemize}
+
+\column{0.48\textwidth}
+\textbf{\color{keyc}Điều R1 chứng minh được}\par\vspace{2pt}
+\begin{itemize}
+  \setlength{\itemsep}{2pt}
+  \item Dù ngữ cảnh $X$ có sẵn đáp án, bỏ đáp án khỏi chuỗi làm xác suất giảm $35$--$74$ điểm: ở bước trả lời, mô hình \textbf{đọc đáp án từ chuỗi} chứ không đọc lại $X$.
+  \item Kiểm tra mô hình có \emph{suy luận} qua các bước hay không cần tác vụ mà đáp án không nằm trong chuỗi: CLUTRR (R3, D6).
+\end{itemize}
 \end{columns}
-\takeaway{Phép che đơn lẻ $\dn$ gần như không phát hiện được vai trò của các bước trung gian ($\Delta \in [-3.9, +6.5]$). Toán tử $\dt$ khắc phục rò rỉ thông tin hạ lưu và đạt $\text{AUROC}$ tới $0.98$. \OKs}
+\takeaway{Phép che đơn lẻ không thấy được bước bắc cầu. Trên MuSiQue, chuỗi CoT là kênh mang đáp án tới bước trả lời: mô hình đọc từ chuỗi, kể cả khi ngữ cảnh có sẵn đáp án. \OKs}
+\tieptheo{phép che cần đối chứng; R2 kiểm tra cách đo còn lại là lấy mẫu lại.}
 \par\kern0pt
-\note{Kết quả trên năm mô hình khớp với phân tích lý thuyết: phép che đơn lẻ màu cam cho hiệu ứng gần bằng 0, phép che toàn phần màu xanh đạt từ 41 đến 67 điểm, và AUROC đạt tới 0.98.}
+\note{Bảng này đặt các phép đo trên cùng một tập bước. Che đơn lẻ cho hiệu ứng gần 0 và AUROC gần ngẫu nhiên. Che toàn phần cho hiệu ứng lớn, nhưng gần bằng hiệu ứng của việc chỉ che bước cuối hoặc bỏ cả chuỗi. Vì vậy em không diễn giải che toàn phần trên MuSiQue là bằng chứng suy luận qua z1, mà là bằng chứng mô hình đọc đáp án từ chuỗi. Bằng chứng về suy luận nằm ở CLUTRR, nơi đáp án không có trong chuỗi.}
 \end{frame}
 
 %%@@R2
 \begin{frame}[shrink]{R2 \textperiodcentered{} Độ lệch đường cơ sở của phương pháp lấy mẫu lại}
+\cauhoi{Đo bằng cách cho mô hình tự sinh lại phần sau của chuỗi (lấy mẫu lại) có đáng tin không?}
 \centering
 \begin{tikzpicture}[font=\scriptsize,node distance=0.3cm,
   b/.style={draw=keyc,fill=keyc!4,rounded corners=2pt,align=center,inner sep=3pt,text width=2.5cm,minimum height=0.9cm},
@@ -479,12 +505,15 @@ $\Delta_{\text{cal}}$ (có hiệu chỉnh): \textbf{bước dư thừa} & $\math
 \end{tabularx}
 \end{columns}
 \takeaway{Mốc cố định gán nhầm mọi bước dư thừa thành bước quan trọng ($56$--$76$ điểm). Hiệu chỉnh đường cơ sở theo vị trí $b(j)$ loại bỏ phần lớn độ lệch này. \OKs}
+\tieptheo{đã có cách đo đáng tin; R3 dùng nó để hỏi mô hình có suy luận qua chuỗi không.}
 \par\kern0pt
 \note{Ở R2, em dẫn xuất vì sao phương pháp lấy mẫu lại với mốc cố định bị lệch. Vì năng lực tự sinh tiếp của mô hình nhỏ chỉ đạt 22 đến 44 phần trăm, việc so với mốc 100 phần trăm khiến cả bước dư thừa cũng bị cộng thêm 56 đến 78 điểm. Khi trừ đường cơ sở tại vị trí j, điểm của bước dư thừa về gần 0.}
 \end{frame}
 
 %%@@R3d
+\section{Bước 2: Chẩn đoán (R3--R4)}
 \begin{frame}[shrink]{R3 \textperiodcentered{} Thiết kế kiểm định: trích xuất bề mặt và suy diễn hợp thành}
+\cauhoi{Mô hình nhỏ suy luận qua các bước, hay chỉ đọc đáp án đã được viết sẵn?}
 \centering
 \begin{tikzpicture}[font=\scriptsize,node distance=0.2cm,
   hb/.style={draw=keyc,fill=keyc!4,rounded corners=2pt,align=left,inner sep=3pt,text width=2.5cm},
@@ -556,12 +585,14 @@ Qwen2.5-7B & 22.9\% & \textbf{10.3\%}\\
 Với các mô hình $\le 3\text{B}$, ngay cả trên tập con câu hỏi mà mô hình \emph{tự giải đúng từ chuỗi C1}, việc chèn thêm một câu kết luận sai khiến mô hình sao chép theo trong $47.7\%\text{--}70.8\%$ trường hợp.
 \end{columns}
 \takeaway{Khi chưa tinh chỉnh, mô hình nhỏ hầu như không thực hiện phép hợp thành trên chuỗi ($\Delta_{\text{C1}} \in [-1.5, +7.3]$) và chỉ phụ thuộc vào chuỗi khi đáp án xuất hiện trên bề mặt văn bản ($\Delta_{\text{C2}} \in [51.9, 77.0]$). \OKs}
+\tieptheo{mô hình chỉ đọc; R4 hỏi tiếp nhiễu gây hại qua đường nào.}
 \par\kern0pt
 \note{Số liệu khớp với giả thuyết đọc bề mặt: ở C1 hiệu ứng gần bằng 0, ở C2 hiệu ứng tăng lên 52 đến 77 điểm, và ở C3 các mô hình từ 3B trở xuống sao chép câu kết luận sai trong khoảng 46 đến 71 phần trăm số lần, kể cả khi trước đó tự giải đúng.}
 \end{frame}
 
 %%@@R4
 \begin{frame}[shrink]{R4 \textperiodcentered{} Phân tích trung gian nhân quả: tác động của nhiễu qua chuỗi}
+\cauhoi{Đoạn văn nhiễu làm hỏng câu trả lời trực tiếp, hay thông qua việc làm hỏng chuỗi?}
 \centering
 \begin{tikzpicture}[font=\scriptsize,node distance=0.25cm,
   b/.style={draw=keyc,fill=keyc!4,rounded corners=2pt,align=center,inner sep=3pt,text width=2.3cm,minimum height=0.75cm},
@@ -614,12 +645,15 @@ Dự đoán trực tiếp (direct prompting) & $-3.8$ & $-2.0$\\
 \end{itemize}
 \end{columns}
 \takeaway{Vì tác hại của nhiễu truyền qua biến trung gian $Z$ ($\text{TIE}$), can thiệp chỉ chỉnh sửa bước đọc đáp án sau khi $Z$ đã sinh xong không xử lý được nguyên nhân gốc. \OKs}
+\tieptheo{nhiễu đi qua chuỗi; liệu sửa ở bước đọc đáp án cuối có ích không (R5)?}
 \par\kern0pt
 \note{R4 áp dụng phân tích trung gian nhân quả. Số liệu cho thấy một khi chuỗi CoT đã được viết ra, nó đóng vai trò nút thắt: nhiễu không tác động trực tiếp lên bước đọc đáp án (NDE bằng âm 0.6) mà tác động lên quá trình viết chuỗi (TIE bằng âm 5.0).}
 \end{frame}
 
 %%@@R5
+\section{Bước 3: Sửa ở giải mã (R5, D1--D3)}
 \begin{frame}[shrink]{R5 \textperiodcentered{} Can thiệp giải mã tại bước kết xuất đáp án (HGCD) không hiệu quả}
+\cauhoi{Chỉnh lại xác suất ở bước chốt đáp án (sau khi chuỗi đã viết xong) có sửa được lỗi không?}
 \footnotesize
 \begin{columns}[T,onlytextwidth]
 \column{0.50\textwidth}
@@ -650,13 +684,14 @@ Việc HGCD không cải thiện ($|\Delta| \le 1.7$ điểm, $p \ge 0.6$) phù 
 \end{enumerate}
 \end{columns}
 \takeaway{Trong phạm vi khảo sát, can thiệp giải mã muộn không sửa được lỗi suy luận nhiều bước: điều chỉnh phân phối token ở bước đọc cuối không thay thế được việc sửa chuỗi hoặc sửa phép hợp thành. \FAILs}
+\tieptheo{phải can thiệp sớm hơn: trước khi sinh chuỗi (D1) hoặc ở bước hợp thành (D2).}
 \par\kern0pt
 \note{R5 kiểm chứng hệ quả của R3 và R4. Khi áp dụng giải mã tương phản HGCD ở bước chốt đáp án, độ chính xác gần như giữ nguyên so với CoT. Kết quả này đóng lại hướng can thiệp giải mã muộn và chuyển trọng tâm sang can thiệp ở bước tạo chuỗi hoặc bước hợp thành.}
 \end{frame}
 
-\section{Can thiệp giải mã (D1--D3)}
 %%@@D1
 \begin{frame}[shrink]{D1 \textperiodcentered{} Lọc đoạn văn nhiễu bằng attention trước khi sinh chuỗi}
+\cauhoi{Nếu nhiễu gây hại qua chuỗi (R4), loại đoạn nhiễu trước khi sinh chuỗi có giúp không?}
 \centering
 \begin{tikzpicture}[font=\tiny,node distance=0.12cm,
   p/.style={draw=nac,fill=black!3,minimum width=0.85cm,minimum height=0.5cm,inner sep=1pt},
@@ -696,12 +731,14 @@ Việc HGCD không cải thiện ($|\Delta| \le 1.7$ điểm, $p \ge 0.6$) phù 
 \end{itemize}
 \end{columns}
 \takeaway{Trọng số attention trước khi sinh chuỗi của mô hình nhỏ không nhận diện được đoạn bắc cầu ẩn; phương pháp lấy mẫu nhiều chuỗi $\text{SC}_5$ vẫn tốt hơn. \FAILs}
+\tieptheo{không chọn được đúng đoạn; chuyển sang điểm nghẽn R3 chỉ ra là phép hợp thành (D2).}
 \par\kern0pt
 \note{Theo gợi ý của R4 rằng cần giảm nhiễu trước khi viết chuỗi, ở D1 em thử lọc đoạn văn bằng điểm attention. Tuy nhiên đoạn thứ hai chứa thông tin về thực thể trung gian chưa xuất hiện trong câu hỏi nên bị chấm điểm thấp và bị loại nhầm.}
 \end{frame}
 
 %% ============================================================================ D2 pipeline
 \begin{frame}[shrink]{D2 \textperiodcentered{} Kiến trúc lai Neuro-Symbolic: tách trích xuất và hợp thành}
+\cauhoi{Mô hình trích xuất tốt nhưng không hợp thành (R3): giao phép hợp thành cho bộ luật thì sao?}
 \centering
 \begin{tikzpicture}[font=\scriptsize,node distance=0.3cm,
   b/.style={draw,rounded corners=2pt,align=center,minimum height=1.35cm,text width=2.05cm,inner sep=3pt},
@@ -783,12 +820,14 @@ L (5--8) & Qwen2.5-7B & $\mathbf{+24.0}\ \ci{17.0}{31.5}$\\
 \end{itemize}
 \end{columns}
 \takeaway{Giao phép hợp thành cho bộ giải quy tắc giúp mô hình 1.5B (60.7\%) vượt mô hình 7B chạy Self-Consistency 10 mẫu (43.3\%) trên tập validation. \OKs}
+\tieptheo{tăng nhờ bộ luật hay nhờ bước trích xuất? D3 tách hai yếu tố.}
 \par\kern0pt
 \note{Một mô hình 1.5B khi kết hợp với bảng luật đạt độ chính xác 60.7 phần trăm trên tập validation, cao hơn mô hình 7B chạy Self-Consistency 10 mẫu, chỉ đạt 43.3 phần trăm.}
 \end{frame}
 
 %%@@D3
 \begin{frame}[shrink]{D3 \textperiodcentered{} Ablation: cô lập vai trò của bộ hợp thành}
+\cauhoi{Phần tăng của D2 đến từ bộ luật, hay chỉ vì bước trích xuất đã lọc bớt nhiễu?}
 \centering
 \begin{tikzpicture}[font=\scriptsize,node distance=0.3cm,
   b/.style={draw=keyc,fill=keyc!4,rounded corners=2pt,align=center,inner sep=3pt,text width=2.6cm,minimum height=0.95cm},
@@ -828,13 +867,15 @@ Một giải thích thay thế cho kết quả của D2 là bước trích xuấ
 \end{tabularx}
 \end{columns}
 \takeaway{Khi đã có sẵn danh sách sự kiện sạch $\hat{E}$, bản thân mô hình ngôn ngữ (Nhánh 1) không cải thiện so với CoT. Thay bước hợp thành bằng bảng luật (Nhánh 2) cho mức tăng $+13$ đến $+35$ điểm trên chuỗi ngắn. \OKs}
+\tieptheo{bộ luật là yếu tố quyết định nhưng chỉ dùng được ở miền đóng; D4 thử dạy mô hình tự hợp thành.}
 \par\kern0pt
 \note{Ablation D3 là bằng chứng nhân quả trực tiếp nhất cho phần giải mã. Khi đưa lại đúng danh sách sự kiện đã làm sạch cho chính mô hình ngôn ngữ tự suy luận, độ chính xác vẫn gần như khi đọc văn bản dài. Chỉ khi thay bộ hợp thành bằng bảng luật thì độ chính xác mới tăng đáng kể.}
 \end{frame}
 
-\section{Can thiệp huấn luyện (D4--D9)}
+\section{Bước 4: Sửa ở huấn luyện (D4--D9)}
 %%@@D4d
 \begin{frame}[shrink]{D4 \textperiodcentered{} SFT: thiết kế ba định dạng chuỗi giám sát}
+\cauhoi{Bộ luật chỉ dùng được ở miền đóng. Fine-tune trên chuỗi có dạy được mô hình tự hợp thành không, và định dạng chuỗi nào tốt nhất?}
 \centering
 \begin{tikzpicture}[font=\scriptsize,node distance=0.2cm,
   bx/.style={draw=keyc,fill=keyc!3,rounded corners=2pt,align=left,inner sep=4pt,text width=3.55cm,minimum height=3.0cm,anchor=north west}]
@@ -902,12 +943,14 @@ Nhánh \code{S\_struct} yêu cầu mô hình ghi tường minh kết quả hợp
 \end{enumerate}
 \end{columns}
 \takeaway{Việc mô hình không hợp thành được quan hệ ở R3 phản ánh hạn chế của cách gợi ý (prompting) chứ không phải giới hạn dung lượng của mô hình; tinh chỉnh trên chuỗi chuẩn \code{S\_plain} khắc phục hạn chế này. \FAILs\ (cấu trúc)}
+\tieptheo{SFT chuỗi thường là tốt nhất; D5 kiểm tra trên dữ liệu thật.}
 \par\kern0pt
 \note{Kết quả D4 cho thấy việc ép mô hình viết thêm dòng quan hệ tích lũy làm chuỗi dài hơn và không cải thiện kết quả. Ngược lại, chỉ cần tinh chỉnh trên chuỗi tự nhiên, mô hình 3B tăng từ 36 lên 94.7 phần trăm và đạt 59 phần trăm trên chuỗi 5 đến 8 bước, cao hơn phương pháp bảng luật D2.}
 \end{frame}
 
 %%@@D5d
 \begin{frame}[shrink]{D5 \textperiodcentered{} Kiểm chứng SFT trên văn bản Wikipedia (2WikiMultihopQA)}
+\cauhoi{Kết luận của D4 có còn đúng trên văn bản Wikipedia thật không?}
 \footnotesize
 \begin{columns}[T,onlytextwidth]
 \column{0.50\textwidth}
@@ -948,13 +991,15 @@ Qwen2.5-3B (tổng) & 28.8 & 50.0 & \textbf{56.0} & 54.4\\
 \end{itemize}
 \end{columns}
 \takeaway{Quy luật trên văn bản Wikipedia tự nhiên nhất quán với CLUTRR: tinh chỉnh có giám sát trên chuỗi chuẩn là yếu tố quyết định hiệu năng, còn việc gắn nhãn trích dẫn không đem lại lợi ích bổ sung. \PARTs}
+\tieptheo{kết luận giữ nguyên; D6 xem cơ chế bên trong có đổi sau SFT không.}
 \par\kern0pt
 \note{Mở rộng sang văn bản Wikipedia thật trên 2WikiMultihopQA, quy luật lặp lại: SFT tăng 21 đến 30 điểm EM, sinh chuỗi giúp mô hình 3B hơn chỉ đoán đáp án, còn việc yêu cầu trích dẫn tên đoạn văn không tăng thêm độ chính xác.}
 \end{frame}
 
 
 %%@@D6
-\begin{frame}[shrink]{D6 \textperiodcentered{} Sau SFT: phụ thuộc nhân quả vào các bước trung gian}
+\begin{frame}[shrink]{D6 \textperiodcentered{} Sau SFT: câu trả lời phụ thuộc vào chuỗi}
+\cauhoi{Sau SFT, câu trả lời có thật sự phụ thuộc vào chuỗi không?}
 \footnotesize
 \begin{columns}[T,onlytextwidth]
 \column{0.56\textwidth}
@@ -979,17 +1024,19 @@ Phép thử của R3 được áp dụng lại cho mô hình \code{S\_plain} tr�
 \textbf{\color{keyc}Nhận xét}\par\vspace{2pt}
 \begin{itemize}
   \setlength{\itemsep}{4pt}
-  \item \textbf{Chuyển dịch cơ chế:} $\Delta(\dt)$ tăng từ mức nhiễu ($1$--$7$ điểm) lên $\sim \mathbf{40}$ \textbf{điểm}, nghĩa là mô hình sau SFT \emph{sử dụng các bước trung gian} để tính đáp án.
+  \item \textbf{Chuyển dịch cơ chế:} $\Delta(\dt)$ tăng từ mức nhiễu ($1$--$7$ điểm) lên $\sim \mathbf{40}$ \textbf{điểm}, nghĩa là sau SFT câu trả lời phụ thuộc vào chuỗi đã liên kết. Trên CLUTRR đáp án không nằm trong chuỗi, nên đây không phải hiệu ứng chép đáp án như ở R1; tuy nhiên trên chuỗi tuyến tính, $\dt$ cắt mọi liên kết phía sau, nên nó đo việc dùng chuỗi chứ không cô lập riêng một bước.
   \item \textbf{Tác dụng phụ:} mô hình 7B sau SFT sao chép kết luận sai nhiều hơn ($47.5\%$ so với $10.3\%$), cho thấy nó tin vào dòng kết luận cuối theo quy ước định dạng.
 \end{itemize}
 \end{columns}
 \takeaway{SFT biến chuỗi CoT từ phần diễn giải đi kèm thành mạch tính toán có phụ thuộc nhân quả ($\Delta \approx 40$ điểm); đồng thời làm xuất hiện xu hướng tin vào dòng kết luận cuối ở mô hình 7B. \OKs}
+\tieptheo{mô hình dùng chuỗi nhưng vẫn tin dòng kết luận cuối; D7 hỏi chuỗi có cần không.}
 \par\kern0pt
 \note{Phép đo nhân quả cho thấy mô hình sau SFT thực sự dựa vào các bước trung gian, Delta tăng từ mức nhiễu lên khoảng 40 điểm. Tác dụng phụ là mô hình 7B sao chép kết luận sai nhiều hơn.}
 \end{frame}
 
 %%@@D7
 \begin{frame}[shrink]{D7 \textperiodcentered{} Vai trò của chuỗi đối với tổng quát hóa ngoài phân phối}
+\cauhoi{Đã fine-tune rồi thì viết chuỗi có còn cần, hay học thẳng đáp án là đủ?}
 \footnotesize
 \begin{columns}[T,onlytextwidth]
 \column{0.58\textwidth}
@@ -1018,12 +1065,14 @@ Phép thử của R3 được áp dụng lại cho mô hình \code{S\_plain} tr�
 \end{itemize}
 \end{columns}
 \takeaway{Việc sinh chuỗi trung gian đi cùng với khả năng tổng quát hóa tốt hơn ngoài phân phối so với chỉ học đáp án ($+9$ đến $+23$ điểm). \OKs}
+\tieptheo{chuỗi cần cho đề lạ và dài; còn tật tin kết luận sai, D8 thử sửa bằng DPO.}
 \par\kern0pt
 \note{Việc viết chuỗi trung gian giúp mô hình tổng quát hóa sang đề mới và dài hơn tốt hơn tới 23 điểm so với chỉ học đáp án.}
 \end{frame}
 
 %%@@D8
 \begin{frame}[shrink]{D8 \textperiodcentered{} DPO phản thực giảm hành vi sao chép kết luận sai}
+\cauhoi{Sau SFT mô hình vẫn tin dòng kết luận cuối (D6). DPO với cặp phản thực có sửa được không?}
 \footnotesize
 \begin{columns}[T,onlytextwidth]
 \column{0.50\textwidth}
@@ -1053,12 +1102,14 @@ Seed 1 & 32.4\% & \textbf{7.2\%} & 56.5 & 51.5\\
 \end{tabularx}
 \end{columns}
 \takeaway{DPO phản thực loại bỏ phần lớn hành vi sao chép kết luận sai nhưng làm giảm độ chính xác trên chuỗi dài; đây là một đánh đổi chứ không phải cải thiện thuần. \PARTs}
+\tieptheo{DPO có đánh đổi; D9 thử học tăng cường với phần thưởng kiểm chứng.}
 \par\kern0pt
 \note{DPO giúp giảm tật chép kết luận sai xuống còn 4.5 đến 7 phần trăm nhưng làm giảm độ chính xác trên chuỗi dài từ 5 đến 13 điểm, nên em đánh giá ở mức đánh đổi.}
 \end{frame}
 
 %%@@D9
 \begin{frame}[shrink]{D9 \textperiodcentered{} GRPO với phần thưởng theo từng bước}
+\cauhoi{Học tăng cường (GRPO) có cải thiện thêm so với SFT không?}
 \footnotesize
 \begin{columns}[T,onlytextwidth]
 \column{0.38\textwidth}
@@ -1089,12 +1140,181 @@ GRPO được áp dụng với phần thưởng kiểm chứng được: $+1.0$ 
 \end{tabularx}
 \end{columns}
 \takeaway{GRPO tăng độ bền trước nhiễu ngữ cảnh ($51.9\% \to 23.4\%$ ở 1.5B) và cải thiện chuỗi ngắn, nhưng chưa cải thiện chuỗi dài 5--8 bước. \PARTs}
+\tieptheo{kiểm tra lại toàn bộ trên mô hình mới hơn (Qwen3).}
 \par\kern0pt
 \note{GRPO giúp giảm gần một nửa tỷ lệ bị lật đáp án khi gặp nhiễu và cải thiện chuỗi ngắn, nhưng chưa cải thiện chuỗi dài vì tập huấn luyện RL chỉ gồm mẫu ngắn.}
 \end{frame}
 
 
-\section{Thảo luận và kết luận}
+\section{Bước 5: Mô hình mới (Qwen3)}
+%%@@Q3
+\begin{frame}[shrink]{Q3 \textperiodcentered{} Kiểm chứng trên mô hình mới hơn có chế độ thinking (Qwen3)}
+\cauhoi{Mô hình mới hơn, lớn hơn và có chế độ suy nghĩ dài (thinking) có còn cần fine-tune trên chuỗi không?}
+\scriptsize
+\textbf{\color{keyc}CLUTRR, độ chính xác (\%): C6 = tổ hợp quan hệ mới (2--4 bước), C5 = chuỗi dài 5--8 bước}\par\vspace{3pt}
+\renewcommand{\arraystretch}{1.25}
+\setlength{\tabcolsep}{5pt}
+\begin{tabularx}{\textwidth}{@{}YQ{1.0cm}Q{1.0cm}Q{1.0cm}Q{1.0cm}Q{1.0cm}Q{1.0cm}@{}}
+\toprule
+ & \multicolumn{2}{c}{\textbf{Qwen3-1.7B}} & \multicolumn{2}{c}{\textbf{Qwen3-4B}} & \multicolumn{2}{c}{\textbf{Qwen3-8B}}\\
+\cmidrule(lr){2-3}\cmidrule(lr){4-5}\cmidrule(l){6-7}
+\textbf{Phương pháp} & C6 & C5 & C6 & C5 & C6 & C5\\
+\midrule
+Few-shot (không fine-tune) & 36.1 & 22.0 & 38.0 & 27.5 & 37.3 & 27.5\\
+Thinking (không fine-tune; tập con, tối đa 1500 token) & -- & -- & 59.0 & 22.0 & 60.0 & 31.7\\
+SFT chỉ đáp án & 63.3 & 36.0 & 67.1 & 40.0 & 62.7 & 44.0\\
+\textbf{SFT trên chuỗi} & \textbf{73.4} & \textbf{46.0} & \textbf{77.8} & \textbf{61.0} & \textbf{83.5} & \textbf{58.5}\\
+SFT trên chuỗi + GRPO (lọc câu khó) & 71.5 & 40.0 & 75.3 & 50.5 & -- & --\\
+Chưng cất từ Qwen3-8B (không dùng chuỗi chuẩn) & -- & -- & 51.3 & 33.5 & -- & --\\
+\bottomrule
+\end{tabularx}
+\ghichu{Một seed. Thinking đo trên 100 câu (4B) và 60 câu (8B) mỗi tập; lượt sinh chưa xong trong giới hạn token tính là sai (chỉ 31--42\% xong ở C5).}
+\par\vspace{4pt}
+\footnotesize
+\begin{columns}[T,onlytextwidth]
+\column{0.48\textwidth}
+\begin{itemize}
+  \setlength{\itemsep}{2pt}
+  \item SFT trên chuỗi hơn thinking $+19$ (C6) và $+39$ điểm (C5) ở 4B, trên cùng tập câu.
+  \item Chuỗi hơn chỉ đáp án $+10$ đến $+21$ điểm ở C5, lặp lại kết luận D7.
+\end{itemize}
+\column{0.48\textwidth}
+\begin{itemize}
+  \setlength{\itemsep}{2pt}
+  \item Chưng cất từ teacher kém SFT chuỗi chuẩn $25$--$32$ điểm (teacher chỉ đúng 46\%).
+  \item GRPO lọc câu khó làm giảm chuỗi dài ($-6$ đến $-8.5$ điểm ở C5).
+\end{itemize}
+\end{columns}
+\takeaway{Mô hình mới và chế độ thinking không thay thế được fine-tune trên chuỗi; chưng cất từ teacher và GRPO không cải thiện thêm. \OKs}
+\tieptheo{đòn bẩy chính đã rõ; bước cuối là áp dụng cho bài toán thực tế: trả lời từ tài liệu mà không bịa.}
+\par\kern0pt
+\note{Em kiểm tra lại trên Qwen3. Ở cả ba cỡ mô hình, fine-tune trên chuỗi vẫn tốt nhất, hơn cả chế độ thinking. Chưng cất từ mô hình lớn và GRPO không cải thiện thêm.}
+\end{frame}
+
+\section{Bước 6: Ứng dụng -- hallucination khi trả lời từ tài liệu}
+%%@@H1
+\begin{frame}[shrink]{H1 \textperiodcentered{} Hallucination kiểu RAG: ba điều kiện có hành vi đúng biết trước}
+\cauhoi{Khi trả lời từ tài liệu, có dạy được mô hình từ chối khi tài liệu thiếu bằng chứng và bám theo tài liệu khi tài liệu mâu thuẫn với trí nhớ không?}
+\footnotesize
+\begin{columns}[T,onlytextwidth]
+\column{0.54\textwidth}
+\textbf{\color{keyc}Can thiệp lên ngữ cảnh (MuSiQue, 300 câu mỗi điều kiện)}\par\vspace{3pt}
+\scriptsize
+\renewcommand{\arraystretch}{1.3}
+\begin{tabularx}{\linewidth}{@{}P{1.45cm}YP{2.1cm}@{}}
+\toprule
+\textbf{Điều kiện} & \textbf{Can thiệp} & \textbf{Hành vi đúng}\\
+\midrule
+Trả lời được & Giữ nguyên: đoạn bằng chứng + 4 đoạn nhiễu & Trả lời đúng\\
+Thiếu bằng chứng & Bỏ một đoạn bằng chứng (đáp án không còn xuất hiện) & Từ chối (``unanswerable'')\\
+Mâu thuẫn & Thay đáp án trong tài liệu bằng thực thể cùng loại & Theo tài liệu, không theo trí nhớ\\
+\bottomrule
+\end{tabularx}
+\par\vspace{4pt}
+\footnotesize
+Giống R1--R3: hành vi đúng được biết trước nhờ can thiệp có kiểm soát.
+
+\column{0.42\textwidth}
+\textbf{\color{keyc}Các nhánh so sánh}\par\vspace{2pt}
+\begin{enumerate}
+  \setlength{\itemsep}{2pt}
+  \item Mô hình gốc + chỉ dẫn ``hãy từ chối nếu thiếu thông tin''.
+  \item SFT chuỗi thường (chỉ câu trả lời được).
+  \item + mẫu thiếu bằng chứng (dạy từ chối).
+  \item + mẫu mâu thuẫn (dạy bám tài liệu).
+  \item Thêm DPO trên các cặp đúng/sai dựng sẵn.
+  \item Thêm GRPO, phần thưởng ba mức: đúng $+1$, bịa $-1$, từ chối nhầm $-0.5$.
+\end{enumerate}
+\par\vspace{2pt}
+Qwen2.5-3B (2 seed) và Qwen3-4B; giả thuyết và ngưỡng đăng ký trước.
+\end{columns}
+\par\kern0pt
+\note{Đây là bước ứng dụng. Em dựng ba điều kiện bằng can thiệp lên tài liệu: tài liệu đủ thông tin, tài liệu bị bỏ một đoạn bằng chứng, và tài liệu bị thay đáp án. Mỗi điều kiện có hành vi đúng biết trước, giống như cách em kiểm chuẩn phép đo ở R1 đến R3.}
+\end{frame}
+
+%%@@H2
+\begin{frame}[shrink]{H2 \textperiodcentered{} Kết quả: từ chối và bám tài liệu học được, nhưng có giá}
+\scriptsize
+\textbf{\color{keyc}Tỷ lệ (\%) trên 300 câu mỗi điều kiện}\par\vspace{3pt}
+\renewcommand{\arraystretch}{1.22}
+\setlength{\tabcolsep}{4pt}
+\begin{tabularx}{\textwidth}{@{}YQ{1.05cm}Q{1.05cm}Q{1.05cm}Q{1.05cm}Q{1.05cm}Q{1.05cm}Q{1.05cm}Q{1.05cm}@{}}
+\toprule
+ & \multicolumn{4}{c}{\textbf{Qwen2.5-3B (seed 0)}} & \multicolumn{4}{c}{\textbf{Qwen3-4B}}\\
+\cmidrule(lr){2-5}\cmidrule(l){6-9}
+\textbf{Nhánh} & \textbf{Đúng} & \textbf{Từ chối nhầm} & \textbf{Từ chối khi thiếu} & \textbf{Bám tài liệu} & \textbf{Đúng} & \textbf{Từ chối nhầm} & \textbf{Từ chối khi thiếu} & \textbf{Bám tài liệu}\\
+\midrule
+Gốc + chỉ dẫn từ chối & 29.3 & 17.7 & 35.7 & 11.7 & 31.7 & 35.7 & 73.3 & 13.3\\
+SFT chuỗi thường & 52.0 & 0.0 & 0.0 & 22.3 & 60.7 & 0.0 & 0.0 & 30.3\\
++ mẫu thiếu bằng chứng & 44.3 & 19.3 & 61.7 & 21.0 & 56.7 & 12.3 & 70.7 & 32.0\\
+\textbf{+ mẫu mâu thuẫn} & 46.7 & 11.7 & 55.7 & \textbf{42.7} & 57.3 & 10.7 & 70.7 & \textbf{52.7}\\
+\quad + DPO & 51.3 & 3.0 & 25.0 & 51.7 & 58.7 & 4.7 & 52.3 & 58.0\\
+\quad + GRPO ba mức & 40.7 & 30.0 & 80.7 & 45.3 & 49.0 & 32.3 & 89.7 & 47.7\\
+\bottomrule
+\end{tabularx}
+\ghichu{``Đúng'' và ``Từ chối nhầm'' đo trên câu trả lời được; ``Từ chối khi thiếu'' trên câu thiếu bằng chứng; ``Bám tài liệu'' trên câu mâu thuẫn. Seed 1 của Qwen2.5-3B cho kết quả cùng chiều. DPO/GRPO so với mô hình SFT của chính lần chạy đó.}
+\par\vspace{4pt}
+\footnotesize
+\begin{columns}[T,onlytextwidth]
+\column{0.48\textwidth}
+\textbf{\color{keyc}Điều học được}\par\vspace{2pt}
+\begin{itemize}
+  \setlength{\itemsep}{2pt}
+  \item Từ chối khi thiếu bằng chứng: $0\% \to 56$--$71\%$, lặp lại ở cả 3 lần chạy.
+  \item Bám tài liệu khi mâu thuẫn: $+21$ đến $+24$ điểm, lặp lại ở cả 3 lần chạy.
+  \item Giá phải trả: độ đúng giảm $4$--$8$ điểm, vượt giới hạn $-5$ đặt trước.
+\end{itemize}
+\column{0.48\textwidth}
+\textbf{\color{keyc}Điều không đạt}\par\vspace{2pt}
+\begin{itemize}
+  \setlength{\itemsep}{2pt}
+  \item DPO làm mô hình trả lời nhiều hơn, bịa nhiều hơn.
+  \item GRPO từ chối nhiều hơn nhưng mất $7$--$11$ điểm độ đúng: chỉ dời điểm cân bằng trả lời/từ chối.
+  \item Đầu dò trạng thái ẩn nhận ra tài liệu thiếu bằng chứng kém: AUROC $0.66$--$0.77$.
+\end{itemize}
+\end{columns}
+\takeaway{Dữ liệu ``thiếu bằng chứng'' và ``mâu thuẫn'' dạy được mô hình từ chối và bám tài liệu; RL chỉ dời điểm cân bằng. Độ đúng gốc 44--61\% vẫn là nguồn lỗi chính. \PARTs}
+\par\kern0pt
+\note{Hai loại dữ liệu đơn giản dạy được mô hình biết từ chối và biết bám tài liệu, và kết quả lặp lại trên cả hai mô hình. Cái giá là mất vài điểm độ đúng. DPO và GRPO không cho cải thiện thật: chúng chỉ dời điểm cân bằng giữa trả lời và từ chối. Phần lỗi còn lại chủ yếu đến từ việc mô hình đọc hoặc suy luận sai ngay cả khi tài liệu đủ thông tin.}
+\end{frame}
+
+\section{Tổng hợp và kết luận}
+%% ============================================================================ tổng quan
+\begin{frame}[shrink]{Tổng hợp kết quả theo lộ trình}
+\scriptsize
+\renewcommand{\arraystretch}{1.02}
+\setlength{\tabcolsep}{5pt}
+\begin{tabularx}{\textwidth}{@{}P{0.7cm}YP{4.3cm}P{1.95cm}@{}}
+\toprule
+\textbf{Mã} & \textbf{Giả thuyết / phương pháp can thiệp} & \textbf{Kết quả định lượng chính} & \textbf{Kiểm định}\\
+\midrule
+R1 & Phép che đơn lẻ ($\dn$) bỏ sót phụ thuộc bắc cầu; mô hình lấy đáp án từ chuỗi chứ không từ ngữ cảnh & $\dn$: $-4$ đến $+6.5$; bỏ đáp án khỏi chuỗi: 35--74 điểm & \OKs\\
+R2 & Lấy mẫu lại với mốc cố định gán nhầm bước dư thừa là quan trọng & Bước thừa: 56--78 điểm; sau hiệu chỉnh: $\le 4$ & \OKs\\
+R3 & \textbf{Mô hình nhỏ trích xuất bề mặt thay vì suy diễn hợp thành} & CLUTRR: $-1.5$ đến $+7.3$; có đáp án: 52--77 & \OKs\\
+R4 & Nhiễu ngữ cảnh làm giảm hiệu năng gián tiếp qua việc làm hỏng chuỗi CoT ($\text{TIE}$) & $\text{NDE} \approx 0$; $\text{TIE} = -3.6$ đến $-5.0$ & \OKs\\
+R5 & Tái trọng số giải mã tại bước kết xuất đáp án (HGCD) cải thiện độ chính xác & $|\Delta|\le1.7$, $p\ge0.6$ so với CoT & \FAILs\\
+\midrule
+D1 & Lọc đoạn văn nhiễu bằng điểm Attention trước khi sinh chuỗi (MuSiQue) & Thấp hơn $\text{SC}_5$; làm mất đoạn bắc cầu & \FAILs\\
+D2 & Giao phép hợp thành cho bộ giải quy tắc (Neuro-Symbolic Extract + Rules) & Vượt $\text{SC}_{10}$ cùng chi phí $+21$ đến $+37$ điểm & \OKs\\
+D3 & Ablation: cố định sự kiện đầu vào, cô lập vai trò của bộ hợp thành & Bảng luật vượt LLM $+13$ đến $+35$ điểm & \OKs\\
+D4 & SFT trên chuỗi chuẩn so với chuỗi ghi trạng thái quan hệ tích lũy & SFT chuẩn (3B): 95/78/59\%; cấu trúc: $-3$ đến $-7$ & \FAILs\ (cấu trúc)\\
+D5 & SFT trên văn bản tự nhiên (2WikiMultihopQA) kèm nhãn trích dẫn nguồn & SFT $+21$ đến $+30$ so với few-shot; nguồn: $-1.6$ & \PARTs\\
+D6 & Sau SFT câu trả lời phụ thuộc vào chuỗi (CLUTRR) & $\Delta(\dt)$ tăng từ 1--7 lên $\sim$40 điểm; chép sai 13--48\% & \OKs\\
+D7 & Sinh chuỗi sau SFT tổng quát hóa ngoài phân phối tốt hơn dự đoán trực tiếp & Có chuỗi hơn chỉ đáp án $+9$ đến $+23$ điểm (OOD) & \OKs\\
+D8 & DPO phản thực giảm hành vi chép kết luận sai & Chép sai giảm 22--25 điểm; chuỗi dài giảm 5--13 điểm & \PARTs\\
+D9 & GRPO với phần thưởng kiểm chứng theo từng bước & Chuỗi dài $+0.0$; lật đáp án giảm từ 36\% xuống 22\% & \PARTs\\
+\midrule
+Q3 & Qwen3: thinking, chưng cất, GRPO lọc khó so với SFT chuỗi & SFT chuỗi hơn thinking $+19$/$+39$; chưng cất $-25$ đến $-32$ & \OKs\ (SFT)\\
+H & Hallucination kiểu RAG: dạy từ chối và bám tài liệu & Từ chối $0\to56$--$71\%$; bám tài liệu $+21$ đến $+24$; độ đúng $-4$ đến $-8$ & \PARTs\\
+\bottomrule
+\end{tabularx}
+\ghichu{Thứ tự hàng theo lộ trình thực hiện: đo (R1--R2), chẩn đoán (R3--R4), sửa ở giải mã (R5, D1--D3), sửa ở huấn luyện (D4--D9), mô hình mới (Q3), ứng dụng (H).}
+\par\kern0pt
+\note{Bảng tổng hợp cho thấy bốn giả thuyết chẩn đoán R1 đến R4 đều được xác nhận. Các can thiệp nông ở bước giải mã như R5 và D1 không hiệu quả, trong khi can thiệp đúng vào điểm nghẽn hợp thành ở D2, D3, D4, D6 và D7 cho mức cải thiện đáng kể.}
+\end{frame}
+
+
+
 %% ============================================================================ Hạn chế
 \begin{frame}[shrink]{Thảo luận: phạm vi hiệu lực, hạn chế và tính minh bạch}
 \footnotesize
@@ -1136,14 +1356,15 @@ Lược bỏ giới tính khi trích xuất sự kiện giúp tăng $+6\%\text{-
 \textbf{\color{keyc}Tổng kết các đóng góp đã kiểm chứng}\par\vspace{3pt}
 \begin{enumerate}
   \setlength{\itemsep}{3.5pt}
-  \item \textbf{Chuẩn hóa phép đo nhân quả CoT (R1, R2).} Phép che đơn lẻ ($\dn$) và lấy mẫu lại với mốc cố định cho kết quả lệch hệ thống; toán tử che toàn phần ($\dt$) và hiệu chỉnh theo vị trí đạt $\text{AUROC} = 0.86\text{--}0.98$.
+  \item \textbf{Chuẩn hóa phép đo nhân quả CoT (R1, R2).} Phép che đơn lẻ ($\dn$) và lấy mẫu lại với mốc cố định cho kết quả lệch hệ thống; đối chứng có nhãn biết trước cho thấy trên MuSiQue mô hình đọc đáp án từ chuỗi, và hiệu chỉnh theo vị trí loại bỏ độ lệch của lấy mẫu lại.
   \item \textbf{Giải mã cơ chế của mô hình nhỏ (R3, R4, R5).} Khi chưa tinh chỉnh, mô hình chủ yếu \emph{trích xuất bề mặt} thay vì \emph{suy diễn hợp thành}; nhiễu tác động gián tiếp qua quá trình sinh chuỗi ($\text{TIE}$), nên can thiệp giải mã muộn (HGCD) không hiệu quả.
   \item \textbf{Hai lộ trình can thiệp hiệu quả (D2--D9).}
   \begin{itemize}
     \scriptsize
     \item \emph{Không huấn luyện:} tách trích xuất và hợp thành bằng kiến trúc lai Neuro-Symbolic (D2, D3), tăng $+21\text{--}37$ điểm so với $\text{SC}_{10}$.
-    \item \emph{Có huấn luyện:} SFT trên chuỗi chuẩn (D4--D7) hình thành mạch suy diễn có phụ thuộc nhân quả ($\Delta \approx 40$), tổng quát hóa vượt độ dài ($+9\text{--}23$ điểm OOD); DPO/GRPO bổ sung độ bền vững với đánh đổi đã nêu.
+    \item \emph{Có huấn luyện:} SFT trên chuỗi chuẩn (D4--D7, Q3) làm câu trả lời phụ thuộc vào chuỗi ($\Delta \approx 40$), tổng quát hóa vượt độ dài ($+9\text{--}23$ điểm OOD), hơn cả chế độ thinking của Qwen3; DPO/GRPO chỉ cho đánh đổi.
   \end{itemize}
+  \item \textbf{Ứng dụng RAG (H).} Dữ liệu thiếu bằng chứng và mâu thuẫn dạy mô hình từ chối ($0\to56$--$71\%$) và bám tài liệu ($+21$--$24$ điểm), đổi lại mất $4$--$8$ điểm độ đúng.
 \end{enumerate}
 
 \column{0.46\textwidth}
@@ -1154,8 +1375,8 @@ Lược bỏ giới tính khi trích xuất sự kiện giúp tăng $+6\%\text{-
 \toprule
 \textbf{\#} & \textbf{Nội dung triển khai}\\
 \midrule
-1 & \textbf{Tối ưu đa mục tiêu DPO + GRPO.} Đưa mẫu chuỗi dài (5--8 bước) vào tập huấn luyện RL/DPO để giảm hành vi chép sai mà không làm giảm hiệu năng OOD.\\
-2 & \textbf{Đồ thị suy luận ngữ nghĩa (Semantic DRG).} Thay phép so khớp chuỗi trong $\dt$ bằng mô hình nhúng thực thể để tăng độ phủ liên thông trên văn bản tự do.\\
+1 & \textbf{Nâng độ đúng gốc khi trả lời từ tài liệu.} Nguồn lỗi chính còn lại (độ đúng 44--61\%): SFT trên chuỗi với dữ liệu RAG lớn và đa dạng hơn, rồi mới dạy từ chối.\\
+2 & \textbf{Kiểm chứng với RAG thật.} Thay đoạn văn dựng sẵn bằng bộ truy xuất thật và đo hallucination bằng cùng bộ can thiệp (thiếu bằng chứng, mâu thuẫn).\\
 3 & \textbf{Mở rộng quy mô và miền tác vụ.} Áp dụng bộ công cụ kiểm định nhân quả ($\dt$, $T_{\text{copy-wrong}}$) cho các mô hình suy luận chuyên biệt (14B--32B) trên bài toán toán học và lập trình.\\
 \bottomrule
 \end{tabularx}
