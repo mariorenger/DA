@@ -95,7 +95,7 @@
 \begin{frame}{Nội dung trình bày}
 \begin{enumerate}
   \setlength{\itemsep}{6pt}
-  \item Bối cảnh, vấn đề và mục tiêu nghiên cứu
+  \item Bối cảnh, vấn đề, mục tiêu và giả thuyết nghiên cứu
   \item Phương pháp đo: can thiệp lên chuỗi suy luận với kết quả biết trước
   \item Giai đoạn 1. Chẩn đoán: mô hình dùng chuỗi suy luận như thế nào
   \item Giai đoạn 2. Can thiệp không cần huấn luyện
@@ -138,6 +138,22 @@
   \item \textbf{Can thiệp.} Can thiệp ở bước giải mã cuối không hiệu quả. Hai cách hiệu quả là giao phép hợp thành cho bộ luật và tinh chỉnh trên chuỗi.
   \item \textbf{Ứng dụng.} Dữ liệu huấn luyện có tài liệu thiếu bằng chứng và tài liệu mâu thuẫn giúp mô hình biết từ chối và bám theo tài liệu.
 \end{enumerate}
+\end{frame}
+
+%% ============================================================================ giả thuyết nghiên cứu
+\begin{frame}{Giả thuyết nghiên cứu}
+\small
+\renewcommand{\arraystretch}{1.35}
+\begin{tabularx}{\textwidth}{@{}P{0.8cm}YP{2.4cm}@{}}
+\toprule
+\textbf{Mã} & \textbf{Giả thuyết} & \textbf{Kiểm chứng ở}\\
+\midrule
+H1 & Các phép đo tầm quan trọng của bước suy luận đang dùng (che một bước, lấy mẫu lại) cho kết quả lệch khi đối chiếu với can thiệp có kết quả biết trước. & TN1, TN2\\
+H2 & Mô hình nhỏ chưa tinh chỉnh dùng chuỗi suy luận như nơi đọc đáp án, không như nơi tính toán đáp án. & TN3, TN4\\
+H3 & Điểm nghẽn nằm ở phép hợp thành, nên can thiệp ở bước giải mã cuối không hiệu quả còn can thiệp vào phép hợp thành thì hiệu quả. & TN5, TN6, TN7, TN8\\
+H4 & Cùng nguyên tắc can thiệp có kiểm soát áp dụng được cho bài toán thực tế: giảm hallucination khi trả lời từ tài liệu. & TN9\\
+\bottomrule
+\end{tabularx}
 \end{frame}
 
 %% ============================================================================ 5
@@ -208,28 +224,47 @@ Giao thức & Giả thuyết và ngưỡng chấp nhận được ghi trước k
 \end{tabularx}
 \end{frame}
 
+%% ============================================================================ tính chặt chẽ
+\begin{frame}{Các nguyên tắc bảo đảm tính chặt chẽ của thực nghiệm}
+\small
+\renewcommand{\arraystretch}{1.35}
+\begin{tabularx}{\textwidth}{@{}P{3.6cm}Y@{}}
+\toprule
+\textbf{Nguyên tắc} & \textbf{Cách thực hiện trong luận văn}\\
+\midrule
+Kết quả biết trước & Mỗi phép đo được kiểm chứng trên can thiệp có hiệu ứng thật đã biết: bước không liên quan (hiệu ứng bằng 0), kết luận sai, tài liệu bị bỏ bằng chứng.\\
+Đăng ký giả thuyết trước & Giả thuyết, chỉ số và ngưỡng chấp nhận được ghi trước khi chạy trên tập kiểm thử. Kết quả âm tính được báo cáo đầy đủ.\\
+Đối chứng & Đối chứng định dạng (chèn token che mà không xóa nội dung), đối chứng bỏ cả chuỗi, ablation giữ nguyên đầu vào chỉ đổi một thành phần.\\
+So sánh cùng chi phí & Phương pháp tốn $k$ lượt sinh được so với lấy mẫu $k$ lần có cùng ngân sách token.\\
+Kiểm định thống kê & Khoảng tin cậy 95\% bằng bootstrap ghép cặp trên cùng tập câu hỏi.\\
+Lặp lại & Kết luận chính được kiểm tra trên nhiều cỡ mô hình (0.5B đến 8B), hai họ mô hình (Qwen2.5, Qwen3) và nhiều bộ dữ liệu.\\
+\bottomrule
+\end{tabularx}
+\end{frame}
+
 %% ============================================================================ 8
 \begin{frame}{Lộ trình thực nghiệm}
 \centering
-\begin{tikzpicture}[font=\small,
-  st/.style={draw=mid,rounded corners=3pt,align=left,inner sep=5pt,text width=5.7cm,minimum height=1.7cm,anchor=north west},
+\begin{tikzpicture}[font=\footnotesize,
+  st/.style={draw=mid,rounded corners=3pt,inner sep=5pt,anchor=north west},
+  rs/.style={draw=light,fill=black!3,rounded corners=3pt,inner sep=5pt,anchor=north west},
   ar/.style={-{Stealth[length=2.2mm]},thick,mid}]
-\node[st] (g1) at (0,0) {\textbf{Giai đoạn 1. Chẩn đoán} (TN1 đến TN4)\par\vspace{2pt}
-  Kiểm chứng phép đo, sau đó đo xem mô hình đọc hay suy luận và nhiễu tác động qua đâu.};
-\node[st] (g2) at (6.6,0) {\textbf{Giai đoạn 2. Can thiệp không huấn luyện} (TN5, TN6)\par\vspace{2pt}
-  Can thiệp ở bước giải mã và giao phép hợp thành cho bộ luật.};
-\node[st] (g3) at (0,-2.25) {\textbf{Giai đoạn 3. Tinh chỉnh mô hình} (TN7, TN8)\par\vspace{2pt}
-  Tinh chỉnh trên chuỗi, kiểm chứng trên mô hình mới và dữ liệu thật, đo lại cơ chế.};
-\node[st] (g4) at (6.6,-2.25) {\textbf{Giai đoạn 4. Ứng dụng} (TN9)\par\vspace{2pt}
-  Giảm hallucination khi trả lời từ tài liệu (bài toán kiểu RAG).};
+\node[st] (g1) at (0,0) {\parbox[t][2.35cm][t]{2.95cm}{\raggedright \textbf{Giai đoạn 1}\par\textbf{Chẩn đoán}\par TN1 đến TN4\par\vspace{3pt}Kiểm chứng phép đo, đo mức mô hình dùng chuỗi, phân rã tác động của nhiễu.}};
+\node[st] (g2) at (3.65,0) {\parbox[t][2.35cm][t]{2.95cm}{\raggedright \textbf{Giai đoạn 2}\par\textbf{Can thiệp không huấn luyện}\par TN5, TN6\par\vspace{3pt}Can thiệp ở bước giải mã; giao phép hợp thành cho bộ luật.}};
+\node[st] (g3) at (7.3,0) {\parbox[t][2.35cm][t]{2.95cm}{\raggedright \textbf{Giai đoạn 3}\par\textbf{Tinh chỉnh mô hình}\par TN7, TN8\par\vspace{3pt}Tinh chỉnh trên chuỗi, kiểm chứng trên mô hình mới và dữ liệu thật, đo lại cơ chế.}};
+\node[st] (g4) at (10.95,0) {\parbox[t][2.35cm][t]{2.95cm}{\raggedright \textbf{Giai đoạn 4}\par\textbf{Ứng dụng}\par TN9\par\vspace{3pt}Giảm hallucination khi trả lời từ tài liệu.}};
 \draw[ar] (g1.east)--(g2.west);
-\draw[ar] (g2.south) -- ++(0,-0.3) -| (g3.north);
+\draw[ar] (g2.east)--(g3.west);
 \draw[ar] (g3.east)--(g4.west);
+\node[rs] at (0,-2.85) {\parbox[t][1.55cm][t]{2.95cm}{\raggedright \textbf{Phát hiện:} mô hình đọc đáp án có sẵn, không hợp thành; nhiễu tác động qua chuỗi.}};
+\node[rs] at (3.65,-2.85) {\parbox[t][1.55cm][t]{2.95cm}{\raggedright \textbf{Phát hiện:} sửa ở bước giải mã không hiệu quả; bộ luật hiệu quả ở miền đóng.}};
+\node[rs] at (7.3,-2.85) {\parbox[t][1.55cm][t]{2.95cm}{\raggedright \textbf{Phát hiện:} tinh chỉnh trên chuỗi hiệu quả nhất và tổng quát hơn.}};
+\node[rs] at (10.95,-2.85) {\parbox[t][1.55cm][t]{2.95cm}{\raggedright \textbf{Phát hiện:} mô hình học được cách từ chối và bám tài liệu.}};
 \end{tikzpicture}
 \raggedright
-\vspace{6pt}
+\vspace{4pt}
 \begin{itemize}
-  \item Kết quả của mỗi giai đoạn quyết định thiết kế của giai đoạn sau.
+  \item Phát hiện của mỗi giai đoạn xác định vị trí can thiệp của giai đoạn sau.
 \end{itemize}
 \end{frame}
 
