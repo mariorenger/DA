@@ -3,6 +3,7 @@
 %% Học viên: Nguyễn Nam Hán | GVHD: PGS.TS. Nguyễn Thị Kim Anh
 %% Biên dịch: pdfLaTeX hoặc tectonic, chạy 2 lần.
 %% Nếu có beamerthemehust.sty cùng thư mục thì dùng theme HUST, nếu không dùng theme đơn giản.
+%% Thuật ngữ chuyên ngành giữ tiếng Anh (masking, intervention, ground truth, composition, ...).
 %% ============================================================================
 \documentclass[aspectratio=169,t,10pt]{beamer}
 \usepackage[utf8]{inputenc}
@@ -56,11 +57,6 @@
   \makeatletter\define@key{beamerframe}{Title}[true]{}\makeatother
 \fi
 \beamertemplatenavigationsymbolsempty
-\setbeamertemplate{note page}{%
-  \vspace*{4mm}\noindent\begin{minipage}[t]{\textwidth}
-    {\small\bfseries Lời thoại gợi ý}\par\vspace{2mm}
-    {\small\insertnote\par}
-  \end{minipage}}
 
 \newcolumntype{Y}{>{\raggedright\arraybackslash}X}
 \newcolumntype{P}[1]{>{\raggedright\arraybackslash}p{#1}}
@@ -70,6 +66,7 @@
 \newcommand{\ketluan}[1]{\par\vspace{5pt}\noindent{\color{light}\rule{\linewidth}{0.5pt}}\par\vspace{2pt}\noindent{\small\textbf{Kết luận.} #1}}
 \newcommand{\nguon}[1]{\par\vspace{2pt}{\tiny\color{mid}#1\par}}
 \newcommand{\code}[1]{\texttt{#1}}
+\newcommand{\ex}[1]{{\ttfamily\footnotesize #1}}
 \newcommand{\dn}{\mathrm{do}_{\text{naive}}}
 \newcommand{\dt}{\mathrm{do}_{\text{total}}}
 
@@ -85,62 +82,58 @@
 
 \begin{document}
 
-%% ============================================================================ 1
+%% ============================================================================
 \begin{frame}[noframenumbering,Title]
 \titlepage
-\note{Kính chào thầy cô. Em xin trình bày kết quả nghiên cứu về việc mô hình ngôn ngữ nhỏ có thật sự dùng chuỗi suy luận để trả lời hay không, và cách can thiệp để cải thiện.}
 \end{frame}
 
-%% ============================================================================ 2
 \begin{frame}{Nội dung trình bày}
 \begin{enumerate}
   \setlength{\itemsep}{6pt}
   \item Bối cảnh, vấn đề, mục tiêu và giả thuyết nghiên cứu
-  \item Phương pháp đo: can thiệp lên chuỗi suy luận với kết quả biết trước
-  \item Giai đoạn 1. Chẩn đoán: mô hình dùng chuỗi suy luận như thế nào
+  \item Phương pháp đo: intervention lên chuỗi suy luận với ground truth biết trước
+  \item Giai đoạn 1. Chẩn đoán: mô hình dùng Chain-of-Thought như thế nào
   \item Giai đoạn 2. Can thiệp không cần huấn luyện
-  \item Giai đoạn 3. Can thiệp bằng tinh chỉnh mô hình
-  \item Giai đoạn 4. Ứng dụng: giảm hallucination khi trả lời từ tài liệu
+  \item Giai đoạn 3. Can thiệp bằng fine-tuning
+  \item Giai đoạn 4. Ứng dụng: giảm hallucination khi trả lời từ tài liệu (RAG)
   \item Tổng hợp, hạn chế và hướng phát triển
 \end{enumerate}
 \end{frame}
 
 \section{Bối cảnh và mục tiêu}
-%% ============================================================================ 3
+%% ============================================================================
 \begin{frame}{Bối cảnh và vấn đề}
 \textbf{Bối cảnh}
 \begin{itemize}
   \item Chain-of-Thought (CoT): mô hình viết các bước trung gian $Z = (z_1, \dots, z_k)$ trước khi đưa ra đáp án $Y$.
-  \item Một chuỗi đúng không bảo đảm đáp án được tính từ chuỗi đó. Mô hình có thể trả lời theo lối tắt và viết chuỗi như phần diễn giải đi kèm (Lanham et al., 2023; Paul et al., 2024).
+  \item Một chuỗi đúng không bảo đảm đáp án được tính từ chuỗi đó. Mô hình có thể trả lời theo lối tắt, còn chuỗi chỉ là phần diễn giải đi kèm (vấn đề faithfulness; Lanham et al., 2023; Paul et al., 2024).
   \item Mô hình nhỏ (0.5B đến 8B) được triển khai rộng rãi vì chi phí thấp và chạy được tại chỗ, nhưng ít được phân tích về mặt này.
 \end{itemize}
 \vspace{4pt}
 \textbf{Vấn đề nghiên cứu}
 \begin{itemize}
-  \item Các phép đo hiện có (che một bước, lấy mẫu lại) chưa được kiểm chứng trên dữ liệu có kết quả biết trước.
-  \item Chưa tách được hai năng lực: đọc thông tin có sẵn và tự hợp thành thông tin mới.
-  \item Chưa rõ nên can thiệp ở giai đoạn giải mã hay giai đoạn huấn luyện.
+  \item Các phép đo hiện có (masking một bước, resampling) chưa được kiểm chứng trên dữ liệu có ground truth.
+  \item Chưa tách được hai năng lực: đọc thông tin có sẵn trong chuỗi và tự thực hiện composition để tạo thông tin mới.
+  \item Chưa rõ nên can thiệp ở giai đoạn decoding hay giai đoạn huấn luyện.
 \end{itemize}
 \end{frame}
 
-%% ============================================================================ 4
 \begin{frame}{Mục tiêu và đóng góp}
 \textbf{Mục tiêu}
 \begin{itemize}
-  \item Xây dựng phép đo mức độ mô hình dùng chuỗi suy luận, kiểm chứng bằng các can thiệp có kết quả biết trước.
+  \item Xây dựng phép đo mức độ mô hình dùng chuỗi suy luận, kiểm chứng bằng các intervention có ground truth.
   \item Dùng phép đo đó để chẩn đoán mô hình nhỏ, sau đó tìm vị trí can thiệp hiệu quả.
 \end{itemize}
 \vspace{4pt}
 \textbf{Đóng góp}
 \begin{enumerate}
-  \item \textbf{Phương pháp đo.} Chỉ ra hai phép đo phổ biến cho kết quả lệch và cách hiệu chỉnh.
-  \item \textbf{Chẩn đoán.} Mô hình nhỏ đọc đáp án có sẵn trong chuỗi nhưng không dùng chuỗi để hợp thành quan hệ.
-  \item \textbf{Can thiệp.} Can thiệp ở bước giải mã cuối không hiệu quả. Hai cách hiệu quả là giao phép hợp thành cho bộ luật và tinh chỉnh trên chuỗi.
-  \item \textbf{Ứng dụng.} Dữ liệu huấn luyện có tài liệu thiếu bằng chứng và tài liệu mâu thuẫn giúp mô hình biết từ chối và bám theo tài liệu.
+  \item \textbf{Phương pháp đo.} Chỉ ra hai phép đo phổ biến cho kết quả lệch, kèm các control và cách hiệu chỉnh.
+  \item \textbf{Chẩn đoán.} Mô hình nhỏ đọc đáp án có sẵn trong chuỗi nhưng không dùng chuỗi để thực hiện composition.
+  \item \textbf{Can thiệp.} Can thiệp ở bước decoding cuối không hiệu quả. Hai cách hiệu quả: chuyển composition sang rule table, và fine-tuning trên chuỗi.
+  \item \textbf{Ứng dụng.} Dữ liệu huấn luyện có tài liệu thiếu bằng chứng và tài liệu mâu thuẫn giúp mô hình biết abstain và bám theo tài liệu.
 \end{enumerate}
 \end{frame}
 
-%% ============================================================================ giả thuyết nghiên cứu
 \begin{frame}{Giả thuyết nghiên cứu}
 \small
 \renewcommand{\arraystretch}{1.35}
@@ -148,65 +141,83 @@
 \toprule
 \textbf{Mã} & \textbf{Giả thuyết} & \textbf{Kiểm chứng ở}\\
 \midrule
-H1 & Các phép đo tầm quan trọng của bước suy luận đang dùng (che một bước, lấy mẫu lại) cho kết quả lệch khi đối chiếu với can thiệp có kết quả biết trước. & TN1, TN2\\
-H2 & Mô hình nhỏ chưa tinh chỉnh dùng chuỗi suy luận như nơi đọc đáp án, không như nơi tính toán đáp án. & TN3, TN4\\
-H3 & Điểm nghẽn nằm ở phép hợp thành, nên can thiệp ở bước giải mã cuối không hiệu quả còn can thiệp vào phép hợp thành thì hiệu quả. & TN5, TN6, TN7, TN8\\
-H4 & Cùng nguyên tắc can thiệp có kiểm soát áp dụng được cho bài toán thực tế: giảm hallucination khi trả lời từ tài liệu. & TN9\\
+H1 & Các phép đo tầm quan trọng của bước suy luận đang dùng (masking một bước, resampling) cho kết quả lệch khi đối chiếu với ground truth. & TN1, TN2\\
+H2 & Mô hình nhỏ chưa fine-tune dùng chuỗi suy luận như nơi đọc đáp án, không như nơi tính ra đáp án. & TN3, TN4\\
+H3 & Điểm nghẽn nằm ở composition, nên can thiệp ở bước decoding cuối không hiệu quả còn can thiệp vào composition thì hiệu quả. & TN5 đến TN8\\
+H4 & Cùng nguyên tắc intervention có ground truth áp dụng được cho bài toán thực tế: giảm hallucination khi trả lời từ tài liệu. & TN9\\
 \bottomrule
 \end{tabularx}
 \end{frame}
 
-%% ============================================================================ 5
 \begin{frame}{Hai loại bài toán suy luận nhiều bước}
 \small
 \renewcommand{\arraystretch}{1.35}
-\begin{tabularx}{\textwidth}{@{}P{2.6cm}YY@{}}
+\begin{tabularx}{\textwidth}{@{}P{2.7cm}YY@{}}
 \toprule
- & \textbf{Bắc cầu (MuSiQue)} & \textbf{Hợp thành quan hệ (CLUTRR)}\\
+ & \textbf{Bridge (MuSiQue)} & \textbf{Composition (CLUTRR)}\\
 \midrule
-Ví dụ & Vợ của đạo diễn phim X là ai & Anna có con trai Ben, Ben có chị gái Clara. Clara là gì của Anna\\
-Chuỗi suy luận & Bước 1: đạo diễn phim X là Y.\newline Bước 2: vợ của Y là Z. & Bước 1: Ben là con trai của Anna.\newline Bước 2: Clara là chị gái của Ben.\\
-Đáp án & Z & con gái\\
-Đáp án nằm trong chuỗi & Có, ở bước cuối & Không, phải tính $\text{con trai} \circ \text{chị gái} = \text{con gái}$\\
-Năng lực cần có & Đọc và chép lại & Hợp thành quan hệ\\
+Câu hỏi & Vợ của đạo diễn phim X là ai & Anna có con trai Ben, Ben có chị gái Clara. Clara là gì của Anna\\
+Chuỗi suy luận & Hop 1: đạo diễn phim X là Y\newline Hop 2: vợ của Y là Z & Hop 1: con trai của Anna là Ben\newline Hop 2: chị gái của Ben là Clara\\
+Đáp án & Z & con gái (daughter)\\
+Đáp án có trong chuỗi & Có, ở hop cuối & Không, phải tính son $\circ$ sister = daughter\\
+Năng lực cần có & Đọc và chép lại & Composition quan hệ\\
 \bottomrule
 \end{tabularx}
 \vspace{6pt}
 \begin{itemize}
-  \item So sánh hai loại bài toán cho phép tách việc đọc thông tin có sẵn khỏi việc suy luận thật.
+  \item Nếu mô hình chỉ đọc, nó sẽ phụ thuộc mạnh vào chuỗi ở MuSiQue và gần như không phụ thuộc ở CLUTRR. So sánh hai loại bài toán cho phép tách việc đọc khỏi việc suy luận.
 \end{itemize}
 \end{frame}
 
 \section{Phương pháp đo}
-%% ============================================================================ 6
-\begin{frame}{Phương pháp đo: can thiệp lên chuỗi suy luận}
-\centering
-\begin{tikzpicture}[font=\small,node distance=0.35cm,
-  b/.style={draw=mid,rounded corners=2pt,align=center,inner sep=4pt,minimum height=0.8cm,text width=2.6cm},
-  m/.style={draw=mid,dashed,rounded corners=2pt,align=center,inner sep=4pt,minimum height=0.8cm,text width=2.6cm},
-  ar/.style={-{Stealth[length=2mm]},mid}]
-\node[b] (x) {Ngữ cảnh $X$};
-\node[b,right=of x] (z1) {Bước $z_1$};
-\node[b,right=of z1] (z2) {Bước $z_2$};
-\node[b,right=of z2] (y) {Đáp án $Y$};
-\draw[ar] (x)--(z1); \draw[ar] (z1)--(z2); \draw[ar] (z2)--(y);
-\node[b,below=0.6cm of x] (x2) {Ngữ cảnh $X$};
-\node[m,right=of x2] (m1) {$z_1$ bị che};
-\node[b,right=of m1] (m2) {Bước $z_2$};
-\node[b,right=of m2] (y2) {Đáp án $Y$};
-\draw[ar] (x2)--(m1); \draw[ar] (m1)--(m2); \draw[ar] (m2)--(y2);
-\end{tikzpicture}
-\raggedright
-\vspace{6pt}
+%% ============================================================================
+\begin{frame}[shrink]{Phương pháp đo: intervention lên chuỗi suy luận}
+\small
+\textbf{Cách đo.} Không cho mô hình sinh lại. Đưa vào mô hình một prompt cố định gồm ngữ cảnh $X$, chuỗi $Z$ (đã sửa hoặc chưa sửa) và dòng \ex{Answer:}, rồi đọc xác suất mô hình gán cho đáp án đúng.
+$$\Delta_i = p(Y^* \mid X, Z) - p\big(Y^* \mid X, \mathrm{do}(z_i)\big)$$
+\textbf{Ví dụ trên MuSiQue} (định dạng chuỗi dùng trong thực nghiệm)\par\vspace{2pt}
+\footnotesize
+\renewcommand{\arraystretch}{1.25}
+\begin{tabularx}{\textwidth}{@{}P{3.0cm}Y@{}}
+\toprule
+\textbf{Phiên bản chuỗi} & \textbf{Nội dung đưa vào sau ngữ cảnh $X$}\\
+\midrule
+Gốc & \ex{Hop 1: Who directed X? => Y}\newline \ex{Hop 2: Who is the spouse of Y? => Z}\newline \ex{Answer:}\\
+$\dn(z_1)$: mask riêng hop 1 & \ex{Hop 1: [MASKED] => [MASKED]}\newline \ex{Hop 2: Who is the spouse of Y? => Z}\\
+$\dt(z_1)$: mask hop 1 và các hop dùng kết quả của nó & \ex{Hop 1: [MASKED] => [MASKED]}\newline \ex{Hop 2: Who is the spouse of [MASKED]? => [MASKED]}\\
+Không có chuỗi & Chỉ có $X$ và \ex{Answer:}\\
+\bottomrule
+\end{tabularx}
+\small
 \begin{itemize}
-  \item Hiệu ứng của bước $z_i$ là mức giảm xác suất mô hình gán cho đáp án đúng $Y^*$ khi bước đó bị can thiệp:
-  $$\Delta_i = p(Y^* \mid X, Z) - p\big(Y^* \mid X, \mathrm{do}(z_i)\big)$$
-  \item $\Delta_i$ lớn: mô hình dựa vào bước $z_i$ khi trả lời. $\Delta_i \approx 0$: mô hình bỏ qua bước đó.
-  \item Kiểm chứng phép đo: chèn vào chuỗi một bước đúng nhưng không liên quan tới câu hỏi. Hiệu ứng thật của bước này bằng 0, nên phép đo đúng phải cho $\Delta \approx 0$.
+  \item $\Delta_i$ lớn: mô hình dựa vào $z_i$ khi trả lời. $\Delta_i \approx 0$: mô hình bỏ qua $z_i$.
+  \item Ngữ cảnh $X$ luôn giữ nguyên, nên đáp án Z vẫn đọc được từ các đoạn văn.
 \end{itemize}
 \end{frame}
 
-%% ============================================================================ 7
+\begin{frame}[shrink]{Ground truth: các intervention có hiệu ứng thật biết trước}
+\small
+\textbf{Ý tưởng.} Để biết một phép đo có đúng không, cần những intervention mà hiệu ứng thật đã biết trước nhờ cách xây dựng. Phép đo đúng phải tái hiện được các hiệu ứng này.\par
+\vspace{4pt}
+\footnotesize
+\renewcommand{\arraystretch}{1.3}
+\begin{tabularx}{\textwidth}{@{}P{3.0cm}YP{3.1cm}@{}}
+\toprule
+\textbf{Intervention} & \textbf{Ví dụ trên CLUTRR} & \textbf{Hiệu ứng thật}\\
+\midrule
+Chèn hop không liên quan & \ex{Hop: Anna likes football.} & Bằng 0\\
+Placebo: viết lại hop, giữ nội dung & \ex{Ben is the son of Anna.} thay cho \ex{Anna's son is Ben.} & Bằng 0\\
+Mask marker: chèn token che nhưng giữ nội dung & \ex{[MASKED] Anna's son is Ben.} & Chỉ là chi phí của token che\\
+Thêm hop ghi sẵn đáp án & \ex{So Clara is Anna's relative: => daughter} & Mô hình biết đáp án nếu đọc\\
+Thêm hop ghi đáp án sai & \ex{So Clara is Anna's relative: => mother} & Mô hình suy luận sẽ bỏ qua, mô hình chỉ đọc sẽ chép theo\\
+\bottomrule
+\end{tabularx}
+\small
+\begin{itemize}
+  \item AUROC: xác suất phép đo chấm hop cần thiết cao hơn hop không liên quan. Giá trị 0.5 tương ứng ngẫu nhiên.
+\end{itemize}
+\end{frame}
+
 \begin{frame}{Dữ liệu, mô hình và giao thức thực nghiệm}
 \small
 \renewcommand{\arraystretch}{1.3}
@@ -214,52 +225,50 @@ Năng lực cần có & Đọc và chép lại & Hợp thành quan hệ\\
 \toprule
 \textbf{Thành phần} & \textbf{Mô tả}\\
 \midrule
-CLUTRR & Hợp thành quan hệ gia đình, chuỗi 2 đến 10 bước. Tập kiểm thử gồm câu cùng phân phối, tổ hợp quan hệ mới và chuỗi dài 5 đến 8 bước\\
-MuSiQue & Hỏi đáp bắc cầu 2 đến 4 bước trên Wikipedia, mỗi câu kèm 4 hoặc 8 đoạn nhiễu\\
+CLUTRR & Composition quan hệ gia đình, chuỗi 2 đến 10 hop. Tập kiểm thử gồm câu cùng phân phối, tổ hợp quan hệ mới và chuỗi dài 5 đến 8 hop\\
+MuSiQue & Hỏi đáp bridge 2 đến 4 hop trên Wikipedia, mỗi câu kèm 4 hoặc 8 đoạn distractor\\
 2WikiMultihopQA & Hỏi đáp nhiều bước trên Wikipedia, dùng để kiểm tra khả năng tổng quát\\
 Mô hình & Qwen2.5 (0.5B, 1.5B, 3B, 7B), SmolLM2-1.7B, Qwen3 (1.7B, 4B, 8B)\\
 Tài nguyên & 2 GPU T4 16 GB (Kaggle)\\
-Giao thức & Giả thuyết và ngưỡng chấp nhận được ghi trước khi chạy. Kết luận dựa trên khoảng tin cậy 95\% bằng bootstrap ghép cặp\\
+Giao thức & Giả thuyết và ngưỡng chấp nhận được ghi trước khi chạy (pre-registration). Khoảng tin cậy 95\% bằng paired bootstrap\\
 \bottomrule
 \end{tabularx}
 \end{frame}
 
-%% ============================================================================ tính chặt chẽ
-\begin{frame}{Các nguyên tắc bảo đảm tính chặt chẽ của thực nghiệm}
+\begin{frame}{Các nguyên tắc bảo đảm tính chặt chẽ}
 \small
 \renewcommand{\arraystretch}{1.35}
-\begin{tabularx}{\textwidth}{@{}P{3.6cm}Y@{}}
+\begin{tabularx}{\textwidth}{@{}P{3.4cm}Y@{}}
 \toprule
-\textbf{Nguyên tắc} & \textbf{Cách thực hiện trong luận văn}\\
+\textbf{Nguyên tắc} & \textbf{Cách thực hiện}\\
 \midrule
-Kết quả biết trước & Mỗi phép đo được kiểm chứng trên can thiệp có hiệu ứng thật đã biết: bước không liên quan (hiệu ứng bằng 0), kết luận sai, tài liệu bị bỏ bằng chứng.\\
-Đăng ký giả thuyết trước & Giả thuyết, chỉ số và ngưỡng chấp nhận được ghi trước khi chạy trên tập kiểm thử. Kết quả âm tính được báo cáo đầy đủ.\\
-Đối chứng & Đối chứng định dạng (chèn token che mà không xóa nội dung), đối chứng bỏ cả chuỗi, ablation giữ nguyên đầu vào chỉ đổi một thành phần.\\
-So sánh cùng chi phí & Phương pháp tốn $k$ lượt sinh được so với lấy mẫu $k$ lần có cùng ngân sách token.\\
-Kiểm định thống kê & Khoảng tin cậy 95\% bằng bootstrap ghép cặp trên cùng tập câu hỏi.\\
-Lặp lại & Kết luận chính được kiểm tra trên nhiều cỡ mô hình (0.5B đến 8B), hai họ mô hình (Qwen2.5, Qwen3) và nhiều bộ dữ liệu.\\
+Ground truth & Mỗi phép đo được kiểm chứng trên intervention có hiệu ứng thật biết trước (slide trước).\\
+Pre-registration & Giả thuyết, chỉ số và ngưỡng chấp nhận được ghi trước khi chạy trên tập kiểm thử. Kết quả âm tính được báo cáo đầy đủ.\\
+Control & Placebo, mask marker, chuỗi chỉ có hình thức, counterfactual replacement, ablation giữ nguyên đầu vào và chỉ đổi một thành phần.\\
+So sánh cùng chi phí & Phương pháp tốn $k$ lượt sinh được so với self-consistency $k$ mẫu có cùng ngân sách token.\\
+Kiểm định thống kê & Khoảng tin cậy 95\% bằng paired bootstrap trên cùng tập câu hỏi.\\
+Lặp lại & Kết luận chính được kiểm tra trên nhiều cỡ mô hình (0.5B đến 8B), hai họ mô hình và nhiều bộ dữ liệu.\\
 \bottomrule
 \end{tabularx}
 \end{frame}
 
-%% ============================================================================ 8
 \begin{frame}{Lộ trình thực nghiệm}
 \centering
 \begin{tikzpicture}[font=\footnotesize,
   st/.style={draw=mid,rounded corners=3pt,inner sep=5pt,anchor=north west},
   rs/.style={draw=light,fill=black!3,rounded corners=3pt,inner sep=5pt,anchor=north west},
   ar/.style={-{Stealth[length=2.2mm]},thick,mid}]
-\node[st] (g1) at (0,0) {\parbox[t][2.35cm][t]{2.95cm}{\raggedright \textbf{Giai đoạn 1}\par\textbf{Chẩn đoán}\par TN1 đến TN4\par\vspace{3pt}Kiểm chứng phép đo, đo mức mô hình dùng chuỗi, phân rã tác động của nhiễu.}};
-\node[st] (g2) at (3.65,0) {\parbox[t][2.35cm][t]{2.95cm}{\raggedright \textbf{Giai đoạn 2}\par\textbf{Can thiệp không huấn luyện}\par TN5, TN6\par\vspace{3pt}Can thiệp ở bước giải mã; giao phép hợp thành cho bộ luật.}};
-\node[st] (g3) at (7.3,0) {\parbox[t][2.35cm][t]{2.95cm}{\raggedright \textbf{Giai đoạn 3}\par\textbf{Tinh chỉnh mô hình}\par TN7, TN8\par\vspace{3pt}Tinh chỉnh trên chuỗi, kiểm chứng trên mô hình mới và dữ liệu thật, đo lại cơ chế.}};
-\node[st] (g4) at (10.95,0) {\parbox[t][2.35cm][t]{2.95cm}{\raggedright \textbf{Giai đoạn 4}\par\textbf{Ứng dụng}\par TN9\par\vspace{3pt}Giảm hallucination khi trả lời từ tài liệu.}};
+\node[st] (g1) at (0,0) {\parbox[t][2.35cm][t]{2.95cm}{\raggedright \textbf{Giai đoạn 1}\par\textbf{Chẩn đoán}\par TN1 đến TN4\par\vspace{3pt}Kiểm chứng phép đo, đo mức mô hình dùng chuỗi, phân tích tác động của distractor.}};
+\node[st] (g2) at (3.65,0) {\parbox[t][2.35cm][t]{2.95cm}{\raggedright \textbf{Giai đoạn 2}\par\textbf{Can thiệp không huấn luyện}\par TN5, TN6\par\vspace{3pt}Can thiệp ở bước decoding; chuyển composition sang rule table.}};
+\node[st] (g3) at (7.3,0) {\parbox[t][2.35cm][t]{2.95cm}{\raggedright \textbf{Giai đoạn 3}\par\textbf{Fine-tuning}\par TN7, TN8\par\vspace{3pt}Fine-tuning trên chuỗi, kiểm chứng trên mô hình mới và dữ liệu thật, đo lại cơ chế.}};
+\node[st] (g4) at (10.95,0) {\parbox[t][2.35cm][t]{2.95cm}{\raggedright \textbf{Giai đoạn 4}\par\textbf{Ứng dụng RAG}\par TN9\par\vspace{3pt}Giảm hallucination khi trả lời từ tài liệu.}};
 \draw[ar] (g1.east)--(g2.west);
 \draw[ar] (g2.east)--(g3.west);
 \draw[ar] (g3.east)--(g4.west);
-\node[rs] at (0,-2.85) {\parbox[t][1.55cm][t]{2.95cm}{\raggedright \textbf{Phát hiện:} mô hình đọc đáp án có sẵn, không hợp thành; nhiễu tác động qua chuỗi.}};
-\node[rs] at (3.65,-2.85) {\parbox[t][1.55cm][t]{2.95cm}{\raggedright \textbf{Phát hiện:} sửa ở bước giải mã không hiệu quả; bộ luật hiệu quả ở miền đóng.}};
-\node[rs] at (7.3,-2.85) {\parbox[t][1.55cm][t]{2.95cm}{\raggedright \textbf{Phát hiện:} tinh chỉnh trên chuỗi hiệu quả nhất và tổng quát hơn.}};
-\node[rs] at (10.95,-2.85) {\parbox[t][1.55cm][t]{2.95cm}{\raggedright \textbf{Phát hiện:} mô hình học được cách từ chối và bám tài liệu.}};
+\node[rs] at (0,-2.85) {\parbox[t][1.55cm][t]{2.95cm}{\raggedright \textbf{Phát hiện:} mô hình đọc đáp án có sẵn, không thực hiện composition; distractor tác động qua chuỗi.}};
+\node[rs] at (3.65,-2.85) {\parbox[t][1.55cm][t]{2.95cm}{\raggedright \textbf{Phát hiện:} can thiệp ở decoding không hiệu quả; rule table hiệu quả ở miền đóng.}};
+\node[rs] at (7.3,-2.85) {\parbox[t][1.55cm][t]{2.95cm}{\raggedright \textbf{Phát hiện:} fine-tuning trên chuỗi hiệu quả nhất và tổng quát hơn.}};
+\node[rs] at (10.95,-2.85) {\parbox[t][1.55cm][t]{2.95cm}{\raggedright \textbf{Phát hiện:} mô hình học được cách abstain và bám tài liệu.}};
 \end{tikzpicture}
 \raggedright
 \vspace{4pt}
@@ -269,95 +278,93 @@ Lặp lại & Kết luận chính được kiểm tra trên nhiều cỡ mô hì
 \end{frame}
 
 \section{Giai đoạn 1. Chẩn đoán}
-%% ============================================================================ 9
-\begin{frame}[shrink]{TN1. Phép che một bước không phát hiện được bước bắc cầu}
+%% ============================================================================ TN1
+\begin{frame}[shrink]{TN1. Masking một hop không phát hiện được hop bridge}
 \small
-\textbf{Giả thuyết.} Che riêng một bước giữa (Lanham et al., 2023) cho $\Delta \approx 0$ vì bước cuối vẫn ghi sẵn đáp án.\par
-\textbf{Thiết kế.} Trên MuSiQue so sánh: che riêng một bước ($\dn$), che bước và mọi bước phụ thuộc vào nó ($\dt$), và bỏ toàn bộ chuỗi. Ngữ cảnh $X$ luôn giữ nguyên.\par
+\textbf{Giả thuyết.} Mask riêng một hop giữa ($\dn$, cách đo của Lanham et al., 2023) cho $\Delta \approx 0$, vì hop cuối vẫn ghi sẵn đáp án.\par
+\textbf{Thiết kế.} MuSiQue, 150 câu mỗi mô hình (7B: 100 câu). So sánh $\dn$, $\dt$ và bỏ cả chuỗi trên các hop giữa (ví dụ ở slide phương pháp đo).\par
 \vspace{4pt}
 \footnotesize
 \renewcommand{\arraystretch}{1.2}
-\begin{tabularx}{\textwidth}{@{}YQ{1.9cm}Q{1.9cm}Q{1.9cm}Q{2.3cm}@{}}
+\begin{tabularx}{\textwidth}{@{}YQ{1.6cm}Q{1.6cm}Q{1.9cm}Q{1.7cm}Q{2.0cm}@{}}
 \toprule
-\textbf{Mô hình} & $\Delta$ của $\dn$ & $\Delta$ của $\dt$ & Bỏ cả chuỗi & AUROC của $\dn$\\
+\textbf{Mô hình} & $\Delta$ của $\dn$ & $\Delta$ của $\dt$ & Chỉ mask hop cuối & Bỏ cả chuỗi & AUROC của $\dn$\\
 \midrule
-Qwen2.5-0.5B & $-2.4$ & 56.7 & 52.6 & 0.57\\
-Qwen2.5-1.5B & 0.6 & 56.9 & 55.2 & 0.71\\
-SmolLM2-1.7B & $-3.9$ & 66.8 & 61.0 & 0.46\\
-Qwen2.5-3B & 0.5 & 49.1 & 50.6 & 0.64\\
-Qwen2.5-7B & 6.5 & 41.3 & 37.7 & 0.63\\
+Qwen2.5-0.5B & $-2.4$ & 56.7 & 67.2 & 52.6 & 0.57\\
+Qwen2.5-1.5B & 0.6 & 56.9 & 69.7 & 55.2 & 0.71\\
+SmolLM2-1.7B & $-3.9$ & 66.8 & 73.5 & 61.0 & 0.46\\
+Qwen2.5-3B & 0.5 & 49.1 & 55.0 & 50.6 & 0.64\\
+Qwen2.5-7B & 6.5 & 41.3 & 34.8 & 37.7 & 0.63\\
 \bottomrule
 \end{tabularx}
-\nguon{$\Delta$ tính bằng điểm phần trăm trên các bước giữa. AUROC phân biệt bước giữa với bước không liên quan, 0.5 là ngẫu nhiên.}
-\vspace{2pt}
+\nguon{$\Delta$ tính bằng điểm phần trăm. AUROC phân biệt hop giữa với hop không liên quan.}
 \small
 \textbf{Kết quả.}
 \begin{itemize}
-  \item $\dn$ cho $\Delta \approx 0$ và AUROC gần mức ngẫu nhiên.
-  \item $\dt$ xấp xỉ hiệu ứng bỏ cả chuỗi, tức là đo việc đáp án có trong chuỗi, không đo riêng vai trò một bước.
+  \item $\dn$ cho $\Delta \approx 0$ và AUROC gần ngẫu nhiên: không phát hiện được hop bridge.
+  \item $\dt$, chỉ mask hop cuối và bỏ cả chuỗi cho kết quả xấp xỉ nhau. Trên MuSiQue, $\dt$ thực chất đo việc đáp án có nằm trong chuỗi, không đo riêng vai trò của $z_1$.
 \end{itemize}
-\ketluan{Phép che một bước bị mù với bước bắc cầu. Dù ngữ cảnh có sẵn đáp án, mô hình lấy đáp án từ chuỗi suy luận.}
+\ketluan{Masking một hop bị mù với hop bridge. Dù $X$ có sẵn đáp án, mô hình lấy đáp án từ chuỗi suy luận.}
 \end{frame}
 
-%% ============================================================================ 10
-\begin{frame}[shrink]{TN2. Phép lấy mẫu lại với mốc cố định thổi phồng bước không liên quan}
+%% ============================================================================ TN2
+\begin{frame}[shrink]{TN2. Resampling với baseline cố định thổi phồng hop không liên quan}
 \small
-\textbf{Giả thuyết.} Khi làm nhiễu bước $z_j$ rồi cho mô hình tự viết tiếp, so sánh với mốc chuỗi chuẩn sẽ gán cả bước không liên quan là quan trọng, vì mô hình nhỏ tự viết tiếp thường sai.\par
-\textbf{Thiết kế.} So sánh mốc cố định với mốc hiệu chỉnh theo vị trí: độ chính xác khi mô hình tự viết tiếp từ cùng vị trí mà không bị can thiệp.\par
-\vspace{6pt}
+\textbf{Phương pháp resampling} (Bogdan et al., 2025): làm nhiễu hop $z_j$, cho mô hình tự sinh tiếp phần còn lại của chuỗi, rồi đo xác suất đáp án đúng. Baseline thường dùng là chuỗi chuẩn đầy đủ, với $p(Y^*) \approx 1$.\par
+\textbf{Giả thuyết.} Mô hình nhỏ tự sinh tiếp thường sai, nên baseline cố định gán cả hop không liên quan là quan trọng.\par
+\textbf{Thiết kế.} So sánh baseline cố định với baseline hiệu chỉnh theo vị trí $b(j)$: độ chính xác khi mô hình tự sinh tiếp từ cùng vị trí mà không bị can thiệp.\par
+\vspace{4pt}
 \begin{columns}[T,onlytextwidth]
 \column{0.5\textwidth}
 \footnotesize
 \renewcommand{\arraystretch}{1.25}
-\begin{tabularx}{\linewidth}{@{}YQ{1.1cm}Q{1.1cm}@{}}
+\begin{tabularx}{\linewidth}{@{}YQ{1.0cm}Q{1.0cm}@{}}
 \toprule
 \textbf{$\Delta$ trên MuSiQue} & \textbf{1.5B} & \textbf{3B}\\
 \midrule
-Mốc cố định, bước chuẩn & 75.7 & 61.5\\
-Mốc cố định, bước không liên quan & 76.3 & 56.3\\
+Baseline cố định, hop cần thiết & 75.7 & 61.5\\
+Baseline cố định, hop không liên quan & 76.3 & 56.3\\
 \midrule
-Mốc hiệu chỉnh, bước chuẩn & 6.4 & 11.3\\
-Mốc hiệu chỉnh, bước không liên quan & $-0.3$ & 4.3\\
+Baseline hiệu chỉnh, hop cần thiết & 6.4 & 11.3\\
+Baseline hiệu chỉnh, hop không liên quan & $-0.3$ & 4.3\\
 \bottomrule
 \end{tabularx}
 \column{0.46\textwidth}
 \small
 \textbf{Kết quả.}
 \begin{itemize}
-  \item Với mốc cố định, bước không liên quan có $\Delta$ ngang bước chuẩn.
-  \item Độ lệch xấp xỉ $1 - b(j)$, với $b(j)$ là độ chính xác khi tự viết tiếp, khoảng 22\% đến 44\%.
-  \item Mốc hiệu chỉnh đưa bước không liên quan về gần 0.
+  \item Với baseline cố định, hop không liên quan có $\Delta$ ngang hop cần thiết. Độ lệch xấp xỉ $1 - b(j)$, với $b(j)$ từ 22\% đến 44\%.
+  \item Baseline hiệu chỉnh đưa hop không liên quan về gần 0.
+  \item Hop cần thiết sau hiệu chỉnh cũng nhỏ: mô hình tự tìm lại thông tin từ $X$. Resampling đo khả năng phục hồi, masking đo việc sử dụng.
 \end{itemize}
 \end{columns}
-\ketluan{Phép lấy mẫu lại chỉ dùng được khi so với mốc hiệu chỉnh theo vị trí.}
+\ketluan{Resampling chỉ dùng được với baseline hiệu chỉnh theo vị trí, và đo một đại lượng khác với masking.}
 \end{frame}
 
-%% ============================================================================ 11
+%% ============================================================================ TN3
 \begin{frame}[shrink]{TN3. Thiết kế: phân biệt đọc với suy luận trên CLUTRR}
 \small
-\textbf{Giả thuyết.} Mô hình nhỏ không dùng các bước quan hệ để hợp thành, mà chỉ đọc đáp án khi đáp án được viết sẵn trong chuỗi.\par
+\textbf{Giả thuyết.} Mô hình nhỏ không dùng các hop quan hệ để thực hiện composition, mà chỉ đọc đáp án khi đáp án được viết sẵn trong chuỗi.\par
+\textbf{Thiết kế.} 158 câu CLUTRR mỗi mô hình. Chuỗi đưa vào là chuỗi chuẩn (không do mô hình sinh), theo ba điều kiện:\par
 \vspace{4pt}
 \footnotesize
 \renewcommand{\arraystretch}{1.3}
-\begin{tabularx}{\textwidth}{@{}P{1.6cm}P{4.6cm}YY@{}}
+\begin{tabularx}{\textwidth}{@{}P{1.0cm}P{5.6cm}YY@{}}
 \toprule
-\textbf{Điều kiện} & \textbf{Chuỗi đưa vào mô hình} & \textbf{Nếu mô hình suy luận} & \textbf{Nếu mô hình chỉ đọc}\\
+ & \textbf{Chuỗi đưa vào mô hình} & \textbf{Nếu mô hình suy luận} & \textbf{Nếu mô hình chỉ đọc}\\
 \midrule
-C1 & Chỉ các bước quan hệ, che một bước & $\Delta$ lớn & $\Delta \approx 0$\\
-C2 & Thêm dòng kết luận đúng ở cuối, ví dụ: Vậy Clara là con gái của Anna & $\Delta$ thay đổi ít & $\Delta$ lớn, vì mô hình đọc dòng kết luận\\
-C3 & Thêm dòng kết luận sai ở cuối, ví dụ: Vậy Clara là mẹ của Anna & Bỏ qua dòng sai & Chép theo dòng sai\\
+C1 & \ex{Hop 1: Anna's son is Ben. => Ben}\newline\ex{Hop 2: Ben's sister is Clara. => Clara}\newline rồi mask một hop & $\Delta$ lớn, vì mất một quan hệ cần cho composition & $\Delta \approx 0$\\
+C2 & C1 thêm hop cuối\newline\ex{So Clara is Anna's relative: => daughter} & $\Delta$ thay đổi ít & $\Delta$ lớn, vì mô hình đọc hop cuối\\
+C3 & C1 thêm hop cuối ghi đáp án sai\newline\ex{So Clara is Anna's relative: => mother} & Bỏ qua hop sai & Chép theo hop sai (copy)\\
 \bottomrule
 \end{tabularx}
-\vspace{6pt}
 \small
 \begin{itemize}
-  \item Ở C3, nhãn sai được chọn ngẫu nhiên trong các quan hệ khác của CLUTRR. Mỗi cặp người chỉ có đúng một nhãn đúng, nên mọi nhãn khác đều mâu thuẫn với các bước quan hệ.
-  \item Tỷ lệ chép theo được đo trên cả những câu mà mô hình trả lời đúng khi chuỗi chưa có dòng kết luận.
+  \item Ở C3, nhãn sai được chọn ngẫu nhiên trong các quan hệ khác của CLUTRR. Mỗi cặp người chỉ có đúng một nhãn đúng, nên mọi nhãn khác đều mâu thuẫn với các hop quan hệ.
 \end{itemize}
 \end{frame}
 
-%% ============================================================================ 12
-\begin{frame}[shrink]{TN3. Kết quả: mô hình nhỏ đọc chứ không suy luận}
+\begin{frame}[shrink]{TN3. Kết quả C1 và C2: chuỗi chỉ có tác dụng khi chứa sẵn đáp án}
 \begin{columns}[T,onlytextwidth]
 \column{0.52\textwidth}
 \centering
@@ -369,67 +376,168 @@ C3 & Thêm dòng kết luận sai ở cuối, ví dụ: Vậy Clara là mẹ c�
   enlarge x limits=0.12, ymajorgrids, grid style={light}]
 \addplot[fill=bar1,draw=none] coordinates {(0.5B,0.1)(1.5B,-1.5)(Smol,1.8)(3B,7.3)(7B,1.3)};
 \addplot[fill=bar3,draw=none] coordinates {(0.5B,60.8)(1.5B,76.1)(Smol,69.5)(3B,77.0)(7B,51.9)};
-\legend{C1: chỉ có bước quan hệ, C2: có dòng kết luận}
+\legend{C1: chỉ có hop quan hệ, C2: có hop ghi đáp án}
 \end{axis}
 \end{tikzpicture}
 \column{0.44\textwidth}
-\footnotesize
-\textbf{C3: tỷ lệ chép theo dòng kết luận sai}\par\vspace{3pt}
-\renewcommand{\arraystretch}{1.25}
-\begin{tabularx}{\linewidth}{@{}YQ{1.1cm}Q{1.8cm}@{}}
-\toprule
-\textbf{Mô hình} & \textbf{Mọi câu} & \textbf{Câu tự giải đúng}\\
-\midrule
-Qwen2.5-0.5B & 66.5\% & 70.8\%\\
-Qwen2.5-1.5B & 58.2\% & 63.0\%\\
-Qwen2.5-3B & 46.2\% & 47.7\%\\
-Qwen2.5-7B & 22.9\% & 10.3\%\\
-\bottomrule
-\end{tabularx}
-\end{columns}
 \small
+\textbf{Kết quả}
 \begin{itemize}
-  \item C1: $\Delta$ từ $-1.5$ đến 7.3 điểm. Mô hình không dùng các bước quan hệ.
-  \item C2: $\Delta$ từ 52 đến 77 điểm. Mô hình dựa vào dòng ghi sẵn đáp án.
-  \item C3: mô hình 3B trở xuống ưu tiên dòng kết luận viết sẵn hơn kết quả nó tự tính được. Mô hình 7B ít chép hơn nhưng vẫn không dùng bước quan hệ ở C1.
+  \item C1: $\Delta$ từ $-1.5$ đến 7.3 điểm. Mask một hop quan hệ gần như không ảnh hưởng.
+  \item C2: cùng các hop đó nhưng thêm một dòng ghi đáp án, $\Delta$ tăng lên 52 đến 77 điểm.
+  \item Ở 3B, 7.3 [3.8, 11.0] điểm có ý nghĩa thống kê nhưng nhỏ hơn hiệu ứng ở C2 khoảng mười lần.
+  \item Khi được đưa chuỗi chuẩn đầy đủ, mô hình chỉ trả lời đúng 15\% (0.5B) đến 33\% (7B).
 \end{itemize}
-\ketluan{Khi chưa tinh chỉnh, mô hình nhỏ đọc đáp án có sẵn trong chuỗi nhưng không hợp thành quan hệ từ chuỗi.}
+\end{columns}
+\ketluan{Các hop quan hệ gần như không tham gia vào câu trả lời. Chuỗi chỉ có tác dụng khi đáp án được viết sẵn trong chuỗi.}
 \end{frame}
 
-%% ============================================================================ 13
-\begin{frame}{TN4. Nhiễu trong ngữ cảnh gây hại thông qua chuỗi suy luận}
+\begin{frame}[shrink]{TN3. Kết quả C3 (copy test): mô hình chép theo đáp án sai}
 \small
-\textbf{Giả thuyết.} Đoạn nhiễu làm giảm độ chính xác chủ yếu vì làm hỏng chuỗi suy luận, không phải vì tác động trực tiếp lên bước trả lời.\par
-\textbf{Thiết kế.} Phân tích trung gian nhân quả trên MuSiQue (Qwen2.5-3B, 500 câu). Giữ cố định chuỗi sinh từ ngữ cảnh sạch rồi đưa vào ngữ cảnh có nhiễu.
-\begin{itemize}
-  \item Hiệu ứng trực tiếp (NDE): thay đổi do nhiễu khi chuỗi được giữ nguyên.
-  \item Hiệu ứng gián tiếp (TIE): thay đổi do nhiễu làm chuỗi thay đổi.
-\end{itemize}
+\textbf{Lý do cần copy test.} C1 có thể bằng 0 vì mô hình không biết làm composition, không phải vì nó chỉ đọc. Copy test tách hai khả năng này: đo tỷ lệ chép đáp án sai riêng trên những câu mô hình đã trả lời đúng khi chưa có hop sai.\par
 \vspace{4pt}
+\footnotesize
+\renewcommand{\arraystretch}{1.25}
+\begin{tabularx}{\textwidth}{@{}YQ{3.0cm}Q{3.4cm}Q{2.6cm}@{}}
+\toprule
+\textbf{Mô hình} & \textbf{Chép theo, mọi câu} & \textbf{Chép theo, câu tự giải đúng} & \textbf{Số câu tự giải đúng}\\
+\midrule
+Qwen2.5-0.5B & 66.5\% [58.9, 74.1] & 70.8\% [54.2, 87.5] & 24\\
+Qwen2.5-1.5B & 58.2\% [50.6, 66.5] & 63.0\% [44.4, 81.5] & 27\\
+SmolLM2-1.7B & 56.3\% [48.1, 64.6] & 57.1\% [42.9, 71.4] & 42\\
+Qwen2.5-3B & 46.2\% [38.0, 54.4] & 47.7\% [34.1, 61.4] & 44\\
+Qwen2.5-7B & 22.9\% [16.1, 30.5] & 10.3\% [2.6, 20.5] & 39\\
+\bottomrule
+\end{tabularx}
+\nguon{Khoảng tin cậy 95\% bằng bootstrap. Mỗi mô hình 158 câu (7B: 118 câu).}
+\small
+\textbf{Kết quả.}
+\begin{itemize}
+  \item Đến 3B, tỷ lệ chép trên câu tự giải đúng ngang với mọi câu: hop ghi sẵn đáp án lấn át kết quả mô hình tự tính được.
+  \item Ở 7B, đáp án sai bị bác bỏ khi mô hình tự giải được (10.3\%), nhưng ở C1 các hop quan hệ vẫn không mang hiệu ứng (1.3 điểm). 7B thực hiện composition, nhưng không thông qua chuỗi.
+\end{itemize}
+\ketluan{Kết quả C1 không do mô hình thiếu năng lực composition. Với mô hình đến 3B, hop ghi sẵn đáp án được ưu tiên hơn kết quả tự tính.}
+\end{frame}
+
+\begin{frame}[shrink]{TN3. Có đủ thông tin nhưng không làm composition}
+\small
+\begin{columns}[T,onlytextwidth]
+\column{0.5\textwidth}
+\textbf{(a) Chuỗi tự sinh đi đúng đường vẫn không giúp}\par\vspace{2pt}
+Tách các câu mà chuỗi CoT do mô hình tự sinh nhắc đủ mọi nhân vật trên đường quan hệ đúng.\par\vspace{3pt}
+\footnotesize
+\renewcommand{\arraystretch}{1.2}
+\begin{tabularx}{\linewidth}{@{}YQ{2.0cm}Q{2.0cm}@{}}
+\toprule
+\textbf{CoT} & \textbf{Chuỗi đi đủ đường} & \textbf{Chuỗi khác}\\
+\midrule
+Qwen2.5-1.5B & 17.1\% (n=41) & 18.3\% (n=197)\\
+SmolLM2-1.7B & 15.2\% (n=33) & 22.4\% (n=205)\\
+\bottomrule
+\end{tabularx}
+\small
+\vspace{6pt}
+\textbf{(b) Mô hình trích xuất đúng quan hệ}\par\vspace{2pt}
+Khi được yêu cầu liệt kê các quan hệ trong câu chuyện, mô hình tìm được 70\% (1.5B), 71\% (3B) và 87\% (7B) số quan hệ trên đường đúng.
+\column{0.46\textwidth}
+\textbf{(c) Cùng thông tin, đổi bên thực hiện composition}\par\vspace{2pt}
+Giữ nguyên danh sách quan hệ đã trích xuất, chỉ thay bên ghép quan hệ: chính mô hình hoặc rule table. Chuỗi 2 đến 4 hop.\par\vspace{3pt}
+\footnotesize
+\renewcommand{\arraystretch}{1.2}
+\begin{tabularx}{\linewidth}{@{}YQ{1.3cm}Q{1.5cm}@{}}
+\toprule
+ & \textbf{Mô hình ghép} & \textbf{Rule table ghép}\\
+\midrule
+Qwen2.5-1.5B & 32.9\% & 46.2\%\\
+Qwen2.5-3B & 28.5\% & 54.4\%\\
+Qwen2.5-7B & 36.1\% & 71.5\%\\
+\bottomrule
+\end{tabularx}
+\small
+\vspace{3pt}
+Chênh lệch +13.3, +25.9 và +35.4 điểm, đều có khoảng tin cậy lớn hơn 0.
+\end{columns}
+\ketluan{Thông tin cần thiết có mặt và được mô hình đọc đúng. Điểm hỏng là bước composition.}
+\end{frame}
+
+\begin{frame}[shrink]{Control: loại trừ các giải thích khác cho kết quả masking}
+\small
+\textbf{Mục đích.} Kiểm tra rằng hiệu ứng đo được đến từ nội dung bị xóa, không đến từ token \ex{[MASKED]}, từ cách viết hay từ hình thức của chuỗi.\par
+\vspace{2pt}
+\begin{itemize}
+  \item \textbf{Hình thức và nội dung:} chuỗi cùng hình dạng nhưng mọi hop bị mask, so với không có chuỗi (hình thức) và so với chuỗi đầy đủ (nội dung).
+  \item \textbf{Placebo:} viết lại hop, giữ nguyên nội dung. \textbf{Mask marker:} chèn \ex{[MASKED]} vào cùng các hop như $\dt$ nhưng giữ nội dung.
+  \item \textbf{Counterfactual replacement:} thay thực thể bằng một tên khác thay vì mask, không dùng token che.
+\end{itemize}
+\vspace{2pt}
+\footnotesize
+\renewcommand{\arraystretch}{1.2}
+\begin{tabularx}{\textwidth}{@{}YQ{1.5cm}Q{1.5cm}Q{1.4cm}Q{1.7cm}Q{2.2cm}Q{1.5cm}@{}}
+\toprule
+\textbf{MuSiQue (điểm)} & \textbf{Hình thức} & \textbf{Nội dung} & \textbf{Placebo} & \textbf{Mask marker} & \textbf{Counterfactual} & $\dt$\\
+\midrule
+Qwen2.5-0.5B & 4.1 & 48.5 & $-3.1$ & 7.3 & 64.2 & 56.7\\
+Qwen2.5-1.5B & 3.3 & 51.9 & 0.2 & 0.0 & 66.5 & 56.9\\
+SmolLM2-1.7B & $-5.4$ & 66.4 & 1.1 & 2.3 & 71.6 & 66.8\\
+Qwen2.5-3B & 2.3 & 48.3 & 0.3 & $-0.3$ & 61.2 & 49.1\\
+Qwen2.5-7B & 2.2 & 35.4 & 0.9 & 5.7 & 45.9 & 41.3\\
+\bottomrule
+\end{tabularx}
+\nguon{Placebo, mask marker, counterfactual và $\dt$ tính trên các hop giữa. CLUTRR có hop ghi đáp án cho cùng kết luận: hình thức từ $-2.2$ đến 0.4, nội dung từ 45.5 đến 75.6.}
+\ketluan{Hiệu ứng đến từ nội dung của chuỗi. Hình thức, placebo và token che đều cho hiệu ứng nhỏ; thay thực thể không dùng token che cho cùng kết luận với masking.}
+\end{frame}
+
+%% ============================================================================ TN4
+\begin{frame}[shrink]{TN4. Distractor gây hại thông qua chuỗi suy luận (mediation analysis)}
+\small
+\textbf{Giả thuyết.} Đoạn distractor làm giảm độ chính xác chủ yếu vì làm hỏng chuỗi suy luận, không phải vì tác động trực tiếp lên bước trả lời.\par
+\textbf{Thiết kế.} MuSiQue, Qwen2.5-3B, 500 câu, thêm 4 đoạn distractor. Ba trạng thái được so sánh:\par
+\vspace{3pt}
 \centering
+\begin{tikzpicture}[font=\footnotesize,
+  b/.style={draw=mid,rounded corners=2pt,align=center,inner sep=3pt,minimum height=0.55cm,text width=3.2cm},
+  m/.style={draw=mid,dashed,rounded corners=2pt,align=center,inner sep=3pt,minimum height=0.55cm,text width=3.2cm},
+  l/.style={align=left,text width=2.2cm,anchor=west},
+  ar/.style={-{Stealth[length=2mm]},mid}]
+\foreach \y/\lab/\sa/\sb/\ta/\tb in {0/Sạch/b/b/Ngữ cảnh sạch/Chuỗi từ ngữ cảnh sạch, -0.85/Có distractor/m/m/Ngữ cảnh có distractor/Chuỗi sinh lại, -1.7/Giữ chuỗi cũ/m/b/Ngữ cảnh có distractor/Chuỗi từ ngữ cảnh sạch}{
+  \node[l] at (0,\y) {\lab};
+  \node[\sa] (p) at (4.0,\y) {\ta};
+  \node[\sb] (q) at (7.9,\y) {\tb};
+  \node[b,text width=1.6cm] (r) at (10.9,\y) {Đáp án};
+  \draw[ar] (p)--(q); \draw[ar] (q)--(r);}
+\end{tikzpicture}
+\raggedright
+\vspace{3pt}
+\begin{columns}[T,onlytextwidth]
+\column{0.42\textwidth}
 \footnotesize
 \renewcommand{\arraystretch}{1.25}
 \begin{tabular}{@{}lcc@{}}
 \toprule
 \textbf{Chế độ trả lời} & \textbf{NDE} & \textbf{TIE}\\
 \midrule
-Có chuỗi suy luận (CoT) & $-0.6$ & $-5.0$\\
+CoT & $-0.6$ & $-5.0$\\
 Trả lời trực tiếp & $-3.8$ & $-2.0$\\
 \bottomrule
 \end{tabular}
-\raggedright
+\column{0.54\textwidth}
 \small
-\ketluan{Khi có chuỗi suy luận, toàn bộ tác hại của nhiễu đi qua chuỗi. Sửa ở bước đọc đáp án sau khi chuỗi đã viết xong không xử lý được nguyên nhân.}
+\begin{itemize}
+  \item NDE (natural direct effect): thay đổi khi giữ chuỗi cũ, chỉ đổi ngữ cảnh.
+  \item TIE (total indirect effect): thay đổi do chuỗi bị sinh lại khác đi.
+\end{itemize}
+\end{columns}
+\ketluan{Với CoT, tác hại của distractor đi qua chuỗi (TIE $-5.0$ điểm, NDE gần 0). Sửa ở bước đọc đáp án sau khi chuỗi đã viết xong không xử lý được nguyên nhân.}
 \end{frame}
 
 \section{Giai đoạn 2. Can thiệp không huấn luyện}
-%% ============================================================================ 14
-\begin{frame}[shrink]{TN5. Can thiệp ở bước giải mã không cải thiện kết quả}
+%% ============================================================================ TN5
+\begin{frame}[shrink]{TN5. Can thiệp ở bước decoding không cải thiện kết quả}
 \small
-\textbf{Giả thuyết.} Từ TN3 và TN4, can thiệp lúc giải mã không sửa được lỗi suy luận. Hai phương pháp được kiểm chứng:
+\textbf{Giả thuyết.} Từ TN3 và TN4, can thiệp lúc decoding không sửa được lỗi suy luận. Hai phương pháp được kiểm chứng:
 \begin{itemize}
-  \item HGCD: tính lại điểm các đáp án ứng viên theo mức phụ thuộc vào từng bước.
-  \item Lọc ngữ cảnh: giữ 4 đoạn có trọng số attention cao nhất trước khi sinh chuỗi.
+  \item HGCD (đề xuất của luận văn): sau khi chuỗi được sinh, cộng thêm vào điểm của mỗi đáp án ứng viên mức phụ thuộc nhân quả của nó vào các hop.
+  \item Lọc ngữ cảnh bằng attention: trước khi sinh chuỗi, chỉ giữ 4 đoạn có trọng số attention từ câu hỏi cao nhất.
 \end{itemize}
 \vspace{4pt}
 \begin{columns}[T,onlytextwidth]
@@ -451,12 +559,12 @@ MuSiQue, SmolLM2-1.7B & 15.0 & 15.8\\
 \footnotesize
 \textbf{Lọc ngữ cảnh, MuSiQue, Qwen2.5-3B (EM \%)}\par\vspace{2pt}
 \renewcommand{\arraystretch}{1.2}
-\begin{tabularx}{\linewidth}{@{}YQ{1.2cm}Q{1.2cm}@{}}
+\begin{tabularx}{\linewidth}{@{}YQ{1.4cm}Q{1.4cm}@{}}
 \toprule
- & \textbf{4 nhiễu} & \textbf{8 nhiễu}\\
+ & \textbf{4 distractor} & \textbf{8 distractor}\\
 \midrule
 CoT & 38.8 & 31.6\\
-Lấy mẫu 5 lần ($\text{SC}_5$) & 41.4 & 35.6\\
+Self-consistency 5 mẫu & 41.4 & 35.6\\
 Lọc theo attention & 33.8 & 27.4\\
 Chỉ giữ đoạn chuẩn & 48.6 & 45.6\\
 \bottomrule
@@ -464,39 +572,40 @@ Chỉ giữ đoạn chuẩn & 48.6 & 45.6\\
 \end{columns}
 \small
 \begin{itemize}
-  \item HGCD không khác CoT ($|\Delta| \le 1.7$ điểm, $p \ge 0.6$).
-  \item Lọc theo attention loại nhầm đoạn bắc cầu thứ hai, vì đoạn này chỉ liên quan tới thực thể trung gian chưa xuất hiện trong câu hỏi.
+  \item HGCD không khác CoT ($|\Delta| \le 1.7$ điểm, $p \ge 0.6$), đúng như TN3 dự đoán: không có phụ thuộc để khuếch đại.
+  \item Lọc theo attention loại nhầm đoạn bridge thứ hai, vì đoạn này chỉ liên quan tới thực thể trung gian chưa xuất hiện trong câu hỏi.
 \end{itemize}
-\ketluan{Can thiệp ở bước giải mã không hiệu quả. Cần tác động trực tiếp vào điểm nghẽn mà TN3 chỉ ra là phép hợp thành.}
+\ketluan{Can thiệp ở bước decoding không hiệu quả. Cần tác động trực tiếp vào điểm nghẽn mà TN3 chỉ ra là composition.}
 \end{frame}
 
-%% ============================================================================ 15
-\begin{frame}{TN6. Giao phép hợp thành cho bộ luật}
+%% ============================================================================ TN6
+\begin{frame}[shrink]{TN6. Chuyển composition sang rule table}
 \small
-\textbf{Giả thuyết.} Mô hình trích xuất quan hệ tốt nhưng hợp thành kém (TN3), nên tách hai việc: mô hình trích xuất, bộ luật hợp thành.\par
+\textbf{Giả thuyết.} Mô hình trích xuất quan hệ tốt nhưng làm composition kém (TN3), nên tách hai việc: mô hình trích xuất, rule table thực hiện composition.\par
 \vspace{4pt}
 \centering
 \begin{tikzpicture}[font=\footnotesize,node distance=0.35cm,
   b/.style={draw=mid,rounded corners=2pt,align=center,minimum height=1.1cm,text width=2.35cm,inner sep=3pt},
   ar/.style={-{Stealth[length=2mm]},mid}]
-\node[b] (s) {Văn bản câu chuyện};
-\node[b,right=of s] (e) {Mô hình trích xuất các quan hệ};
+\node[b] (s) {Câu chuyện};
+\node[b,right=of s] (e) {Mô hình trích xuất quan hệ và giới tính};
 \node[b,right=of e] (g) {Đồ thị quan hệ giữa các nhân vật};
 \node[b,right=of g] (p) {Tìm đường đi giữa hai người được hỏi};
-\node[b,right=of p] (r) {Bộ luật hợp thành, ví dụ con trai $\circ$ chị gái = con gái};
+\node[b,right=of p] (r) {Rule table ghép quan hệ trên đường đi};
 \draw[ar] (s)--(e); \draw[ar] (e)--(g); \draw[ar] (g)--(p); \draw[ar] (p)--(r);
 \end{tikzpicture}
 \raggedright
-\vspace{6pt}
+\vspace{4pt}
+\textbf{Ví dụ.} Mô hình trích ra \ex{Anna's son is Ben}, \ex{Ben's sister is Clara}. Đường đi Anna $\to$ Ben $\to$ Clara. Rule table: son $\circ$ sister = daughter.\par
+\vspace{3pt}
 \begin{itemize}
-  \item Bộ luật gồm 126 quy tắc, quy nạp tự động từ nhãn của tập huấn luyện.
-  \item So sánh công bằng với lấy mẫu 10 lần ($\text{SC}_{10}$), có chi phí sinh token không nhỏ hơn.
-  \item Thí nghiệm đối chứng: giữ nguyên danh sách quan hệ đã trích xuất, chỉ thay bộ hợp thành (bộ luật hoặc chính mô hình) để tách phần đóng góp của bộ luật.
+  \item Rule table gồm 126 quy tắc dạng $r_1 \circ r_2 = r_3$, quy nạp tự động từ nhãn của tập huấn luyện (đúng 95\% trên chuỗi chuẩn).
+  \item Mô hình trích xuất 5 lần và bỏ phiếu. Đối thủ là self-consistency 10 mẫu, có chi phí sinh token không nhỏ hơn.
+  \item Ablation ở TN3 (c) dùng cùng pipeline: giữ nguyên quan hệ đã trích xuất, chỉ thay bên ghép.
 \end{itemize}
 \end{frame}
 
-%% ============================================================================ 16
-\begin{frame}[shrink]{TN6. Kết quả: bộ luật tăng mạnh độ chính xác}
+\begin{frame}[shrink]{TN6. Kết quả: rule table tăng mạnh độ chính xác}
 \begin{columns}[T,onlytextwidth]
 \column{0.55\textwidth}
 \centering
@@ -510,57 +619,69 @@ Chỉ giữ đoạn chuẩn & 48.6 & 45.6\\
 \addplot[fill=bar1,draw=none] coordinates {(V 1.5B,25.7)(V 3B,36.3)(V 7B,39.7)(S 1.5B,31.6)(S 3B,30.4)(S 7B,39.2)(L 1.5B,34.5)(L 3B,26.0)(L 7B,26.0)};
 \addplot[fill=bar2,draw=none] coordinates {(V 1.5B,28.7)(V 3B,38.0)(V 7B,43.3)(S 1.5B,31.0)(S 3B,32.3)(S 7B,40.5)(L 1.5B,29.5)(L 3B,29.0)(L 7B,28.5)};
 \addplot[fill=bar3,draw=none] coordinates {(V 1.5B,60.7)(V 3B,70.0)(V 7B,80.0)(S 1.5B,52.5)(S 3B,59.5)(S 7B,74.1)(L 1.5B,33.5)(L 3B,38.5)(L 7B,52.5)};
-\legend{CoT,$\text{SC}_{10}$,Bộ luật}
+\legend{CoT,Self-consistency 10,Rule table}
 \end{axis}
 \end{tikzpicture}
-\nguon{V: cùng phân phối, 2 đến 4 bước. S: tổ hợp quan hệ mới. L: chuỗi dài 5 đến 8 bước.}
+\nguon{V: cùng phân phối, 2 đến 4 hop. S: tổ hợp quan hệ mới. L: chuỗi dài 5 đến 8 hop.}
 \column{0.42\textwidth}
 \small
 \textbf{Kết quả}
 \begin{itemize}
-  \item Hơn $\text{SC}_{10}$ từ 21 đến 37 điểm trên chuỗi 2 đến 4 bước.
+  \item Hơn self-consistency 10 mẫu từ 21 đến 37 điểm trên chuỗi 2 đến 4 hop.
   \item Chuỗi dài: hơn 24 điểm ở 7B, không khác biệt ở 1.5B.
-  \item Đối chứng, cùng danh sách quan hệ: bộ luật hơn chính mô hình từ 13 đến 35 điểm (ví dụ 7B: 71.5\% so với 36.1\%).
+  \item Mô hình 1.5B dùng rule table (60.7\%) vượt mô hình 7B dùng self-consistency (43.3\%).
 \end{itemize}
 \end{columns}
-\ketluan{Phần tăng đến từ bộ luật hợp thành, không đến từ bước trích xuất. Cách này hiệu quả nhưng chỉ áp dụng được ở miền có tập quan hệ đóng.}
+\ketluan{Rule table hiệu quả, và theo ablation ở TN3 (c) phần tăng đến từ composition chứ không từ bước trích xuất. Cách này chỉ áp dụng được ở miền có tập quan hệ đóng.}
 \end{frame}
 
-\section{Giai đoạn 3. Tinh chỉnh mô hình}
-%% ============================================================================ 17
-\begin{frame}[shrink]{TN7. Tinh chỉnh trên chuỗi suy luận}
+\section{Giai đoạn 3. Fine-tuning}
+%% ============================================================================ TN7
+\begin{frame}[shrink]{TN7. Fine-tuning trên chuỗi suy luận: thiết kế}
 \small
-\textbf{Giả thuyết.} Mô hình không hợp thành được do cách gợi ý chứ không do giới hạn năng lực. Tinh chỉnh trên chuỗi sẽ dạy được mô hình tự hợp thành.\par
+\textbf{Giả thuyết.} Mô hình không làm được composition do cách prompting chứ không do giới hạn năng lực. Fine-tuning trên chuỗi sẽ dạy được mô hình tự làm composition, cả trên chuỗi dài hơn dữ liệu huấn luyện.\par
 \textbf{Thiết kế.}
 \begin{itemize}
-  \item LoRA trên 3000 câu CLUTRR, chỉ gồm chuỗi 2 đến 4 bước. Chuỗi huấn luyện được dựng tự động từ đường đi quan hệ.
-  \item Hai dạng dữ liệu: chỉ có đáp án, và có chuỗi các bước trước đáp án.
-  \item Kiểm tra trên tổ hợp quan hệ mới và chuỗi dài 5 đến 8 bước chưa từng thấy khi huấn luyện.
+  \item LoRA (rank 16) trên 3000 câu CLUTRR, chỉ gồm chuỗi 2 đến 4 hop. Chuỗi huấn luyện được dựng tự động từ đường quan hệ có sẵn trong dữ liệu.
+  \item Kiểm tra trên câu cùng phân phối, tổ hợp quan hệ mới và chuỗi dài 5 đến 8 hop chưa từng thấy khi huấn luyện.
 \end{itemize}
 \vspace{3pt}
+\footnotesize
+\renewcommand{\arraystretch}{1.3}
+\begin{tabularx}{\textwidth}{@{}P{2.6cm}Y@{}}
+\toprule
+\textbf{Dạng dữ liệu} & \textbf{Đầu ra mục tiêu cho cùng một câu chuyện}\\
+\midrule
+Answer-only & \ex{Answer: Clara is Anna's daughter.}\\
+Chain & \ex{Hop 1: Anna's son is Ben. => Ben}\newline\ex{Hop 2: Ben's sister is Clara. => Clara}\newline\ex{Answer: Clara is Anna's daughter.}\\
+\bottomrule
+\end{tabularx}
+\small
+\begin{itemize}
+  \item Hai dạng dùng cùng câu chuyện và cùng số bước huấn luyện, chỉ khác có hay không có các hop.
+\end{itemize}
+\end{frame}
+
+\begin{frame}[shrink]{TN7. Kết quả: fine-tuning trên chuỗi hiệu quả nhất}
+\small
 \footnotesize
 \renewcommand{\arraystretch}{1.2}
 \begin{tabularx}{\textwidth}{@{}YQ{2.2cm}Q{2.2cm}Q{2.2cm}@{}}
 \toprule
 \textbf{Qwen2.5-3B, độ chính xác (\%)} & \textbf{Cùng phân phối} & \textbf{Tổ hợp mới} & \textbf{Chuỗi dài}\\
 \midrule
-CoT, không tinh chỉnh & 36.3 & 30.4 & 26.0\\
-Bộ luật (TN6) & 70.0 & 59.5 & 38.5\\
-Tinh chỉnh, chỉ đáp án & 90.3 & 55.1 & 41.0\\
-Tinh chỉnh, có chuỗi & \textbf{94.7} & \textbf{77.8} & \textbf{59.0}\\
+CoT, không fine-tune & 36.3 & 30.4 & 26.0\\
+Rule table (TN6) & 70.0 & 59.5 & 38.5\\
+Fine-tune answer-only & 90.3 & 55.1 & 41.0\\
+Fine-tune chain & \textbf{94.7} & \textbf{77.8} & \textbf{59.0}\\
 \bottomrule
 \end{tabularx}
-\small
-\ketluan{Tinh chỉnh trên chuỗi đưa mô hình 3B từ 36.3\% lên 94.7\%, và vượt bộ luật trên chuỗi dài.}
-\end{frame}
-
-%% ============================================================================ 18
-\begin{frame}[shrink]{TN7. Kết quả lặp lại trên mô hình khác và dữ liệu thật}
+\vspace{4pt}
 \begin{columns}[T,onlytextwidth]
 \column{0.5\textwidth}
 \centering
 \begin{tikzpicture}
-\begin{axis}[ybar, boxleg, width=\linewidth, height=4.8cm, bar width=7pt, ymin=0, ymax=70,
+\begin{axis}[ybar, boxleg, width=\linewidth, height=4.4cm, bar width=6.5pt, ymin=0, ymax=70,
   symbolic x coords={Qwen2.5-1.5B,Qwen2.5-3B,Qwen2.5-7B,Qwen3-4B,Qwen3-8B}, xtick=data,
   x tick label style={font=\tiny,rotate=25,anchor=east}, y tick label style={font=\scriptsize},
   ylabel={Chuỗi dài (\%)}, ylabel style={font=\scriptsize},
@@ -568,36 +689,74 @@ Tinh chỉnh, có chuỗi & \textbf{94.7} & \textbf{77.8} & \textbf{59.0}\\
   enlarge x limits=0.12, ymajorgrids, grid style={light}]
 \addplot[fill=bar1,draw=none] coordinates {(Qwen2.5-1.5B,38.0)(Qwen2.5-3B,41.0)(Qwen2.5-7B,47.5)(Qwen3-4B,40.0)(Qwen3-8B,44.0)};
 \addplot[fill=bar3,draw=none] coordinates {(Qwen2.5-1.5B,47.0)(Qwen2.5-3B,59.0)(Qwen2.5-7B,58.5)(Qwen3-4B,61.0)(Qwen3-8B,58.5)};
-\legend{Chỉ đáp án,Có chuỗi}
+\legend{Answer-only,Chain}
 \end{axis}
 \end{tikzpicture}
-\nguon{CLUTRR, chuỗi 5 đến 8 bước. Chuỗi hơn chỉ đáp án từ 9 đến 21 điểm.}
 \column{0.46\textwidth}
 \small
-\textbf{Mô hình mới có chế độ thinking (Qwen3-4B)}
+\textbf{Kết quả}
 \begin{itemize}
-  \item Chuỗi dài: thinking 22.0\%, tinh chỉnh trên chuỗi 61.0\%.
-  \item Thinking bị giới hạn 1500 token, nhiều lượt chưa hoàn thành.
-\end{itemize}
-\textbf{Dữ liệu Wikipedia (2WikiMultihopQA, 3B)}
-\begin{itemize}
-  \item EM: không tinh chỉnh 28.8, chỉ đáp án 50.0, có chuỗi 56.0.
-  \item Huấn luyện trên một loại câu hỏi, kiểm tra trên loại khác: có chuỗi 40.6, chỉ đáp án 22.6.
+  \item Fine-tune chain đưa 3B từ 36.3\% lên 94.7\%, vượt rule table trên chuỗi dài.
+  \item Chain hơn answer-only từ 9 đến 21 điểm trên chuỗi dài, lặp lại ở năm mô hình thuộc hai họ.
+  \item Trên câu cùng phân phối, answer-only gần ngang chain: khác biệt nằm ở khả năng tổng quát.
 \end{itemize}
 \end{columns}
-\ketluan{Tinh chỉnh trên chuỗi là cách hiệu quả nhất trong các phương pháp đã thử. Chuỗi giúp tổng quát sang đề mới, chuỗi dài và loại câu hỏi mới. Mô hình mới hơn chưa thay thế được bước tinh chỉnh này.}
+\ketluan{Mô hình làm được composition sau fine-tuning trên chuỗi, kể cả trên chuỗi dài hơn dữ liệu huấn luyện.}
 \end{frame}
 
-%% ============================================================================ 19
-\begin{frame}[shrink]{TN8. Sau tinh chỉnh, câu trả lời phụ thuộc vào chuỗi}
+\begin{frame}[shrink]{TN7. Kiểm chứng trên mô hình mới và trên dữ liệu thật}
 \small
-\textbf{Thiết kế.} Đo lại TN3 trên mô hình đã tinh chỉnh (120 câu CLUTRR). Trên CLUTRR đáp án không nằm trong chuỗi, nên phép che không xóa đáp án như ở TN1.\par
+\begin{columns}[T,onlytextwidth]
+\column{0.5\textwidth}
+\textbf{Qwen3 với chế độ thinking (CLUTRR, \%)}\par\vspace{3pt}
+\footnotesize
+\renewcommand{\arraystretch}{1.25}
+\begin{tabularx}{\linewidth}{@{}YQ{1.2cm}Q{1.2cm}@{}}
+\toprule
+ & \textbf{Tổ hợp mới} & \textbf{Chuỗi dài}\\
+\midrule
+Qwen3-4B, few-shot & 38.0 & 27.5\\
+Qwen3-4B, thinking & 59.0 & 22.0\\
+Qwen3-4B, fine-tune chain & 77.8 & 61.0\\
+\midrule
+Qwen3-8B, few-shot & 37.3 & 27.5\\
+Qwen3-8B, thinking & 60.0 & 31.7\\
+Qwen3-8B, fine-tune chain & 83.5 & 58.5\\
+\bottomrule
+\end{tabularx}
+\nguon{Thinking đo trên 100 câu (4B) và 60 câu (8B), giới hạn 1500 token; lượt chưa xong tính là sai.}
+\column{0.46\textwidth}
+\textbf{2WikiMultihopQA (Wikipedia, Qwen2.5-3B, EM \%)}\par\vspace{3pt}
+\footnotesize
+\renewcommand{\arraystretch}{1.25}
+\begin{tabularx}{\linewidth}{@{}YQ{1.6cm}@{}}
+\toprule
+\textbf{Cấu hình} & \textbf{EM}\\
+\midrule
+Few-shot & 28.8\\
+Fine-tune answer-only & 50.0\\
+Fine-tune chain & 56.0\\
+\midrule
+\multicolumn{2}{@{}l}{Huấn luyện trên câu compositional,}\\
+\multicolumn{2}{@{}l}{kiểm tra trên câu inference:}\\
+Fine-tune answer-only & 22.6\\
+Fine-tune chain & 40.6\\
+\bottomrule
+\end{tabularx}
+\end{columns}
+\ketluan{Chế độ thinking của mô hình mới chưa thay thế được fine-tuning trên chuỗi. Trên dữ liệu thật, chuỗi giúp tổng quát sang loại câu hỏi chưa thấy khi huấn luyện (+18 điểm).}
+\end{frame}
+
+%% ============================================================================ TN8
+\begin{frame}[shrink]{TN8. Sau fine-tuning, câu trả lời phụ thuộc vào chuỗi}
+\small
+\textbf{Thiết kế.} Đo lại TN3 trên mô hình đã fine-tune (120 câu CLUTRR). Trên CLUTRR đáp án không nằm trong chuỗi, nên masking không xóa đáp án như ở TN1.\par
 \vspace{4pt}
 \footnotesize
 \renewcommand{\arraystretch}{1.25}
 \begin{tabularx}{\textwidth}{@{}YQ{2.1cm}Q{2.1cm}Q{2.4cm}Q{2.4cm}@{}}
 \toprule
- & \multicolumn{2}{c}{\textbf{Hiệu ứng che bước (điểm)}} & \multicolumn{2}{c}{\textbf{Chép dòng kết luận sai}}\\
+ & \multicolumn{2}{c}{\textbf{$\Delta$ khi mask hop giữa (điểm)}} & \multicolumn{2}{c}{\textbf{Chép hop ghi đáp án sai}}\\
 \textbf{Mô hình} & \textbf{Trước} & \textbf{Sau} & \textbf{Trước} & \textbf{Sau}\\
 \midrule
 Qwen2.5-1.5B & $-1.5$ & 36 đến 42 & 63.0\% & 13 đến 22\%\\
@@ -605,128 +764,130 @@ Qwen2.5-3B & 7.3 & 41 đến 44 & 47.7\% & 26 đến 32\%\\
 Qwen2.5-7B & 1.3 & 39 & 10.3\% & 47.5\%\\
 \bottomrule
 \end{tabularx}
+\nguon{Khoảng giá trị là kết quả của hai seed. Trên chuỗi tuyến tính, $\dt$ cắt mọi liên kết phía sau, nên đo việc dùng chuỗi chứ không cô lập riêng một hop.}
 \small
-\vspace{4pt}
 \textbf{Kết quả}
 \begin{itemize}
-  \item Hiệu ứng che bước tăng từ mức nhiễu lên khoảng 40 điểm: sau tinh chỉnh, câu trả lời phụ thuộc vào chuỗi.
-  \item Mô hình vẫn tin dòng kết luận cuối. Với 7B, tỷ lệ chép kết luận sai tăng sau tinh chỉnh.
-  \item Huấn luyện thêm bằng DPO với cặp phản thực giảm tỷ lệ chép xuống 4.5\% đến 7.2\%, nhưng làm giảm 5 đến 13 điểm trên chuỗi dài. GRPO không cải thiện chuỗi dài.
+  \item $\Delta$ tăng từ mức nhiễu lên khoảng 40 điểm: sau fine-tuning, câu trả lời phụ thuộc vào chuỗi.
+  \item Mô hình vẫn tin hop ghi đáp án ở cuối. Với 7B, tỷ lệ chép đáp án sai tăng sau fine-tuning.
+  \item DPO với cặp counterfactual giảm tỷ lệ chép xuống 4.5\% đến 7.2\% nhưng làm giảm 5 đến 13 điểm trên chuỗi dài. GRPO không cải thiện chuỗi dài.
 \end{itemize}
-\ketluan{Tinh chỉnh thay đổi cơ chế: mô hình chuyển sang dựa vào chuỗi. DPO và GRPO chỉ cho đánh đổi, không cho cải thiện thêm.}
+\ketluan{Fine-tuning thay đổi cơ chế: mô hình chuyển sang dựa vào chuỗi. DPO và GRPO chỉ cho đánh đổi, không cho cải thiện thêm.}
 \end{frame}
 
 \section{Giai đoạn 4. Ứng dụng}
-%% ============================================================================ 20
+%% ============================================================================ TN9
 \begin{frame}[shrink]{TN9. Giảm hallucination khi trả lời từ tài liệu: thiết kế}
 \small
-\textbf{Giả thuyết.} Huấn luyện thêm trên tài liệu thiếu bằng chứng và tài liệu mâu thuẫn dạy mô hình từ chối khi tài liệu không đủ và bám theo tài liệu khi tài liệu khác với trí nhớ.\par
+\textbf{Giả thuyết.} Thêm vào dữ liệu fine-tuning các tài liệu thiếu bằng chứng và tài liệu mâu thuẫn sẽ dạy mô hình abstain khi tài liệu không đủ và bám theo tài liệu khi tài liệu khác với kiến thức đã nhớ.\par
 \vspace{4pt}
 \footnotesize
 \renewcommand{\arraystretch}{1.3}
-\begin{tabularx}{\textwidth}{@{}P{2.9cm}YP{3.6cm}@{}}
+\begin{tabularx}{\textwidth}{@{}P{2.4cm}YP{3.3cm}@{}}
 \toprule
-\textbf{Điều kiện} & \textbf{Can thiệp lên tài liệu (MuSiQue)} & \textbf{Hành vi đúng}\\
+\textbf{Điều kiện} & \textbf{Intervention lên tài liệu (MuSiQue)} & \textbf{Hành vi đúng}\\
 \midrule
-Đủ bằng chứng & Giữ nguyên: đoạn bằng chứng và 4 đoạn nhiễu & Trả lời đúng\\
-Thiếu bằng chứng & Bỏ một đoạn bằng chứng & Trả lời không đủ thông tin\\
-Mâu thuẫn & Thay đáp án trong tài liệu bằng một thực thể cùng loại & Trả lời theo tài liệu\\
+Answerable & Giữ nguyên: đoạn bằng chứng và 4 đoạn distractor & Trả lời đúng\\
+Unanswerable & Bỏ một đoạn bằng chứng; đáp án không còn xuất hiện trong tài liệu & \ex{Answer: unanswerable}\\
+Conflict & Thay đáp án ở mọi chỗ trong tài liệu bằng một thực thể cùng loại & Trả lời theo tài liệu\\
 \bottomrule
 \end{tabularx}
-\vspace{6pt}
 \small
+\vspace{4pt}
+\textbf{Ví dụ conflict.} Tài liệu ghi vợ của Y là W thay cho Z. Mô hình bám tài liệu phải trả lời W; trả lời Z nghĩa là dùng kiến thức đã nhớ.\par
+\vspace{3pt}
 \begin{itemize}
-  \item Hành vi đúng được biết trước nhờ can thiệp có kiểm soát, cùng nguyên tắc với TN1 đến TN3.
-  \item Các cách huấn luyện: tinh chỉnh trên chuỗi thông thường, thêm mẫu thiếu bằng chứng, thêm mẫu mâu thuẫn.
-  \item Mô hình: Qwen2.5-3B (2 seed) và Qwen3-4B. Mỗi điều kiện 300 câu.
+  \item Ba cách fine-tuning: chain thông thường; thêm 30\% mẫu unanswerable; thêm cả mẫu unanswerable và conflict.
+  \item Qwen2.5-3B (2 seed) và Qwen3-4B, 300 câu mỗi điều kiện. Ngưỡng chấp nhận đặt trước: độ chính xác trên câu answerable không giảm quá 5 điểm.
 \end{itemize}
 \end{frame}
 
-%% ============================================================================ 21
-\begin{frame}[shrink]{TN9. Kết quả: mô hình học được cách từ chối và bám tài liệu}
-\begin{columns}[T,onlytextwidth]
-\column{0.55\textwidth}
-\centering
-\begin{tikzpicture}
-\begin{axis}[ybar, boxleg, width=\linewidth, height=5.4cm, bar width=6pt, ymin=0, ymax=105,
-  symbolic x coords={Đúng,Từ chối khi thiếu,Bám tài liệu}, xtick=data,
-  x tick label style={font=\scriptsize}, y tick label style={font=\scriptsize},
-  ylabel={\%}, ylabel style={font=\scriptsize},
-  legend style={at={(0.02,0.98)},anchor=north west,legend columns=1,font=\scriptsize,draw=none,fill=white},
-  enlarge x limits=0.25, ymajorgrids, grid style={light}]
-\addplot[fill=bar1,draw=none] coordinates {(Đúng,60.7)(Từ chối khi thiếu,0.0)(Bám tài liệu,30.3)};
-\addplot[fill=bar2,draw=none] coordinates {(Đúng,56.7)(Từ chối khi thiếu,70.7)(Bám tài liệu,32.0)};
-\addplot[fill=bar3,draw=none] coordinates {(Đúng,57.3)(Từ chối khi thiếu,70.7)(Bám tài liệu,52.7)};
-\legend{Chuỗi thông thường,+ thiếu bằng chứng,+ mâu thuẫn}
-\end{axis}
-\end{tikzpicture}
-\nguon{Qwen3-4B. Đúng: trên câu đủ bằng chứng. Từ chối khi thiếu: trên câu thiếu bằng chứng. Bám tài liệu: trên câu mâu thuẫn.}
-\column{0.42\textwidth}
+\begin{frame}[shrink]{TN9. Kết quả: mô hình học được cách abstain và bám tài liệu}
+\footnotesize
+\renewcommand{\arraystretch}{1.22}
+\setlength{\tabcolsep}{4pt}
+\begin{tabularx}{\textwidth}{@{}YQ{1.0cm}Q{1.1cm}Q{1.1cm}Q{1.1cm}Q{1.0cm}Q{1.1cm}Q{1.1cm}Q{1.1cm}@{}}
+\toprule
+ & \multicolumn{4}{c}{\textbf{Qwen2.5-3B (seed 0)}} & \multicolumn{4}{c}{\textbf{Qwen3-4B}}\\
+\cmidrule(lr){2-5}\cmidrule(l){6-9}
+\textbf{Fine-tuning} & \textbf{Đúng} & \textbf{Abstain nhầm} & \textbf{Abstain đúng} & \textbf{Theo tài liệu} & \textbf{Đúng} & \textbf{Abstain nhầm} & \textbf{Abstain đúng} & \textbf{Theo tài liệu}\\
+\midrule
+Không fine-tune, có chỉ dẫn abstain & 29.3 & 17.7 & 35.7 & 11.7 & 31.7 & 35.7 & 73.3 & 13.3\\
+Chain thông thường & 52.0 & 0.0 & 0.0 & 22.3 & 60.7 & 0.0 & 0.0 & 30.3\\
++ unanswerable & 44.3 & 19.3 & 61.7 & 21.0 & 56.7 & 12.3 & 70.7 & 32.0\\
++ unanswerable + conflict & 46.7 & 11.7 & 55.7 & 42.7 & 57.3 & 10.7 & 70.7 & 52.7\\
+\bottomrule
+\end{tabularx}
+\nguon{Đúng và abstain nhầm: trên câu answerable. Abstain đúng: trên câu unanswerable. Theo tài liệu: trên câu conflict. Đơn vị \%. Seed 1 của Qwen2.5-3B cho kết quả cùng chiều.}
 \small
-\textbf{Kết quả, lặp lại trên cả 3 lần chạy}
+\vspace{3pt}
+\begin{columns}[T,onlytextwidth]
+\column{0.48\textwidth}
+\textbf{Đạt}
 \begin{itemize}
-  \item Từ chối khi thiếu bằng chứng tăng từ 0\% lên 56\% đến 71\%.
-  \item Bám tài liệu khi mâu thuẫn tăng 21 đến 24 điểm.
-  \item Độ chính xác trên câu đủ bằng chứng giảm 4 đến 8 điểm, vượt ngưỡng 5 điểm đặt trước ở cả 3 lần chạy.
-  \item DPO và GRPO chỉ dời điểm cân bằng giữa trả lời và từ chối, không cải thiện thật.
+  \item Abstain khi thiếu bằng chứng tăng từ 0\% lên 56\% đến 71\%, lặp lại ở cả 3 lần chạy.
+  \item Trả lời theo tài liệu khi conflict tăng 21 đến 24 điểm, lặp lại ở cả 3 lần chạy.
+\end{itemize}
+\column{0.48\textwidth}
+\textbf{Chưa đạt}
+\begin{itemize}
+  \item Độ chính xác trên câu answerable giảm 4 đến 8 điểm, vượt ngưỡng 5 điểm đặt trước.
+  \item DPO và GRPO chỉ dời điểm cân bằng giữa trả lời và abstain, không cải thiện thật.
 \end{itemize}
 \end{columns}
-\ketluan{Hai loại dữ liệu đơn giản dạy được mô hình từ chối và bám tài liệu. Nguồn lỗi còn lại chủ yếu là độ chính xác gốc (44\% đến 61\%) trên câu đủ bằng chứng.}
+\ketluan{Hai loại dữ liệu đơn giản dạy được mô hình abstain và bám tài liệu. Nguồn lỗi còn lại chủ yếu là độ chính xác gốc (44\% đến 61\%) trên câu answerable.}
 \end{frame}
 
 \section{Tổng hợp và kết luận}
-%% ============================================================================ 22
-\begin{frame}{Tổng hợp kết quả}
+%% ============================================================================
+\begin{frame}[shrink]{Tổng hợp kết quả}
 \footnotesize
 \renewcommand{\arraystretch}{1.18}
-\begin{tabularx}{\textwidth}{@{}P{0.9cm}YP{4.6cm}P{1.6cm}@{}}
+\begin{tabularx}{\textwidth}{@{}P{0.9cm}YP{4.8cm}P{1.6cm}@{}}
 \toprule
 \textbf{TN} & \textbf{Giả thuyết} & \textbf{Kết quả chính} & \textbf{Đánh giá}\\
 \midrule
-TN1 & Che một bước không thấy bước bắc cầu & $\Delta \approx 0$, AUROC 0.46 đến 0.71 & Chấp nhận\\
-TN2 & Lấy mẫu lại mốc cố định thổi phồng bước thừa & 56 đến 76 điểm, về $\le 4$ sau hiệu chỉnh & Chấp nhận\\
-TN3 & Mô hình nhỏ đọc chứ không suy luận & C1 $\approx 0$; C2 từ 52 đến 77 điểm & Chấp nhận\\
-TN4 & Nhiễu gây hại qua chuỗi & NDE $-0.6$, TIE $-5.0$ & Chấp nhận\\
-TN5 & Can thiệp ở bước giải mã cải thiện kết quả & Không khác CoT & Bác bỏ\\
-TN6 & Bộ luật hợp thành cải thiện kết quả & Hơn $\text{SC}_{10}$ từ 21 đến 37 điểm & Chấp nhận\\
-TN7 & Tinh chỉnh trên chuỗi dạy được hợp thành & 3B: 36.3\% lên 94.7\%; chuỗi hơn đáp án 9 đến 21 điểm & Chấp nhận\\
-TN8 & Sau tinh chỉnh mô hình dựa vào chuỗi & Hiệu ứng che bước khoảng 40 điểm & Chấp nhận\\
-TN9 & Dữ liệu thiếu bằng chứng và mâu thuẫn giảm hallucination & Từ chối 56\% đến 71\%; bám tài liệu tăng 21 đến 24 điểm & Chấp nhận một phần\\
+TN1 & Masking một hop không thấy hop bridge & $\Delta \approx 0$, AUROC 0.46 đến 0.71 & Chấp nhận\\
+TN2 & Resampling với baseline cố định thổi phồng hop không liên quan & 56 đến 76 điểm, về $\le 4$ sau hiệu chỉnh & Chấp nhận\\
+TN3 & Mô hình nhỏ đọc chứ không suy luận & C1 gần 0; C2 từ 52 đến 77 điểm; chép đáp án sai 48\% đến 71\% (đến 3B); control đều nhỏ & Chấp nhận\\
+TN4 & Distractor gây hại qua chuỗi & NDE $-0.6$, TIE $-5.0$ & Chấp nhận\\
+TN5 & Can thiệp ở decoding cải thiện kết quả & Không khác CoT & Bác bỏ\\
+TN6 & Rule table cải thiện kết quả & Hơn self-consistency 21 đến 37 điểm & Chấp nhận\\
+TN7 & Fine-tuning trên chuỗi dạy được composition & 3B: 36.3\% lên 94.7\%; chain hơn answer-only 9 đến 21 điểm & Chấp nhận\\
+TN8 & Sau fine-tuning mô hình dựa vào chuỗi & $\Delta$ khoảng 40 điểm & Chấp nhận\\
+TN9 & Dữ liệu unanswerable và conflict giảm hallucination & Abstain 56\% đến 71\%; theo tài liệu tăng 21 đến 24 điểm; độ chính xác giảm 4 đến 8 điểm & Chấp nhận một phần\\
 \bottomrule
 \end{tabularx}
 \end{frame}
 
-%% ============================================================================ 23
 \begin{frame}{Hạn chế}
 \begin{itemize}
   \setlength{\itemsep}{5pt}
-  \item Dữ liệu chủ yếu là CLUTRR (tổng hợp) và MuSiQue. Bộ luật ở TN6 chỉ dùng được ở miền có tập quan hệ đóng.
+  \item Dữ liệu chủ yếu là CLUTRR (tổng hợp) và MuSiQue. Rule table ở TN6 chỉ dùng được ở miền có tập quan hệ đóng.
   \item Mô hình từ 0.5B đến 8B. Chưa kiểm chứng trên mô hình rất lớn như GPT-5 hay Claude Opus.
-  \item Nhiều kết quả chỉ có một seed. Các kết luận chính đã được lặp lại trên nhiều mô hình.
-  \item Trên MuSiQue, phép che toàn phần đo việc đáp án có trong chuỗi, không đo riêng vai trò từng bước. Kết luận về suy luận dựa trên CLUTRR.
-  \item Nhãn thiếu bằng chứng ở TN9 được dựng bằng cách bỏ đoạn văn, mô hình vẫn có thể trả lời từ trí nhớ.
+  \item Nhiều kết quả chỉ có một seed, và số câu tự giải đúng trong copy test nhỏ (24 đến 44 câu). Các kết luận chính đã được lặp lại trên nhiều mô hình.
+  \item Trên MuSiQue, $\dt$ đo việc đáp án có trong chuỗi, không đo riêng vai trò từng hop. Kết luận về suy luận dựa trên CLUTRR.
+  \item Nhãn unanswerable ở TN9 được dựng bằng cách bỏ đoạn văn, mô hình vẫn có thể trả lời từ kiến thức đã nhớ.
 \end{itemize}
 \end{frame}
 
-%% ============================================================================ 24
-\begin{frame}[shrink]{Kết luận và hướng phát triển}
+\begin{frame}{Kết luận và hướng phát triển}
 \textbf{Kết luận}
 \begin{enumerate}
-  \item Phép che một bước và phép lấy mẫu lại với mốc cố định cho kết quả lệch. Cần đối chứng và mốc hiệu chỉnh.
-  \item Mô hình nhỏ chưa tinh chỉnh đọc đáp án có sẵn trong chuỗi nhưng không dùng chuỗi để hợp thành quan hệ.
-  \item Can thiệp ở bước giải mã không hiệu quả. Bộ luật hợp thành hiệu quả ở miền đóng. Tinh chỉnh trên chuỗi hiệu quả và tổng quát hơn.
-  \item Dữ liệu thiếu bằng chứng và mâu thuẫn giúp mô hình từ chối và bám tài liệu khi trả lời từ tài liệu.
+  \item Masking một hop và resampling với baseline cố định cho kết quả lệch. Cần control và baseline hiệu chỉnh.
+  \item Mô hình nhỏ chưa fine-tune đọc đáp án có sẵn trong chuỗi nhưng không dùng chuỗi để làm composition, dù có đủ thông tin.
+  \item Can thiệp ở bước decoding không hiệu quả. Rule table hiệu quả ở miền đóng. Fine-tuning trên chuỗi hiệu quả và tổng quát hơn.
+  \item Dữ liệu unanswerable và conflict giúp mô hình abstain và bám tài liệu khi trả lời từ tài liệu.
 \end{enumerate}
 \vspace{4pt}
 \textbf{Hướng phát triển}
 \begin{itemize}
   \item Nâng độ chính xác gốc khi trả lời từ tài liệu bằng dữ liệu chuỗi lớn và đa dạng hơn.
-  \item Kiểm chứng với hệ thống RAG dùng bộ truy xuất thật.
-  \item Áp dụng phép đo cho mô hình lớn qua API.
+  \item Kiểm chứng với hệ thống RAG dùng retriever thật.
+  \item Áp dụng copy test và các intervention có ground truth cho mô hình lớn qua API.
 \end{itemize}
 \end{frame}
 
-%% ============================================================================ 25
 \begin{frame}[c,noframenumbering]
 \centering
 {\Large\bfseries Xin trân trọng cảm ơn\par}
@@ -735,7 +896,6 @@ TN9 & Dữ liệu thiếu bằng chứng và mâu thuẫn giảm hallucination &
 \end{frame}
 
 \appendix
-%% ============================================================================ phụ lục
 \begin{frame}{Phụ lục. Tài liệu tham khảo chính}
 \small
 \begin{enumerate}
@@ -743,7 +903,7 @@ TN9 & Dữ liệu thiếu bằng chứng và mâu thuẫn giảm hallucination &
   \item Lanham et al. Measuring Faithfulness in Chain-of-Thought Reasoning. arXiv:2307.13702, 2023.
   \item Dziri et al. Faith and Fate: Limits of Transformers on Compositionality. NeurIPS 2023.
   \item Paul, West, Bosselut, Faltings. Making Reasoning Matter: Measuring and Improving Faithfulness of Chain-of-Thought Reasoning. Findings of EMNLP 2024.
-  \item Tutek, Hashemi Chaleshtori, Marasovi\'c, Belinkov. Measuring Chain of Thought Faithfulness by Unlearning Reasoning Steps. EMNLP 2025.
+  \item Bogdan, Macar, Nanda, Conmy. Thought Anchors: Which LLM Reasoning Steps Matter. arXiv:2506.19143, 2025.
   \item Somov, Chaichuk, Seleznyov, Panchenko, Tutubalina. Breaking the Chain: A Causal Analysis of LLM Faithfulness to Intermediate Structures. arXiv:2603.16475, 2026.
 \end{enumerate}
 \end{frame}
@@ -756,7 +916,7 @@ TN9 & Dữ liệu thiếu bằng chứng và mâu thuẫn giảm hallucination &
 \textbf{Nội dung} & \textbf{Đường dẫn}\\
 \midrule
 Giả thuyết đăng ký trước và kết luận từng vòng & \code{REVIEW.md}\\
-TN1 đến TN3 & \code{results/reliance\_v2/}\\
+TN1 đến TN3, control & \code{results/reliance\_v2/}, \code{tools/check\_r1\_triviality.py}\\
 TN4 & \code{results/mediation\_n500/}\\
 TN5, TN6 & \code{results/decoding/}, \code{results/causaldec/}\\
 TN7, TN8 & \code{results/cftrain/}, \code{results/cfrl/}, \code{results/egen/}\\
