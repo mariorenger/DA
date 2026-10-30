@@ -218,6 +218,26 @@ Thêm hop ghi đáp án sai & \ex{So Clara is Anna's relative: => mother} & Mô 
 \end{itemize}
 \end{frame}
 
+\begin{frame}[shrink]{Các chỉ số đo}
+\small
+\renewcommand{\arraystretch}{1.3}
+\begin{tabularx}{\textwidth}{@{}P{3.3cm}YP{1.9cm}@{}}
+\toprule
+\textbf{Chỉ số} & \textbf{Ý nghĩa} & \textbf{Dùng ở}\\
+\midrule
+$\Delta$ & Mức giảm xác suất của đáp án đúng khi can thiệp (đại lượng liên tục). Có thêm bản tính trên log-prob thô để không phụ thuộc tập đáp án ứng viên & TN1 đến TN3, TN8\\
+AUROC & Khả năng một phép đo xếp hop cần thiết trên hop không liên quan & TN1\\
+Copy-follow rate & Tỷ lệ mô hình chọn đáp án sai được ghi sẵn trong chuỗi & TN3, TN8\\
+TE, NDE, TIE & Tác động tổng, trực tiếp và gián tiếp qua chuỗi (mediation analysis) & TN4\\
+Accuracy, EM, F1 & Chất lượng đáp án cuối & TN5 đến TN7\\
+Hop fidelity & Tỷ lệ hop trong chuỗi tự sinh khớp với đường quan hệ chuẩn & TN7\\
+Flip rate & Tỷ lệ đáp án thay đổi khi đổi tên nhân vật, đổi thứ tự câu hoặc thêm distractor & TN7\\
+Abstain precision, recall, F1; coverage & Chất lượng của quyết định abstain và tỷ lệ câu được trả lời & TN9\\
+\bottomrule
+\end{tabularx}
+\nguon{Mọi so sánh dùng khoảng tin cậy 95\% bằng paired bootstrap trên cùng tập câu hỏi; so sánh hai phương pháp giải mã dùng thêm kiểm định McNemar.}
+\end{frame}
+
 \begin{frame}{Dữ liệu, mô hình và giao thức thực nghiệm}
 \small
 \renewcommand{\arraystretch}{1.3}
@@ -699,6 +719,7 @@ Fine-tune chain & \textbf{94.7} & \textbf{77.8} & \textbf{59.0}\\
   \item Fine-tune chain đưa 3B từ 36.3\% lên 94.7\%, vượt rule table trên chuỗi dài.
   \item Chain hơn answer-only từ 9 đến 21 điểm trên chuỗi dài, lặp lại ở năm mô hình thuộc hai họ.
   \item Trên câu cùng phân phối, answer-only gần ngang chain: khác biệt nằm ở khả năng tổng quát.
+  \item Chuỗi do mô hình 3B tự sinh có hop fidelity 0.95 (cùng phân phối) và 0.77 (chuỗi dài). Flip rate: 12\% khi đổi tên, 21\% khi đổi thứ tự câu, 34\% khi thêm distractor.
 \end{itemize}
 \end{columns}
 \ketluan{Mô hình làm được composition sau fine-tuning trên chuỗi, kể cả trên chuỗi dài hơn dữ liệu huấn luyện.}
@@ -726,21 +747,21 @@ Qwen3-8B, fine-tune chain & 83.5 & 58.5\\
 \end{tabularx}
 \nguon{Thinking đo trên 100 câu (4B) và 60 câu (8B), giới hạn 1500 token; lượt chưa xong tính là sai.}
 \column{0.46\textwidth}
-\textbf{2WikiMultihopQA (Wikipedia, Qwen2.5-3B, EM \%)}\par\vspace{3pt}
+\textbf{2WikiMultihopQA (Wikipedia, Qwen2.5-3B, \%)}\par\vspace{3pt}
 \footnotesize
 \renewcommand{\arraystretch}{1.25}
-\begin{tabularx}{\linewidth}{@{}YQ{1.6cm}@{}}
+\begin{tabularx}{\linewidth}{@{}YQ{1.0cm}Q{1.0cm}@{}}
 \toprule
-\textbf{Cấu hình} & \textbf{EM}\\
+\textbf{Cấu hình} & \textbf{EM} & \textbf{F1}\\
 \midrule
-Few-shot & 28.8\\
-Fine-tune answer-only & 50.0\\
-Fine-tune chain & 56.0\\
+Few-shot & 28.8 & 41.9\\
+Fine-tune answer-only & 50.0 & 60.4\\
+Fine-tune chain & 56.0 & 66.0\\
 \midrule
-\multicolumn{2}{@{}l}{Huấn luyện trên câu compositional,}\\
-\multicolumn{2}{@{}l}{kiểm tra trên câu inference:}\\
-Fine-tune answer-only & 22.6\\
-Fine-tune chain & 40.6\\
+\multicolumn{3}{@{}l}{Huấn luyện trên câu compositional,}\\
+\multicolumn{3}{@{}l}{kiểm tra trên câu inference:}\\
+Fine-tune answer-only & 22.6 & 45.5\\
+Fine-tune chain & 40.6 & 58.9\\
 \bottomrule
 \end{tabularx}
 \end{columns}
@@ -838,6 +859,35 @@ Chain thông thường & 52.0 & 0.0 & 0.0 & 22.3 & 60.7 & 0.0 & 0.0 & 30.3\\
 \ketluan{Hai loại dữ liệu đơn giản dạy được mô hình abstain và bám tài liệu. Nguồn lỗi còn lại chủ yếu là độ chính xác gốc (44\% đến 61\%) trên câu answerable.}
 \end{frame}
 
+\begin{frame}[shrink]{TN9. Chỉ số abstention: đánh đổi giữa coverage và độ chính xác}
+\small
+\textbf{Cách tính.} Lớp dương là câu unanswerable. P, R, F1: precision, recall, F1 của quyết định abstain. Cov.: tỷ lệ câu answerable được trả lời. Ans. P: độ chính xác trên các câu answerable đã trả lời.\par
+\vspace{4pt}
+\footnotesize
+\renewcommand{\arraystretch}{1.2}
+\setlength{\tabcolsep}{4pt}
+\begin{tabularx}{\textwidth}{@{}YQ{0.6cm}Q{0.6cm}Q{0.6cm}Q{0.95cm}Q{0.95cm}Q{0.6cm}Q{0.6cm}Q{0.6cm}Q{0.95cm}Q{0.95cm}@{}}
+\toprule
+ & \multicolumn{5}{c}{\textbf{Qwen2.5-3B (seed 0)}} & \multicolumn{5}{c}{\textbf{Qwen3-4B}}\\
+\cmidrule(lr){2-6}\cmidrule(l){7-11}
+\textbf{Fine-tuning} & \textbf{P} & \textbf{R} & \textbf{F1} & \textbf{Cov.} & \textbf{Ans. P} & \textbf{P} & \textbf{R} & \textbf{F1} & \textbf{Cov.} & \textbf{Ans. P}\\
+\midrule
+Chain & -- & 0.00 & -- & 1.00 & 0.52 & -- & 0.00 & -- & 1.00 & 0.61\\
++ unans. & 0.76 & 0.62 & 0.68 & 0.81 & 0.55 & 0.85 & 0.71 & 0.77 & 0.88 & 0.65\\
++ unans. + conflict & 0.83 & 0.56 & 0.67 & 0.88 & 0.53 & 0.87 & 0.71 & 0.78 & 0.89 & 0.64\\
+\quad + DPO & 0.89 & 0.25 & 0.39 & 0.97 & 0.53 & 0.92 & 0.52 & 0.67 & 0.95 & 0.62\\
+\quad + GRPO & 0.73 & 0.81 & 0.77 & 0.70 & 0.58 & 0.73 & 0.90 & 0.81 & 0.68 & 0.72\\
+\bottomrule
+\end{tabularx}
+\nguon{Nguồn: \code{results/hall/abstain\_metrics.csv}. Seed 1 của Qwen2.5-3B cho kết quả cùng chiều.}
+\small
+\begin{itemize}
+  \item Abstain có precision cao (0.76 đến 0.87): khi mô hình abstain, phần lớn đúng là câu thiếu bằng chứng.
+  \item DPO giữ coverage cao nhưng recall thấp, tức bỏ sót nhiều câu unanswerable. GRPO tăng recall và answer precision nhưng chỉ trả lời khoảng 70\% câu answerable.
+\end{itemize}
+\ketluan{Fine-tuning với unanswerable và conflict cho điểm cân bằng tốt nhất. DPO và GRPO dời điểm cân bằng theo hai hướng ngược nhau, không cải thiện đồng thời cả coverage và precision.}
+\end{frame}
+
 \section{Tổng hợp và kết luận}
 %% ============================================================================
 \begin{frame}[shrink]{Tổng hợp kết quả}
@@ -868,6 +918,7 @@ TN9 & Dữ liệu unanswerable và conflict giảm hallucination & Abstain 56\% 
   \item Nhiều kết quả chỉ có một seed, và số câu tự giải đúng trong copy test nhỏ (24 đến 44 câu). Các kết luận chính đã được lặp lại trên nhiều mô hình.
   \item Trên MuSiQue, $\dt$ đo việc đáp án có trong chuỗi, không đo riêng vai trò từng hop. Kết luận về suy luận dựa trên CLUTRR.
   \item Nhãn unanswerable ở TN9 được dựng bằng cách bỏ đoạn văn, mô hình vẫn có thể trả lời từ kiến thức đã nhớ.
+  \item Chưa đo calibration của xác suất mô hình, và chưa hiệu chỉnh cho nhiều phép so sánh (Holm, Bonferroni). Các kết luận chính có khoảng tin cậy cách xa 0.
 \end{itemize}
 \end{frame}
 
@@ -920,7 +971,7 @@ TN1 đến TN3, control & \code{results/reliance\_v2/}, \code{tools/check\_r1\_t
 TN4 & \code{results/mediation\_n500/}\\
 TN5, TN6 & \code{results/decoding/}, \code{results/causaldec/}\\
 TN7, TN8 & \code{results/cftrain/}, \code{results/cfrl/}, \code{results/egen/}\\
-TN9 & \code{hgcd/hall.py}, \code{results/hall/}\\
+TN9 & \code{hgcd/hall.py}, \code{results/hall/}, \code{tools/analyze\_hall\_abstain.py}\\
 \bottomrule
 \end{tabularx}
 \end{frame}
