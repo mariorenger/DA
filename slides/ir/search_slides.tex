@@ -1,0 +1,399 @@
+%% ============================================================================
+%% Máy tìm kiếm hust.edu.vn: kỹ thuật của dịch vụ search (Lucene 10, Java 21).
+%% Biên dịch: pdfLaTeX hoặc tectonic, chạy 2 lần.
+%% ============================================================================
+\documentclass[aspectratio=169,t,10pt]{beamer}
+\usepackage[utf8]{inputenc}
+\usepackage[vietnamese]{babel}
+\usepackage{amsmath,amssymb}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{tabularx}
+\usepackage{tikz}
+\usetikzlibrary{positioning,arrows.meta}
+
+\definecolor{ink}{HTML}{1F2937}
+\definecolor{mid}{HTML}{6B7280}
+\definecolor{light}{HTML}{D1D5DB}
+
+\usetheme{default}
+\setbeamercolor{structure}{fg=ink}
+\setbeamercolor{normal text}{fg=ink}
+\setbeamercolor{frametitle}{fg=ink}
+\setbeamercolor{title}{fg=ink}
+\setbeamercolor{subtitle}{fg=mid}
+\setbeamertemplate{itemize items}[circle]
+\setbeamerfont{frametitle}{size=\large,series=\bfseries}
+\setbeamertemplate{frametitle}{%
+  \vspace{3mm}\hspace*{1mm}\usebeamerfont{frametitle}\insertframetitle\par
+  \vspace{1mm}{\color{light}\rule{\textwidth}{0.6pt}}\par\vspace{1mm}}
+\setbeamertemplate{footline}{%
+  \hfill{\tiny\color{mid}\insertframenumber\,/\,\inserttotalframenumber}\hspace*{4mm}\vspace*{2mm}}
+\setbeamertemplate{title page}{%
+  \vspace*{1.0cm}
+  {\LARGE\bfseries\inserttitle\par}
+  \vspace{0.3cm}
+  {\large\color{mid}\insertsubtitle\par}
+  \vspace{0.6cm}
+  {\small\insertauthor\par}
+  \vspace{0.3cm}
+  {\small\color{mid}\insertdate\par}}
+\beamertemplatenavigationsymbolsempty
+
+\newcolumntype{Y}{>{\raggedright\arraybackslash}X}
+\newcolumntype{P}[1]{>{\raggedright\arraybackslash}p{#1}}
+\newcolumntype{Q}[1]{>{\centering\arraybackslash}p{#1}}
+\newcommand{\code}[1]{\texttt{#1}}
+\newcommand{\ex}[1]{{\ttfamily\footnotesize #1}}
+
+\title{Máy tìm kiếm cho hust.edu.vn}
+\subtitle{Kỹ thuật của dịch vụ search: chỉ mục, xếp hạng, PageRank, lọc rác và trùng}
+\author{Đồ án môn Tìm kiếm thông tin (IT4863)}
+\date{Năm 2026}
+
+\begin{document}
+
+\begin{frame}[noframenumbering]
+\titlepage
+\end{frame}
+
+%% ============================================================================ 2
+\begin{frame}{Tổng quan dịch vụ search}
+\small
+\begin{itemize}
+  \item \textbf{Đầu vào:} dữ liệu crawler lưu trong MongoDB: \code{html} (trang web), \code{other} (pdf, docx...), \code{picture} (ảnh), \code{graph} (cạnh liên kết \code{source} $\to$ \code{destinations}).
+  \item \textbf{Công nghệ:} Java 21, Apache Lucene 10, HTTP API \code{/search}, \code{/reindex}, \code{/ping}.
+\end{itemize}
+\vspace{4pt}
+\centering
+\begin{tikzpicture}[font=\footnotesize,node distance=0.45cm,
+  b/.style={draw=mid,rounded corners=2pt,align=left,inner sep=5pt,text width=5.6cm},
+  ar/.style={-{Stealth[length=2mm]},mid}]
+\node[b] (ib) {\textbf{Dựng chỉ mục} (\code{IndexBuilder})\par
+  1. PageRank trên \code{graph}\par
+  2. Độ lạ, ngưỡng tự động: đánh dấu trang rác\par
+  3. SHA-1 nội dung: đánh dấu trang trùng\par
+  4. Ghi tài liệu Lucene nhiều trường};
+\node[b,right=of ib] (sq) {\textbf{Truy vấn} (\code{Searcher})\par
+  1. Truy hồi: BM25 nhiều trường, lấy top 100\par
+  2. Chấm lại: cụm từ, PageRank, độ mới\par
+  3. Lọc rác và trùng (profile D)\par
+  4. Phân trang, tạo snippet};
+\draw[ar] (ib)--node[above,font=\tiny]{chỉ mục}(sq);
+\end{tikzpicture}
+\raggedright
+\vspace{6pt}
+\begin{itemize}
+  \item Hai giai đoạn: BM25 rẻ cho toàn bộ kho, các tín hiệu đắt hơn chỉ tính trên 100 kết quả đầu.
+  \item Trang rác và trang trùng vẫn được index, chỉ bị loại lúc truy vấn, nên có thể so sánh có và không lọc trên cùng một chỉ mục.
+\end{itemize}
+\end{frame}
+
+%% ============================================================================ 3
+\begin{frame}{Quy trình dựng chỉ mục}
+\small
+\begin{itemize}
+  \item Dựng lại toàn bộ (\code{OpenMode.CREATE}). Duyệt Mongo nhiều lượt, không giữ nội dung trong bộ nhớ.
+\end{itemize}
+\vspace{2pt}
+\renewcommand{\arraystretch}{1.35}
+\begin{tabularx}{\textwidth}{@{}P{1.6cm}Y@{}}
+\toprule
+\textbf{Lượt} & \textbf{Công việc}\\
+\midrule
+0 & Đọc \code{graph}, dựng đồ thị liên kết, tính PageRank\\
+1 & Trên các trang html đủ dài: đếm document frequency $\mathrm{df}(w)$ của từng từ\\
+2 & Tính độ lạ từng trang, chọn ngưỡng rác tự động; tính khoá SHA-1 nội dung, chọn bản giữ lại cho mỗi nhóm trùng. Chỉ giữ url và số\\
+3 & Ghi từng tài liệu Lucene kèm cờ \code{junk} (\code{spam} hoặc \code{dup})\\
+\bottomrule
+\end{tabularx}
+\vspace{6pt}
+\begin{itemize}
+  \item \code{POST /reindex} dựng ở luồng nền, xong thì \code{SearcherManager.maybeRefresh()}: truy vấn vẫn chạy trong lúc dựng.
+  \item Mọi chuỗi đi qua chuẩn hoá Unicode NFC trước khi index và trước khi truy vấn, vì tiếng Việt có hai cách mã hoá cùng một chữ có dấu.
+\end{itemize}
+\end{frame}
+
+%% ============================================================================ 4
+\begin{frame}{Phân tích văn bản tiếng Việt}
+\small
+\begin{itemize}
+  \item Không dùng thư viện tách từ. Mỗi âm tiết là một token (\code{StandardTokenizer}, UAX \#29); từ ghép được biểu diễn bằng bigram.
+  \item Giữ cả bản có dấu và bản bỏ dấu, vì người dùng thường gõ không dấu và url, tên file thường không dấu.
+\end{itemize}
+\vspace{4pt}
+\footnotesize
+\renewcommand{\arraystretch}{1.3}
+\begin{tabularx}{\textwidth}{@{}P{1.9cm}P{4.6cm}Y@{}}
+\toprule
+\textbf{Analyzer} & \textbf{Chuỗi xử lý} & \textbf{Ví dụ: Bách Khoa Hà Nội}\\
+\midrule
+\code{vi} & tokenizer, chữ thường & \ex{bách}, \ex{khoa}, \ex{hà}, \ex{nội}\\
+\code{viBi} & \code{vi}, rồi bigram (không giữ unigram) & \ex{bách khoa}, \ex{khoa hà}, \ex{hà nội}\\
+\code{viAscii} & \code{vi}, rồi \code{ASCIIFoldingFilter} (cả đ thành d) & \ex{bach}, \ex{khoa}, \ex{ha}, \ex{noi}\\
+\code{urlTokens} & tách theo ký tự không phải chữ hoặc số, chữ thường, bỏ dấu & \ex{.../hoc-phi-654580.html} thành \ex{hoc}, \ex{phi}, \ex{654580}, \ex{html}\\
+\bottomrule
+\end{tabularx}
+\small
+\vspace{4pt}
+\begin{itemize}
+  \item Truy vấn học phí được biểu diễn bằng hai unigram \ex{học}, \ex{phí} và một bigram \ex{học phí}. Bigram bắt phần lớn từ ghép mà không cần tách từ.
+\end{itemize}
+\end{frame}
+
+%% ============================================================================ 5
+\begin{frame}[shrink]{Các trường của chỉ mục và BM25 theo trường}
+\footnotesize
+\renewcommand{\arraystretch}{1.22}
+\begin{tabularx}{\textwidth}{@{}P{3.3cm}P{2.0cm}P{1.6cm}Y@{}}
+\toprule
+\textbf{Trường} & \textbf{Loại} & \textbf{Analyzer} & \textbf{Mục đích}\\
+\midrule
+\code{url}, \code{host}, \code{collection}, \code{format} & StringField & không & Định danh, lọc theo host và loại\\
+\code{title}, \code{content} & TextField & \code{vi} & Khớp unigram; \code{content} lưu vị trí và offset cho phrase query và snippet\\
+\code{title\_bi}, \code{content\_bi} & TextField & \code{viBi} & Khớp cụm hai âm tiết\\
+\code{title\_ascii}, \code{content\_ascii} & TextField & \code{viAscii} & Khớp truy vấn không dấu\\
+\code{url\_tokens} & TextField & \code{urlTokens} & Khớp từ trong url\\
+\code{sig:pagerank}, \code{sig:recency} & FeatureField & & Tín hiệu ngoài văn bản\\
+\code{junk} & StringField & & \code{spam} hoặc \code{dup}\\
+\bottomrule
+\end{tabularx}
+\small
+\vspace{4pt}
+\textbf{BM25 với tham số riêng từng trường}
+$$\mathrm{BM25}(q,d)=\sum_{t\in q}\mathrm{IDF}(t)\,\frac{f(t,d)\,(k_1+1)}{f(t,d)+k_1\big(1-b+b\,\frac{|d|}{\mathrm{avgdl}}\big)}$$
+\begin{itemize}
+  \item $k_1 = 1.2$ cho mọi trường. $b = 0.75$ cho \code{title*} và \code{url\_tokens}; $b = 0.5$ cho \code{content*}, để tài liệu dài như PDF không bị phạt độ dài quá nặng.
+\end{itemize}
+\end{frame}
+
+%% ============================================================================ 6
+\begin{frame}{Giai đoạn 1: truy hồi bằng BM25 nhiều trường}
+\small
+\begin{itemize}
+  \item Một \code{BooleanQuery} gồm các mệnh đề \code{SHOULD}, mỗi mệnh đề là truy vấn đã phân tích bằng analyzer của trường đó, nhân trọng số. Lấy 100 tài liệu điểm cao nhất.
+\end{itemize}
+\begin{columns}[T,onlytextwidth]
+\column{0.42\textwidth}
+\footnotesize
+\renewcommand{\arraystretch}{1.22}
+\begin{tabularx}{\linewidth}{@{}YQ{1.3cm}Q{1.2cm}@{}}
+\toprule
+\textbf{Trường} & \textbf{Trọng số} & \textbf{Từ profile}\\
+\midrule
+\code{url\_tokens} & 1.5 & A\\
+\code{title} & 3 & A\\
+\code{content} & 1 & A\\
+\code{title\_bi} & 3 & B\\
+\code{content\_bi} & 1.5 & B\\
+\code{title\_ascii} & 2 & B\\
+\code{content\_ascii} & 0.7 & B\\
+\bottomrule
+\end{tabularx}
+\column{0.54\textwidth}
+\small
+\begin{itemize}
+  \item Tiêu đề nặng gấp 3 nội dung.
+  \item Bigram trong nội dung nặng hơn unigram vì khớp cụm là bằng chứng mạnh hơn khớp rời.
+  \item Bản bỏ dấu nhẹ hơn bản có dấu, để trang viết đúng dấu xếp trên trang chỉ khớp sau khi bỏ dấu.
+  \item \textbf{Truy vấn không dấu} (\ex{lich thi}): chỉ hỏi \code{title\_ascii} (trọng số 3), \code{content\_ascii} (1) và \code{url\_tokens}, để trang có dấu và trang chỉ có tên file không dấu được xét ngang nhau.
+  \item \textbf{Bộ lọc} dạng \code{FILTER}, không tính điểm: \code{type}, \code{host}; profile D thêm \code{MUST\_NOT junk}.
+\end{itemize}
+\end{columns}
+\end{frame}
+
+%% ============================================================================ 7
+\begin{frame}[shrink]{Giai đoạn 2: chấm lại trên top 100}
+\small
+\begin{itemize}
+  \item \code{QueryRescorer}: điểm mới = điểm BM25 + điểm truy vấn phụ (nếu khớp).
+\end{itemize}
+\vspace{2pt}
+\footnotesize
+\renewcommand{\arraystretch}{1.3}
+\begin{tabularx}{\textwidth}{@{}P{4.2cm}Q{1.5cm}Y@{}}
+\toprule
+\textbf{Mệnh đề của truy vấn phụ} & \textbf{Trọng số} & \textbf{Ghi chú}\\
+\midrule
+Phrase query trên \code{title}, slop 2 & 2 & Các token đứng gần nhau, đúng thứ tự, cho phép chèn tối đa 2 vị trí. Bỏ qua nếu truy vấn có một token\\
+Phrase query trên \code{content}, slop 2 & 1 & Như trên\\
+PageRank, \code{FeatureField} bão hoà & 2 & Mọi tài liệu có tín hiệu này\\
+Độ mới, \code{FeatureField} bão hoà & 2 & Chỉ khi \code{fresh=1}\\
+\bottomrule
+\end{tabularx}
+\small
+\vspace{4pt}
+\textbf{Hàm bão hoà và các tín hiệu}
+$$\mathrm{score} = w\cdot\frac{s}{s+\mathrm{pivot}}, \qquad s_{\mathrm{pr}}=\max(\mathrm{PR}\times N,\,10^{-4}), \qquad s_{\mathrm{rec}}=\frac{1}{1+\text{tuổi (ngày)}/30}$$
+\begin{itemize}
+  \item Hàm bão hoà tăng nhanh ở giá trị nhỏ rồi phẳng dần, nên trang có PageRank rất lớn không lấn át điểm văn bản. \code{pivot} do Lucene ước lượng từ phân bố của tín hiệu.
+  \item Nhân PR với số nút $N$ để giá trị trung bình xấp xỉ 1, không phụ thuộc kích thước đồ thị.
+\end{itemize}
+\end{frame}
+
+%% ============================================================================ 8
+\begin{frame}{PageRank trên đồ thị liên kết}
+\small
+\textbf{Mô hình random surfer}, hệ số $d = 0.85$:
+$$\mathrm{PR}(v)=\frac{1-d}{N}+d\left(\sum_{u\to v}\frac{\mathrm{PR}(u)}{\mathrm{outdeg}(u)}+\frac{\mathrm{dangling}}{N}\right)$$
+\begin{itemize}
+  \item $\mathrm{dangling}$ là tổng PageRank của các nút không có liên kết ra, chia đều cho mọi nút để tổng PageRank luôn bằng 1.
+\end{itemize}
+\vspace{2pt}
+\begin{columns}[T,onlytextwidth]
+\column{0.48\textwidth}
+\textbf{Dựng đồ thị}
+\begin{itemize}
+  \item Mỗi url là một nút, đánh chỉ số theo thứ tự gặp; cạnh lưu trong mảng \code{int}.
+  \item Bỏ cạnh thiếu đầu mút và cạnh tự trỏ.
+  \item Khử cạnh trùng bằng khoá \code{(a << 32) | b}.
+\end{itemize}
+\column{0.48\textwidth}
+\textbf{Lặp}
+\begin{itemize}
+  \item Khởi tạo $1/N$, tối đa 50 vòng, dừng khi tổng sai khác tuyệt đối giữa hai vòng dưới $10^{-6}$.
+  \item Độ phức tạp $O(\text{số vòng}\times(N+E))$, chạy trong bộ nhớ.
+\end{itemize}
+\end{columns}
+\vspace{4pt}
+\begin{itemize}
+  \item PageRank được dùng ở hai chỗ: tín hiệu khi chấm lại, và tiêu chí chọn bản giữ lại trong nhóm trang trùng.
+\end{itemize}
+\end{frame}
+
+%% ============================================================================ 9
+\begin{frame}{Lọc trang rác bằng độ lạ}
+\small
+\textbf{Quan sát.} Một số trang hust bị chèn nội dung rác (từ khoá quảng cáo). Từ vựng của chúng gần như không trùng với phần còn lại của kho, trong khi trang thật dùng từ vựng chung (đào tạo, sinh viên, thông báo).\par
+\vspace{4pt}
+\textbf{Độ đo.} Với trang html có ít nhất 50 từ:
+$$\text{độ lạ}(p)=\frac{1}{|W(p)|}\sum_{w\in W(p)}\log\frac{N}{\mathrm{df}(w)}$$
+\begin{itemize}
+  \item $W(p)$: các chuỗi chữ cái của tiêu đề và nội dung (tính cả từ lặp), chữ thường, NFC. $N$: số trang html đủ dài. $\mathrm{df}(w)$: số trang chứa từ $w$.
+  \item Đây là IDF trung bình của trang: từ phổ biến cho giá trị gần 0, từ chỉ xuất hiện ở một trang cho $\log N$.
+  \item Trang dưới 50 từ không đủ để ước lượng nên không bao giờ bị coi là rác. Chỉ xét collection \code{html}.
+  \item Trang có độ lạ vượt ngưỡng được gắn \code{junk:spam}. Ngưỡng được chọn tự động ở slide sau.
+\end{itemize}
+\end{frame}
+
+%% ============================================================================ 10
+\begin{frame}[shrink]{Chọn ngưỡng rác tự động: đáy thung lũng của histogram}
+\small
+\textbf{Ý tưởng.} Histogram độ lạ có hai cụm: cụm lớn là trang thật, cụm nhỏ nằm cao hơn là trang rác. Ngưỡng là đáy thung lũng giữa hai cụm (phương pháp Prewitt và Mendelsohn). Không đặt ngưỡng tay vì ngưỡng phụ thuộc kho dữ liệu.\par
+\vspace{4pt}
+\textbf{Thuật toán}
+\begin{enumerate}
+  \item Chia độ lạ thành các bin rộng 0.1, đếm số trang mỗi bin: histogram gốc.
+  \item Làm mượt bằng trung bình ba bin kề nhau, lặp đến khi chỉ còn đúng hai đỉnh (tối đa 200 vòng).
+  \item Với hai đỉnh $a < b$:
+  \begin{itemize}
+    \item Đỉnh phải cao hơn đỉnh trái: không có ngưỡng (cụm phải đông hơn thì không phải rác).
+    \item Tìm bin thấp nhất $v$ giữa $a$ và $b$ trên histogram gốc, vì làm mượt lâu sẽ lấp mất thung lũng.
+    \item Nếu $\mathrm{raw}[v] \le 0.5\cdot h[b]$ thì ngưỡng là $\min + (v+0.5)\times0.1$; ngược lại coi là nhiễu và làm mượt tiếp.
+  \end{itemize}
+  \item Còn 0 hoặc 1 đỉnh, hoặc hết 200 vòng: không gắn cờ trang nào.
+\end{enumerate}
+\begin{itemize}
+  \item Giới hạn: nếu số trang rác quá ít để tạo thành một đỉnh riêng thì không phát hiện được.
+\end{itemize}
+\end{frame}
+
+%% ============================================================================ 11
+\begin{frame}{Khử trang trùng nội dung}
+\small
+\textbf{Vấn đề.} Trang mirror, bản in, bản đổi ngôn ngữ giống hệt làm kết quả bị lặp.\par
+\vspace{4pt}
+\textbf{Khoá nội dung}
+$$\mathrm{key}(p)=\mathrm{SHA\text{-}1}\big(\text{trim}(\text{gộp khoảng trắng}(\text{chữ thường}(\mathrm{NFC}(\text{content}))))\big)$$
+\begin{itemize}
+  \item Nội dung dưới 200 ký tự không có khoá, vì quá ngắn để coi là trùng. Khoá tính cho cả ba collection.
+\end{itemize}
+\vspace{4pt}
+\textbf{Chọn bản giữ lại trong mỗi nhóm cùng khoá}
+\begin{enumerate}
+  \item PageRank cao nhất.
+  \item Hoà thì chọn url ngắn hơn.
+  \item Trang đã bị đánh dấu rác không được làm bản giữ lại.
+\end{enumerate}
+\begin{itemize}
+  \item Các url còn lại của nhóm được gắn \code{junk:dup}. Rác được xét trước, nên trang vừa rác vừa trùng chỉ tính là \code{spam}.
+\end{itemize}
+\end{frame}
+
+%% ============================================================================ 12
+\begin{frame}{Bốn profile xếp hạng}
+\small
+\begin{itemize}
+  \item Mỗi profile thêm một tầng kỹ thuật lên profile trước, để đo được đóng góp của từng tầng trên cùng một chỉ mục.
+\end{itemize}
+\vspace{4pt}
+\renewcommand{\arraystretch}{1.4}
+\begin{tabularx}{\textwidth}{@{}P{1.4cm}YP{3.3cm}P{2.4cm}@{}}
+\toprule
+\textbf{Profile} & \textbf{Truy hồi} & \textbf{Chấm lại} & \textbf{Lọc rác và trùng}\\
+\midrule
+A & BM25 trên \code{url\_tokens}, \code{title}, \code{content} & không & không\\
+B & A + bigram + bỏ dấu, nhánh truy vấn không dấu & không & không\\
+C & như B & cụm từ + PageRank (+ độ mới) & không\\
+D (mặc định) & như B & như C & có\\
+\bottomrule
+\end{tabularx}
+\vspace{6pt}
+\begin{itemize}
+  \item Ví dụ truy vấn học phí với profile D: truy hồi trên 7 trường có trọng số, loại rác và trùng, lấy top 100; chấm lại cộng điểm cho trang có cụm học phí liền nhau trong tiêu đề và trang có PageRank cao; trả 10 kết quả đầu.
+\end{itemize}
+\end{frame}
+
+%% ============================================================================ 13
+\begin{frame}[shrink]{Phương pháp đánh giá}
+\small
+\textbf{Dữ liệu.} 25 truy vấn trộn có dấu, không dấu và tên đơn vị (ví dụ \ex{học phí 2025}, \ex{lich thi}, \ex{soict tuyển sinh}). Nhãn liên quan do người gán: 0 không liên quan, 1 liên quan một phần, 2 liên quan hoàn toàn.\par
+\vspace{4pt}
+\textbf{Pooling.} Chạy cả 4 profile cho mỗi truy vấn, gộp top 10 của từng profile để gán nhãn. Mọi tài liệu được bất kỳ profile nào xếp cao đều được người gán nhãn xem, tránh thiên vị một hệ. Nhãn cũ được giữ khi chạy lại.\par
+\vspace{4pt}
+\textbf{Độ đo} (top $K=10$, không lọc type và host, \code{fresh=0})
+$$\mathrm{P@10}=\frac{|\{i\le 10: g_i\ge 1\}|}{10}, \qquad \mathrm{DCG@10}=\sum_{i=1}^{10}\frac{2^{g_i}-1}{\log_2(i+1)}, \qquad \mathrm{nDCG@10}=\frac{\mathrm{DCG@10}}{\mathrm{IDCG@10}}$$
+\begin{itemize}
+  \item IDCG lấy từ mọi nhãn đã gán của truy vấn, sắp giảm dần. Grade 2 có độ lợi 3, gấp ba grade 1.
+  \item So sánh B với A: đóng góp của bigram và bỏ dấu. C với B: cụm từ và PageRank. D với C: lọc rác và khử trùng.
+\end{itemize}
+\end{frame}
+
+%% ============================================================================ 14
+\begin{frame}{Snippet và API}
+\small
+\textbf{Snippet}
+\begin{itemize}
+  \item Tối đa 2 đoạn từ \code{content} bằng \code{UnifiedHighlighter}, từ khớp bọc trong \code{<b>}.
+  \item Truy vấn không dấu chỉ khớp \code{content\_ascii}: highlight trên trường bỏ dấu rồi dùng lại offset trên văn bản gốc, vì bỏ dấu không đổi vị trí ký tự.
+  \item Không có đoạn khớp thì lấy 200 ký tự đầu của nội dung.
+\end{itemize}
+\vspace{4pt}
+\textbf{API}
+\footnotesize
+\renewcommand{\arraystretch}{1.3}
+\begin{tabularx}{\textwidth}{@{}P{3.2cm}Y@{}}
+\toprule
+\textbf{Endpoint} & \textbf{Mô tả}\\
+\midrule
+\code{GET /search} & Tham số \code{q}, \code{type} (html, other, picture), \code{host}, \code{profile} (A đến D), \code{fresh}, \code{page}, \code{size} (tối đa 50). Chỉ 100 kết quả đầu được xếp hạng. Trả \code{total}, \code{tookMs}, danh sách \code{hits} gồm url, title, host, score, snippet\\
+\code{POST /reindex} & Dựng lại chỉ mục ở nền (202; đang dựng thì 409)\\
+\code{GET /ping} & Số tài liệu, thời điểm index gần nhất, số trang rác và trùng, ngưỡng độ lạ\\
+\bottomrule
+\end{tabularx}
+\end{frame}
+
+%% ============================================================================ 15
+\begin{frame}{Giới hạn kỹ thuật và hướng mở rộng}
+\begin{itemize}
+  \setlength{\itemsep}{5pt}
+  \item \textbf{Tách từ:} bigram thay cho tách từ tiếng Việt; cụm đảo thứ tự không khớp bigram. Hướng mở rộng: tách từ bằng pyvi.
+  \item \textbf{Chỉ mục:} dựng lại toàn bộ mỗi lần, chưa cập nhật từng phần. Tín hiệu độ mới tính lúc index nên lệch dần nếu không reindex.
+  \item \textbf{PageRank:} mọi liên kết có trọng số như nhau, nên liên kết điều hướng (menu, chân trang) làm tăng điểm của trang gốc. Chưa dùng anchor text.
+  \item \textbf{Lọc rác:} không phát hiện được nếu số trang rác quá ít để tạo đỉnh riêng trên histogram.
+  \item \textbf{Xếp hạng:} chỉ 100 kết quả đầu được chấm lại và phân trang.
+  \item \textbf{Chưa làm:} gợi ý khi gõ, sửa chính tả.
+\end{itemize}
+\end{frame}
+
+\end{document}
