@@ -856,3 +856,23 @@ chain from the alternative onward, and we use a heuristic equivalence check inst
 Yu's estimator is fine at this scale: that is reported as such. If every method loses accuracy at 50%
 deletion, H-P4 is decided on the difference, not on absolute accuracy. Planted duplicates are lexically
 marked ("Recall:"), which may favour entropy; reported as a limitation.
+
+### Round 14: execution notes (written before the remaining runs finished)
+- **Format bug, runs invalidated.** The first launch used a system prompt only. Qwen2.5-3B separated steps with
+  single newlines (so every chain had 1 body step: 1 of 800 chains kept) and Qwen2.5-1.5B wrote "The answer is"
+  in only 10% of outputs (7% parsed correct, 24 chains kept). Phase-2 SFT for these two models, and the
+  phase-1 score runs for Qwen2.5-1.5B (n = 24), are therefore not analysed; they are kept in
+  `results/compress/invalid_format_v1/`. Fix: two format demonstrations in the prompt, steps split on blank lines
+  or, if none, on lines, "answer is" matched anywhere, max 520 new tokens. Check on 8 questions: 7% → 75% parsed correct. Qwen3-1.7B phase 1
+  (200 chains) was unaffected and is used as is. Re-launched: Qwen2.5-1.5B and 3B, phases 1 and 2 (phase 2 with
+  n_train 400 instead of 800 to fit the 12 h limit). This is a change of protocol after seeing failed runs, not after seeing a result of the hypotheses.
+- **Label-awareness caveat (not in the pre-registration, must be read with H-P4).** `loo`/`loo_g` select the
+  steps to delete by the drop in log p(gold answer), and the pruning benchmark then reads the same answer
+  from the pruned chain. Yu's V also uses the gold answer, entropy and random do not. The pruning benchmark
+  (H-P4) is therefore a label-informed selection test; the label-free generalisation test is the SFT phase
+  (H-P5, evaluated on held-out test questions).
+- Phase 1 on Qwen3-1.7B (n = 200 chains, 889 steps, k = 6; `tools/analyze_compress.py`), as registered:
+  H-P1 fails on this model (yu on planted = 0.055 < 0.10; the model re-derives the answer in 96.5% of
+  rollouts, so Yu's assumption holds here); H-P3 cal − yu planted removal +9.0 [0.0, +17.5] points (< +10:
+  not met); H-P4 loo_g − yu at m50 +33.5 [+27.0, +40.0] (met, subject to the caveat above); entropy − random
+  −19.0 [−28.0, −10.0] (worse than random). Verdicts over the 4-model rule wait for the other models.

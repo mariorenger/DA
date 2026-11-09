@@ -1,0 +1,41 @@
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+Loading weights:   0%|          | 0/338 [00:00<?, ?it/s]Loading weights:   0%|          | 1/338 [00:01<08:17,  1.48s/it]Loading weights:  48%|████▊     | 161/338 [00:01<00:01, 140.55it/s]Loading weights:  73%|███████▎  | 246/338 [00:02<00:00, 134.30it/s]Loading weights:  88%|████████▊ | 298/338 [00:02<00:00, 130.88it/s]Loading weights:  99%|█████████▉| 335/338 [00:02<00:00, 136.08it/s]Loading weights: 100%|██████████| 338/338 [00:02<00:00, 115.99it/s]
+[   1.2 min] loaded Qwen/Qwen2.5-1.5B-Instruct
+[  26.9 min] chains: 800 generated, 0.055 correct, 36 kept (2-10 body steps)
+[  31.8 min] alternatives: 208/238 found
+[  34.4 min]   rollouts 64/482 jobs (2.6 min)
+[  55.3 min] pruned-chain readout still correct: random 0.528, entropy 0.417, yu 0.667, cal 0.750, loo 0.972, loo_g 1.000
+[  72.1 min] [base] acc 0.058 gen_tokens 253.4
+Loading weights:   0%|          | 0/338 [00:00<?, ?it/s]Loading weights:   0%|          | 1/338 [00:00<04:43,  1.19it/s]Loading weights:  51%|█████     | 172/338 [00:00<00:00, 230.92it/s]Loading weights:  70%|███████   | 238/338 [00:01<00:00, 247.60it/s]Loading weights:  85%|████████▍ | 287/338 [00:01<00:00, 247.89it/s]Loading weights:  97%|█████████▋| 327/338 [00:01<00:00, 242.60it/s]Loading weights: 100%|██████████| 338/338 [00:01<00:00, 210.95it/s]
+[19:28:30]   sft step 5/5 loss 0.2259 (0.5 min)
+[  72.6 min] [full] sft {'steps': 5, 'final_loss': 0.22587078975306618, 'n_train': 36, 'minutes': 0.46205809513727825}
+[  89.5 min] [full] acc 0.592 gen_tokens 241.8
+Loading weights:   0%|          | 0/338 [00:00<?, ?it/s]Loading weights:   0%|          | 1/338 [00:00<04:17,  1.31it/s]Loading weights:  58%|█████▊    | 196/338 [00:00<00:00, 301.76it/s]Loading weights:  88%|████████▊ | 297/338 [00:01<00:00, 304.19it/s]Loading weights: 100%|██████████| 338/338 [00:01<00:00, 252.13it/s]
+[19:45:53]   sft step 5/5 loss 0.3726 (0.4 min)
+[  90.0 min] [random] sft {'steps': 5, 'final_loss': 0.3725948929786682, 'n_train': 36, 'minutes': 0.42131734689076744}
+[ 106.3 min] [random] acc 0.568 gen_tokens 244.0
+Loading weights:   0%|          | 0/338 [00:00<?, ?it/s]Loading weights:   0%|          | 1/338 [00:00<04:46,  1.18it/s]Loading weights:  62%|██████▏   | 208/338 [00:00<00:00, 295.29it/s]Loading weights:  95%|█████████▍| 321/338 [00:01<00:00, 280.79it/s]Loading weights: 100%|██████████| 338/338 [00:01<00:00, 238.70it/s]
+[20:02:38]   sft step 5/5 loss 0.2787 (0.4 min)
+[ 106.8 min] [entropy] sft {'steps': 5, 'final_loss': 0.2786996430820889, 'n_train': 36, 'minutes': 0.439676837126414}
+[ 123.2 min] [entropy] acc 0.560 gen_tokens 231.2
+Loading weights:   0%|          | 0/338 [00:00<?, ?it/s]Loading weights:   0%|          | 1/338 [00:00<04:05,  1.37it/s]Loading weights:  58%|█████▊    | 196/338 [00:00<00:00, 319.86it/s]Loading weights:  91%|█████████▏| 309/338 [00:01<00:00, 286.56it/s]Loading weights: 100%|██████████| 338/338 [00:01<00:00, 249.82it/s]
+[20:19:34]   sft step 5/5 loss 0.3617 (0.4 min)
+[ 123.7 min] [yu] sft {'steps': 5, 'final_loss': 0.36167441722419524, 'n_train': 36, 'minutes': 0.385223396619161}
+[ 140.0 min] [yu] acc 0.588 gen_tokens 234.5
+Loading weights:   0%|          | 0/338 [00:00<?, ?it/s]Loading weights:   0%|          | 1/338 [00:00<05:17,  1.06it/s]Loading weights:  58%|█████▊    | 195/338 [00:01<00:00, 253.41it/s]Loading weights:  89%|████████▉ | 300/338 [00:01<00:00, 267.39it/s]Loading weights: 100%|██████████| 338/338 [00:01<00:00, 224.11it/s]
+[20:36:16]   sft step 5/5 loss 0.4419 (0.4 min)
+[ 140.4 min] [cal] sft {'steps': 5, 'final_loss': 0.44193361865149605, 'n_train': 36, 'minutes': 0.35759920279184976}
+[ 157.8 min] [cal] acc 0.576 gen_tokens 260.3
+Loading weights:   0%|          | 0/338 [00:00<?, ?it/s]Loading weights:   0%|          | 1/338 [00:00<03:57,  1.42it/s]Loading weights:  54%|█████▍    | 183/338 [00:00<00:00, 304.71it/s]Loading weights:  84%|████████▍ | 285/338 [00:01<00:00, 283.02it/s]Loading weights: 100%|██████████| 338/338 [00:01<00:00, 244.06it/s]
+[20:54:03]   sft step 5/5 loss 0.5472 (0.3 min)
+[ 158.2 min] [loo_g] sft {'steps': 5, 'final_loss': 0.5472013039721383, 'n_train': 36, 'minutes': 0.3342099269231161}
+[ 175.6 min] [loo_g] acc 0.518 gen_tokens 272.9
+       arm    acc  gen_tokens  train_tokens
+0     base  0.058     253.448       240.472
+1     full  0.592     241.846       240.472
+2   random  0.568     243.974       184.917
+3  entropy  0.560     231.184       217.306
+4       yu  0.588     234.530       179.917
+5      cal  0.576     260.252       155.972
+6    loo_g  0.518     272.864       131.500
+[ 175.6 min] done

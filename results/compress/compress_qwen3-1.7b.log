@@ -1,0 +1,36 @@
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+Fetching 2 files:   0%|          | 0/2 [00:00<?, ?it/s]Fetching 2 files:  50%|█████     | 1/2 [00:05<00:05,  5.28s/it]Fetching 2 files: 100%|██████████| 2/2 [00:34<00:00, 19.33s/it]Fetching 2 files: 100%|██████████| 2/2 [00:34<00:00, 17.22s/it]
+Loading weights:   0%|          | 0/311 [00:00<?, ?it/s]Loading weights:   0%|          | 1/311 [00:02<10:49,  2.10s/it]Loading weights:  44%|████▍     | 137/311 [00:02<00:02, 86.96it/s]Loading weights:  69%|██████▉   | 214/311 [00:02<00:00, 99.55it/s]Loading weights:  84%|████████▍ | 261/311 [00:03<00:00, 117.80it/s]Loading weights:  96%|█████████▌| 299/311 [00:03<00:00, 133.77it/s]Loading weights: 100%|██████████| 311/311 [00:03<00:00, 95.42it/s] 
+[   1.1 min] loaded Qwen/Qwen3-1.7B
+[  13.0 min] chains: 400 generated, 0.740 correct, 240 kept (2-10 body steps)
+[  36.3 min] alternatives: 668/889 found
+[  40.1 min]   rollouts 64/1757 jobs (3.8 min)
+[  83.0 min]   rollouts 704/1757 jobs (46.8 min)
+[ 125.5 min]   rollouts 1344/1757 jobs (89.2 min)
+[ 157.0 min] scores written; pruning
+                   acc  tok_frac  planted_removed
+budget method                                    
+alpha  yu_alpha  0.485     0.274            0.940
+m1     cal       0.860     0.741            0.415
+       entropy   0.725     0.819            0.110
+       loo       1.000     0.739            0.325
+       loo_g     0.995     0.726            0.140
+       none      0.985     1.000            0.000
+       random    0.785     0.759            0.255
+       yu        0.850     0.738            0.325
+m30    cal       0.740     0.543            0.565
+       entropy   0.465     0.666            0.215
+       loo       0.975     0.543            0.660
+       loo_g     0.995     0.530            0.415
+       none      0.985     1.000            0.000
+       random    0.695     0.575            0.475
+       yu        0.735     0.536            0.640
+m50    cal       0.600     0.401            0.760
+       entropy   0.345     0.527            0.355
+       loo       0.955     0.390            0.865
+       loo_g     0.975     0.377            0.660
+       none      0.985     1.000            0.000
+       random    0.535     0.440            0.585
+       yu        0.640     0.394            0.765
+planted mean yu / cal / loo: 0.055 -0.0075 -0.014385085354066405
+[ 172.0 min] done

@@ -85,12 +85,17 @@ def is_correct(text: str, gold: float) -> bool:
 
 
 def split_body(text: str) -> Optional[List[str]]:
-    """Body steps before the final 'The answer is' sentence (None if there is no such sentence)."""
-    m = list(re.finditer(r"the answer is", text, re.I))
+    """Body steps before the line holding the final 'answer is' (None if there is none).
+    Steps are blank-line separated paragraphs; if the body has no blank line, each line is a step."""
+    m = list(re.finditer(r"answer is", text, re.I))
     if not m:
         return None
-    body = text[:m[-1].start()].strip()
-    return [s.strip() for s in body.split("\n\n") if s.strip()]
+    cut = text.rfind("\n", 0, m[-1].start()) + 1       # drop the whole final-answer line
+    body = text[:cut].strip()
+    if not body:
+        return None
+    parts = body.split("\n\n") if "\n\n" in body else body.split("\n")
+    return [x.strip() for x in parts if x.strip()]
 
 
 def _nums(s: str):
@@ -108,8 +113,23 @@ def equivalent_step(a: str, b: str) -> bool:
 
 # ----------------------------------------------------------------------------- prompts
 
+DEMOS = [
+    ("A baker makes 24 muffins in the morning and 18 in the afternoon. He sells 30 of them. "
+     "How many muffins are left?",
+     "He makes 24 + 18 = 42 muffins in total.\n\nHe sells 30, so 42 - 30 = 12 muffins are left.\n\n"
+     "The answer is 12."),
+    ("Lena buys 3 notebooks at $4 each and a pen for $2. She pays with a $20 bill. "
+     "How much change does she get?",
+     "The notebooks cost 3 * 4 = 12 dollars.\n\nThe total cost is 12 + 2 = 14 dollars.\n\n"
+     "Her change is 20 - 14 = 6 dollars.\n\nThe answer is 6."),
+]
+
+
 def msgs(q: str) -> List[dict]:
-    return [{"role": "system", "content": SYS}, {"role": "user", "content": q}]
+    m = [{"role": "system", "content": SYS}]
+    for dq, da in DEMOS:          # two format demonstrations: short steps separated by blank lines
+        m += [{"role": "user", "content": dq}, {"role": "assistant", "content": da}]
+    return m + [{"role": "user", "content": q}]
 
 
 def prefix(lm: LM, q: str, steps: Sequence[str]) -> str:
@@ -160,7 +180,7 @@ def step_entropy(lm: LM, it: Dict, steps: List[str]) -> List[float]:
 # ----------------------------------------------------------------------------- chains
 
 def make_chains(lm: LM, items: List[Dict], args, min_steps: int = 2, max_steps: int = 10) -> List[Dict]:
-    outs = gen(lm, [prefix(lm, it["q"], []) for it in items], args, max_new=420)
+    outs = gen(lm, [prefix(lm, it["q"], []) for it in items], args, max_new=520)
     keep = []
     for it, o in zip(items, outs):
         body = split_body(o)

@@ -1,0 +1,33 @@
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+Loading weights:   0%|          | 0/338 [00:00<?, ?it/s]Loading weights:   0%|          | 1/338 [00:01<08:26,  1.50s/it]Loading weights:  51%|█████     | 171/338 [00:01<00:01, 147.93it/s]Loading weights:  80%|███████▉  | 270/338 [00:02<00:00, 143.83it/s]Loading weights:  98%|█████████▊| 330/338 [00:02<00:00, 142.80it/s]Loading weights: 100%|██████████| 338/338 [00:02<00:00, 123.14it/s]
+[   1.0 min] loaded Qwen/Qwen2.5-1.5B-Instruct
+[  13.6 min] chains: 400 generated, 0.072 correct, 24 kept (2-10 body steps)
+[  17.2 min] alternatives: 169/180 found
+[  21.0 min]   rollouts 64/373 jobs (3.8 min)
+[  39.5 min] scores written; pruning
+                   acc  tok_frac  planted_removed
+budget method                                    
+alpha  yu_alpha  0.917     0.957            0.083
+m1     cal       1.000     0.845            0.292
+       entropy   0.958     0.944            0.000
+       loo       1.000     0.840            0.542
+       loo_g     1.000     0.840            0.542
+       none      0.958     1.000            0.000
+       random    0.792     0.856            0.042
+       yu        0.958     0.884            0.125
+m30    cal       0.750     0.593            0.583
+       entropy   0.708     0.729            0.125
+       loo       0.958     0.572            0.875
+       loo_g     1.000     0.614            0.708
+       none      0.958     1.000            0.000
+       random    0.667     0.644            0.250
+       yu        0.625     0.649            0.500
+m50    cal       0.625     0.454            0.667
+       entropy   0.458     0.577            0.167
+       loo       0.917     0.409            0.917
+       loo_g     1.000     0.447            0.875
+       none      0.958     1.000            0.000
+       random    0.625     0.477            0.417
+       yu        0.458     0.496            0.625
+planted mean yu / cal / loo: 0.6875 0.041666666666666664 -0.04758575730370751
+[  41.9 min] done

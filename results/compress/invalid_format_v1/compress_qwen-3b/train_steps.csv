@@ -1,0 +1,22 @@
+uid,t,n,planted,ntok,random,entropy,loo,keep_acc,rep_acc,base_acc,yu,cal,alt,step
+train-5419,0,5,0,76,0.8444218515250481,25.96053123474121,-0.07481921464204788,1.0,0.75,0.5,0.25,0.25,"In 2006, there were 20 kids attending the cookout. This was 2/3 the number of kids from 2005. Let x be the number of kids in 2005. Then the equation for 2006 can be expressed as (2/3)x = 20.
+To find x, solve the equation: 
+(1/3)x = 10,
+x = 30","Let's denote the number of kids at the cookout in 2004 as \( x \). According to the problem, in 2005, half the number of kids came to the cookout as compared to 2004. Therefore, the number of kids in 2005 would be \( \frac{x}{2} \)."
+train-5419,1,5,0,68,0.7579544029403025,16.75079917907715,-0.026471838355064392,1.0,1.0,0.5,0.0,0.0,"Further, in 2006, two-thirds as many kids came as in 2005. Given that in 2006, 20 kids attended the cookout and this represents two-thirds the number of kids from 2005, we can set up the following equation: 
+\[ \frac{2}{3} \times \frac{x}{2} = 20 \]","In 2006, 2/3 as many kids came to the cookout as in 2005. So, the number of kids in 2006 can be expressed as \( \frac{2}{3} \times \frac{x}{2} = \frac{x}{3} \)."
+train-5419,2,5,0,41,0.420571580830845,13.808126449584961,0.34331507980823517,1.0,0.75,0.5,0.25,0.25,"We are informed that 20 kids came to the cookout in 2006, and we have expressed it as \( \frac{x}{3} \):","We are given that there were 20 kids at the cookout in 2006. Thus, we have:
+\[
+\frac{x}{3} = 20
+\]"
+train-5419,3,5,0,35,0.25891675029296335,6.133143901824951,1.1252830773591995,1.0,1.0,0.5,0.0,0.0,"To find \( x \), multiply both sides of the equation by 3:
+\[
+\frac{x}{3} \times 3 = 20 \times 3
+\]
+\[
+x = 60
+\]","To find \( x \), we multiply both sides of the equation by 3:
+\[
+x = 20 \times 3 = 60
+\]"
+train-5419,4,5,0,19,0.5112747213686085,3.8219144344329834,-0.08609896898270364,1.0,0.5,0.5,0.5,0.5,The answer is 60.,The number of kids at the cookout in 2004 was 60.

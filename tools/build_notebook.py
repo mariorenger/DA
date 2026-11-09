@@ -446,6 +446,18 @@ NOTEBOOKS = {
           "1": [("qwen-1.5b-s1", "Qwen/Qwen2.5-1.5B-Instruct", "compress",
                  ("--phase", "sft", "--n_train", "800", "--k", "4", "--bs", "8", "--seed", "1"))]},
 }""",
+    "R14b_score_q25": """{
+    "s": {"0": [("qwen-1.5b", "Qwen/Qwen2.5-1.5B-Instruct", "compress",
+                 ("--phase", "score", "--n", "200", "--n_pool", "500", "--k", "6", "--bs", "8"))],
+          "1": [("qwen-3b", "Qwen/Qwen2.5-3B-Instruct", "compress",
+                 ("--phase", "score", "--n", "200", "--n_pool", "400", "--k", "6", "--bs", "6"))]},
+}""",
+    "R14b_sft_q25": """{
+    "t": {"0": [("qwen-1.5b", "Qwen/Qwen2.5-1.5B-Instruct", "compress",
+                 ("--phase", "sft", "--n_train", "400", "--k", "4", "--bs", "8"))],
+          "1": [("qwen-3b", "Qwen/Qwen2.5-3B-Instruct", "compress",
+                 ("--phase", "sft", "--n_train", "400", "--k", "4", "--bs", "6", "--mb", "2", "--accum", "8"))]},
+}""",
 }
 
 
