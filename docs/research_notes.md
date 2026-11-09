@@ -38,6 +38,13 @@ Tạo lại: `python tools/export_transcript.py <session.jsonl> docs/conversatio
 - Code: `hgcd/cftrain.py` (SFT cấu trúc CLUTRR), `hgcd/egen.py` (MuSiQue/2Wiki), `tools/build_notebook.py`.
 - Chưa làm: DPO/GRPO với cặp phản thực (chỉ khi SFT cấu trúc có tín hiệu), mô hình 7B huấn luyện, miền ứng dụng thật của người dùng.
 
+## 4b. Hướng tiếp theo đã ghi nhận (chưa chạy, 2026-11)
+1. **Calibrated PNS để cắt gọn CoT cho mô hình nhỏ** (ưu tiên 1). Yu et al. (NeurIPS 2025) ước lượng PN bằng rollout và giả định mô hình rollout luôn viết tiếp đúng (Lemma 1: P(A=y|do(S))=1). TN2 cho thấy giả định này sai ở mô hình ≤4B (viết tiếp đúng 22–44%, bước không liên quan bị chấm 56–76). Đề xuất: thay baseline cố định bằng baseline theo vị trí b(j), kiểm chứng trên bước không liên quan chèn thêm, rồi dùng để cắt chuỗi thinking của Qwen3-4B. Đo token giảm và độ đúng giữ lại, so với PNS gốc, step entropy (ICLR 2026) và không cắt.
+2. **Lọc dữ liệu tự tổng hợp theo từng bước** (cứu Round 12 distillation): giữ chuỗi teacher khi mọi hop đúng theo rule table CLUTRR, kết hợp calibrated PNS.
+3. **R_inv của CF-DAPO**: thưởng bất biến đáp án qua đổi tên, đổi thứ tự câu, thêm nhiễu. Chỉ làm sau hướng 1.
+4. Từ CausalDANN: thay `[MASKED]` bằng bản viết lại tự nhiên do LLM sinh làm control phân phối; báo cáo hiệu ứng theo nhóm (CATE theo số hop).
+5. Liên hệ tài liệu 2026 cần trích dẫn: Liu 2605.22870 (readout shortcut ở 1–3B, cùng hiện tượng với R3 copy), Jia–Benton–Easley 2605.24286 (sufficiency/completeness/necessity qua masked-KL, gần mediation NDE/TIE), Macar–Bogdan et al. ICLR 2026 (resampling on-policy), Li et al. 2610.25876 IGPO (step credit bằng can thiệp tham số trong RL), Hase–Potts 2602.20710 (CST), GRACE 2601.04525 và SABER 2605.18792 (RAG abstention, so với TN9).
+
 ## 5. Câu hỏi mở / hạn chế đã thừa nhận
 - Bảng luật dùng nhãn train; CoT thường không thấy nhãn → cần đối chứng fine-tune (S_plain) và rules-in-prompt (chưa chạy).
 - CLUTRR là miền đóng, tổng hợp; tính ứng dụng cần E-gen và dữ liệu thật.
