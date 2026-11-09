@@ -13,7 +13,7 @@ import nbformat as nbf
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 MODULES = ["__init__", "data", "chain", "prompts", "lm", "decoding", "experiments", "metrics",
-           "report", "pipeline", "causaldec", "cftrain", "egen", "cfrl", "hall"]
+           "report", "pipeline", "causaldec", "cftrain", "egen", "cfrl", "hall", "compress"]
 
 INTRO = """# Read, not reasoned? Kaggle run-all
 
@@ -56,6 +56,8 @@ def run_job(label, model, preset, extra, gpus):
                if preset.startswith("cfrl") else
                [sys.executable, "-m", "hgcd.hall", "--model", model, "--outdir", out, *extra]
                if preset.startswith("hall") else
+               [sys.executable, "-m", "hgcd.compress", "--model", model, "--outdir", out, *extra]
+               if preset.startswith("compress") else
                [sys.executable, "-m", "hgcd.egen", "--model", model, "--outdir", out, *extra]
                if preset.startswith("egen") else
                [sys.executable, "-m", "hgcd.cftrain", "--model", model, "--outdir", out, *extra]
@@ -419,6 +421,30 @@ NOTEBOOKS = {
     "7b": {"0,1": [("qwen-7b", "Qwen/Qwen2.5-7B-Instruct", "causaldec_musique",
                     ("--task", "musique", "--n", "300", "--conditions", "orig", "dist8",
                      "--device_map", "auto", "--bs", "4", "--max_minutes", "560"))]},
+}""",
+    "R14_score_a": """{
+    "s": {"0": [("qwen-1.5b", "Qwen/Qwen2.5-1.5B-Instruct", "compress",
+                 ("--phase", "score", "--n", "200", "--k", "6", "--bs", "8"))],
+          "1": [("qwen3-1.7b", "Qwen/Qwen3-1.7B", "compress",
+                 ("--phase", "score", "--n", "200", "--k", "6", "--bs", "8", "--roll_tokens", "400"))]},
+}""",
+    "R14_score_b": """{
+    "s": {"0": [("qwen-3b", "Qwen/Qwen2.5-3B-Instruct", "compress",
+                 ("--phase", "score", "--n", "200", "--k", "6", "--bs", "6"))],
+          "1": [("qwen3-4b", "Qwen/Qwen3-4B", "compress",
+                 ("--phase", "score", "--n", "150", "--k", "6", "--bs", "4", "--roll_tokens", "400"))]},
+}""",
+    "R14_sft_a": """{
+    "t": {"0": [("qwen-1.5b", "Qwen/Qwen2.5-1.5B-Instruct", "compress",
+                 ("--phase", "sft", "--n_train", "800", "--k", "4", "--bs", "8"))],
+          "1": [("qwen3-1.7b", "Qwen/Qwen3-1.7B", "compress",
+                 ("--phase", "sft", "--n_train", "800", "--k", "4", "--bs", "8", "--roll_tokens", "400"))]},
+}""",
+    "R14_sft_b": """{
+    "t": {"0": [("qwen-3b", "Qwen/Qwen2.5-3B-Instruct", "compress",
+                 ("--phase", "sft", "--n_train", "800", "--k", "4", "--bs", "6", "--mb", "2", "--accum", "8"))],
+          "1": [("qwen-1.5b-s1", "Qwen/Qwen2.5-1.5B-Instruct", "compress",
+                 ("--phase", "sft", "--n_train", "800", "--k", "4", "--bs", "8", "--seed", "1"))]},
 }""",
 }
 

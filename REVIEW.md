@@ -818,3 +818,41 @@ Tool: `tools/analyze_hall.py` -> results/hall/analysis.csv; paired bootstrap ove
 * H-N: **NO-GO in 3/3** (AUROC 0.66, 0.67, 0.77).
 **What this round establishes.** Counterfactual-context and unanswerable-context data make a small model both abstain and follow the context (large, replicated effects), at a cost of a few points of answerable accuracy; a preference/RL stage can trade coverage for precision as the reward dictates.
 It does not raise the base accuracy of the answers (44-61% on answerable questions), which is why a large share of the remaining answers is still wrong or unsupported. Limits as declared: MuSiQue only, constructed labels, one seed per model besides the Qwen2.5 replication.
+
+## Round 14 (pre-registered before any GPU run): step-importance estimators for CoT compression (GSM8K)
+
+*Motivation.* Three 2025–2026 lines score CoT steps causally and delete the unimportant ones: PNS of Yu et al.
+(NeurIPS 2025, code `yxn9191/causalmath`: PN = 1 − mean V over k=3 rollouts after replacing s_t, threshold 0.3,
+no keep-arm), resampling importance of Thought Anchors / Thought Branches (ICLR 2026, keep-vs-resample contrast),
+and step entropy (ICLR 2026, `staymylove/COT_Compresstion_via_Step_entropy`: sum of token entropies, mask the
+lowest 80%). Our round 7–8 result (bias of a fixed baseline = 1 − r) predicts that Yu's estimator is biased
+when the rollout model is weak, and TN1 separates direct from total effects. For *deletion* the relevant
+quantity is the direct effect (the rest of the chain stays), which a one-pass leave-one-out readout measures
+without any sampling. No paper compares these estimators head-to-head on small models.
+
+*Design.* `hgcd/compress.py`. GSM8K test, greedy chains of the model itself, kept if correct with 2–10 body
+paragraphs. One planted duplicate step ("Recall: " + an earlier step, inserted after ≥1 step and before the
+last one) = unnecessary by construction. Estimators: random, entropy, yu (Yu's PN with one sampled
+non-equivalent alternative step, k rollouts; LLM equivalence judge replaced by text/number-multiset check),
+cal (keep-rollout accuracy − yu rollout accuracy, same rollouts), loo (teacher-forced log p(gold) drop when
+the step is deleted), loo_g (greedy iterative loo). Pruning: delete m lowest-scored steps, m ∈ {1, ⌈0.3n⌉,
+⌈0.5n⌉}, then greedy readout after "The answer is". Also Yu's own rule (delete PN < 0.3).
+Phase 1 models: Qwen2.5-1.5B/3B-Instruct, Qwen3-1.7B/4B (non-thinking); n = 200 (150 for Qwen3-4B), k = 6.
+Phase 2 (SFT, practical use): GSM8K train n = 800 own correct chains, k = 4, delete 40% of body steps per
+method (a pruned chain whose readout is wrong is replaced by the full chain), LoRA SFT per arm (base, full,
+random, entropy, yu, cal, loo_g), eval on 500 test questions: accuracy and generated tokens.
+Deviation from Yu et al. stated up front: we use their PN estimator but delete steps instead of rewriting the
+chain from the alternative onward, and we use a heuristic equivalence check instead of an LLM judge.
+
+*Hypotheses (paired bootstrap over questions, 2000 resamples, 95% CI; "≥ 3/4" = at least 3 of 4 models).*
+- **H-P1 (bias).** Planted steps: mean yu ≥ 0.10 and |mean cal| ≤ 0.05, on ≥ 3/4 models.
+- **H-P2 (difficulty confound).** Spearman(yu on planted step, 1 − keep accuracy at that step) ≥ 0.3 on ≥ 3/4.
+- **H-P3 (detection, m = 1).** Planted-step removal rate cal − yu ≥ +10 points, CI excluding 0, on ≥ 3/4.
+- **H-P4 (main, utility at m = ⌈0.5n⌉).** Readout accuracy loo_g − yu ≥ +5 points, CI excluding 0, on ≥ 3/4.
+  Secondary (no threshold): cal − yu, entropy − random, loo_g − cal; estimator cost in forward passes.
+- **H-P5 (SFT).** loo_g-SFT generates ≤ 0.75 × the tokens of full-SFT and its accuracy is non-inferior
+  (difference ≥ −2 points, CI lower bound ≥ −5) on ≥ 2 of the 3 SFT runs; yu-SFT reported alongside.
+*Failure modes written down now.* If small models regenerate well (keep accuracy ≈ 1), H-P1/H-P2 fail and
+Yu's estimator is fine at this scale: that is reported as such. If every method loses accuracy at 50%
+deletion, H-P4 is decided on the difference, not on absolute accuracy. Planted duplicates are lexically
+marked ("Recall:"), which may favour entropy; reported as a limitation.
