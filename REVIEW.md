@@ -1041,3 +1041,28 @@ test questions (300 at 7B); models Qwen2.5-1.5B, Qwen2.5-3B, Qwen3-1.7B (rule), 
 Between H-R1 and H-R2 the result is "inconclusive". Prediction written now from Rounds 14–15: H-R1. If H-R2 holds, the collapse in
 Rounds 14–15 is a property of the estimators' choices and the training-value hypothesis of Round 15 is rejected.
 Limitations stated up front: one seed per arm (run-to-run noise ≈ 3–4 points, Round 15), one benchmark, plain LOO only.
+
+### Round 16, final verdicts (small models: Qwen2.5-1.5B, Qwen2.5-3B, Qwen3-1.7B; 500 test questions each; `results/blind/blind_*_order`)
+| Arm (40% of the steps deleted) | 1.5B | 3B | Qwen3-1.7B |
+|---|---|---|---|
+| full (reference accuracy) | 53.0 | 80.8 | 73.8 |
+| loo_low (least important deleted) | 22.6 | 42.0 | 36.4 |
+| loo_high (MOST important deleted) | 32.0 | 39.2 | 34.8 |
+| random40 | 27.0 | 45.4 | 34.8 |
+| loo_low − loo_high | **−9.4 [−14.0, −4.4]** | +2.8 [−2.4, +8.2] | +1.6 [−3.0, +6.4] |
+| loo_low − random40 | −4.4 [−8.6, −0.2] | −3.4 [−8.4, +1.8] | +1.6 [−2.6, +5.8] |
+- **H-R2 (order informative, ≥ +10): NO-GO (0/3).** **H-R1 (|difference| ≤ 5 and CI contains 0): GO on 2/3** (3B and Qwen3-1.7B; at
+  Qwen2.5-1.5B the difference is outside the band and in the OPPOSITE direction: deleting the most important steps is better).
+  Prediction confirmed: the LOO order does not predict the value of a step as a training target.
+- The "most important" deletion removes the answer-bearing step on purpose (last step contains the gold number in only 9–10% of
+  loo_high chains vs 97–98% in loo_low; plain readout 13–20% vs 99–100%) and SFT accuracy is not lower than with the answer-bearing
+  step kept. So the Round 14 account "LOO keeps the answer step and that is why SFT collapses" is NOT what drives the collapse.
+- 7B order run (`ngpnguyen/hgcd-r16-order-7b`) ended with a Kaggle ERROR before the first job wrote output (log stops after the phase header);
+  no 7B number for Round 16.
+- **Exploratory, post hoc (not pre-registered), `results/blind/tokens_vs_accuracy.csv`:** over all 42 pruned SFT arms of Rounds 14–16
+  (10 runs, 1.5B–7B), the accuracy change relative to full-chain SFT is almost a linear function of the generated-token ratio: Pearson r = 0.94
+  pooled, 0.97 within runs, Δacc ≈ 63 × token_ratio − 64 points (about −6.3 points per 10% fewer tokens, zero loss extrapolated to
+  ratio 1), residual SD 4.2 points, the same size as the run-to-run noise (3–4 points). No selection rule (Yu, calibrated, LOO, answer-blind,
+  entropy, random) departs from this line by more than the noise except loo_cal, which sits at ratio ≈ 0.9–1.0 because it deletes almost
+  nothing. Caveat: the generated-token ratio is itself an outcome of the trained model, so the fit shows consistency with "the amount of
+  explicit computation kept determines accuracy", not a causal law.

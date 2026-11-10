@@ -1,0 +1,69 @@
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+Fetching 2 files:   0%|          | 0/2 [00:00<?, ?it/s]Fetching 2 files:  50%|█████     | 1/2 [00:05<00:05,  5.12s/it]Fetching 2 files: 100%|██████████| 2/2 [00:37<00:00, 21.00s/it]Fetching 2 files: 100%|██████████| 2/2 [00:37<00:00, 18.62s/it]
+Loading weights:   0%|          | 0/311 [00:00<?, ?it/s]Loading weights:   0%|          | 1/311 [00:01<09:50,  1.91s/it]Loading weights:   1%|          | 2/311 [00:02<04:25,  1.16it/s]Loading weights:  44%|████▎     | 136/311 [00:02<00:01, 118.52it/s]Loading weights:  60%|██████    | 188/311 [00:02<00:01, 120.61it/s]Loading weights:  72%|███████▏  | 225/311 [00:02<00:00, 120.17it/s]Loading weights:  81%|████████▏ | 253/311 [00:03<00:00, 134.36it/s]Loading weights:  90%|████████▉ | 279/311 [00:03<00:00, 143.66it/s]Loading weights:  97%|█████████▋| 303/311 [00:03<00:00, 153.14it/s]Loading weights: 100%|██████████| 311/311 [00:03<00:00, 95.32it/s] 
+[   1.1 min] loaded Qwen/Qwen3-1.7B
+[  19.3 min] chains: 800 generated, 0.790 correct, 608 kept (2-10 body steps)
+[  19.3 min]   scored 1/608 training chains
+[  20.0 min]   scored 51/608 training chains
+[  20.7 min]   scored 101/608 training chains
+[  21.4 min]   scored 151/608 training chains
+[  22.0 min]   scored 201/608 training chains
+[  22.7 min]   scored 251/608 training chains
+[  23.4 min]   scored 301/608 training chains
+[  24.0 min]   scored 351/608 training chains
+[  24.7 min]   scored 401/608 training chains
+[  25.3 min]   scored 451/608 training chains
+[  26.0 min]   scored 501/608 training chains
+[  26.7 min]   scored 551/608 training chains
+[  27.4 min]   scored 601/608 training chains
+[  32.3 min] order statistics: {"random40": {"mean_steps": 1.680921052631579, "single_step": 0.5476973684210527, "last_has_gold": 0.48026315789473684, "readout_ok": 0.5098684210526315}, "loo_low": {"mean_steps": 1.680921052631579, "single_step": 0.5476973684210527, "last_has_gold": 0.9720394736842105, "readout_ok": 0.9884868421052632}, "loo_high": {"mean_steps": 1.680921052631579, "single_step": 0.5476973684210527, "last_has_gold": 0.09868421052631579, "readout_ok": 0.12828947368421054}}
+Loading weights:   0%|          | 0/311 [00:00<?, ?it/s]Loading weights:   0%|          | 1/311 [00:01<07:26,  1.44s/it]Loading weights:  54%|█████▍    | 169/311 [00:01<00:00, 148.49it/s]Loading weights:  79%|███████▉  | 246/311 [00:01<00:00, 161.46it/s]Loading weights:  95%|█████████▌| 297/311 [00:02<00:00, 172.86it/s]Loading weights: 100%|██████████| 311/311 [00:02<00:00, 136.77it/s]
+[14:26:29]   sft step 10/76 loss 0.0763 (1.3 min)
+[14:27:51]   sft step 20/76 loss 0.0557 (2.7 min)
+[14:29:14]   sft step 30/76 loss 0.0481 (4.1 min)
+[14:30:35]   sft step 40/76 loss 0.0407 (5.5 min)
+[14:31:55]   sft step 50/76 loss 0.0238 (6.8 min)
+[14:33:18]   sft step 60/76 loss 0.0253 (8.2 min)
+[14:34:39]   sft step 70/76 loss 0.0247 (9.5 min)
+[14:35:28]   sft step 76/76 loss 0.0248 (10.3 min)
+[  42.8 min] [full] sft {'steps': 76, 'final_loss': 0.022661104379221798, 'n_train': 608, 'minutes': 10.338631331920624}
+[  54.1 min] [full] acc 0.738 gen_tokens 126.7
+Loading weights:   0%|          | 0/311 [00:00<?, ?it/s]Loading weights:   0%|          | 1/311 [00:01<05:44,  1.11s/it]Loading weights:  25%|██▍       | 77/311 [00:01<00:02, 86.55it/s]Loading weights:  51%|█████     | 158/311 [00:01<00:00, 184.93it/s]Loading weights:  69%|██████▉   | 215/311 [00:01<00:00, 218.69it/s]Loading weights:  84%|████████▍ | 262/311 [00:01<00:00, 239.74it/s]Loading weights:  97%|█████████▋| 303/311 [00:01<00:00, 230.43it/s]Loading weights: 100%|██████████| 311/311 [00:01<00:00, 167.22it/s]
+[14:48:04]   sft step 10/76 loss 1.0537 (1.1 min)
+[14:49:12]   sft step 20/76 loss 0.4107 (2.3 min)
+[14:50:23]   sft step 30/76 loss 0.3582 (3.5 min)
+[14:51:31]   sft step 40/76 loss 0.3176 (4.6 min)
+[14:52:39]   sft step 50/76 loss 0.2737 (5.7 min)
+[14:53:48]   sft step 60/76 loss 0.3097 (6.9 min)
+[14:54:57]   sft step 70/76 loss 0.2777 (8.0 min)
+[14:55:39]   sft step 76/76 loss 0.2873 (8.7 min)
+[  63.0 min] [random40] sft {'steps': 76, 'final_loss': 0.3029849834740162, 'n_train': 608, 'minutes': 8.735668710867564}
+[  69.2 min] [random40] acc 0.348 gen_tokens 53.8
+Loading weights:   0%|          | 0/311 [00:00<?, ?it/s]Loading weights:   0%|          | 1/311 [00:01<05:47,  1.12s/it]Loading weights:  51%|█████     | 158/311 [00:01<00:00, 174.05it/s]Loading weights:  76%|███████▌  | 235/311 [00:01<00:00, 181.10it/s]Loading weights:  92%|█████████▏| 286/311 [00:01<00:00, 188.80it/s]Loading weights: 100%|██████████| 311/311 [00:01<00:00, 156.73it/s]
+[15:03:10]   sft step 10/76 loss 1.1846 (1.1 min)
+[15:04:18]   sft step 20/76 loss 0.4175 (2.3 min)
+[15:05:28]   sft step 30/76 loss 0.3859 (3.4 min)
+[15:06:35]   sft step 40/76 loss 0.3301 (4.6 min)
+[15:07:44]   sft step 50/76 loss 0.3102 (5.7 min)
+[15:08:53]   sft step 60/76 loss 0.3275 (6.9 min)
+[15:10:02]   sft step 70/76 loss 0.2918 (8.0 min)
+[15:10:43]   sft step 76/76 loss 0.2998 (8.7 min)
+[  78.0 min] [loo_low] sft {'steps': 76, 'final_loss': 0.3175382524728775, 'n_train': 608, 'minutes': 8.688987878958384}
+[  84.7 min] [loo_low] acc 0.364 gen_tokens 53.4
+Loading weights:   0%|          | 0/311 [00:00<?, ?it/s]Loading weights:   0%|          | 1/311 [00:01<05:33,  1.07s/it]Loading weights:  48%|████▊     | 148/311 [00:01<00:00, 171.84it/s]Loading weights:  74%|███████▎  | 229/311 [00:01<00:00, 198.09it/s]Loading weights:  92%|█████████▏| 285/311 [00:01<00:00, 203.66it/s]Loading weights: 100%|██████████| 311/311 [00:01<00:00, 169.09it/s]
+[15:18:38]   sft step 10/76 loss 0.9129 (1.2 min)
+[15:19:48]   sft step 20/76 loss 0.3341 (2.4 min)
+[15:20:59]   sft step 30/76 loss 0.3007 (3.5 min)
+[15:22:08]   sft step 40/76 loss 0.2754 (4.7 min)
+[15:23:17]   sft step 50/76 loss 0.2425 (5.8 min)
+[15:24:28]   sft step 60/76 loss 0.2601 (7.0 min)
+[15:25:38]   sft step 70/76 loss 0.2156 (8.2 min)
+[15:26:20]   sft step 76/76 loss 0.2310 (8.9 min)
+[  93.7 min] [loo_high] sft {'steps': 76, 'final_loss': 0.2355140134692192, 'n_train': 608, 'minutes': 8.886088848114014}
+[ 100.5 min] [loo_high] acc 0.348 gen_tokens 59.4
+        arm    acc  gen_tokens  train_steps
+0      full  0.738     126.742        3.556
+1  random40  0.348      53.822        1.681
+2   loo_low  0.364      53.388        1.681
+3  loo_high  0.348      59.418        1.681
+[ 100.5 min] done
