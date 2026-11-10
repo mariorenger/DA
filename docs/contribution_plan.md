@@ -69,3 +69,17 @@ Rủi ro mới: có nhiều bài cùng thời. Trước khi viết cần đọc 
 - Bài 1 có đóng góp phương pháp luận rõ và dữ liệu đã chạy, nhưng bị cạnh tranh bởi các bài cùng thời. Khả năng tốt nhất là Findings hoặc main track nếu có miền thứ hai, ba seed và ít nhất một mô hình lớn. Không nên kỳ vọng main track của ACL nếu chỉ có GSM8K.
 - Kết quả Round 17 quyết định tiêu đề: nếu chuỗi chỉ giữ phép tính hoạt động thì bài có một phát hiện xây dựng; nếu không, đây là bài phân tích thuần túy, mạnh ở kiểm chứng nhưng khó được nhận hơn.
 - Bài 2 chưa có phương pháp mới; cần kết quả thưởng nhiều tầng ở 7B mới có đóng góp.
+
+## 7. Phụ lục: ý tưởng phát triển từ các paper công bố mới nhất (khảo sát ngày 10/11/2026, đã xác minh abstract, chưa đọc toàn văn)
+
+| # | Paper | Ý của họ | Phát triển được gì với tài sản hiện có | Rủi ro |
+|---|---|---|---|---|
+| 1 | **BAPO bounds on CoT token complexity** (2602.02909) | Chứng minh một số tác vụ (đa số, ghép bộ ba, đồ thị liên thông) cần Ω(n) token CoT; thí nghiệm chỉ trên mô hình frontier | Đường tuyến tính độ đúng theo tỷ lệ token (r = 0.94) của ta là kết quả thực nghiệm cùng chủ đề. Thí nghiệm mới: tác vụ tổng hợp có độ phức tạp token tối thiểu đã biết (liên thông trên đồ thị, hợp thành quan hệ kiểu CLUTRR), SFT mô hình nhỏ ở nhiều ngân sách token, tìm ngưỡng gãy và so với cận lý thuyết | Trung bình. Cần sinh dữ liệu tổng hợp; kết quả có thể không khớp lý thuyết |
+| 2 | **LIFT** (2509.13334) | Chấm bước bằng thay bằng sự kiện không liên quan, đo giảm log-prob, rồi fine-tune trên chuỗi điểm cao; báo tăng faithfulness | Chọn chuỗi theo điểm LIFT so với chọn ngẫu nhiên cùng kích thước (đối chứng ta đã dùng cho bước); đánh giá bằng copy test độc lập thay vì cùng loại can thiệp lúc huấn luyện | Thấp đến trung bình |
+| 3 | **Correctness Conditioning as Selection** (2610.37070) | Chỉ đánh giá faithfulness trên câu đúng làm lệch quần thể; có phân rã hiệp phương sai | Copy test của ta điều kiện hóa trên "tự giải được" nên chịu đúng lỗi này. Việc cần làm: báo cáo cả có và không điều kiện, áp phân rã của họ vào dữ liệu Round 8 và Round 18 | Thấp (phân tích trên dữ liệu có sẵn) |
+| 4 | **AttriCoT** (ICML 2026, 2606.21821), **CMI** (2602.03994) | Ước lượng quan hệ nhân quả giữa các đơn vị của một chuỗi (O(U) lần forward); kiểm toán theo tầng bằng activation patching | Thêm vào bảng ground truth (bước thừa cài sẵn, bước mang phép tính, bảng luật CLUTRR) cùng NLDD và FACT-E | Thấp; CMI nặng hơn vì cần patching |
+| 5 | SPRING (2609.34660), VeriGate (2605.30451) | Thưởng bước có solver kiểm chứng cho mô hình nhỏ | Bảng luật CLUTRR là bộ kiểm chứng từng hop; dùng làm baseline hoặc phần mở rộng bài 2 | Cao về độ mới (đã đông) |
+| 6 | AWA-RL, ACA-RL (EMNLP 2026), Abstain-R1 (ACL 2026 Findings) | RL từ chối khi thiếu bằng chứng cho mô hình nhỏ | Baseline bắt buộc cho bài 2 (Round 13); không đủ mới để làm trục chính | Cao |
+| 7 | LoRi (2606.05315), Do Latent-CoT think step by step (2602.00449) | Suy luận ngầm; "fusion muộn" ở bước đọc đáp án | Cùng hiện tượng với phát hiện "đọc đáp án"; chưa có mô hình để thử | Cao, bỏ qua |
+
+Đề xuất thứ tự: (3) làm ngay vì rẻ và sửa lỗi của chính ta; (4) đưa vào bài 1; (1) là hướng có thể thành đóng góp chính vì nối lý thuyết với đường token của ta; (2) làm nếu còn thời gian.
