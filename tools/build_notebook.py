@@ -488,6 +488,16 @@ NOTEBOOKS = {
             "1": [("qwen-3b_sft", "Qwen/Qwen2.5-3B-Instruct", "blind",
                    ("--phase", "sft", "--n_train", "800", "--bs", "6", "--mb", "2", "--accum", "8"))]},
 }""",
+    "R15_blind_b": """{
+    "sft": {"0,1": [("qwen3-1.7b_sft", "Qwen/Qwen3-1.7B", "blind",
+                     ("--phase", "sft", "--n_train", "800", "--bs", "8", "--mb", "2", "--accum", "8",
+                      "--device_map", "auto"))]},
+}""",
+    "R15_blind_7b": """{
+    "audit": {"0,1": [("qwen-7b", "Qwen/Qwen2.5-7B-Instruct", "blind",
+                       ("--phase", "audit", "--n", "100", "--n_pool", "200", "--bs", "4",
+                        "--device_map", "auto"))]},
+}""",
 }
 
 
