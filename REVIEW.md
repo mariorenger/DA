@@ -876,3 +876,22 @@ marked ("Recall:"), which may favour entropy; reported as a limitation.
   rollouts, so Yu's assumption holds here); H-P3 cal − yu planted removal +9.0 [0.0, +17.5] points (< +10:
   not met); H-P4 loo_g − yu at m50 +33.5 [+27.0, +40.0] (met, subject to the caveat above); entropy − random
   −19.0 [−28.0, −10.0] (worse than random). Verdicts over the 4-model rule wait for the other models.
+
+### Round 14: phase 1 verdicts (4 models: Qwen2.5-1.5B/3B, Qwen3-1.7B/4B; 150–200 correct chains each, k = 6; `tools/analyze_compress.py`, `results/compress/analysis_score.csv`)
+| Hypothesis (rule) | Result per model (1.5B / 3B / Q3-1.7B / Q3-4B) | Verdict |
+|---|---|---|
+| H-P1: yu on planted ≥ 0.10 and \|cal\| ≤ 0.05, on ≥ 3/4 | yu 0.28 / 0.07 / 0.06 / 0.02 (cal ≈ 0 on all 4) | **NO-GO** (1/4). Bias of Yu's PN on a redundant step appears only at Qwen2.5-1.5B (regen. success 0.83; mean yu over all steps 0.54). From 3B up it is small (regen. success 0.96–0.98) |
+| H-P2: ρ(yu, 1 − keep acc) ≥ 0.3 on ≥ 3/4 | 0.40 / 0.35 / 0.24 / 0.59 | **GO** (3/4): Yu's PN co-varies with how hard the step is to re-derive |
+| H-P3: planted removal cal − yu ≥ +10, CI excl. 0, on ≥ 3/4 | +9.0 [2.0, 16.0] / −3.5 / +9.0 [0.0, 17.5] / −8.7 | **NO-GO** (0/4). Calibration does not improve duplicate detection |
+| H-P4: acc(loo_g) − acc(yu) at m = ⌈0.5n⌉ ≥ +5, CI excl. 0, on ≥ 3/4 | +38.5 / +33.0 / +33.5 / +39.3 (all CIs excl. 0) | **GO as registered (4/4), but confounded** (below) |
+Secondary: entropy − random −12.5 [−21, −4] / −4.5 / −19.0 [−28, −10] / −8.0 (never better than random); cal − yu +10.5 / −2.0 / −4.0 / +6.0 (inconsistent); Yu's own rule (delete PN < 0.3) keeps 0.45–0.64 accuracy at 27–54% of tokens (full chain 0.985–1.0).
+
+**H-P4 is an artefact of the readout, shown by H-P5 data (Qwen3-1.7B SFT, n = 545 training chains).** After
+loo_g pruning, 99% of chains still contain the gold number but 60% have a single step (full chains: 3.5 steps,
+0 single-step; yu 33%, random 29%). loo_g keeps the step that states the answer and deletes the derivation,
+which a "read the answer" test rewards. This is the same answer-in-chain triviality as R1.
+Qwen3-1.7B SFT (500 test questions, paired bootstrap): full 78.2; base 75.4; random −9.8 [−14.0, −5.8];
+entropy −5.4 [−8.8, −2.0]; yu −14.2 [−18.8, −10.0]; cal −15.6 [−20.0, −11.4]; **loo_g −45.8 [−50.8, −40.8]**
+(generates 0.41 × the tokens of full). So on this model H-P5 fails for every pruning method, loo_g worst.
+H-P5 needs ≥ 2 of 3 SFT runs; the Qwen2.5-1.5B and 3B SFT runs (mario123475, corrected format) are still
+running, the verdict follows when they finish. Not rescued after the fact: no pruning method is non-inferior to full-chain SFT on Qwen3-1.7B.

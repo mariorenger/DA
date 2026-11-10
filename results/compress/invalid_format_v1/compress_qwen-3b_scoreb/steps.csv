@@ -1,0 +1,37 @@
+uid,t,n,planted,ntok,random,entropy,loo,keep_acc,rep_acc,base_acc,yu,cal,alt,step
+test-467,0,3,0,66,0.9654648863619172,25.947338104248047,0.000525055053003598,1.0,0.3333333333333333,0.6666666666666666,0.6666666666666667,0.6666666666666667,"First, determine how many sheets total are needed for one room. There are 2 sheets per room.
+Next, establish the number of comforters per room, which equals the number of sheets: There are 2 comforters per room.
+Then, calculate the pillow cases needed for each room. Pillow cases equal twice the quantity of sheets, so they equal 2 * 2 = 4 pillow cases per room.
+Now, find out the number of towels needed for each","First, let's determine how many items are needed per room. Each room needs:
+- 2 sheets
+- 1 comforter
+- Twice as many pillow cases as sheets: 2 * 2 = 4 pillow cases
+- Twice as many towels as pillow cases: 2 * 4 = 8 towels"
+test-467,1,3,1,69,0.48592769656281265,24.643550872802734,0.0013739026690018363,1.0,0.8333333333333334,0.6666666666666666,0.16666666666666663,0.16666666666666663,"To find how many total items are needed per room, sum the individual counts: 2 (sheets) + 1 (comforter) + 4 (pillow cases) + 8 (towels) = 15 items per room.","Recall: First, let's determine how many items are needed per room. Each room needs:
+- 2 sheets
+- 1 comforter
+- Twice as many pillow cases as sheets: 2 * 2 = 4 pillow cases
+- Twice as many towels as pillow cases: 2 * 4 = 8 towels"
+test-467,2,3,0,82,0.9182343317851318,46.548248291015625,13.271514612839383,1.0,1.0,0.6666666666666666,0.0,0.0,"Now add up all the laundry items required for one room:
+Total for one room: 2 sheets + 1 comforter + 4 pillow cases + 8 towels = 15 pieces","So, each room requires 2 + 1 + 4 + 8 = 15 pieces of laundry.
+Now, we need to find out how many pieces of laundry are needed for 80 rooms. This would be 15 * 80.
+The total number of pieces of laundry for 80 rooms is 15 * 80 = 1200."
+test-815,0,4,0,127,0.8298529036589914,62.38932800292969,0.0,0.6666666666666666,0.16666666666666666,0.3333333333333333,0.8333333333333334,0.5,"First, let's define the variables: let \( S \) be the amount of salt, \( O \) the amount of oil, \( C \) the amount of citrus zest, and \( F \) the amount of fragrance. From the question we know: the amount of citrus zest equals the amount of fragrance (\( C = F \)), the amount of salt equals the amount of sugar (let's set this as \( S \) for both), and the amount","First, let's denote the quantities of each ingredient Tanya uses in terms of variables. Let \( S \) represent the amount of salt used.
+Since she uses twice as much oil as salt, the amount of oil used is \( 2S \).
+She uses twice as much salt as zest, so the amount of zest used is \( \frac{S}{2} \).
+S"
+test-815,1,4,1,130,0.9677999949201714,39.56429672241211,0.0,0.3333333333333333,0.0,0.3333333333333333,1.0,0.3333333333333333,"Now we know the total quantity \( T \) can be expressed algebraically as:
+\[ T = S + 2S + \frac{S}{2} + \frac{S}{2} + S = 6S \]","Recall: First, let's denote the quantities of each ingredient Tanya uses in terms of variables. Let \( S \) represent the amount of salt used.
+Since she uses twice as much oil as salt, the amount of oil used is \( 2S \).
+She uses twice as much salt as zest, so the amount of zest used is \( \frac{S}{"
+test-815,2,4,0,95,0.3580493746949883,30.919116973876953,1.1920928244535389e-07,0.8333333333333334,0.5,0.3333333333333333,0.5,0.33333333333333337,"Now, since she combines all these ingredients to make 10 ounces of shower gel, we can write the equation:
+\[ S + 2S + \frac{S}{2} + \frac{S}{2} + S = 10 \]","Now we can write an equation for the total amount of ingredients:
+\[ S + 2S + \frac{S}{2} + \frac{S}{2} + S = 10 \]
+Combine like terms:
+\[ S + 2S + \frac{S}{2} + \frac{S}{2} + S = 5S = 10 \]
+Solving for \( S \):
+\[ S = 2 \]"
+test-815,3,4,0,36,0.8916606598206824,16.13967514038086,0.01852611778303981,0.5,0.6666666666666666,0.3333333333333333,0.33333333333333337,-0.16666666666666663,"Now that \( S = 2 \), we can substitute back to find the amount of oil:
+Since \( 2S \) represents the amount of oil, substitution gives us:
+\[ 2S = 2 \times 2 = 4 \]","Now that we know \( S = 2 \), we can find the amount of oil used:
+\[ 2S = 2 \times 2 = 4 \]"

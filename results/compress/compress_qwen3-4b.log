@@ -1,0 +1,36 @@
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+Fetching 3 files:   0%|          | 0/3 [00:00<?, ?it/s]Fetching 3 files:  33%|███▎      | 1/3 [00:01<00:03,  1.55s/it]Fetching 3 files:  67%|██████▋   | 2/3 [01:06<00:38, 38.84s/it]Fetching 3 files: 100%|██████████| 3/3 [01:06<00:00, 22.17s/it]
+Loading weights:   0%|          | 0/398 [00:00<?, ?it/s]Loading weights:   0%|          | 1/398 [00:09<1:03:37,  9.61s/it]Loading weights:  45%|████▍     | 179/398 [00:09<00:08, 25.44it/s]Loading weights:  54%|█████▍    | 215/398 [00:15<00:11, 15.97it/s]Loading weights:  59%|█████▉    | 235/398 [00:18<00:12, 13.03it/s]Loading weights:  62%|██████▏   | 248/398 [00:19<00:12, 12.03it/s]Loading weights:  65%|██████▍   | 257/398 [00:21<00:13, 10.75it/s]Loading weights:  66%|██████▌   | 263/398 [00:21<00:11, 11.64it/s]Loading weights:  68%|██████▊   | 269/398 [00:23<00:13,  9.32it/s]Loading weights:  70%|██████▉   | 278/398 [00:24<00:14,  8.28it/s]Loading weights:  72%|███████▏  | 287/398 [00:24<00:10, 10.26it/s]Loading weights:  73%|███████▎  | 291/398 [00:26<00:14,  7.62it/s]Loading weights:  75%|███████▍  | 298/398 [00:26<00:10,  9.62it/s]Loading weights:  76%|███████▌  | 302/398 [00:27<00:11,  8.29it/s]Loading weights:  78%|███████▊  | 311/398 [00:28<00:09,  9.21it/s]Loading weights:  81%|████████  | 322/398 [00:28<00:07, 10.44it/s]Loading weights:  84%|████████▎ | 333/398 [00:29<00:05, 11.55it/s]Loading weights:  86%|████████▌ | 343/398 [00:29<00:03, 15.93it/s]Loading weights:  87%|████████▋ | 348/398 [00:30<00:04, 12.13it/s]Loading weights:  89%|████████▉ | 355/398 [00:31<00:03, 11.25it/s]Loading weights:  92%|█████████▏| 366/398 [00:32<00:02, 11.93it/s]Loading weights:  95%|█████████▍| 377/398 [00:33<00:01, 11.72it/s]Loading weights:  97%|█████████▋| 388/398 [00:34<00:00, 11.75it/s]Loading weights: 100%|██████████| 398/398 [00:34<00:00, 11.68it/s]
+[   2.1 min] loaded Qwen/Qwen3-4B
+[  28.8 min] chains: 400 generated, 0.870 correct, 296 kept (2-10 body steps)
+[  67.7 min] alternatives: 515/753 found
+[  76.0 min]   rollouts 64/1418 jobs (8.2 min)
+[ 155.4 min]   rollouts 704/1418 jobs (87.7 min)
+[ 233.2 min]   rollouts 1344/1418 jobs (165.4 min)
+[ 247.0 min] scores written; pruning
+                   acc  tok_frac  planted_removed
+budget method                                    
+alpha  yu_alpha  0.453     0.315            0.960
+m1     cal       0.873     0.784            0.333
+       entropy   0.887     0.812            0.080
+       loo       0.993     0.781            0.313
+       loo_g     1.000     0.761            0.007
+       none      1.000     1.000            0.000
+       random    0.853     0.788            0.220
+       yu        0.853     0.778            0.420
+m30    cal       0.773     0.573            0.687
+       entropy   0.713     0.636            0.160
+       loo       0.993     0.576            0.493
+       loo_g     1.000     0.553            0.367
+       none      1.000     1.000            0.000
+       random    0.720     0.592            0.433
+       yu        0.747     0.579            0.647
+m50    cal       0.667     0.428            0.787
+       entropy   0.520     0.487            0.240
+       loo       0.980     0.416            0.713
+       loo_g     1.000     0.400            0.693
+       none      1.000     1.000            0.000
+       random    0.600     0.433            0.613
+       yu        0.607     0.431            0.800
+planted mean yu / cal / loo: 0.023333333333333334 -0.004444444444444445 -1.3510380464746656e-08
+[ 272.1 min] done
