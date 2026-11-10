@@ -987,3 +987,18 @@ placebo per chain gives a noisy threshold.
   usually high), bloo_cal removes 18.5% with acc_plain 0.98 / acc_blind 0.96, while random removal of the same number of
   steps gives 0.90 / 0.85. Calibration therefore adapts the amount removed to the estimator, and with the
   answer-blind score it removes real steps without damaging the readout; whether this holds under SFT is H-Q3.
+
+### Round 15: Qwen3-1.7B SFT (1 of the 3 pre-registered small models; verdicts H-Q3/H-Q4 still wait for Qwen2.5-1.5B/3B; `results/blind/blind_qwen3-1.7b_sft`)
+500 test questions, 608 training chains; accuracy difference to full-chain SFT [95% CI], tokens relative to full:
+full 74.6 (base 73.2) | random_m −5.6 [−9.4, −1.8] (0.93×) | loo_cal −3.6 [−6.4, −0.8] (1.01×) | **bloo_cal −10.4 [−14.6, −6.6]
+(0.87×)** | loo_g −39.2 [−44.2, −34.6] (0.41×) | **bloo_g −38.2 [−43.0, −33.6] (0.42×)**.
+- On this model H-Q3 fails (bloo_cal is below random_m by 4.8 [1.4, 8.4] points and far from non-inferior) and H-Q4 fails
+  (bloo_g − loo_g = +1.0 [−2.6, +4.4]). With 1 of 3 models failing, H-Q3/H-Q4 can only pass if both remaining models pass.
+- Run-to-run noise: loo_cal removes 1.6% of steps (identical data to full for 95.6% of chains) yet scores −3.6, so the
+  seed/optimisation noise of a single SFT run is of the order of 3–4 points; differences below that are not interpretable.
+- **The answer-in-chain explanation of Round 14 is incomplete.** bloo_g is answer-blind in its score but its chains look
+  like loo_g's: 53% single-step (loo_g 54%), 97% of last steps contain the gold number. Redaction did not stop the
+  final answer-bearing step from surviving, and the intermediate steps get low scores from either estimator because a
+  1.7B model re-derives the answer from the question without them. Interpretation (not tested here): a leave-one-out score
+  measures how necessary a step is for a READER of the chain; the value of a step as a training TARGET (it teaches the
+  model to produce intermediate computations) is a different quantity, and that is what the collapse in SFT measures.

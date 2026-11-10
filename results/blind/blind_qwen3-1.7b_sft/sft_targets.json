@@ -1,0 +1,30 @@
+{
+ "stats": {
+  "loo_cal": {
+   "readout_ok": 0.993421052631579,
+   "removed_frac": 0.01583450814536341,
+   "removed_nonempty": 0.044407894736842105
+  },
+  "bloo_cal": {
+   "readout_ok": 0.9884868421052632,
+   "removed_frac": 0.1952896564327485,
+   "removed_nonempty": 0.5115131578947368
+  },
+  "random_m": {
+   "readout_ok": 0.8421052631578947,
+   "removed_frac": 0.1952896564327485,
+   "removed_nonempty": 0.5115131578947368
+  },
+  "loo_g": {
+   "readout_ok": 0.9967105263157895,
+   "removed_frac": 0.5429145781119465,
+   "removed_nonempty": 1.0
+  },
+  "bloo_g": {
+   "readout_ok": 0.9802631578947368,
+   "removed_frac": 0.5429145781119465,
+   "removed_nonempty": 1.0
+  }
+ },
+ "n": 608
+}
