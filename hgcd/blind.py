@@ -201,13 +201,43 @@ def sft_chains(lm: LM, cs: List[Dict], args, rng: random.Random):
     return arms, stats
 
 
+# ----------------------------------------------------------------------------- order-reversal control (Round 16)
+
+def order_arms(lm: LM, cs: List[Dict], args, rng: random.Random):
+    """Delete the same number (ceil(sft_prune * n)) of steps per chain, chosen as the LEAST important (loo_low), the MOST
+    important (loo_high) by single-pass plain LOO, or at random (random40). No readout verification: loo_high deletes the
+    answer-bearing steps on purpose. If the LOO order carried information about training value, loo_high would hurt more
+    than loo_low."""
+    arms: Dict[str, List[List[str]]] = {"full": [c["body"] for c in cs]}
+    removed = {"random40": [], "loo_low": [], "loo_high": []}
+    for ci, c in enumerate(cs):
+        sc = loo_scores(lm, c, c["body"], blind=False)
+        n = len(sc)
+        m = max(1, math.ceil(args.sft_prune * n))
+        removed["loo_low"].append(_order(sc, rng)[:m])
+        removed["loo_high"].append(_order([-x for x in sc], rng)[:m])
+        removed["random40"].append(rng.sample(range(n), m))
+        if ci % 50 == 0:
+            _log(f"  scored {ci + 1}/{len(cs)} training chains")
+    stats = {}
+    for k, rems in removed.items():
+        arms[k] = [[s for t, s in enumerate(c["body"]) if t not in set(r)] for c, r in zip(cs, rems)]
+        g = [_fmt_gold(c["gold"]) for c in cs]
+        stats[k] = dict(mean_steps=float(np.mean([len(x) for x in arms[k]])),
+                        single_step=float(np.mean([len(x) == 1 for x in arms[k]])),
+                        last_has_gold=float(np.mean([gg in set(_nums(x[-1])) for gg, x in zip(g, arms[k])])),
+                        readout_ok=float(np.mean(readout(lm, cs, arms[k], args))))
+    _log("order statistics: " + json.dumps(stats))
+    return arms, stats
+
+
 # ----------------------------------------------------------------------------- main
 
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--model", required=True)
     ap.add_argument("--outdir", required=True)
-    ap.add_argument("--phase", choices=["audit", "sft"], default="audit")
+    ap.add_argument("--phase", choices=["audit", "sft", "order"], default="audit")
     ap.add_argument("--n", type=int, default=200)
     ap.add_argument("--n_pool", type=int, default=400)
     ap.add_argument("--bs", type=int, default=8)
@@ -216,13 +246,16 @@ def main():
     ap.add_argument("--n_train", type=int, default=800)
     ap.add_argument("--n_eval", type=int, default=500)
     ap.add_argument("--sft_prune", type=float, default=0.4)
-    ap.add_argument("--arms", nargs="*", default=["base", "full", "random_m", "loo_cal", "bloo_cal", "loo_g", "bloo_g"])
+    ap.add_argument("--arms", nargs="*", default=None)
     ap.add_argument("--lr", type=float, default=1e-4)
     ap.add_argument("--epochs", type=float, default=2.0)
     ap.add_argument("--mb", type=int, default=4)
     ap.add_argument("--accum", type=int, default=4)
     ap.add_argument("--device_map", default=None)
     args = ap.parse_args()
+    if args.arms is None:
+        args.arms = (["full", "random40", "loo_low", "loo_high"] if args.phase == "order" else
+                     ["base", "full", "random_m", "loo_cal", "bloo_cal", "loo_g", "bloo_g"])
     os.makedirs(args.outdir, exist_ok=True)
     json.dump(vars(args), open(f"{args.outdir}/args.json", "w"), indent=1)
     rng = random.Random(args.seed)
@@ -251,7 +284,7 @@ def main():
     random.Random(args.seed + 1).shuffle(test)
     evals = test[:args.n_eval]
     cs = make_chains(lm, train[:args.n_train], args)
-    arms, stats = sft_chains(lm, cs, args, rng)
+    arms, stats = order_arms(lm, cs, args, rng) if args.phase == "order" else sft_chains(lm, cs, args, rng)
     json.dump(dict(stats=stats, n=len(cs)), open(f"{args.outdir}/sft_targets.json", "w"), indent=1)
     with open(f"{args.outdir}/sft_chains.jsonl", "w") as f:
         for i, c in enumerate(cs):

@@ -1023,3 +1023,21 @@ that order, see the Qwen3-1.7B note), and it beats random removal of the same nu
 +2.0 [−1.6, 5.8] — but it removes only 4–6% of the real steps and saves 3–9% of the tokens. The planted-duplicate placebo acts as a
 safety rule: the estimator that cannot see redundancy deletes almost nothing instead of deleting useful steps. It is a safeguard, not a
 compression method.
+
+## Round 16 (pre-registered before any GPU run): order-reversal control for step-importance estimators (GSM8K SFT)
+*Idea.* Rounds 14–15 consistently show that SFT on chains with ~40% of the steps deleted loses 10–46 points whichever
+estimator picks the steps (Yu, calibrated, LOO, answer-blind LOO, random); loo_g and bloo_g collapse alike. Competing explanations:
+(a) the estimators carry information about a step's value as a training target, and the loss is the price of any shortening, or
+(b) the estimators carry no such information and the loss is just the loss of chain length/structure. A control that no estimator paper
+uses separates them: delete the SAME number of steps per chain, chosen as the least important (loo_low), the most important
+(loo_high) by single-pass plain LOO, or at random (random40), with no readout verification (loo_high removes the answer-bearing
+steps on purpose). If the order is informative about training value, loo_low must be clearly better than loo_high.
+Design: `hgcd/blind.py --phase order`; 800 training questions (300 at 7B), 40% of the steps per chain, LoRA SFT, 500 held-out
+test questions (300 at 7B); models Qwen2.5-1.5B, Qwen2.5-3B, Qwen3-1.7B (rule), Qwen2.5-7B (extra, reported, not in the rule).
+*Hypotheses (paired bootstrap over questions, "≥ 2/3" over the three small models).*
+- **H-R1 (order uninformative).** |acc(loo_low) − acc(loo_high)| ≤ 5 points AND the CI of the difference contains 0, on ≥ 2/3.
+- **H-R2 (order informative).** acc(loo_low) − acc(loo_high) ≥ +10 points with the CI excluding 0, on ≥ 2/3.
+- Reported without threshold: loo_low − random40 (negative = selection worse than random), each arm − full.
+Between H-R1 and H-R2 the result is "inconclusive". Prediction written now from Rounds 14–15: H-R1. If H-R2 holds, the collapse in
+Rounds 14–15 is a property of the estimators' choices and the training-value hypothesis of Round 15 is rejected.
+Limitations stated up front: one seed per arm (run-to-run noise ≈ 3–4 points, Round 15), one benchmark, plain LOO only.

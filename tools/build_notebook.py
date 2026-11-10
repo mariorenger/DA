@@ -498,6 +498,21 @@ NOTEBOOKS = {
                        ("--phase", "audit", "--n", "100", "--n_pool", "200", "--bs", "4",
                         "--device_map", "auto"))]},
 }""",
+    "R16_order_a": """{
+    "o": {"0": [("qwen-1.5b_order", "Qwen/Qwen2.5-1.5B-Instruct", "blind",
+                 ("--phase", "order", "--n_train", "800", "--bs", "8"))],
+          "1": [("qwen3-1.7b_order", "Qwen/Qwen3-1.7B", "blind",
+                 ("--phase", "order", "--n_train", "800", "--bs", "8"))]},
+}""",
+    "R16_order_b": """{
+    "o": {"0": [("qwen-3b_order", "Qwen/Qwen2.5-3B-Instruct", "blind",
+                 ("--phase", "order", "--n_train", "800", "--bs", "6", "--mb", "2", "--accum", "8"))]},
+}""",
+    "R16_order_7b": """{
+    "o": {"0,1": [("qwen-7b_order", "Qwen/Qwen2.5-7B-Instruct", "blind",
+                   ("--phase", "order", "--n_train", "300", "--n_eval", "300", "--bs", "4", "--mb", "1",
+                    "--accum", "16", "--device_map", "auto"))]},
+}""",
 }
 
 

@@ -81,6 +81,13 @@ for d in sorted(glob.glob(f"{ROOT}/blind_*/")):
     full = e[e.arm == "full"].set_index("uid")
     rnd = e[e.arm == "random_m"].set_index("uid") if "random_m" in set(e.arm) else None
     loo_g = e[e.arm == "loo_g"].set_index("uid") if "loo_g" in set(e.arm) else None
+    if "loo_high" in set(e.arm):                      # Round 16 order-reversal control
+        lo, hi = e[e.arm == "loo_low"].set_index("uid"), e[e.arm == "loo_high"].set_index("uid")
+        rd = e[e.arm == "random40"].set_index("uid")
+        out.append(dict(model=name, arm="HR_loo_low_minus_loo_high", n=len(lo), acc=np.nan, gen_tokens=np.nan, tok_ratio=np.nan,
+                        vs_full=fmt(boot_diff(lo.correct, hi.correct))))
+        out.append(dict(model=name, arm="HR_loo_low_minus_random40", n=len(lo), acc=np.nan, gen_tokens=np.nan, tok_ratio=np.nan,
+                        vs_full=fmt(boot_diff(lo.correct, rd.correct))))
     for arm in e.arm.unique():
         a = e[e.arm == arm].set_index("uid")
         o = dict(model=name, arm=arm, n=len(a), acc=100 * a.correct.mean(), gen_tokens=a.gen_tokens.mean(),
