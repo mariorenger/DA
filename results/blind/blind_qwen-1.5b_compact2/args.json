@@ -1,0 +1,23 @@
+{
+ "model": "Qwen/Qwen2.5-1.5B-Instruct",
+ "outdir": "/kaggle/working/results/blind_qwen-1.5b_compact2",
+ "phase": "compact2",
+ "n": 200,
+ "n_pool": 400,
+ "bs": 8,
+ "cap": 0.5,
+ "seed": 0,
+ "n_train": 800,
+ "n_eval": 500,
+ "sft_prune": 0.4,
+ "arms": [
+  "full",
+  "compact",
+  "compact2"
+ ],
+ "lr": 0.0001,
+ "epochs": 2.0,
+ "mb": 4,
+ "accum": 4,
+ "device_map": null
+}

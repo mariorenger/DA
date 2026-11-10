@@ -1,0 +1,40 @@
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+Loading weights:   0%|          | 0/338 [00:00<?, ?it/s]Loading weights:   0%|          | 1/338 [00:01<07:09,  1.27s/it]Loading weights:  47%|████▋     | 159/338 [00:01<00:01, 151.38it/s]Loading weights:  65%|██████▍   | 219/338 [00:01<00:00, 146.50it/s]Loading weights:  76%|███████▋  | 258/338 [00:02<00:00, 129.88it/s]Loading weights:  85%|████████▍ | 286/338 [00:02<00:00, 129.50it/s]Loading weights:  91%|█████████▏| 309/338 [00:02<00:00, 129.41it/s]Loading weights:  97%|█████████▋| 328/338 [00:02<00:00, 123.03it/s]Loading weights: 100%|██████████| 338/338 [00:02<00:00, 118.34it/s]
+[   1.2 min] loaded Qwen/Qwen2.5-1.5B-Instruct
+[  15.8 min] chains: 800 generated, 0.669 correct, 530 kept (2-10 body steps)
+[  15.8 min] compact statistics: {"full": {"train_token_ratio": 1.0, "mean_steps": 3.237735849056604, "all_numbers_kept": 1.0}, "compact": {"train_token_ratio": 0.54914466640851, "mean_steps": 3.237735849056604, "all_numbers_kept": 0.9377358490566038}, "compact2": {"train_token_ratio": 0.5856130839844195, "mean_steps": 3.237735849056604, "all_numbers_kept": 1.0}, "random40": {"train_token_ratio": 0.45338374980068785, "mean_steps": 1.490566037735849, "all_numbers_kept": 0.04339622641509434}}
+Loading weights:   0%|          | 0/338 [00:00<?, ?it/s]Loading weights:   0%|          | 1/338 [00:00<03:59,  1.41it/s]Loading weights:  43%|████▎     | 147/338 [00:00<00:00, 233.88it/s]Loading weights:  63%|██████▎   | 214/338 [00:01<00:00, 244.21it/s]Loading weights:  78%|███████▊  | 262/338 [00:01<00:00, 244.15it/s]Loading weights:  89%|████████▉ | 301/338 [00:01<00:00, 245.73it/s]Loading weights:  99%|█████████▉| 335/338 [00:01<00:00, 244.91it/s]Loading weights: 100%|██████████| 338/338 [00:01<00:00, 212.66it/s]
+[20:35:38]   sft step 10/67 loss 0.1954 (1.0 min)
+[20:36:41]   sft step 20/67 loss 0.1708 (2.1 min)
+[20:37:44]   sft step 30/67 loss 0.1570 (3.1 min)
+[20:38:46]   sft step 40/67 loss 0.1294 (4.2 min)
+[20:39:49]   sft step 50/67 loss 0.0980 (5.2 min)
+[20:40:52]   sft step 60/67 loss 0.0968 (6.3 min)
+[20:41:31]   sft step 67/67 loss 0.1017 (6.9 min)
+[  22.9 min] [full] sft {'steps': 67, 'final_loss': 0.10431135017424822, 'n_train': 530, 'minutes': 6.917142180601756}
+[  32.4 min] [full] acc 0.534 gen_tokens 106.3
+Loading weights:   0%|          | 0/338 [00:00<?, ?it/s]Loading weights:   0%|          | 1/338 [00:00<04:28,  1.26it/s]Loading weights:  72%|███████▏  | 243/338 [00:00<00:00, 359.26it/s]Loading weights: 100%|██████████| 338/338 [00:01<00:00, 271.83it/s]
+[20:51:57]   sft step 10/67 loss 0.3316 (0.9 min)
+[20:52:53]   sft step 20/67 loss 0.3018 (1.9 min)
+[20:53:49]   sft step 30/67 loss 0.2146 (2.8 min)
+[20:54:45]   sft step 40/67 loss 0.2226 (3.7 min)
+[20:55:41]   sft step 50/67 loss 0.1626 (4.6 min)
+[20:56:37]   sft step 60/67 loss 0.1856 (5.6 min)
+[20:57:11]   sft step 67/67 loss 0.1682 (6.1 min)
+[  38.6 min] [compact] sft {'steps': 67, 'final_loss': 0.174668400734663, 'n_train': 530, 'minutes': 6.146979010105133}
+[  47.6 min] [compact] acc 0.492 gen_tokens 84.3
+Loading weights:   0%|          | 0/338 [00:00<?, ?it/s]Loading weights:   0%|          | 1/338 [00:00<04:42,  1.19it/s]Loading weights:  54%|█████▍    | 184/338 [00:00<00:00, 257.15it/s]Loading weights:  80%|███████▉  | 269/338 [00:01<00:00, 263.33it/s]Loading weights:  97%|█████████▋| 328/338 [00:01<00:00, 259.26it/s]Loading weights: 100%|██████████| 338/338 [00:01<00:00, 223.10it/s]
+[21:07:14]   sft step 10/67 loss 0.3342 (0.9 min)
+[21:08:12]   sft step 20/67 loss 0.2850 (1.9 min)
+[21:09:08]   sft step 30/67 loss 0.2243 (2.8 min)
+[21:10:04]   sft step 40/67 loss 0.2173 (3.7 min)
+[21:11:01]   sft step 50/67 loss 0.1579 (4.7 min)
+[21:11:58]   sft step 60/67 loss 0.1874 (5.6 min)
+[21:12:32]   sft step 67/67 loss 0.1675 (6.2 min)
+[  53.9 min] [compact2] sft {'steps': 67, 'final_loss': 0.178326753154397, 'n_train': 530, 'minutes': 6.217456960678101}
+[  63.2 min] [compact2] acc 0.488 gen_tokens 95.8
+        arm    acc  gen_tokens  train_steps
+0      full  0.534     106.296        3.238
+1   compact  0.492      84.334        3.238
+2  compact2  0.488      95.838        3.238
+[  63.2 min] done

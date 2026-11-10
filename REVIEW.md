@@ -1164,3 +1164,16 @@ Wrong-result follow rate, %, [95% CI] (`last` = one wrong claim at the end of th
 - **Correction of a promise in the Round 18 pre-registration:** the text says conditioned and unconditioned rates would be reported. The design only evaluates questions the model solves
   by itself (a stated wrong result requires a known gold result), so no unconditioned rate or selection gap exists for GSM8K. The CLUTRR selection gap (Round 8 data) is the only one available.
 - Validity limit: the follow rate is close to 100% for small models partly because the answer is read directly after the last stated result; the comparison across scale is informative, the absolute level is not.
+
+### Round 19 verdicts (information-preserving compaction; `results/blind/blind_*_compact2`; 500 test questions)
+| | Qwen2.5-1.5B | Qwen3-1.7B | Qwen2.5-3B |
+|---|---|---|---|
+| full | 53.4 | 74.4 | 80.4 |
+| compact vs full (gen tokens) | −4.2 [−8.6, +0.2] (0.79×) | −17.4 [−21.8, −12.6] (0.56×) | −9.2 [−12.8, −5.4] (0.75×) |
+| compact2 vs full (gen tokens) | −4.6 [−9.2, +0.4] (0.90×) | −17.0 [−21.6, −12.6] (0.65×) | −7.8 [−11.4, −4.0] (0.83×) |
+| compact2 − compact | −0.4 [−3.8, +3.2] | +0.4 [−3.2, +4.2] | +1.4 [−1.6, +4.4] |
+- **H-D2 NO-GO (0/3):** keeping every number does not close the gap (all differences within ±1.4 points), so the Round 17 residual loss was not caused by the lost numbers.
+- **H-D1 NO-GO (0/3):** compact2 is not within 3 points of full-chain SFT at any model (only 1.5B's CI includes 0, and its point estimate is −4.6).
+- The compact arm re-run in Round 19 reproduces Round 17 (49.2 / 57.0 / 71.2 vs 49.6 / 57.0 / 71.6): same-seed, same-data reruns agree to within 0.4 points.
+- Interpretation (pre-registered failure branch): the remaining loss is due to the style change (equation-only chains, which drop the natural-language scaffolding), not to information loss; it is largest for Qwen3-1.7B (−17) and smallest for
+  Qwen2.5-1.5B (−4.6). Together with Round 17 the picture is: keeping the computations is worth 10–12 points over deleting steps at the same generated length, but a sizeable loss remains whatever the compactor.
