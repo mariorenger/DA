@@ -1,0 +1,20 @@
+{
+ "stats": {
+  "full": {
+   "train_token_ratio": 1.0,
+   "mean_steps": 3.5559210526315788,
+   "all_numbers_kept": 1.0
+  },
+  "compact": {
+   "train_token_ratio": 0.4898952971455311,
+   "mean_steps": 3.5559210526315788,
+   "all_numbers_kept": 0.8453947368421053
+  },
+  "random40": {
+   "train_token_ratio": 0.4601661207299953,
+   "mean_steps": 1.680921052631579,
+   "all_numbers_kept": 0.05921052631578947
+  }
+ },
+ "n": 608
+}

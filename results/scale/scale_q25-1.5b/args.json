@@ -1,0 +1,10 @@
+{
+ "model": "Qwen/Qwen2.5-1.5B-Instruct",
+ "outdir": "/kaggle/working/results/scale_q25-1.5b",
+ "n": 200,
+ "n_pool": 500,
+ "bs": 8,
+ "seed": 0,
+ "device_map": null,
+ "load_in_4bit": false
+}

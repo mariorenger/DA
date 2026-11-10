@@ -1,0 +1,8 @@
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+Loading weights:   0%|          | 0/290 [00:00<?, ?it/s]Loading weights:   0%|          | 1/290 [00:00<03:49,  1.26it/s]Loading weights:  85%|████████▍ | 246/290 [00:00<00:00, 373.65it/s]Loading weights: 100%|██████████| 290/290 [00:00<00:00, 318.69it/s]
+[   0.8 min] loaded Qwen/Qwen2.5-0.5B-Instruct (4bit=False)
+[  19.5 min] chains: 800 generated, 0.305 correct, 236 kept (1-12 body steps)
+[  19.8 min] [intact] n=200 follow=0.0 correct=96.5
+[  20.1 min] [last] n=194 follow=99.0 correct=0.5
+[  20.4 min] [all] n=194 follow=100.0 correct=0.0
+[  20.4 min] done

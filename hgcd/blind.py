@@ -245,10 +245,20 @@ def compact_step(step: str) -> str:
     return "; ".join(eqs) if eqs else step
 
 
+def compact_step2(step: str) -> str:
+    """Compaction that never loses information: if the equation-only version drops a number of the step or has unbalanced
+    parentheses, the original step is kept."""
+    c = compact_step(step)
+    if set(_nums(step)) <= set(_nums(c)) and c.count("(") == c.count(")"):
+        return c
+    return step
+
+
 def compact_arms(lm: LM, cs: List[Dict], args, rng: random.Random):
     """full | compact (every step reduced to its equations, all computations kept) | random40 (40% of the steps deleted)."""
     arms: Dict[str, List[List[str]]] = {"full": [c["body"] for c in cs]}
     arms["compact"] = [[compact_step(s) for s in c["body"]] for c in cs]
+    arms["compact2"] = [[compact_step2(s) for s in c["body"]] for c in cs]
     arms["random40"] = []
     for c in cs:
         n = len(c["body"])
@@ -269,7 +279,7 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--model", required=True)
     ap.add_argument("--outdir", required=True)
-    ap.add_argument("--phase", choices=["audit", "sft", "order", "compact"], default="audit")
+    ap.add_argument("--phase", choices=["audit", "sft", "order", "compact", "compact2"], default="audit")
     ap.add_argument("--n", type=int, default=200)
     ap.add_argument("--n_pool", type=int, default=400)
     ap.add_argument("--bs", type=int, default=8)
@@ -287,6 +297,7 @@ def main():
     args = ap.parse_args()
     if args.arms is None:
         args.arms = (["full", "compact", "random40"] if args.phase == "compact" else
+                     ["full", "compact", "compact2"] if args.phase == "compact2" else
                      ["full", "random40", "loo_low", "loo_high"] if args.phase == "order" else
                      ["base", "full", "random_m", "loo_cal", "bloo_cal", "loo_g", "bloo_g"])
     os.makedirs(args.outdir, exist_ok=True)
@@ -317,7 +328,7 @@ def main():
     random.Random(args.seed + 1).shuffle(test)
     evals = test[:args.n_eval]
     cs = make_chains(lm, train[:args.n_train], args)
-    if args.phase == "compact":
+    if args.phase in ("compact", "compact2"):
         arms, stats = compact_arms(lm, cs, args, rng)
     else:
         arms, stats = order_arms(lm, cs, args, rng) if args.phase == "order" else sft_chains(lm, cs, args, rng)

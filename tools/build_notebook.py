@@ -557,6 +557,16 @@ NOTEBOOKS = {
                     "--mb", "1", "--accum", "16", "--device_map", "auto", "--probe", "0", "--seed", "0",
                     "--max_minutes", "520"))]},
 }""",
+    "R19_compact2_a": """{
+    "c": {"0": [("qwen-1.5b_compact2", "Qwen/Qwen2.5-1.5B-Instruct", "blind",
+                 ("--phase", "compact2", "--n_train", "800", "--bs", "8"))],
+          "1": [("qwen3-1.7b_compact2", "Qwen/Qwen3-1.7B", "blind",
+                 ("--phase", "compact2", "--n_train", "800", "--bs", "8"))]},
+}""",
+    "R19_compact2_b": """{
+    "c": {"0": [("qwen-3b_compact2", "Qwen/Qwen2.5-3B-Instruct", "blind",
+                 ("--phase", "compact2", "--n_train", "800", "--bs", "6", "--mb", "2", "--accum", "8"))]},
+}""",
 }
 
 

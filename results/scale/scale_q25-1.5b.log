@@ -1,0 +1,8 @@
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+Loading weights:   0%|          | 0/338 [00:00<?, ?it/s]Loading weights:   0%|          | 1/338 [00:00<03:17,  1.71it/s]Loading weights:  36%|███▋      | 123/338 [00:00<00:00, 231.44it/s]Loading weights:  54%|█████▍    | 183/338 [00:00<00:00, 233.76it/s]Loading weights:  67%|██████▋   | 227/338 [00:01<00:00, 241.68it/s]Loading weights:  78%|███████▊  | 264/338 [00:01<00:00, 245.02it/s]Loading weights:  88%|████████▊ | 297/338 [00:01<00:00, 229.67it/s]Loading weights:  96%|█████████▋| 326/338 [00:01<00:00, 240.24it/s]Loading weights: 100%|██████████| 338/338 [00:01<00:00, 211.69it/s]
+[   0.5 min] loaded Qwen/Qwen2.5-1.5B-Instruct (4bit=False)
+[   9.6 min] chains: 500 generated, 0.552 correct, 276 kept (1-12 body steps)
+[  10.1 min] [intact] n=200 follow=0.0 correct=100.0
+[  10.7 min] [last] n=200 follow=99.5 correct=0.5
+[  11.2 min] [all] n=200 follow=100.0 correct=0.0
+[  11.2 min] done

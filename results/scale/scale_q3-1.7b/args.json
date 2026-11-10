@@ -1,0 +1,10 @@
+{
+ "model": "Qwen/Qwen3-1.7B",
+ "outdir": "/kaggle/working/results/scale_q3-1.7b",
+ "n": 200,
+ "n_pool": 400,
+ "bs": 8,
+ "seed": 0,
+ "device_map": null,
+ "load_in_4bit": false
+}

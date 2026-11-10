@@ -1115,3 +1115,28 @@ Prompted by Pan & Pan 2026 (arXiv 2610.37070): restricting a faithfulness measur
 - At 7B the gap is significantly negative: the solvable questions are followed 10.3% vs 29.1% for the unsolvable ones. The "7B vetoes a wrong claim when it can
   solve" reading cannot separate a real veto from difficulty confounding (easier questions are both solvable and harder to mislead); report both numbers and
   do not state the 10% as the 7B copy rate. Round 18 (GSM8K, scale curve) reports unconditioned and conditioned rates for the same reason (solvable set differs per model).
+
+### Round 17 verdicts (decided with 2 of the 3 small models; the Qwen2.5-3B run `nguyenpn/hgcd-r17-compact-b` is still running and will be reported, it cannot change the rule outcome)
+500 test questions (7B: 300); `results/blind/blind_*_compact`; generated-token ratio relative to full:
+| | Qwen2.5-1.5B | Qwen3-1.7B | Qwen2.5-7B (extra) |
+|---|---|---|---|
+| full | 53.0 | 74.2 | 92.0 |
+| compact vs full | −3.4 [−7.8, +1.0] (0.80×) | −17.2 [−21.6, −13.0] (0.55×) | −10.3 [−14.7, −6.0] (0.66×) |
+| random40 vs full | −22.6 [−27.8, −17.6] (0.52×) | −39.4 [−44.2, −34.8] (0.41×) | −33.7 [−39.3, −28.0] (0.49×) |
+| compact − random40 | **+19.2 [+14.4, +24.0]** | **+22.2 [+17.2, +27.0]** | +23.3 [+17.0, +29.3] |
+- **H-C2 GO** (≥ +15, CI excluding 0, already on 2/3 small models, also at 7B).
+- **H-C1 NO-GO** (non-inferior within 3 points AND generated-token ratio ≤ 0.75): 0/2 so far (1.5B −3.4 and ratio 0.80; Qwen3-1.7B −17.2), so 2/3 cannot be reached.
+- Against the deletion line fitted in Round 16 (Δacc ≈ 63 × token_ratio − 64): predicted −13.5 / −29.7 / −22.6, observed −3.4 / −17.2 / −10.3, i.e. 10–12 points ABOVE the line at all three
+  scales. Verdict on the pre-registered alternatives: neither pure account holds; keeping the computations helps by about 10–12 points at equal generated tokens
+  (supports C in direction) but does not remove the loss (rejects "C alone"), at least with this compactor.
+- **Tool defect found afterwards (not a hypothesis result):** the regex compactor drops a number in 15% of chains (94/608 for Qwen3-1.7B; mostly percentages and
+  premise numbers) and can garble parenthesised expressions ("90) = 90; 9 = 81"). The gap that remains may partly be this loss; Round 19 tests that.
+
+## Round 19 (pre-registered before any GPU run): information-preserving compaction
+`compact2`: use the equation-only version of a step only if it keeps every number of the step and has balanced parentheses, else keep the original step (0/608 chains lose a number;
+generated-token ratio of the training chains 0.58 vs 0.49). Phase `compact2` of `hgcd/blind.py`, arms full, compact, compact2, 800 training questions, 500 test questions;
+Qwen2.5-1.5B, Qwen3-1.7B (m81extend), Qwen2.5-3B (mario123475).
+- **H-D1.** compact2 is non-inferior to full (difference ≥ −3 points, CI lower bound ≥ −6) with generated-token ratio ≤ 0.80, on ≥ 2/3.
+- **H-D2.** compact2 − compact ≥ +5 points (CI excluding 0) on ≥ 2/3: the information loss of the first compactor explains the residual gap.
+Prediction written now: H-D2 yes; H-D1 uncertain (at Qwen3-1.7B the first gap is −17, which is unlikely to close by 10+ points from number preservation alone).
+If H-D2 fails the remaining gap is due to the style change (equation-only chains), not lost numbers. Limitations: one seed (noise 3–4 points), GSM8K only.
