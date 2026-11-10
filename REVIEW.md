@@ -1099,3 +1099,19 @@ stating step (`last`) or everywhere in the chain (`all`); readout after "The ans
 Qwen3-8B on MuSiQue. Rule: Round 13's findings are carried to 7B/8B if abstain rate on `unans` rises ≥ 30 points over p_inst and follow-context on
 `conflict` rises ≥ +15 points over s_plain (the Round 13 thresholds were abstain 0 → 56–71% and +21…+24); exact-match change on `ans` is reported.
 Limitations stated up front: 4-bit weights for 14B/32B (not identical to fp16), single seed, GSM8K only, solvable-by-construction set differs per model.
+
+### Selection gap of the wrong-answer copy test (Round 8 data; `tools/analyze_selection_gap.py`, `results/reliance_v2/selection_gap.csv`)
+Prompted by Pan & Pan 2026 (arXiv 2610.37070): restricting a faithfulness measure to correctly solved items changes the population. Our R3 numbers condition on
+"the plain chain is solved" (PS = 1). Δ = P(follow | solvable) − P(follow) = Cov(A, C) / P(C = 1); bootstrap over questions.
+| Model | n | P(solvable) | follow all | follow solvable | follow unsolvable | Δ [95% CI] |
+|---|---|---|---|---|---|---|
+| Qwen2.5-0.5B | 158 | 0.15 | 66.5 | 70.8 | 65.7 | +4.4 [−13.2, +20.7] |
+| Qwen2.5-1.5B | 158 | 0.17 | 58.2 | 63.0 | 57.3 | +4.7 [−14.0, +21.6] |
+| SmolLM2-1.7B | 158 | 0.27 | 56.3 | 57.1 | 56.0 | +0.8 [−12.0, +13.2] |
+| Qwen2.5-3B | 158 | 0.28 | 46.2 | 47.7 | 45.6 | +1.5 [−11.3, +14.4] |
+| Qwen2.5-7B | 118 | 0.33 | 22.9 | 10.3 | 29.1 | **−12.6 [−21.8, −2.7]** |
+- Up to 3B the selection step does not change the measured follow rate: "the stated wrong answer overrides the model's own solution" is not an artefact of
+  conditioning on solvable items (the CIs are wide because only 24–44 questions are solvable).
+- At 7B the gap is significantly negative: the solvable questions are followed 10.3% vs 29.1% for the unsolvable ones. The "7B vetoes a wrong claim when it can
+  solve" reading cannot separate a real veto from difficulty confounding (easier questions are both solvable and harder to mislead); report both numbers and
+  do not state the 10% as the 7B copy rate. Round 18 (GSM8K, scale curve) reports unconditioned and conditioned rates for the same reason (solvable set differs per model).

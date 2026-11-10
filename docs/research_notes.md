@@ -49,6 +49,14 @@ Tạo lại: `python tools/export_transcript.py <session.jsonl> docs/conversatio
 4. Từ CausalDANN: thay `[MASKED]` bằng bản viết lại tự nhiên do LLM sinh làm control phân phối; báo cáo hiệu ứng theo nhóm (CATE theo số hop).
 5. Liên hệ tài liệu 2026 cần trích dẫn: Liu 2605.22870 (readout shortcut ở 1–3B, cùng hiện tượng với R3 copy), Jia–Benton–Easley 2605.24286 (sufficiency/completeness/necessity qua masked-KL, gần mediation NDE/TIE), Macar–Bogdan et al. ICLR 2026 (resampling on-policy), Li et al. 2610.25876 IGPO (step credit bằng can thiệp tham số trong RL), Hase–Potts 2602.20710 (CST), GRACE 2601.04525 và SABER 2605.18792 (RAG abstention, so với TN9).
 
+## 4c. Ý tưởng phát triển từ các paper 2026 (ghi 10/11/2026; chi tiết ở docs/contribution_plan.md mục 7)
+Xếp theo mức liên quan và khả thi với tài sản hiện có (bảng ground truth, đối chứng cùng số bước, đường token, copy test):
+1. **BAPO bounds (2602.02909) + đường token của ta:** SFT mô hình nhỏ trên tác vụ tổng hợp có độ phức tạp token tối thiểu đã biết, tìm ngưỡng gãy theo ngân sách token và so với cận lý thuyết. Ứng viên đóng góp chính. Chưa chạy.
+2. **Correctness Conditioning as Selection (2610.37070):** đã áp vào copy test Round 8 (làm xong, kết quả ở REVIEW.md): không lệch ≤ 3B, lệch −12.6 điểm ở 7B. Round 18 báo cả hai tỷ lệ.
+3. **AttriCoT (ICML 2026, 2606.21821), CMI (2602.03994), NLDD, FACT-E:** thêm vào bảng AUROC ground truth cho bài 1. Chưa làm.
+4. **LIFT (2509.13334):** chọn chuỗi theo điểm can thiệp so với ngẫu nhiên cùng kích thước, đánh giá bằng copy test. Chưa làm.
+5. Chỉ dùng làm baseline: SPRING, VeriGate, AWA-RL, ACA-RL, Abstain-R1. Bỏ qua: LoRi, latent-CoT.
+
 ## 5. Câu hỏi mở / hạn chế đã thừa nhận
 - Bảng luật dùng nhãn train; CoT thường không thấy nhãn → cần đối chứng fine-tune (S_plain) và rules-in-prompt (chưa chạy).
 - CLUTRR là miền đóng, tổng hợp; tính ứng dụng cần E-gen và dữ liệu thật.
