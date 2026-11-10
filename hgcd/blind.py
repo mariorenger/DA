@@ -231,13 +231,45 @@ def order_arms(lm: LM, cs: List[Dict], args, rng: random.Random):
     return arms, stats
 
 
+# ----------------------------------------------------------------------------- compaction test (Round 17)
+
+import re as _re
+_EQ = _re.compile(r"[\$\d\(][\d\.,\s\+\-\*/x\u00d7\u00f7\(\)\$%]*?=\s*[\$\d][\d\.,\$%]*")
+
+
+def compact_step(step: str) -> str:
+    """Keep only the equations of a step ('18 * 3 = 54'); a step without an equation is kept unchanged (premises, restatements)."""
+    t = (step.replace("\\(", "").replace("\\)", "").replace("\\times", "\u00d7").replace("\\div", "\u00f7")
+         .replace("\\[", "").replace("\\]", "").replace("\\$", "$"))
+    eqs = [m.group(0).strip() for m in _EQ.finditer(t)]
+    return "; ".join(eqs) if eqs else step
+
+
+def compact_arms(lm: LM, cs: List[Dict], args, rng: random.Random):
+    """full | compact (every step reduced to its equations, all computations kept) | random40 (40% of the steps deleted)."""
+    arms: Dict[str, List[List[str]]] = {"full": [c["body"] for c in cs]}
+    arms["compact"] = [[compact_step(s) for s in c["body"]] for c in cs]
+    arms["random40"] = []
+    for c in cs:
+        n = len(c["body"])
+        rem = set(rng.sample(range(n), max(1, math.ceil(args.sft_prune * n))))
+        arms["random40"].append([s for t, s in enumerate(c["body"]) if t not in rem])
+    tl = lambda ch: float(np.mean([sum(len(lm.tok(x, add_special_tokens=False).input_ids) for x in y) for y in ch]))
+    full_t = tl(arms["full"])
+    stats = {k: dict(train_token_ratio=tl(v) / full_t, mean_steps=float(np.mean([len(y) for y in v])),
+                     all_numbers_kept=float(np.mean([set(_nums(" ".join(c["body"]))) <= set(_nums(" ".join(y)))
+                                                     for c, y in zip(cs, v)]))) for k, v in arms.items()}
+    _log("compact statistics: " + json.dumps(stats))
+    return arms, stats
+
+
 # ----------------------------------------------------------------------------- main
 
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--model", required=True)
     ap.add_argument("--outdir", required=True)
-    ap.add_argument("--phase", choices=["audit", "sft", "order"], default="audit")
+    ap.add_argument("--phase", choices=["audit", "sft", "order", "compact"], default="audit")
     ap.add_argument("--n", type=int, default=200)
     ap.add_argument("--n_pool", type=int, default=400)
     ap.add_argument("--bs", type=int, default=8)
@@ -254,7 +286,8 @@ def main():
     ap.add_argument("--device_map", default=None)
     args = ap.parse_args()
     if args.arms is None:
-        args.arms = (["full", "random40", "loo_low", "loo_high"] if args.phase == "order" else
+        args.arms = (["full", "compact", "random40"] if args.phase == "compact" else
+                     ["full", "random40", "loo_low", "loo_high"] if args.phase == "order" else
                      ["base", "full", "random_m", "loo_cal", "bloo_cal", "loo_g", "bloo_g"])
     os.makedirs(args.outdir, exist_ok=True)
     json.dump(vars(args), open(f"{args.outdir}/args.json", "w"), indent=1)
@@ -284,7 +317,10 @@ def main():
     random.Random(args.seed + 1).shuffle(test)
     evals = test[:args.n_eval]
     cs = make_chains(lm, train[:args.n_train], args)
-    arms, stats = order_arms(lm, cs, args, rng) if args.phase == "order" else sft_chains(lm, cs, args, rng)
+    if args.phase == "compact":
+        arms, stats = compact_arms(lm, cs, args, rng)
+    else:
+        arms, stats = order_arms(lm, cs, args, rng) if args.phase == "order" else sft_chains(lm, cs, args, rng)
     json.dump(dict(stats=stats, n=len(cs)), open(f"{args.outdir}/sft_targets.json", "w"), indent=1)
     with open(f"{args.outdir}/sft_chains.jsonl", "w") as f:
         for i, c in enumerate(cs):

@@ -88,6 +88,10 @@ for d in sorted(glob.glob(f"{ROOT}/blind_*/")):
                         vs_full=fmt(boot_diff(lo.correct, hi.correct))))
         out.append(dict(model=name, arm="HR_loo_low_minus_random40", n=len(lo), acc=np.nan, gen_tokens=np.nan, tok_ratio=np.nan,
                         vs_full=fmt(boot_diff(lo.correct, rd.correct))))
+    if "compact" in set(e.arm) and "random40" in set(e.arm):          # Round 17
+        cp, rd = e[e.arm == "compact"].set_index("uid"), e[e.arm == "random40"].set_index("uid")
+        out.append(dict(model=name, arm="HC2_compact_minus_random40", n=len(cp), acc=np.nan, gen_tokens=np.nan, tok_ratio=np.nan,
+                        vs_full=fmt(boot_diff(cp.correct, rd.correct))))
     for arm in e.arm.unique():
         a = e[e.arm == arm].set_index("uid")
         o = dict(model=name, arm=arm, n=len(a), acc=100 * a.correct.mean(), gen_tokens=a.gen_tokens.mean(),

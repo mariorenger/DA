@@ -1066,3 +1066,20 @@ Limitations stated up front: one seed per arm (run-to-run noise ≈ 3–4 points
   entropy, random) departs from this line by more than the noise except loo_cal, which sits at ratio ≈ 0.9–1.0 because it deletes almost
   nothing. Caveat: the generated-token ratio is itself an outcome of the trained model, so the fit shows consistency with "the amount of
   explicit computation kept determines accuracy", not a causal law.
+
+## Round 17 (pre-registered before any GPU run): does the amount of explicit computation, not the token count, determine SFT accuracy?
+*Basis.* The exploratory fit of Round 16 (42 deletion arms: Δacc ≈ 63 × token_ratio − 64, r = 0.94, no selection rule off the line beyond
+noise) is consistent with two accounts: (T) accuracy depends on how many tokens the model writes, or (C) on how many computations are written
+out. Deleting steps lowers both. A format that removes tokens but keeps every computation separates them: **compact** = every step
+reduced to its equations (`compact_step`, e.g. "Adding these together, ... 20 + 18 + 54 = 92 pencils." → "20 + 18 + 54 = 92"; steps with
+no equation, i.e. premises, are kept unchanged). Offline check on 608 Qwen3-1.7B chains: token ratio 0.49. Prior art for the format, not
+claimed as new: Chain of Draft (Xu et al., 2025, prompting, large models). What is tested here is the explanation, under SFT, on small
+models, against the deletion line.
+*Design.* `hgcd/blind.py --phase compact`; arms full, compact, random40 (40% of the steps deleted, the same-run point on the line);
+800 training questions, LoRA SFT, 500 test questions; models Qwen2.5-1.5B, Qwen2.5-3B, Qwen3-1.7B (rule), Qwen2.5-7B (extra, 300/300).
+*Hypotheses (paired bootstrap, "≥ 2/3" over the three small models).*
+- **H-C1 (C holds).** compact is non-inferior to full: difference ≥ −3 points and CI lower bound ≥ −6, AND the generated-token ratio ≤ 0.75.
+- **H-C2.** compact − random40 ≥ +15 points with the CI excluding 0.
+If compact lands on the deletion line (loss of about 25–35 points at its token ratio), account (T) is supported and (C) rejected; in between
+the result is "partial", reported with the number. Limitations stated up front: equation extraction by regex (steps without an equation
+stay verbose), GSM8K only, single seed (noise 3–4 points), the generated-token ratio is a property of the trained model.
