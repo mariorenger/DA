@@ -928,3 +928,38 @@ as predicted from the answer-in-chain mechanism. Full-chain SFT itself does not 
 here (0.0, +1.0, +2.8 points), so the SFT stage mostly fixes format; the comparison between pruning rules is
 what carries the information. Round 14 conclusion on small models: causal step scores (Yu, calibrated, LOO)
 do not give a usable chain compression; step entropy is no better than random.
+
+## Round 15 (pre-registered before any GPU run): answer-blind attribution and placebo-calibrated pruning of CoT (GSM8K)
+
+*Why a new idea, not a rerun.* Round 14 showed (i) leave-one-out (LOO) on log p(gold) keeps the step that states the
+answer and deletes the derivation (99% of loo_g chains still contain the answer, 60% have one step; SFT −35…−46
+points) and (ii) no estimator has a known zero, so a fixed deletion budget removes useful steps in chains that have
+no redundancy. Two changes, implemented in `hgcd/blind.py`:
+1. **Answer-blind LOO (bloo):** redact every occurrence of the gold number in the chain, then take the LOO drop of
+   log p(gold | chain). A step scores only if the answer can still be derived with it; copying a stated answer is
+   impossible. Greedy iterative version: bloo_g.
+2. **Placebo calibration (`*_cal`):** a duplicate of an earlier step is planted in each chain (known redundant, never
+   shown to the model in training targets) and scored with the real steps; a real step is removed only if its score is
+   strictly below the placebo's, at most 50% of the real steps. The threshold is the estimator's own value for a step
+   known to be unnecessary. (Same logic as the placebo controls of TN2/TN3, here used as a decision rule.)
+Ground truth without a readout: planted duplicate = 0; a real step is load-bearing (1) if it introduces a number absent
+from the question and earlier steps that a later step or the answer uses (number-dependency graph, `loadbearing()`).
+Round-14 baseline for context (planted vs load-bearing AUROC, computed from the saved Round-14 scores before this
+design was frozen; models 1.5B / 3B / Qwen3-1.7B / Qwen3-4B): loo 0.81 / 0.74 / 0.67 / 0.66; yu 0.68 / 0.56 / 0.55 /
+0.54; cal 0.74 / 0.60 / 0.56 / 0.54; entropy 0.23 / 0.20 / 0.36 / 0.26 (below chance).
+*Design.* Models Qwen2.5-1.5B-Instruct, Qwen2.5-3B-Instruct, Qwen3-1.7B (non-thinking). Audit: 200 correct chains per
+model. SFT: 800 training questions, arms base, full, random_m (random real steps, count matched per chain to bloo_cal),
+loo_cal, bloo_cal, loo_g, bloo_g (the last two delete 40% of the steps), LoRA SFT, 500 held-out test questions. A pruned
+training chain whose plain readout is wrong falls back to the full chain (as in Round 14); readout rate and removed
+fraction are reported per arm.
+*Hypotheses (question-clustered bootstrap, 2000 resamples; "≥ 2/3" = at least 2 of the 3 models).*
+- **H-Q1 (ground truth).** AUROC(bloo) ≥ 0.80 and AUROC(bloo) − AUROC(loo) ≥ +0.08 with CI excluding 0, on ≥ 2/3.
+- **H-Q2 (derivation readout, m = ⌈0.5n⌉).** acc_blind(bloo_g) − acc_blind(loo_g) ≥ +10 points, CI excluding 0, on ≥ 2/3.
+- **H-Q3 (SFT, main).** bloo_cal is non-inferior to full-chain SFT (difference ≥ −2 points and CI lower bound ≥ −5)
+  AND generates ≤ 0.92 × the tokens of full AND beats random_m by ≥ +2 points (CI excluding 0), on ≥ 2/3.
+- **H-Q4 (SFT, fixed 40% budget).** bloo_g − loo_g ≥ +10 points on ≥ 2/3.
+*Failure modes written down now.* If the placebo scores high (the estimator cannot see the duplicate as redundant),
+`*_cal` removes nothing: then bloo_cal ≈ full and H-Q3 fails on the token condition, not silently passes. If bloo is
+not above loo in AUROC, the answer-blind idea is falsified for this setting. Limitation stated up front: the
+load-bearing label is a proxy (number dependencies), planted duplicates are lexically marked ("Recall:") and one
+placebo per chain gives a noisy threshold.

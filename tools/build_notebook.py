@@ -13,7 +13,7 @@ import nbformat as nbf
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 MODULES = ["__init__", "data", "chain", "prompts", "lm", "decoding", "experiments", "metrics",
-           "report", "pipeline", "causaldec", "cftrain", "egen", "cfrl", "hall", "compress"]
+           "report", "pipeline", "causaldec", "cftrain", "egen", "cfrl", "hall", "compress", "blind"]
 
 INTRO = """# Read, not reasoned? Kaggle run-all
 
@@ -58,6 +58,8 @@ def run_job(label, model, preset, extra, gpus):
                if preset.startswith("hall") else
                [sys.executable, "-m", "hgcd.compress", "--model", model, "--outdir", out, *extra]
                if preset.startswith("compress") else
+               [sys.executable, "-m", "hgcd.blind", "--model", model, "--outdir", out, *extra]
+               if preset.startswith("blind") else
                [sys.executable, "-m", "hgcd.egen", "--model", model, "--outdir", out, *extra]
                if preset.startswith("egen") else
                [sys.executable, "-m", "hgcd.cftrain", "--model", model, "--outdir", out, *extra]
@@ -473,6 +475,18 @@ NOTEBOOKS = {
                    ("--phase", "sft", "--n_train", "300", "--n_eval", "300", "--k", "3", "--n_alt", "3",
                     "--bs", "4", "--mb", "1", "--accum", "16", "--device_map", "auto",
                     "--arms", "base", "full", "random", "yu", "loo_g"))]},
+}""",
+    "R15_blind_a": """{
+    "audit": {"0": [("qwen-1.5b", "Qwen/Qwen2.5-1.5B-Instruct", "blind",
+                     ("--phase", "audit", "--n", "200", "--n_pool", "500", "--bs", "8")),
+                    ("qwen3-1.7b", "Qwen/Qwen3-1.7B", "blind",
+                     ("--phase", "audit", "--n", "200", "--n_pool", "400", "--bs", "8"))],
+              "1": [("qwen-3b", "Qwen/Qwen2.5-3B-Instruct", "blind",
+                     ("--phase", "audit", "--n", "200", "--n_pool", "400", "--bs", "6"))]},
+    "sft": {"0": [("qwen-1.5b_sft", "Qwen/Qwen2.5-1.5B-Instruct", "blind",
+                   ("--phase", "sft", "--n_train", "800", "--bs", "8"))],
+            "1": [("qwen-3b_sft", "Qwen/Qwen2.5-3B-Instruct", "blind",
+                   ("--phase", "sft", "--n_train", "800", "--bs", "6", "--mb", "2", "--accum", "8"))]},
 }""",
 }
 
