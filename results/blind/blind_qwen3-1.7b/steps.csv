@@ -1,0 +1,1035 @@
+uid,t,n,planted,loadbearing,ntok,random,entropy,loo,bloo,step
+test-1101,0,3,0,1,34,0.2896641383723638,0.6551573872566223,0.0,-7.152541954269509e-07,"Amber ran 8 miles. Micah ran 3.5 times what Amber ran, which is 3.5 * 8 = 28 miles."
+test-1101,1,3,1,0,36,0.9011387199060191,3.0892117023468018,0.0,5.841226716540859e-06,"Recall: Amber ran 8 miles. Micah ran 3.5 times what Amber ran, which is 3.5 * 8 = 28 miles."
+test-1101,2,3,0,1,39,0.4178406508691356,3.195518732070923,17.151884615263043,17.15188223107976,"The total distance ran by all three is 52 miles. So, the distance run by Ahito is 52 - (8 + 28) = 16 miles."
+test-120,0,6,0,0,12,0.9725485107467589,0.517654299736023,0.0,-3.158965500915656e-05,Miguel uses 2 pads of paper each week.
+test-120,1,6,1,0,13,0.8454919814395919,1.1585074663162231,0.0,-1.3112476153764874e-06,Recall: Miguel uses 2 pads of paper each week.
+test-120,2,6,0,0,10,0.9722338049752182,0.7786282300949097,0.0,2.467499507474713e-05,Each pad has 30 sheets of paper.
+test-120,3,6,0,1,23,0.6074299110948179,1.183421015739441,0.0,0.45099550571103464,"So, the total number of sheets used per week is 2 * 30 = 60 sheets."
+test-120,4,6,0,1,9,0.23357109614697547,0.05281824246048927,0.0,-4.088793150458514e-05,There are 4 weeks in a month.
+test-120,5,6,0,1,25,0.8647767439340015,1.2656456232070923,20.88272011279537,20.88267874802682,"Therefore, the total number of sheets used in a month is 60 * 4 = 240 sheets."
+test-991,0,5,0,0,51,0.020481785066310598,1.288574457168579,0.0,0.0,Comet Halley orbits the sun every 75 years. Bill's dad saw the comet when he was 30 years old. Bill saw the comet a second time when he was three times the age his father was when he saw the comet.
+test-991,1,5,0,1,62,0.8852550461906246,6.052539825439453,0.0,0.0,"First, we find the age of Bill when he saw the comet for the first time. His father was 30 when he saw the comet, so Bill was three times that age, which is 3 * 30 = 90 years old when he saw the comet for the second time."
+test-991,2,5,0,0,38,0.7407454042283365,4.905803680419922,0.0,1.6212332411669195e-05,"Since the comet orbits every 75 years, we subtract 75 years from Bill's age when he saw it for the second time to find his age when he first saw it."
+test-991,3,5,1,0,65,0.30244204779608386,7.4847731590271,0.0,0.0,"Recall: First, we find the age of Bill when he saw the comet for the first time. His father was 30 when he saw the comet, so Bill was three times that age, which is 3 * 30 = 90 years old when he saw the comet for the second time."
+test-991,4,5,0,1,11,0.5702666361217156,1.2721984386444092,22.26218032836914,22.26218032836914,90 - 75 = 15.
+test-192,0,4,0,1,90,0.3326858137966755,5.330887794494629,0.0,3.099436753473128e-06,"Tom plants 10 trees each year and chops down 2 trees each year, resulting in a net gain of 10 - 2 = 8 trees per year. Over 10 years, he plants and chops down a total of 8 * 10 = 80 trees. Starting with 50 trees, he has 50 + 80 = 130 trees after 10 years."
+test-192,1,4,0,1,44,0.49351002171548763,1.6523475646972656,0.0,0.0,"After 10 years, 30% of the trees die, so 30% of 130 is 0.30 * 130 = 39 trees that die."
+test-192,2,4,1,0,47,0.2620075340788589,2.52520489692688,0.0,0.0,"Recall: After 10 years, 30% of the trees die, so 30% of 130 is 0.30 * 130 = 39 trees that die."
+test-192,3,4,0,1,19,0.8250203378707534,1.1677801609039307,4.233468055725098,4.233468055725098,The remaining number of trees is 130 - 39 = 91.
+test-1020,0,3,0,1,62,0.7724801555877414,2.698983669281006,0.0,0.0,"John picks 4 bananas on Wednesday and 6 bananas on Thursday, so he picks 4 + 6 = 10 bananas in total on those two days. On Friday, he picks triple the number of bananas he did on Wednesday, which is 3 * 4 = 12 bananas."
+test-1020,1,3,1,0,65,0.3841597274693662,4.0139336585998535,0.0,0.0,"Recall: John picks 4 bananas on Wednesday and 6 bananas on Thursday, so he picks 4 + 6 = 10 bananas in total on those two days. On Friday, he picks triple the number of bananas he did on Wednesday, which is 3 * 4 = 12 bananas."
+test-1020,2,3,0,1,24,0.3836794276703801,3.1855640411376953,25.34512233734131,25.34512233734131,"Adding these together, the total number of bananas John has is 10 + 12 = 22."
+test-350,0,3,0,1,94,0.16379542381305134,2.965744972229004,0.0,-4.151333838701248,"Peyton schedules a one-hour yoga class on Monday.  
+A cooking class that lasts three times as long as Monday’s yoga class on Tuesday lasts 3 * 1 = 3 hours.  
+A half-hour cheese-tasting event on Wednesday lasts 0.5 hours.  
+A museum tour that takes half as long as the cooking class on Thursday lasts "
+test-350,1,3,1,0,95,0.9355243379423083,4.812291622161865,0.0,-3.75364750623703,"Recall: Peyton schedules a one-hour yoga class on Monday.  
+A cooking class that lasts three times as long as Monday’s yoga class on Tuesday lasts 3 * 1 = 3 hours.  
+A half-hour cheese-tasting event on Wednesday lasts 0.5 hours.  
+A museum tour that takes half as long as the cooking class on Thursda"
+test-350,2,3,0,1,27,0.23895170008456956,3.2195703983306885,13.576678276062012,9.312512397766113,Adding these together: 1 + 3 + 0.5 + 1.5 + 2 = 8 hours.
+test-480,0,3,0,1,73,0.7294506641472926,0.38056302070617676,0.0,-4.768369947782958e-07,"Ben has 4 tubes of blue paint and 3 tubes of yellow paint. Jasper has half as many tubes of blue paint as Ben, so he has 4 / 2 = 2 tubes of blue paint. Jasper has three times as many tubes of yellow paint as Ben, so he has 3 * 3 = 9 tubes of yellow paint."
+test-480,1,3,1,0,76,0.334024645801835,2.3128697872161865,0.0,-4.768369947782958e-07,"Recall: Ben has 4 tubes of blue paint and 3 tubes of yellow paint. Jasper has half as many tubes of blue paint as Ben, so he has 4 / 2 = 2 tubes of blue paint. Jasper has three times as many tubes of yellow paint as Ben, so he has 3 * 3 = 9 tubes of yellow paint."
+test-480,2,3,0,1,18,0.9418620991403894,0.30324119329452515,5.379647731781006,5.379647135734729,Jasper has 2 + 9 = 11 tubes of paint in total.
+test-883,0,4,0,0,38,0.4813304127593788,3.2970237731933594,0.0,0.00022204150448601467,"Elaina's final concert is twice as long as her usual concerts, and she also includes a 15-minute encore. The total runtime of the final concert is 65 minutes."
+test-883,1,4,1,0,41,0.14090487727396894,6.933420181274414,0.0,0.00017651688543196542,"Recall: Elaina's final concert is twice as long as her usual concerts, and she also includes a 15-minute encore. The total runtime of the final concert is 65 minutes."
+test-883,2,4,0,1,36,0.8899614875266342,3.14037823677063,0.0,0.02208105312459452,"To find the length of her usual concerts, we first subtract the 15-minute encore from the total runtime: 65 - 15 = 50 minutes."
+test-883,3,4,0,1,36,0.6019667067914363,1.254693627357483,20.2555892229999,20.255495886462683,"Since the final concert is twice as long as her usual concerts, we divide the 50 minutes by 2: 50 / 2 = 25 minutes."
+test-799,0,4,0,1,20,0.08161964024263468,0.14722155034542084,0.0,-9.417404726264067e-06,The cost of 3 loaves of bread is 3 * 2 = 6 dollars.
+test-799,1,4,1,0,23,0.6986964058233333,1.1041114330291748,0.0,-3.5762186598731205e-06,Recall: The cost of 3 loaves of bread is 3 * 2 = 6 dollars.
+test-799,2,4,0,0,18,0.8102884962164306,1.6734500150050735e-06,0.0,0.011094370735008852,The cost of 2 bagels is 2 * 1 = 2 dollars.
+test-799,3,4,0,1,15,0.3527718366022422,0.1246444433927536,20.265625,20.265606641938575,The difference in cost is 6 - 2 = 4 dollars.
+test-1257,0,3,0,1,33,0.03517979094215373,1.6042529344558716,-0.22314807772636414,0.15812745065341005,"Bob needs 56 popsicle sticks. Each box contains 8 popsicle sticks, so he needs 56 ÷ 8 = 7 boxes."
+test-1257,1,3,1,0,36,0.4662789582213983,1.7916886806488037,-0.30672409385442734,0.002927330209786305,"Recall: Bob needs 56 popsicle sticks. Each box contains 8 popsicle sticks, so he needs 56 ÷ 8 = 7 boxes."
+test-1257,2,3,0,0,27,0.458882332198567,1.0511314868927002,11.161254223261487,9.879563444323132,"Each box costs $2.00, so 7 boxes cost 7 * 2 = $14.00."
+test-1234,0,3,0,1,53,0.10148050986892876,2.7863197326660156,0.0,0.0,"Regina wrote 9 novels last year, and this is 3 quarters of the number of novels she has written this year. To find the total number of novels she has written this year, we divide 9 by 3 and then multiply by 4."
+test-1234,1,3,1,0,55,0.7781483542276006,6.091255187988281,0.0,0.0,"Recall: Regina wrote 9 novels last year, and this is 3 quarters of the number of novels she has written this year. To find the total number of novels she has written this year, we divide 9 by 3 and then multiply by 4."
+test-1234,2,3,0,1,21,0.02022807324279441,1.893252968788147,4.768370445162873e-07,4.768370445162873e-07,"9 divided by 3 is 3, and 3 multiplied by 4 is 12."
+test-446,0,4,0,1,49,0.5983002604350479,1.9753433465957642,0.0,0.0,"Rozanne uses 4 dozen eggs, which is 4 * 12 = 48 eggs. She also uses 2 loose eggs, so she has a total of 48 + 2 = 50 eggs."
+test-446,1,4,1,0,51,0.13270195297871745,1.9803166389465332,0.0,2.026555449674561e-06,"Recall: Rozanne uses 4 dozen eggs, which is 4 * 12 = 48 eggs. She also uses 2 loose eggs, so she has a total of 48 + 2 = 50 eggs."
+test-446,2,4,0,1,35,0.3239113547302247,1.2391421794891357,0.0,0.0002373278949008295,"Each tray holds 5 glasses of eggnog, and each glass needs 5 eggs. Therefore, each tray requires 5 * 5 = 25 eggs."
+test-446,3,4,0,0,22,0.7000796910311562,1.6274688243865967,0.2969289720058441,0.00016604470150838324,"With 50 eggs, Rozanne can fill 50 / 25 = 2 trays."
+test-1302,0,5,0,1,33,0.6489922579129634,5.7975616455078125,0.0,1.3589513287115551e-05,"Matthew has 12 toy soldiers, with half (6 soldiers) priced at $5 each and the other half (6 soldiers) priced at $7 each."
+test-1302,1,5,0,1,20,0.19497362064878687,1.790418028831482,0.0,6.103211939034736e-05,The total earnings from the first half would be 6 * 5 = 30 dollars.
+test-1302,2,5,1,0,23,0.7834169698984913,2.2091667652130127,0.0,4.3271186740412304e-05,Recall: The total earnings from the first half would be 6 * 5 = 30 dollars.
+test-1302,3,5,0,1,20,0.7774609885388588,0.0003990603145211935,0.0,8.106047516776016e-06,The total earnings from the second half would be 6 * 7 = 42 dollars.
+test-1302,4,5,0,1,20,0.11099692345616674,1.8660380840301514,16.828130722030863,16.828111648687326,"Adding these together, Matthew would earn 30 + 42 = 72 dollars."
+test-265,0,6,0,1,30,0.060160827712116616,3.1959781646728516,-1.5296110943309031,0.7526555672897075,"Mrs. Cruz's budget is $400,000. The property's selling price is $350,000."
+test-265,1,6,0,1,43,0.7008174245595068,0.5622583031654358,-1.311747706728056,1.312893031166226,"The brokerage fee is 5% of $350,000, which is 0.05 * 350,000 = 17,500 dollars."
+test-265,2,6,1,0,46,0.6143308403515266,3.3103487491607666,-2.05981184594566,-0.22925265878313894,"Recall: The brokerage fee is 5% of $350,000, which is 0.05 * 350,000 = 17,500 dollars."
+test-265,3,6,0,1,44,0.9339155207415325,4.5407665538732545e-07,-0.3752656676515471,4.4158742930479775,"The transfer fee is 12% of $350,000, which is 0.12 * 350,000 = 42,000 dollars."
+test-265,4,6,0,1,41,0.6504721799814983,2.047218084335327,0.6865993446115795,14.584869564046471,"The total price of the house is $350,000 + $17,500 + $42,000 = $409,500."
+test-265,5,6,0,1,32,0.9694854220936419,1.0818148851394653,30.21790240885457,26.83131259493655,"The total price of the house is $409,500, which is $9,500 more than Mrs. Cruz's budget."
+test-554,0,4,0,1,49,0.7136168898793864,1.8514405488967896,0.0,9.858085786618176e-05,"Ray swims a mile in 16 minutes in cold water. When the water is warm, it takes him 2 minutes more than twice as long, which is 2 + 2*16 = 34 minutes per mile."
+test-554,1,4,0,1,44,0.2963863893491513,2.0569591522216797,0.0,3.1709052109363256e-05,"To swim 3 miles on a hot day, it takes 3 * 34 = 102 minutes. On a cold day, it takes 3 * 16 = 48 minutes."
+test-554,2,4,1,0,47,0.8491315553121948,2.5608649253845215,0.0,3.1709052109363256e-05,"Recall: To swim 3 miles on a hot day, it takes 3 * 34 = 102 minutes. On a cold day, it takes 3 * 16 = 48 minutes."
+test-554,3,4,0,1,19,0.95846907728749,0.027369339019060135,0.24505482614040375,0.24505113065924888,The difference in time is 102 - 48 = 54 minutes.
+test-625,0,3,0,1,43,0.38764569013819994,1.8574448823928833,0.0,-0.0009435088140890002,"Arianna's garden has 10 rows of flowers, with 20 flowers in each row. The total number of flowers planted is 10 * 20 = 200 flowers."
+test-625,1,3,1,0,45,0.29380353478258403,2.781052589416504,0.0,0.00023520225664697136,"Recall: Arianna's garden has 10 rows of flowers, with 20 flowers in each row. The total number of flowers planted is 10 * 20 = 200 flowers."
+test-625,2,3,0,1,54,0.7457841029207014,2.9142158031463623,0.8350441753623272,0.8326441552249548,"Currently, 4/5 of the planted flowers have bloomed. To find the number of bloomed flowers, we calculate 4/5 of 200, which is (4/5) * 200 = 160 flowers."
+test-204,0,5,0,1,33,0.9575468650535228,2.022321939468384,0.0,3.5762741390499286e-07,"Janet initially has 22 green pens and 10 yellow pens, for a total of 22 + 10 = 32 pens."
+test-204,1,5,1,0,35,0.98339807845839,4.278934001922607,0.0,-3.576275275918306e-07,"Recall: Janet initially has 22 green pens and 10 yellow pens, for a total of 22 + 10 = 32 pens."
+test-204,2,5,0,1,33,0.12155240415787172,2.1959633827209473,0.0,0.03483404900237019,"She buys 6 bags of blue pens, each containing 9 pens, so the total number of blue pens is 6 * 9 = 54."
+test-204,3,5,0,1,34,0.8604321836344089,0.5306965708732605,0.0,3.576268341021205e-06,"She also buys 2 bags of red pens, each containing 6 pens, so the total number of red pens is 2 * 6 = 12."
+test-204,4,5,0,1,32,0.9958411320233901,3.5800962448120117,34.45713341236114,34.4571323394781,"Adding these to the initial pens, the total number of pens Janet has now is 32 + 54 + 12 = 98."
+test-789,0,4,0,1,61,0.03818441020037311,6.002303600311279,0.0,-2.9802274710277743e-06,"Carson's house was 45 degrees during the day. During the night, the temperature drops by 33 degrees, making it 45 - 33 = 12 degrees. The temperature inside the house needs to stay above 32 degrees to prevent the pipes from freezing."
+test-789,1,4,1,0,63,0.39202639046743215,4.500113010406494,0.0,-2.9802274710277743e-06,"Recall: Carson's house was 45 degrees during the day. During the night, the temperature drops by 33 degrees, making it 45 - 33 = 12 degrees. The temperature inside the house needs to stay above 32 degrees to prevent the pipes from freezing."
+test-789,2,4,0,1,62,0.3715816420064585,6.360452651977539,0.0,5.245054967417673e-05,"To determine how many logs Carson needs to burn, we calculate the difference between the current temperature and the safe temperature: 12 - 32 = -20 degrees. This means the temperature is already below 32 degrees, so Carson needs to heat the house up by 20 degrees."
+test-789,3,4,0,1,36,0.19047756087385292,1.81911301612854,6.782403349876347,6.7824002504395935,"Each log of wood heats the house up by 5 degrees. To heat the house by 20 degrees, Carson needs 20 / 5 = 4 logs."
+test-197,0,5,0,0,15,0.3565538137373233,1.1979131698608398,0.0,0.0,The total number of inhabitants in Soda is 23786.
+test-197,1,5,0,0,22,0.6320134108911423,0.7788338661193848,0.0,0.0,The number of men is 8417 and the number of women is 9092.
+test-197,2,5,1,0,18,0.9564975354421206,2.8905937671661377,0.0,-1.1920928244535389e-07,Recall: The total number of inhabitants in Soda is 23786.
+test-197,3,5,0,1,27,0.901927522825372,1.8054418563842773,0.0,2.38418529363571e-07,The total number of men and women is 8417 + 9092 = 17509.
+test-197,4,5,0,1,36,0.039980675922074105,1.5312601327896118,26.871920622848165,26.871920503638883,The number of children is the total inhabitants minus the number of men and women: 23786 - 17509 = 6277.
+test-1126,0,5,0,0,12,0.2553863294502452,0.1154596284031868,0.0,-1.1920928244535389e-07,Alfie flies 400 kilometers each day.
+test-1126,1,5,0,0,15,0.02665600139486224,1.7210904359817505,0.0,1.1920926823449918e-07,"The distance around the Earth is 40,000 kilometers."
+test-1126,2,5,0,1,25,0.5200631817170318,0.6438525319099426,0.0,-1.1920928244535389e-07,"Half of that distance is 40,000 / 2 = 20,000 kilometers."
+test-1126,3,5,1,0,18,0.5692567569896342,1.2566583156585693,0.0,1.0728829309414323e-06,"Recall: The distance around the Earth is 40,000 kilometers."
+test-1126,4,5,0,1,33,0.8758772851227178,3.716885566711426,1.053701400756836,1.0537012815475535,"To find the number of days, divide the distance by the daily distance: 20,000 / 400 = 50 days."
+test-23,0,4,0,0,12,0.2296552367022351,1.1989328861236572,0.0,1.1920928244535389e-07,A candle melts 2 centimeters every hour it burns.
+test-23,1,4,1,0,15,0.7763426439418957,2.9653661251068115,0.0,1.1920928244535389e-07,Recall: A candle melts 2 centimeters every hour it burns.
+test-23,2,4,0,1,22,0.8846860519705121,1.3110802173614502,0.0,0.0,From 1:00 PM to 5:00 PM is a total of 4 hours.
+test-23,3,4,0,1,21,0.6274277551427163,2.1325879096984863,12.287048458741992,12.287048458741992,"So, the candle will be 2 centimeters * 4 hours = 8 centimeters shorter."
+test-1083,0,4,0,1,58,0.5024128608294012,7.0077738761901855,0.00040709026507101953,0.1702057123184204,"The cost of 10 bunches of bananas, where each bunch contains 4 bananas, is 10 * 4 = 40 bananas.  
+If Jenny bought these bananas individually, the cost would be 40 * 0.80 = $32."
+test-1083,1,4,1,0,61,0.5237115354844265,4.846748352050781,0.0,0.8055641651271799,"Recall: The cost of 10 bunches of bananas, where each bunch contains 4 bananas, is 10 * 4 = 40 bananas.  
+If Jenny bought these bananas individually, the cost would be 40 * 0.80 = $32."
+test-1083,2,4,0,1,36,0.5071067236759631,4.2660064697265625,-8.022205292945728e-05,-0.12300631516518479,"The cost of 10 bunches at the bulk price is $3.00 per bunch, so 10 * 3.00 = $30."
+test-1083,3,4,0,1,22,0.9454855480301745,1.6743472814559937,15.998915320989909,15.5366207362149,The difference between buying individually and buying in bunches is $32 - $30 = $2.
+test-1052,0,4,0,1,45,0.14569042195357562,1.3939025402069092,0.0,0.00014005470441702528,"Romeo starts on a train with 120 people. At the first stop, 20 more people board, so the total becomes 120 + 20 = 140 people."
+test-1052,1,4,1,0,46,0.8918421087116969,2.5182549953460693,0.0,0.0015579720348171122,"Recall: Romeo starts on a train with 120 people. At the first stop, 20 more people board, so the total becomes 120 + 20 = 140 people."
+test-1052,2,4,0,1,56,0.42205651792049836,2.5080270767211914,0.0,0.3878664189251424,"At the second stop, 50 people descend, and twice that number (50 * 2 = 100) board the train. So, the total becomes 140 - 50 + 100 = 190 people."
+test-1052,3,4,0,1,29,0.08403205823715598,1.0398050546646118,27.09467261179816,27.094626955673476,"At the third stop, 80 people descend. The total becomes 190 - 80 = 110 people."
+test-952,0,4,0,0,55,0.1047646210762947,4.81328010559082,0.0,-1.1920928244535389e-07,"Vince staples 30 reports every 15 minutes. To find out how many reports he staples in total, we first determine how many 15-minute intervals there are in the period from 8:00 AM to 11:00 PM."
+test-952,1,4,1,0,57,0.06292282863863541,8.901731491088867,0.0,-1.1920928244535389e-07,"Recall: Vince staples 30 reports every 15 minutes. To find out how many reports he staples in total, we first determine how many 15-minute intervals there are in the period from 8:00 AM to 11:00 PM."
+test-952,2,4,0,1,44,0.4151614515022839,2.894045352935791,0.0,1.859656004654653e-05,"From 8:00 AM to 11:00 PM is 3 hours, which is 180 minutes. Dividing 180 by 15 gives 12 intervals."
+test-952,3,4,0,1,29,0.15615697007089357,4.149778842926025,18.908221647845494,18.90822152863621,"In each interval, he staples 30 reports. So, 12 intervals × 30 reports = 360 reports."
+test-867,0,4,0,0,13,0.9545538427732947,0.33831214904785156,0.0,-0.0021615796722471714,Daisy bought a bag of potatoes that weighed 5 pounds.
+test-867,1,4,0,1,27,0.7913428503775491,0.44118672609329224,0.0,0.04632405750453472,"The sweet potatoes weighed 2 times as much as the potatoes, so they weighed 2 * 5 = 10 pounds."
+test-867,2,4,1,0,30,0.43108631436838285,2.8203518390655518,0.0,0.3149821553379297,"Recall: The sweet potatoes weighed 2 times as much as the potatoes, so they weighed 2 * 5 = 10 pounds."
+test-867,3,4,0,1,26,0.41701950900356644,3.288492007413879e-05,21.343756914114692,21.336828092089036,"The carrots weighed 3 pounds fewer than the sweet potatoes, so they weighed 10 - 3 = 7 pounds."
+test-950,0,7,0,0,94,0.4966247746294912,3.3903932571411133,0.0,-0.149366672441829,"Bahati, Azibo, and Dinar each contributed to their team's 45 points. Let the number of points Azibo scored be $ x $. Then, Bahati scored $ x + 20 $ points, as he scored 20 more than Azibo. Also, Bahati scored 10 more points than Dinar, so Dinar scored $ x + 20 - 10 = x + 10 $ points."
+test-950,1,7,1,0,97,0.86405767472269,5.374235153198242,0.0,-0.013630442474095616,"Recall: Bahati, Azibo, and Dinar each contributed to their team's 45 points. Let the number of points Azibo scored be $ x $. Then, Bahati scored $ x + 20 $ points, as he scored 20 more than Azibo. Also, Bahati scored 10 more points than Dinar, so Dinar scored $ x + 20 - 10 = x + 10 $ points."
+test-950,2,7,0,0,31,0.32449912818180593,2.75557279586792,0.0,0.16795721091330051,The total points scored by all three is $ x + (x + 20) + (x + 10) = 45 $.
+test-950,3,7,0,1,19,0.25258592574699623,4.089603424072266,0.0,-0.07657004019711167,"Simplifying, we get $ 3x + 30 = 45 $."
+test-950,4,7,0,0,21,0.35250302456564797,1.5211198329925537,0.0,4.685092570260167,"Subtracting 30 from both sides, we get $ 3x = 15 $."
+test-950,5,7,0,1,16,0.12137799977699892,0.43643561005592346,0.0,-0.25291600299533457,"Dividing both sides by 3, we get $ x = 5 $."
+test-950,6,7,0,0,7,0.691775150815975,0.7717893123626709,0.0,-0.011206266295630485,Azibo scored 5 points.
+test-543,0,4,0,1,35,0.34544510653523897,1.8770042657852173,0.0,7.0333226247498715e-06,"Jairus completes 20 tasks and earns 0.8 dollars per task, so he earns 20 * 0.8 = 16 dollars."
+test-543,1,4,0,1,34,0.17790766067776254,0.006037720944732428,0.0,7.152554033496017e-07,"Jenny completes 20 tasks and earns 0.5 dollars per task, so she earns 20 * 0.5 = 10 dollars."
+test-543,2,4,1,0,38,0.830270051764872,1.9300141334533691,0.0,3.8146895420254623e-06,"Recall: Jairus completes 20 tasks and earns 0.8 dollars per task, so he earns 20 * 0.8 = 16 dollars."
+test-543,3,4,0,1,25,0.23049353673314077,0.9596922397613525,2.753696753643453e-05,2.7417758253989177e-05,The difference between Jairus's earnings and Jenny's earnings is 16 - 10 = 6 dollars.
+test-1226,0,5,0,1,34,0.3658024748453319,2.3760809898376465,-1.1920926823449918e-07,-6.9133502051954565e-06,"A basic manicure costs $35 and a pedicure costs $40. Together, they cost 35 + 40 = $75."
+test-1226,1,5,0,1,31,0.5965890354919068,2.7250759601593018,-2.3841855067985307e-07,-1.2396992985941324e-05,"Since the salon offers 20% off for both services, the discounted price is 75 * 0.80 = $60."
+test-1226,2,5,0,1,38,0.14329113966210216,3.6899325847625732,-2.3841855067985307e-07,5.8477859246305,"Nail art costs $3 per nail, and there are 10 nails (one per finger), so the nail art cost is 10 * 3 = $30."
+test-1226,3,5,1,0,34,0.003232100641658797,4.3811469078063965,-2.3841855067985307e-07,-4.589412304767393e-05,"Recall: Since the salon offers 20% off for both services, the discounted price is 75 * 0.80 = $60."
+test-1226,4,5,0,1,16,0.6590184917581017,0.7202327847480774,18.666924975812464,18.666870141034508,The total cost is 60 + 30 = $90.
+test-743,0,5,0,0,37,0.7321014772226084,4.374740123748779,0.0,0.0011947295852294815,"Mara initially added 3 slices to a plate that already had 2 slices, so the total number of slices on the plate was 2 + 3 = 5 slices."
+test-743,1,5,0,1,25,0.9009039411186286,1.144696593284607,0.0,4.2080205282957195e-05,"She then tripled the number of slices she currently has, which means 5 * 3 = 15 slices."
+test-743,2,5,0,1,20,0.7479768172441763,1.5673167705535889,0.0,3.6821256876128317,"She ate 2 slices, so 15 - 2 = 13 slices remained."
+test-743,3,5,1,0,39,0.29326295382626455,5.563366889953613,0.0,5.721997702323733e-06,"Recall: Mara initially added 3 slices to a plate that already had 2 slices, so the total number of slices on the plate was 2 + 3 = 5 slices."
+test-743,4,5,0,1,28,0.6894664766240866,0.9758163094520569,21.328125,21.32811963559562,"While she was distracted, her friend stole 5 slices, so 13 - 5 = 8 slices remained on the plate."
+test-544,0,3,0,0,73,0.932788033819558,8.445717811584473,0.0,0.0,"Jeff and Brad are trying to divide 100 dollars between them. Let the amount Brad gets be represented by a variable, say x. Since Jeff gets 4 times as much as Brad, Jeff gets 4x. The total amount they have is the sum of what Jeff and Brad get, so 4x + x = 100."
+test-544,1,3,1,0,76,0.23286310478430694,2.112946033477783,0.0,0.0,"Recall: Jeff and Brad are trying to divide 100 dollars between them. Let the amount Brad gets be represented by a variable, say x. Since Jeff gets 4 times as much as Brad, Jeff gets 4x. The total amount they have is the sum of what Jeff and Brad get, so 4x + x = 100."
+test-544,2,3,0,1,68,0.14188743522012004,7.333103656768799,10.265674829480758,10.265674829480758,"Simplifying the equation, we get 5x = 100. Solving for x, we divide both sides by 5, which gives x = 20. Therefore, Brad gets $20, and Jeff gets 4 times that amount, which is 4 * 20 = 80."
+test-957,0,3,0,1,38,0.4540480681686925,1.0194892883300781,0.0,2.980224621751404e-06,"Shawna is currently three times as old as Aliya, and Aliya is 3 years old. Therefore, Shawna is 3 * 3 = 9 years old."
+test-957,1,3,1,0,40,0.4766939084563374,2.515246629714966,0.0,1.7881358189697494e-06,"Recall: Shawna is currently three times as old as Aliya, and Aliya is 3 years old. Therefore, Shawna is 3 * 3 = 9 years old."
+test-957,2,3,0,1,31,0.7074804824528956,1.5309159755706787,13.019686109003487,13.01968503612045,"Shawna's father is five times as old as Shawna. So, his age is 5 * 9 = 45 years old."
+test-604,0,4,0,1,54,0.2582188407343454,3.410853862762451,0.0,-9.989183445213712e-05,"Howard spends $8 on Monday. On Tuesday, he spends twice as much, which is 2 * 8 = $16. On Wednesday, he spends 4 times as much as Tuesday, which is 4 * 16 = $64."
+test-604,1,4,0,1,20,0.027936242271358158,0.8404843211174011,0.0,0.0006299967967322573,The total amount spent is 8 + 16 + 64 = $88.
+test-604,2,4,1,0,57,0.20812012525081536,2.0563125610351562,0.0,-9.786528971744701e-05,"Recall: Howard spends $8 on Monday. On Tuesday, he spends twice as much, which is 2 * 8 = $16. On Wednesday, he spends 4 times as much as Tuesday, which is 4 * 16 = $64."
+test-604,3,4,0,1,26,0.33501316214628807,2.0786046981811523,21.624919914640486,21.62481441998534,"Howard originally had $100, so the remaining amount is 100 - 88 = $12."
+test-465,0,4,0,1,68,0.9609071038114427,2.4777750968933105,0.0,0.0,"Miss Maria has 6 decks of basketball cards, each with 25 cards, so she has 6 * 25 = 150 basketball cards. She also has 5 boxes of baseball cards, each with 40 cards, so she has 5 * 40 = 200 baseball cards."
+test-465,1,4,0,1,48,0.29634664160852753,1.4335154294967651,0.0,0.0001289761275984347,"In total, she has 150 + 200 = 350 cards. She keeps 50 cards, so the remaining cards are 350 - 50 = 300 cards."
+test-465,2,4,1,0,71,0.8784103092413238,4.413149833679199,0.0,0.0,"Recall: Miss Maria has 6 decks of basketball cards, each with 25 cards, so she has 6 * 25 = 150 basketball cards. She also has 5 boxes of baseball cards, each with 40 cards, so she has 5 * 40 = 200 baseball cards."
+test-465,3,4,0,1,28,0.5532045188241876,1.5912139415740967,1.1920928244535389e-07,1.1920928244535389e-07,"If each student receives 10 cards, then the number of students is 300 / 10 = 30."
+test-1011,0,7,0,1,90,0.32698413866792275,3.2922019958496094,0.0,-1.0728829309414323e-06,"Wanda and Ms. B pump water into the tank over two days. On the first day, Wanda filled 1/4 of the tank's capacity, which is 1/4 * 18000 = 4500 gallons. Ms. B pumped 3/4 as much water as Wanda, so she pumped 3/4 * 4500 = 3375 gallons."
+test-1011,1,7,0,1,32,0.5930193960141523,0.4502110183238983,0.0,-1.1920906928253316e-07,"On the first day, the total water pumped into the tank is 4500 + 3375 = 7875 gallons."
+test-1011,2,7,1,0,93,0.08080901281968078,4.9048171043396,0.0,-1.0728829309414323e-06,"Recall: Wanda and Ms. B pump water into the tank over two days. On the first day, Wanda filled 1/4 of the tank's capacity, which is 1/4 * 18000 = 4500 gallons. Ms. B pumped 3/4 as much water as Wanda, so she pumped 3/4 * 4500 = 3375 gallons."
+test-1011,3,7,0,1,82,0.5332278801564081,1.5994764566421509,0.0,-8.344644015778613e-07,"On the second day, Wanda pumped 2/3 of the amount she pumped on the first day, which is 2/3 * 4500 = 3000 gallons. Ms. B pumped 1/3 of the number of gallons she pumped on the first day, which is 1/3 * 3375 = 1125 gallons."
+test-1011,4,7,0,1,32,0.30776249733867533,0.003269932232797146,0.0,-9.536736627069331e-07,"On the second day, the total water pumped into the tank is 3000 + 1125 = 4125 gallons."
+test-1011,5,7,0,1,31,0.3765889324074634,0.8906484842300415,0.0,0.004660215695139414,The total water pumped into the tank over two days is 7875 + 4125 = 12000 gallons.
+test-1011,6,7,0,1,39,0.14692685712634312,1.8408443927764893,20.515625119209282,20.51562392711707,"The tank's capacity is 18000 gallons, so the remaining water is 18000 - 12000 = 6000 gallons."
+test-76,0,5,0,0,54,0.1252359956830017,4.9483489990234375,0.0,0.0,Cecilia needs to feed her puppy 1 cup per day for the first 180 days. This means she will use 1 cup × 180 days = 180 cups of dog food for the first 180 days.
+test-76,1,5,1,0,56,0.2228174233130471,4.963159084320068,0.0,0.0,Recall: Cecilia needs to feed her puppy 1 cup per day for the first 180 days. This means she will use 1 cup × 180 days = 180 cups of dog food for the first 180 days.
+test-76,2,5,0,1,89,0.5083324480268261,6.267604827880859,0.0,0.0,"After the first 180 days, the puppy requires 2 cups per day for the rest of its life. In a year, there are 365 days, so the remaining days are 365 - 180 = 185 days. This means she will use 2 cups × 185 days = 370 cups of dog food for the rest of the puppy's life."
+test-76,3,5,0,1,27,0.23665719296677712,1.7995169162750244,0.0,8.344646857949556e-07,The total amount of dog food needed in a year is 180 + 370 = 550 cups.
+test-76,4,5,0,1,33,0.18394442119493715,1.6875215768814087,9.536740606108651e-07,9.536740606108651e-07,"One bag of dog food contains 110 cups, so the number of bags needed is 550 ÷ 110 = 5."
+test-467,0,4,0,1,94,0.3724619255943996,7.385457992553711,0.0,-3.5762741390499286e-07,"Bob needs to calculate the total number of laundry items in 80 rooms. Each room has 2 sheets, so in one room, there are 2 sheets. Each room also has 1 comforter. For pillow cases, there are twice as many as sheets, so 2 * 2 = 4 pillow cases per room. For towels, there are twice as many as pillow cas"
+test-467,1,4,0,1,26,0.6631955135334705,2.062403917312622,0.0,9.727040844609292e-05,"Adding these up, each room has 2 + 1 + 4 + 8 = 15 pieces of laundry."
+test-467,2,4,1,0,97,0.8609746033864751,3.469693183898926,0.0,-1.3113011689824816e-06,"Recall: Bob needs to calculate the total number of laundry items in 80 rooms. Each room has 2 sheets, so in one room, there are 2 sheets. Each room also has 1 comforter. For pillow cases, there are twice as many as sheets, so 2 * 2 = 4 pillow cases per room. For towels, there are twice as many as pi"
+test-467,3,4,0,1,28,0.6012082175951422,0.8629401922225952,22.099513539113104,22.099512108602653,"For 80 rooms, the total number of pieces of laundry is 15 * 80 = 1200."
+test-411,0,5,0,1,60,0.3938011681878649,1.7168704271316528,0.0,-5.5669431276328396e-05,"Tim buys a package of fireworks worth $400 and another pack worth twice that much, which is 2 * 400 = 800 dollars. The total cost of the two packs is 400 + 800 = 1200 dollars."
+test-411,1,5,1,0,63,0.7021695231885549,1.4478195905685425,0.0,-5.555022199388304e-05,"Recall: Tim buys a package of fireworks worth $400 and another pack worth twice that much, which is 2 * 400 = 800 dollars. The total cost of the two packs is 400 + 800 = 1200 dollars."
+test-411,2,5,0,1,63,0.13202027544551864,4.874145030975342,0.0,14.755732634479507,"He gets a 20% discount on the total cost of the two packs, which is 20% of 1200 = 240 dollars. So, the discounted price of the two packs is 1200 - 240 = 960 dollars."
+test-411,3,5,0,0,14,0.29938666187805807,0.3793792426586151,0.0,0.000324535651543556,He also buys a finale firework that costs $150.
+test-411,4,5,0,1,23,0.4167493264442593,1.3829171657562256,20.94329047203061,20.943227292441385,The total amount he spent is 960 + 150 = 1110 dollars.
+test-217,0,4,0,0,9,0.9263964007964989,0.6275240778923035,0.0,0.0,There are 4 roses in the vase.
+test-217,1,4,1,0,12,0.5910765187605377,1.4916820526123047,0.0,0.0,Recall: There are 4 roses in the vase.
+test-217,2,4,0,1,27,0.2980281087530109,0.6424462199211121,0.0,0.0,"There are 7 more dahlias than roses, so the number of dahlias is 4 + 7 = 11."
+test-217,3,4,0,1,20,0.35456411603507165,0.5725008845329285,25.546936988819198,25.546936988819198,The total number of flowers in the vase is 4 + 11 = 15.
+test-857,0,3,0,1,47,0.24805850121983253,3.832644462585449,0.0,5.960260750725865e-06,"The initial amount of water passing through the river is 4000 gallons. After a day of heavy rain, the amount doubles, so it becomes 4000 * 2 = 8000 gallons."
+test-857,1,3,1,0,50,0.6327789974902275,5.7467265129089355,0.0,-3.7787676774314605e-05,"Recall: The initial amount of water passing through the river is 4000 gallons. After a day of heavy rain, the amount doubles, so it becomes 4000 * 2 = 8000 gallons."
+test-857,2,3,0,1,43,0.6370445113549524,0.9410780668258667,22.951616233214708,22.951503583870334,"On the third day, the volume increases by 6000 gallons, so the total amount of water is 8000 + 6000 = 14000 gallons."
+test-1050,0,4,0,1,35,0.5292072971005523,1.2883892059326172,0.0,-1.1920926823449918e-07,"Bernice drove 325 kilometers for 4 days, so the total distance she drove is 325 * 4 = 1300 kilometers."
+test-1050,1,4,0,0,18,0.376431751315491,0.2041388601064682,0.0,3.576277265437966e-07,The total distance from San Diego to New York is approximately 1955 kilometers.
+test-1050,2,4,1,0,38,0.008427608141492793,2.3514301776885986,0.0,2.503391243635633e-06,"Recall: Bernice drove 325 kilometers for 4 days, so the total distance she drove is 325 * 4 = 1300 kilometers."
+test-1050,3,4,0,1,26,0.9619565585865117,1.1658753156661987,24.687521338235456,24.687521099816905,The distance she still needs to drive is 1955 - 1300 = 655 kilometers.
+test-294,0,5,0,0,7,0.901262330417864,0.0005449849413707852,0.0,0.0,Will buys 15 oranges.
+test-294,1,5,1,0,10,0.44129738363616366,1.129647970199585,0.0,0.0,Recall: Will buys 15 oranges.
+test-294,2,5,0,1,24,0.3715965769686672,1.2245640754699707,0.0,0.0,His sons are 8 years old and 4 years old (since the youngest is half as old as the oldest).
+test-294,3,5,0,1,15,0.9523409342086877,0.8847014904022217,0.0,0.0,"Together, they wash 8 + 4 = 12 oranges."
+test-294,4,5,0,1,19,0.09105648808381206,0.5147525668144226,20.0,20.0,The number of oranges left unwashed is 15 - 12 = 3.
+test-51,0,3,0,1,51,0.18545820412424963,3.8297104835510254,0.0,0.00025713839568197727,"Tom's ship travels from 1 PM to 4 PM, which is a total of 3 hours at a speed of 10 miles per hour. In that time, the ship covers 10 * 3 = 30 miles."
+test-51,1,3,1,0,54,0.10861526636012075,5.621886730194092,0.0,0.003990329569205642,"Recall: Tom's ship travels from 1 PM to 4 PM, which is a total of 3 hours at a speed of 10 miles per hour. In that time, the ship covers 10 * 3 = 30 miles."
+test-51,2,3,0,1,50,0.11215874223546374,6.001806259155273,0.057969436049461365,0.056723402580253435,"When Tom turns back, his speed is 6 miles per hour. To find out how long it takes him to travel the 30 miles back, we divide the distance by the speed: 30 / 6 = 5 hours."
+test-445,0,6,0,1,45,0.6055458611860893,5.0192670822143555,-1.1920928244535389e-07,0.0012176061136415228,"Michael's horse runs for 30 minutes at 32MPH. To find the distance the horse runs, we calculate:  
+32 miles per hour × 0.5 hours = 16 miles."
+test-445,1,6,0,1,37,0.15387883630139487,2.737328052520752,1.1920926823449918e-07,-7.217870006570593e-05,"For every mile, the horse eats 1/2 a bail of hay, so the horse eats 16 × (1/2) = 8 bails of hay."
+test-445,2,6,0,1,26,0.7025980908137885,0.28390634059906006,-1.1920928244535389e-07,-6.715951894875616e-05,"Each bail of hay costs $3, so the total cost for the hay is 8 × 3 = $24."
+test-445,3,6,0,1,20,0.928268212070889,1.4497137069702148,5.960462274856582e-07,0.002520334892324172,"Michael has six 5 dollar bills, which totals 6 × 5 = $30."
+test-445,4,6,1,0,29,0.18538068806857422,5.380003452301025,-1.1920928244535389e-07,-0.0006306462109932909,"Recall: Each bail of hay costs $3, so the total cost for the hay is 8 × 3 = $24."
+test-445,5,6,0,0,18,0.42170431041506296,1.214038610458374,6.76844102144242,6.006018134430633,His change after buying the hay is 30 - 24 = $6.
+test-476,0,3,0,1,51,0.1747372019883816,4.61715841293335,0.0,2.3841789698053617e-07,"Sarah spent $300 on books, and each book cost $15. To find the total number of books, we divide $300 by $15:  
+300 ÷ 15 = 20 books."
+test-476,1,3,1,0,54,0.9595322940755414,3.3447537422180176,0.0,-2.3841789698053617e-07,"Recall: Sarah spent $300 on books, and each book cost $15. To find the total number of books, we divide $300 by $15:  
+300 ÷ 15 = 20 books."
+test-476,2,3,0,1,37,0.3403879026852894,0.4558720886707306,10.062542915344238,10.062540411952341,"She gave an equal number of books to her 4 kids, so we divide the total number of books by 4:  
+20 ÷ 4 = 5 books."
+test-231,0,3,0,1,27,0.5233486454380116,0.4550394117832184,0.0,0.00013550744915846735,"Kylie collects 5 more shells than Robert on Monday, so she collects 20 + 5 = 25 shells."
+test-231,1,3,1,0,29,0.35536744790103547,1.2891138792037964,0.0,0.007673713684198447,"Recall: Kylie collects 5 more shells than Robert on Monday, so she collects 20 + 5 = 25 shells."
+test-231,2,3,0,1,32,0.6315169232882821,1.5650765895843506,4.325814247131348,4.325634614870069,"On Tuesday, Kylie collects 2 times more shells than she did on Monday, which means she collects 2 * 25 = 50 shells."
+test-874,0,4,0,1,33,0.08649939658707362,1.7440941333770752,0.0,3.230515449104132e-05,"Ella earns $33 for 3 hours of dog walking, so her rate is $33 ÷ 3 = 11 dollars per hour."
+test-874,1,4,0,0,14,0.7550350740823142,1.6803638935089111,0.0,6.318064151855651e-06,"At this rate, she would earn 11 dollars per hour."
+test-874,2,4,1,0,35,0.2947283238309857,2.960604667663574,0.0,1.0490348358871415e-05,"Recall: Ella earns $33 for 3 hours of dog walking, so her rate is $33 ÷ 3 = 11 dollars per hour."
+test-874,3,4,0,1,23,0.8301737658604361,2.5322484970092773,0.00016950137779758734,0.00016819007652202345,"After 12 hours, she would earn 12 * 11 = 132 dollars."
+test-550,0,5,0,1,76,0.4490883769000732,2.149242877960205,0.0,-1.7881166058941744e-05,"One notebook costs $1.50, so five notebooks cost 5 * 1.50 = 7.50 dollars.  
+One pen costs $0.25, so two pens cost 2 * 0.25 = 0.50 dollars.  
+One calculator costs $12.  
+One geometry set costs $10."
+test-550,1,5,1,0,79,0.4620108455998946,2.02706241607666,0.0,-1.5258575729149015e-05,"Recall: One notebook costs $1.50, so five notebooks cost 5 * 1.50 = 7.50 dollars.  
+One pen costs $0.25, so two pens cost 2 * 0.25 = 0.50 dollars.  
+One calculator costs $12.  
+One geometry set costs $10."
+test-550,2,5,0,1,31,0.2187341846418389,1.4657617807388306,0.0,2.688517451471057,The total cost before discount is 7.50 + 0.50 + 12 + 10 = 30 dollars.
+test-550,3,5,0,1,24,0.11445722556586746,2.582705020904541,0.0,-1.1920728525183222e-05,"The shop gives a 10% discount, so 10% of 30 = 3 dollars."
+test-550,4,5,0,1,18,0.9788025142917065,0.9938024282455444,9.7500581741333,9.750036001440208,The total cost after discount is 30 - 3 = 27 dollars.
+test-736,0,5,0,1,36,0.3011589686960586,0.9442225694656372,0.0,-4.2914844016195275e-06,"Boris has 100 apples. Beck has 23 fewer apples than Boris, so Beck has 100 - 23 = 77 apples."
+test-736,1,5,0,1,43,0.6091605287508749,1.5213788747787476,0.0,7.652837757632369e-05,"Boris gives Beck 10 apples, so Boris now has 100 - 10 = 90 apples, and Beck has 77 + 10 = 87 apples."
+test-736,2,5,0,0,17,0.4242090709976407,0.15766394138336182,0.0,6.317984116321895e-06,"Now, Beck has 87 apples, and Boris has 90 apples."
+test-736,3,5,1,0,45,0.7513524999576429,2.9924709796905518,0.0,4.482106760406168e-05,"Recall: Boris gives Beck 10 apples, so Boris now has 100 - 10 = 90 apples, and Beck has 77 + 10 = 87 apples."
+test-736,4,5,0,1,18,0.09255304692818778,0.7334356904029846,2.3841855067985307e-07,-1.3589763540267086e-05,Beck has 90 - 87 = 3 fewer apples than Boris.
+test-1130,0,6,0,1,51,0.4976795968420046,4.727686405181885,0.0,-6.6277246332902e-05,"Nik has 200 crayons. He wants to separate them into groups of 8. First, we calculate how many groups of 8 crayons he can make:  
+200 ÷ 8 = 25 groups."
+test-1130,1,6,1,0,53,0.9609180855182016,2.904545545578003,0.0,-6.866140211059246e-05,"Recall: Nik has 200 crayons. He wants to separate them into groups of 8. First, we calculate how many groups of 8 crayons he can make:  
+200 ÷ 8 = 25 groups."
+test-1130,2,6,0,0,38,0.5437408220916614,3.942406415939331,0.0,0.0002083394065266475,"Each group of 8 crayons weighs 8 ounces, so the total weight of all the crayons is:  
+25 groups × 8 ounces = 200 ounces."
+test-1130,3,6,0,0,39,0.405305104554358,2.5138657093048096,0.0,7.485462992917746e-05,"Each box weighs 8 ounces, and there are 25 boxes, so the total weight of the boxes is:  
+25 boxes × 8 ounces = 200 ounces."
+test-1130,4,6,0,1,30,0.6320656015278037,1.055412769317627,0.0,0.32170814597338904,"The total weight of the crayons and the boxes is:  
+200 ounces + 200 ounces = 400 ounces."
+test-1130,5,6,0,0,34,0.0216193804206819,2.72599196434021,28.46927249431576,31.46873677098256,"Since there are 16 ounces in a pound, we convert the total weight to pounds:  
+400 ÷ 16 = 25 pounds."
+test-420,0,3,0,1,42,0.2700784048715086,1.4396408796310425,0.0,0.0002714988190746226,"Mr. Josue receives $4000 from the first bank. The second company gives him twice as much, which is 2 * 4000 = 8000 dollars."
+test-420,1,3,1,0,45,0.6684886667173141,1.7293899059295654,0.0,-5.173356248633354e-05,"Recall: Mr. Josue receives $4000 from the first bank. The second company gives him twice as much, which is 2 * 4000 = 8000 dollars."
+test-420,2,3,0,1,43,0.0002532098932251925,4.518163204193115,22.842571345725446,22.84248313467856,"Adding these amounts to his initial capital of $5000, the total is 5000 + 4000 + 8000 = 17000 dollars."
+test-487,0,4,0,1,68,0.3984286079265319,2.585979461669922,0.0,0.0,"Uncle Ben has four horses, and each horse consumes five pounds of oats per meal. Since he feeds his horses twice a day, each horse consumes 5 * 2 = 10 pounds of oats per day. For four horses, the total daily consumption is 4 * 10 = 40 pounds of oats."
+test-487,1,4,0,1,24,0.8905618085087551,0.0949295312166214,0.0,0.0,"Over five days, the total amount of oats needed is 40 * 5 = 200 pounds."
+test-487,2,4,1,0,27,0.7099647178965433,2.5126309394836426,0.0,0.0,"Recall: Over five days, the total amount of oats needed is 40 * 5 = 200 pounds."
+test-487,3,4,0,0,29,0.4445845492335537,1.471569538116455,7.080780778778717e-05,7.402622577501461e-05,"One bag contains 50 pounds of oats, so the number of bags needed is 200 / 50 = 4."
+test-108,0,5,0,1,67,0.7465509493098265,6.653956413269043,0.0,-4.875349475241819e-05,"Henry wants to make twice as many cookies as he did last year. Let the number of cookies he made last year be $ x $. He plans to make $ 2x $ cookies. However, he ends up baking 15 more than he intended, so he bakes $ 2x + 15 $ cookies."
+test-108,1,5,1,0,70,0.35382203223851694,4.757772922515869,0.0,-4.0647652220116015e-05,"Recall: Henry wants to make twice as many cookies as he did last year. Let the number of cookies he made last year be $ x $. He plans to make $ 2x $ cookies. However, he ends up baking 15 more than he intended, so he bakes $ 2x + 15 $ cookies."
+test-108,2,5,0,1,32,0.8712980207444939,2.179267168045044,0.0,-7.187934966168541e-05,"He then drops 5 cookies, leaving him with $ 2x + 15 - 5 = 2x + 10 $ cookies."
+test-108,3,5,0,0,36,0.6725473918674463,7.0316619873046875,0.0,0.31239486137315,"We are told that he now has 110 cookies. So, we set up the equation:  
+$ 2x + 10 = 110 $."
+test-108,4,5,0,1,26,0.19603088941730495,0.9337463974952698,0.05802937271027986,0.057938419996617085,"Solving for $ x $:  
+$ 2x = 100 $  
+$ x = 50 $."
+test-515,0,5,0,1,30,0.08525923665948931,0.5746917724609375,-8.225394026339927e-06,-0.034202693208214896,"Tara bought 8 packs of 5 canvas bags, so the total number of bags is 8 * 5 = 40 bags."
+test-515,1,5,1,0,32,0.0704556688087915,4.373786449432373,-9.417485728135944e-06,0.42328024152490684,"Recall: Tara bought 8 packs of 5 canvas bags, so the total number of bags is 8 * 5 = 40 bags."
+test-515,2,5,0,1,26,0.26248678792717994,1.8996374607086182,-9.655904257499515e-06,5.390164118533448,"The cost of each bag is $4, so the total cost is 40 * 4 = $160."
+test-515,3,5,0,1,25,0.533638651221174,0.6874687671661377,0.0,7.342297198854794,"She sold each bag for $8, so the total revenue is 40 * 8 = $320."
+test-515,4,5,0,0,26,0.11818482376773232,2.3018555641174316,19.22645704709157,12.348840809351259,"Her profit is the revenue minus the cost, which is 320 - 160 = $160."
+test-781,0,4,0,0,51,0.8594532404023933,5.143275737762451,0.0,1.4542543802065211e-05,Four friends ordered four pizzas for a total of 64 dollars. The cost of two of the pizzas is 30 dollars. The cost of the remaining two pizzas can be calculated by subtracting the cost of the first two pizzas from the total.
+test-781,1,4,1,0,54,0.8906989166138923,6.332545757293701,0.0,0.0002550599529129727,Recall: Four friends ordered four pizzas for a total of 64 dollars. The cost of two of the pizzas is 30 dollars. The cost of the remaining two pizzas can be calculated by subtracting the cost of the first two pizzas from the total.
+test-781,2,4,0,1,23,0.7620005545284954,1.1777759790420532,0.0,14.549590955874017,"So, the cost of the other two pizzas is 64 - 30 = 34 dollars."
+test-781,3,4,0,1,28,0.06809296768032302,1.7460246086120605,14.5625,14.562439681911208,"Since the two pizzas cost the same amount, each of the other two pizzas costs 34 / 2 = 17 dollars."
+test-272,0,3,0,1,82,0.8609410769469436,4.199100494384766,-0.0677522923797369,0.31044781208152017,"The cost of the cocoa is $4.20, the cost of the laundry is $9.45, and the cost of the package of pasta is $1.35. Adding these together:  
+$4.20 + $9.45 = $13.65  
+$13.65 + $1.35 = $15.00"
+test-272,1,3,1,0,85,0.2827478909480132,1.6192768812179565,-0.06421314179897308,0.5740092992798509,"Recall: The cost of the cocoa is $4.20, the cost of the laundry is $9.45, and the cost of the package of pasta is $1.35. Adding these together:  
+$4.20 + $9.45 = $13.65  
+$13.65 + $1.35 = $15.00"
+test-272,2,3,0,0,45,0.13442052583382869,4.064192295074463,3.965309157036245,3.8023176630977105,"The total cost is $15.00. She pays with a $20 bill, so her change is:  
+$20.00 - $15.00 = $5.00"
+test-247,0,3,0,1,30,0.5230599837537087,1.6392107009887695,0.0,-2.9802067729178816e-06,Isabelle spent a total of 12 + 43 + 15 + 4 + 22 = 96 dollars.
+test-247,1,3,1,0,33,0.21027834364306774,2.1779210567474365,0.0,6.556421794812195e-06,Recall: Isabelle spent a total of 12 + 43 + 15 + 4 + 22 = 96 dollars.
+test-247,2,3,0,1,26,0.10530639745894443,3.951507568359375,9.93792819956775,9.93791806682907,"The total cost is divided evenly among three people, so 96 ÷ 3 = 32 dollars per person."
+test-1170,0,9,0,0,39,0.9556548717215211,2.800846815109253,0.0,0.10168254375469132,"The mural has four colors: red, white, purple, and yellow. The problem states that there are equal amounts of red, white, and purple paint, and half the mural is yellow."
+test-1170,1,9,0,0,48,0.5435731515542631,8.31751537322998,0.0,-0.20903310179694046,"The total amount of paint used in the mural is 12 pints. Since the amounts of red, white, and purple paint are equal, let the amount of each of these colors be represented by a variable, say $ x $."
+test-1170,2,9,0,1,31,0.7414270622920264,1.7387558221817017,0.0,1.1018450260162354,"The amount of yellow paint is given as half of the total, which is $ \frac{12}{2} = 6 $ pints."
+test-1170,3,9,0,0,25,0.9040457292510377,3.8150558471679688,0.0,0.11752122640626084,"The total paint used can be expressed as:
+$$
+x + x + x + 6 = 12
+$$"
+test-1170,4,9,1,0,42,0.2786145977098805,11.030242919921875,0.0,0.08649390935903511,"Recall: The mural has four colors: red, white, purple, and yellow. The problem states that there are equal amounts of red, white, and purple paint, and half the mural is yellow."
+test-1170,5,9,0,1,17,0.4423646135017597,1.854113221168518,0.0,0.14920949935475392,"Simplifying:
+$$
+3x + 6 = 12
+$$"
+test-1170,6,9,0,0,18,0.5682329433322765,0.6167426705360413,0.0,-0.06569880376611081,"Subtracting 6 from both sides:
+$$
+3x = 6
+$$"
+test-1170,7,9,0,0,16,0.13781274972163116,0.5943623781204224,0.0,-0.576544056704563,"Dividing both sides by 3:
+$$
+x = 2
+$$"
+test-1170,8,9,0,0,14,0.1232982180791492,1.9821046590805054,0.0005911033367738128,-0.5731740657236628,"Therefore, the amount of red paint used is 2 pints."
+test-685,0,5,0,0,13,0.12051785276403837,0.483167827129364,1.1920926823449918e-07,0.00031049636686475424,Catherine buys 1 kilo of apples for $4.
+test-685,1,5,0,0,26,0.4012165411640888,1.5805681943893433,0.0,-0.0006730118270752428,"She buys 2 kilos of bananas for $2 per kilo, which totals 2 * 2 = $4."
+test-685,2,5,1,0,15,0.4679428423906348,1.5286266803741455,-1.1920928244535389e-07,-0.0006553706965064521,Recall: Catherine buys 1 kilo of apples for $4.
+test-685,3,5,0,1,26,0.5596131508667647,0.025799842551350594,1.1920926823449918e-07,-0.000514962084025683,"She buys 2 kilos of oranges for $3 per kilo, which totals 2 * 3 = $6."
+test-685,4,5,0,1,17,0.29896126951320356,0.583988606929779,14.46664899587632,14.465891110422262,The total cost is 4 + 4 + 6 = $14.
+test-1289,0,5,0,1,37,0.6321114709426877,2.0149004459381104,0.0,1.6689209587639198e-06,"Octavia uses 11 small t-shirts, each 3 square feet, so the total for small t-shirts is 11 * 3 = 33 square feet."
+test-1289,1,5,1,0,40,0.7423454703026071,2.206587791442871,0.0,-3.576257995518972e-06,"Recall: Octavia uses 11 small t-shirts, each 3 square feet, so the total for small t-shirts is 11 * 3 = 33 square feet."
+test-1289,2,5,0,1,34,0.21800995973285464,0.9209794402122498,0.0,4.851911902443106,"She uses 8 medium t-shirts, each 4 square feet, so the total for medium t-shirts is 8 * 4 = 32 square feet."
+test-1289,3,5,0,1,34,0.48885816108208613,3.394957457203418e-05,0.0,0.045787107226253454,"She uses 6 large t-shirts, each 6 square feet, so the total for large t-shirts is 6 * 6 = 36 square feet."
+test-1289,4,5,0,1,31,0.501567157493831,2.4478602409362793,29.281516544346232,29.28150796130467,"Adding these together, the total square feet of the quilt is 33 + 32 + 36 = 101 square feet."
+test-643,0,4,0,1,33,0.49271975198428686,2.874826431274414,0.0,4.76836760299193e-07,"The website publishes 20 political and weather articles each day, so in February, it publishes 20 * 28 = 560 articles."
+test-643,1,4,1,0,36,0.958422556968198,1.7235625982284546,0.0,-1.1920928955078125e-07,"Recall: The website publishes 20 political and weather articles each day, so in February, it publishes 20 * 28 = 560 articles."
+test-643,2,4,0,1,33,0.44398175403613704,0.12754294276237488,0.0,0.0037637040496178997,"The sister company publishes 10 business news articles each day, so in February, it publishes 10 * 28 = 280 articles."
+test-643,3,4,0,1,26,0.14281143058247625,0.966739296913147,14.625000953674316,14.625000476837215,The total number of articles published by both websites is 560 + 280 = 840 articles.
+test-99,0,4,0,1,42,0.4955231327742775,0.7432515621185303,0.0,0.0,"Mary receives 18 new potted plants, so she has 18 + (2 * 40) = 18 + 80 = 98 potted plants in total."
+test-99,1,4,1,0,45,0.8873352305676206,2.6744492053985596,0.0,0.0,"Recall: Mary receives 18 new potted plants, so she has 18 + (2 * 40) = 18 + 80 = 98 potted plants in total."
+test-99,2,4,0,0,32,0.21571394075115613,0.9919019937515259,0.0,0.0,"She gives 1 potted plant from each of the 40 ledges to friends and family, so she gives away 40 potted plants."
+test-99,3,4,0,1,20,0.3554013630116646,2.4392411708831787,26.203292355843587,26.203292355843587,The remaining number of potted plants is 98 - 40 = 58.
+test-249,0,7,0,1,16,0.39096604949642,0.6956557631492615,0.0,-1.6689276947090548e-06,Sue ate 4 * 5 = 20 cookies on Monday.
+test-249,1,7,0,1,17,0.9928835035123682,0.2296409159898758,0.0,1.0967213285084654e-05,"On Tuesday, she ate 2 * 13 = 26 cookies."
+test-249,2,7,1,0,18,0.8462248334797323,2.1321206092834473,0.0,-7.152567391699449e-07,Recall: Sue ate 4 * 5 = 20 cookies on Monday.
+test-249,3,7,0,1,18,0.9789066021625461,1.256248950958252,0.0,8.225412472029348e-06,Total cookies Sue ate: 20 + 26 = 46 cookies.
+test-249,4,7,0,1,18,0.6868956228130294,1.0226582288742065,0.0,5.722025576915257e-06,Total cookies her sister ate: 5 + 13 = 18 cookies.
+test-249,5,7,0,1,17,0.08137290691060206,1.2563869953155518,0.0,0.0001332705755032748,Difference in cookies: 46 - 18 = 28 cookies.
+test-249,6,7,0,1,32,0.9493092651810784,1.547350287437439,14.062500953674316,14.062497258189438,"Since 1 cookie has 200 calories, the difference in calories is 28 * 200 = 5600 calories."
+test-708,0,4,0,0,10,0.9246190463677613,0.06825967133045197,0.0,-1.1324773822707357e-05,Alex charges $12 per day for tutoring.
+test-708,1,4,1,0,13,0.3951154575230438,1.3508671522140503,0.0,-5.4835591072333045e-06,Recall: Alex charges $12 per day for tutoring.
+test-708,2,4,0,1,21,0.3612783181755085,1.469788670539856,0.0,3.4333339632719344,"In a 7-day week, she charges 7 * 12 = 84 dollars."
+test-708,3,4,0,1,20,0.11615210489091876,0.42792755365371704,13.432694345712655,13.432679087040007,"For 2 weeks, she charges 2 * 84 = 168 dollars."
+test-945,0,5,0,1,68,0.0037403702712440756,2.4585156440734863,0.0,0.0,"James needs to swim across a 20-mile lake at a pace of 2 miles per hour. He swims 60% of the distance, which is 0.6 * 20 = 12 miles. The time taken to swim 12 miles is 12 / 2 = 6 hours."
+test-945,1,5,0,1,37,0.2703277384724262,1.6983373165130615,0.0,1.847726889536716e-05,"After swimming, he rests for half as long as the swimming time. The swimming time was 6 hours, so the rest time is 6 / 2 = 3 hours."
+test-945,2,5,0,1,40,0.6403732426441148,2.3768997192382812,0.0,0.00011848704160399848,"He then finishes the remaining 8 miles at half the speed, which is 1 mile per hour. The time taken to swim the remaining distance is 8 / 1 = 8 hours."
+test-945,3,5,1,0,71,0.29252642189785794,6.237035274505615,0.0,0.0,"Recall: James needs to swim across a 20-mile lake at a pace of 2 miles per hour. He swims 60% of the distance, which is 0.6 * 20 = 12 miles. The time taken to swim 12 miles is 12 / 2 = 6 hours."
+test-945,4,5,0,1,19,0.9007258804640697,2.0940396785736084,13.703844860196114,13.703844860196114,The total time taken is 6 + 3 + 8 = 17 hours.
+test-470,0,5,0,0,9,0.14067978971908934,0.7057101130485535,0.0,-4.172309218120063e-06,The cost of the pen is $2.
+test-470,1,5,0,1,32,0.5728503338092871,1.4372119903564453,0.0,0.0007017731140877004,"The piece of paper costs $1 less than three times the price of the pen, which is 3 * 2 - 1 = 5 dollars."
+test-470,2,5,1,0,12,0.1912043400515635,2.0445752143859863,0.0,8.821397386782337e-06,Recall: The cost of the pen is $2.
+test-470,3,5,0,1,14,0.43401891336511733,0.4446294605731964,0.0,-4.768354870066105e-06,The total cost is 2 + 5 = 7 dollars.
+test-470,4,5,0,0,24,0.7163457448050065,1.3240166902542114,16.484413981059333,8.687682986145774,"Theo gives the cashier $10, so her change is 10 - 7 = 3 dollars."
+test-552,0,3,0,1,88,0.3841301513333275,2.2008543014526367,0.0,-3.5762761996238623e-07,"Antonella sold goods worth $2500. She earns a 30% commission on the first $1000, which is 0.30 * 1000 = 300 dollars. She also earns an additional 10% commission on the remaining $1500, which is 0.10 * 1500 = 150 dollars."
+test-552,1,3,1,0,90,0.33069552050314754,5.917730331420898,0.0,2.861015694577418e-06,"Recall: Antonella sold goods worth $2500. She earns a 30% commission on the first $1000, which is 0.30 * 1000 = 300 dollars. She also earns an additional 10% commission on the remaining $1500, which is 0.10 * 1500 = 150 dollars."
+test-552,2,3,0,1,20,0.6480049557775331,2.0064070224761963,0.0015137653099372983,0.0015125732175249595,The total commission is 300 + 150 = 450 dollars.
+test-545,0,3,0,1,26,0.6874717059379091,3.53524112701416,0.0,0.0,"Jeff walks 3 miles each way, so for a round trip, he walks 3 * 2 = 6 miles."
+test-545,1,3,1,0,29,0.14801928734251768,2.4767191410064697,0.0,0.0,"Recall: Jeff walks 3 miles each way, so for a round trip, he walks 3 * 2 = 6 miles."
+test-545,2,3,0,1,25,0.93323205939552,1.7487488985061646,0.43971848487854004,0.43971848487854004,"If he works 5 times a week, then he walks 6 * 5 = 30 miles in total."
+test-319,0,4,0,0,29,0.14750072005511716,1.8193976879119873,0.0,0.0,"The ratio of electric poles to electric wires is 1:3, meaning for every 1 electric pole, there are 3 electric wires."
+test-319,1,4,0,0,31,0.31607169754224296,3.5931522846221924,0.0,0.0,"Given that the total number of electric wires is 45, we can find the number of electric poles by dividing the number of wires by 3."
+test-319,2,4,1,0,32,0.2088660889148145,4.975709915161133,0.0,0.0,"Recall: The ratio of electric poles to electric wires is 1:3, meaning for every 1 electric pole, there are 3 electric wires."
+test-319,3,4,0,1,17,0.1868244368145192,2.3456814289093018,1.4305015582749547e-05,1.4305015582749547e-05,The number of electric poles is 45 / 3 = 15.
+test-68,0,4,0,1,27,0.3491672112743387,2.115713119506836,0.0,0.0,"There are twice as many boys as girls, so the number of boys is 2 * 60 = 120."
+test-68,1,4,1,0,30,0.9834841816788549,1.6280970573425293,0.0,0.0,"Recall: There are twice as many boys as girls, so the number of boys is 2 * 60 = 120."
+test-68,2,4,0,1,20,0.427290207198605,0.16026660799980164,0.0,1.1920928244535389e-07,The total number of students is 120 + 60 = 180.
+test-68,3,4,0,1,27,0.49195852420878716,0.18847918510437012,14.476223066448483,14.476223066448483,"There are 5 students to every teacher, so the number of teachers is 180 / 5 = 36."
+test-521,0,6,0,1,52,0.7297831417632067,1.8953734636306763,0.0,-0.004395720767206512,"Chris has 100 math problems in total. On Monday night, he completes 12 problems. On Tuesday, he completes 3 times as many as he did on Monday, which is 3 * 12 = 36 problems."
+test-521,1,6,1,0,55,0.7955834433152874,8.123807907104492,0.0,-0.0029487167776096612,"Recall: Chris has 100 math problems in total. On Monday night, he completes 12 problems. On Tuesday, he completes 3 times as many as he did on Monday, which is 3 * 12 = 36 problems."
+test-521,2,6,0,1,19,0.43927203819181504,0.776841402053833,0.0,-0.0014432137832045555,"So far, he has completed 12 + 36 = 48 problems."
+test-521,3,6,0,1,19,0.2042687131951023,1.1916964054107666,0.0,7.486070117156487,The remaining number of problems is 100 - 48 = 52.
+test-521,4,6,0,1,26,0.709997013582239,1.0072418451309204,0.0,3.313079860759899,"On Wednesday, he completes one-quarter of the remaining problems, which is 52 / 4 = 13 problems."
+test-521,5,6,0,1,19,0.9058221085991531,1.7644476890563965,14.176951527594952,14.171871808124138,"After Wednesday, he has 52 - 13 = 39 problems left."
+test-557,0,3,0,1,71,0.03327924187503195,7.105809211730957,0.0,-9.536727247905219e-07,"The bag initially contains 21 buttons. Out of these, 7 buttons had two holes, which means they contributed 7 * 2 = 14 holes. The remaining buttons, which is 21 - 7 = 14 buttons, had four holes each, contributing 14 * 4 = 56 holes."
+test-557,1,3,1,0,74,0.6331757983912308,7.676570892333984,0.0,-1.192091076518409e-06,"Recall: The bag initially contains 21 buttons. Out of these, 7 buttons had two holes, which means they contributed 7 * 2 = 14 holes. The remaining buttons, which is 21 - 7 = 14 buttons, had four holes each, contributing 14 * 4 = 56 holes."
+test-557,2,3,0,1,22,0.8710093735661795,1.766883373260498,1.2016888856887817,1.2016867399238436,"Adding these together, the total number of holes is 14 + 56 = 70."
+test-713,0,3,0,1,48,0.3636101637556439,4.4888596534729,0.0,-2.741807008987962e-06,"Mr Boarden needs to cover two thirds of his bathroom, which is 36 square feet. To find the area he needs to cover, we calculate 2/3 of 36, which is 24 square feet."
+test-713,1,3,1,0,51,0.7431628081058981,2.4455220699310303,0.0,2.0026919287374767e-05,"Recall: Mr Boarden needs to cover two thirds of his bathroom, which is 36 square feet. To find the area he needs to cover, we calculate 2/3 of 36, which is 24 square feet."
+test-713,2,3,0,1,39,0.6774926049513658,1.7933111190795898,15.500003099441514,15.499997973450817,"For every square foot, he needs 24 mosaic tiles. Therefore, for 24 square feet, he needs 24 * 24 = 576 mosaic tiles."
+test-214,0,9,0,0,46,0.23306417175218364,2.681445837020874,0.0,0.9762127995491028,"Jerry has two pools, both leaking at 4 gallons per minute. Four minutes ago, the big pool had twice as much water as the small pool. Now the big pool has four times as much water as the small pool."
+test-214,1,9,0,0,34,0.2975271762349214,1.780052661895752,0.0,0.10213299095630646,Let the current amount of water in the small pool be $ x $ gallons. Then the current amount of water in the big pool is $ 4x $ gallons.
+test-214,2,9,0,1,61,0.0866296567389645,1.908583402633667,0.0,-0.24000591039657593,"Four minutes ago, the amount of water in the big pool was $ 4x + 4 \times 4 = 4x + 16 $ gallons, and the amount in the small pool was $ x + 4 \times 4 = x + 16 $ gallons."
+test-214,3,9,0,0,24,0.8688435220131177,2.1150693893432617,0.0,0.3284538686275482,"According to the problem, four minutes ago, the big pool had twice as much water as the small pool. So:"
+test-214,4,9,0,1,18,0.7514921149941085,0.5412498116493225,0.0,-0.16035772860050201,"$$
+4x + 16 = 2(x + 16)
+$$"
+test-214,5,9,0,0,5,0.7714305883456576,0.5633401870727539,0.0,-0.13233909010887146,Solving this equation:
+test-214,6,9,1,0,27,0.8829516943772963,2.8641774654388428,0.0,1.0435144901275635,"Recall: According to the problem, four minutes ago, the big pool had twice as much water as the small pool. So:"
+test-214,7,9,0,1,30,0.4114323292545551,0.49763667583465576,0.0,1.299982845759132,"$$
+4x + 16 = 2x + 32 \\
+2x = 16 \\
+x = 8
+$$"
+test-214,8,9,0,0,11,0.05394001775890156,2.294415235519409,1.1920928244535389e-07,0.267584728077054,The small pool now has 8 gallons of water.
+test-670,0,3,0,1,41,0.696805048854085,0.6061395406723022,0.0,-0.006669896538369358,"Robert had 3 pounds of candy, Cindy had 5 pounds, and Aaron had 4 pounds. Together, they have 3 + 5 + 4 = 12 pounds of candy."
+test-670,1,3,1,0,44,0.6656296547984208,3.9443016052246094,0.0,0.01566627668217535,"Recall: Robert had 3 pounds of candy, Cindy had 5 pounds, and Aaron had 4 pounds. Together, they have 3 + 5 + 4 = 12 pounds of candy."
+test-670,2,3,0,0,28,0.6485122289860075,2.8542895317077637,9.937549591063998,-0.005796343204558241,"If they pool their candy and share it equally, each person would get 12 ÷ 3 = 4 pounds of candy."
+test-1284,0,5,0,0,12,0.5471816206705559,1.2530399560928345,0.0,7.3751677086602285,The ice cream truck starts with 5 children following it.
+test-1284,1,5,1,0,15,0.7344166333532061,2.431771755218506,0.0,4.282451231547384,Recall: The ice cream truck starts with 5 children following it.
+test-1284,2,5,0,1,32,0.4306045068871984,2.8840525150299072,0.0,1.689376684886156,"On the second street, each of the 5 children is joined by another child, so the total becomes 5 * 2 = 10 children."
+test-1284,3,5,0,0,36,0.45460236437769275,0.9834085702896118,0.00036840804386883974,13.218967080512357,"On the third street, each of the 10 children is joined by another 2 children, so the total becomes 10 * 3 = 30 children."
+test-1284,4,5,0,1,19,0.25475221651879554,3.7326669692993164,20.263835549353644,5.795057297150379,"After the original 5 children leave, the remaining 25 children continue following the truck."
+test-1211,0,4,0,1,37,0.47565246533915095,0.8467082977294922,0.0,4.768370445162873e-07,"Saanvi combines 14 mL of the first medicine with 3 times that amount, which is 14 * 3 = 42 mL of the second medicine."
+test-1211,1,4,1,0,40,0.3371942584654095,4.992242813110352,0.0,1.0728830375228426e-06,"Recall: Saanvi combines 14 mL of the first medicine with 3 times that amount, which is 14 * 3 = 42 mL of the second medicine."
+test-1211,2,4,0,1,21,0.04223511400675217,1.3368779420852661,0.0,0.04045708477462995,The total amount of medicine per dose is 14 + 42 = 56 mL.
+test-1211,3,4,0,1,24,0.05255331220371673,0.17909522354602814,20.182972311973543,20.182972311973543,"For 8 doses, the total amount of medicine is 56 * 8 = 448 mL."
+test-1283,0,6,0,0,29,0.34980223330761895,2.163890838623047,0.0,-0.000276845850976315,"Frances sells 20 cupcakes at $2 each, so the total from cupcakes is 20 * 2 = $40."
+test-1283,1,6,0,0,29,0.2898096938030986,0.5238993167877197,0.0,-0.00014788794214837253,"She also sells 40 cookies at $1 each, so the total from cookies is 40 * 1 = $40."
+test-1283,2,6,0,1,16,0.007130057665757694,1.0398941040039062,1.1920928244535389e-07,-0.00011082415653618227,The total revenue is 40 + 40 = $80.
+test-1283,3,6,1,0,31,0.06369015415518986,2.9293112754821777,0.0,-0.0003861514778691344,"Recall: Frances sells 20 cupcakes at $2 each, so the total from cupcakes is 20 * 2 = $40."
+test-1283,4,6,0,0,24,0.42774457246440645,1.0033047199249268,5.364403477869928e-06,0.010460433579282835,"She buys five trays at $4 each, so the total cost is 5 * 4 = $20."
+test-1283,5,6,0,1,18,0.22216650821772055,1.4210731983184814,22.238862723534112,22.23844533970987,The money she has left is 80 - 20 = $60.
+test-719,0,3,0,1,38,0.6086379170158094,2.352224111557007,0.0,-2.622591182444012e-06,"Goldy initially bought 20 sacks of rice. She gave 3 sacks to her cousin and 4 sacks to her brother, totaling 3 + 4 = 7 sacks."
+test-719,1,3,1,0,41,0.557768500755667,2.803905487060547,0.0,5.960464477539062e-07,"Recall: Goldy initially bought 20 sacks of rice. She gave 3 sacks to her cousin and 4 sacks to her brother, totaling 3 + 4 = 7 sacks."
+test-719,2,3,0,1,35,0.22097295115667703,1.4284874200820923,44.762922286987305,44.762915253657184,"Each sack weighs 25 kilograms, so the total weight of the rice given to her cousin and brother is 7 * 25 = 175 kilograms."
+test-1301,0,7,0,1,40,0.19284823789822858,0.9112359881401062,0.0,0.0,"Randy starts with 9 oatmeal cookies, 4 chocolate chip cookies, and 5 sugar cookies, for a total of 9 + 4 + 5 = 18 cookies."
+test-1301,1,7,1,0,42,0.6083188139076446,2.3855223655700684,0.0,0.0,"Recall: Randy starts with 9 oatmeal cookies, 4 chocolate chip cookies, and 5 sugar cookies, for a total of 9 + 4 + 5 = 18 cookies."
+test-1301,2,7,0,1,56,0.606354511401297,2.387369155883789,0.0,0.0,"He eats 3 cookies for an early day snack, one of each flavor, so he now has 9 - 1 = 8 oatmeal cookies, 4 - 1 = 3 chocolate chip cookies, and 5 - 1 = 4 sugar cookies."
+test-1301,3,7,0,1,39,0.08562053587131313,1.154615044593811,0.0,0.0,"He then eats 2 oatmeal cookies for lunch, so he now has 8 - 2 = 6 oatmeal cookies, 3 chocolate chip cookies, and 4 sugar cookies."
+test-1301,4,7,0,0,25,0.31903016062772993,0.0042607225477695465,0.0,0.0,"He gives 2 sugar cookies to his friends, so he now has 4 - 2 = 2 sugar cookies."
+test-1301,5,7,0,1,52,0.53590115499306,1.1458094120025635,0.0,5.2379191517829895,"He bakes 4 of each flavor for dinner, so he now has 6 + 4 = 10 oatmeal cookies, 3 + 4 = 7 chocolate chip cookies, and 2 + 4 = 6 sugar cookies."
+test-1301,6,7,0,1,23,0.8934753784920533,1.5347808599472046,19.66818332672119,19.66818332672119,The total number of cookies he has now is 10 + 7 + 6 = 23.
+test-304,0,4,0,1,60,0.25549985489866966,3.1805145740509033,0.0,0.0003241929880459793,"Watson works 10 hours each day for 5 days a week, so his weekly earnings from work are 10 * 5 = 50 hours. At $10 per hour, his weekly earnings are 50 * 10 = 500 dollars."
+test-304,1,4,0,0,34,0.5219903070058861,3.0097477436065674,0.0,2.288765972480178e-05,"He also receives a $300 bonus each week if the company performs well. Since the company performed well for the whole month, he gets the bonus each week."
+test-304,2,4,1,0,37,0.1901317713313112,2.555030584335327,0.0,1.549701664771419e-06,"Recall: He also receives a $300 bonus each week if the company performs well. Since the company performed well for the whole month, he gets the bonus each week."
+test-304,3,4,0,1,50,0.08011594570868696,2.4949514865875244,29.15645801564051,29.156446571614197,"In April, there are 4 weeks. So, his total earnings are 500 * 4 + 300 * 4 = 2000 + 1200 = 3200 dollars."
+test-576,0,7,0,1,38,0.8699478397109702,3.1627566814422607,0.0,-6.436098568150271,"The area of Michael's bedroom is 18 feet by 12 feet, so the total square footage is 18 * 12 = 216 square feet."
+test-576,1,7,0,1,37,0.3457472114844995,2.1225385665893555,0.0,0.682547487185218,"The cost of the new carpet is $12 per square foot, so the cost for the carpet is 12 * 216 = 2592 dollars."
+test-576,2,7,0,1,33,0.837290862214726,0.043792132288217545,0.0,-9.34665815159255,"The cost of the padding is $2 per square foot, so the cost for the padding is 2 * 216 = 432 dollars."
+test-576,3,7,1,0,40,0.25127706432840136,1.7799358367919922,0.0,3.3797113373887555,"Recall: The cost of the new carpet is $12 per square foot, so the cost for the carpet is 12 * 216 = 2592 dollars."
+test-576,4,7,0,1,34,0.7290260027021367,0.8083399534225464,0.0,-1.6046229861639745,"The cost to remove the old carpet is $4 per square foot, so the cost for removal is 4 * 216 = 864 dollars."
+test-576,5,7,0,1,37,0.3013213449137814,0.004736454226076603,1.1920928244535389e-07,4.248019017283298,"The cost to install the new carpet is $34 per square foot, so the cost for installation is 34 * 216 = 7344 dollars."
+test-576,6,7,0,1,36,0.5169005458056509,1.9693411588668823,25.097240418178444,9.198456175612307,Adding all these costs together: 2592 + 432 + 864 + 7344 = 11232 dollars.
+test-1066,0,4,0,1,57,0.38467176448284957,3.4342994689941406,0.0,0.0,"The glee club ordered 20 pizzas and ate 70% of them. 70% of 20 is 0.7 * 20 = 14 pizzas. So, 20 - 14 = 6 pizzas are left."
+test-1066,1,4,0,1,68,0.4820846642847386,1.3973959684371948,0.0,8.293014406226554,"The football team ordered twice as many pizzas as the glee club, which is 2 * 20 = 40 pizzas. They ate 80% of them, so 0.8 * 40 = 32 pizzas. Thus, 40 - 32 = 8 pizzas are left."
+test-1066,2,4,1,0,60,0.8719757028853922,3.9041266441345215,0.0,-1.1920928244535389e-07,"Recall: The glee club ordered 20 pizzas and ate 70% of them. 70% of 20 is 0.7 * 20 = 14 pizzas. So, 20 - 14 = 6 pizzas are left."
+test-1066,3,4,0,0,17,0.2399620044566907,0.20134983956813812,12.786687960382551,14.321805119514472,The total number of pizzas left is 6 + 8 = 14.
+test-595,0,4,0,1,36,0.3058147052987177,1.6503231525421143,0.0,0.0,"Jerry's age 5 years ago was his current age minus 5. Let his current age be $ x $. Then, $ x = 2(x - 5) $."
+test-595,1,4,1,0,39,0.5519737755681405,2.647134780883789,0.0,0.0,"Recall: Jerry's age 5 years ago was his current age minus 5. Let his current age be $ x $. Then, $ x = 2(x - 5) $."
+test-595,2,4,0,1,46,0.009208459116004764,2.7188358306884766,0.0,9.500084161751118,"Solving the equation:  
+$ x = 2x - 10 $  
+$ x - 2x = -10 $  
+$ -x = -10 $  
+$ x = 10 $"
+test-595,3,4,0,1,20,0.4953005367860557,0.4867331087589264,6.2831196784973145,6.2831196784973145,"In 3 years, Jerry will be $ 10 + 3 = 13 $."
+test-84,0,5,0,0,34,0.43819859659275806,2.4817731380462646,0.0,-5.602816031569091e-06,The team played a total of 22 games. Let the number of lost games be $ x $. Then the number of won games is $ x + 8 $.
+test-84,1,5,0,0,35,0.9171481192782721,5.130457401275635,0.0,-2.5033818928932305e-06,"We know that the total number of games is the sum of the number of lost and won games:  
+$ x + (x + 8) = 22 $."
+test-84,2,5,0,1,35,0.41212019308576986,1.4900164604187012,0.0,-5.722025207433035e-06,"Solving the equation:  
+$ 2x + 8 = 22 $  
+$ 2x = 14 $  
+$ x = 7 $."
+test-84,3,5,1,0,37,0.49358197644734136,4.947257995605469,0.0,-3.4570530260680243e-06,Recall: The team played a total of 22 games. Let the number of lost games be $ x $. Then the number of won games is $ x + 8 $.
+test-84,4,5,0,1,23,0.44010860560926524,0.9707149267196655,0.0,-6.437280717364047e-06,"So, the team lost 7 games and won $ 7 + 8 = 15 $ games."
+test-375,0,3,0,1,28,0.0856157398333921,1.7603917121887207,0.0,1.1920926823449918e-07,"Mrs. Sherman made 12 bread rolls. After feeding 6 children, 12 - 6 = 6 rolls remain."
+test-375,1,3,1,0,31,0.2411443971002879,2.013894557952881,0.0,5.483611410284084e-06,"Recall: Mrs. Sherman made 12 bread rolls. After feeding 6 children, 12 - 6 = 6 rolls remain."
+test-375,2,3,0,1,26,0.8262650576639278,1.6115736961364746,0.0005208089714869857,0.0005206897622045403,"She broke each of the remaining 6 rolls into 8 pieces, so 6 * 8 = 48 pieces."
+test-553,0,4,0,1,31,0.15379567752788093,0.7464463710784912,0.0,0.0,"Bill starts with 2 cases of water, each containing 24 bottles, so he has 2 * 24 = 48 bottles."
+test-553,1,4,0,1,34,0.8842528530898255,1.5641710758209229,0.0,12.375212778992143,"He needs 2 bottles for each of the 70 guests, so the total number of bottles required is 70 * 2 = 140."
+test-553,2,4,1,0,34,0.2134665283608419,2.4943814277648926,0.0,1.1920926823449918e-07,"Recall: Bill starts with 2 cases of water, each containing 24 bottles, so he has 2 * 24 = 48 bottles."
+test-553,3,4,0,1,32,0.6127566924478359,0.9859104156494141,20.984416007155232,20.98441588794595,"He already has 48 bottles, so the number of additional bottles he needs to buy is 140 - 48 = 92."
+test-628,0,4,0,1,30,0.818008657000479,1.306726336479187,0.0,0.0,"Adam's height is 40 inches, and the required height to ride the roller coaster is 4 feet, which is 48 inches."
+test-628,1,4,1,0,33,0.5590112191053322,3.4111411571502686,0.0,-1.1920928244535389e-07,"Recall: Adam's height is 40 inches, and the required height to ride the roller coaster is 4 feet, which is 48 inches."
+test-628,2,4,0,1,16,0.8866043301622452,0.2571154832839966,0.0,1.4305012882687151e-05,Adam needs to grow 48 - 40 = 8 inches.
+test-628,3,4,0,0,22,0.39447102725022787,1.709540843963623,8.687670230864455,10.609399676322944,"Since he grows 2 inches per year, he will need 8 / 2 = 4 years."
+test-821,0,3,0,1,41,0.9589163376419946,2.359117031097412,0.0,-0.0041381277260086335,"Hunter initially counted 50 cars in the parking lot. During the first break, he counted 20 more cars, making the total 50 + 20 = 70 cars."
+test-821,1,3,1,0,44,0.24972819156954773,4.66251277923584,0.0,-0.0059019398758834996,"Recall: Hunter initially counted 50 cars in the parking lot. During the first break, he counted 20 more cars, making the total 50 + 20 = 70 cars."
+test-821,2,3,0,1,46,0.22005049979750413,5.477005481719971,0.013837606645950018,0.003311433887432713,"When he got out of class, he realized that half of the cars in the parking lot had gone. This means the number of cars remaining in the parking lot is 70 - 35 = 35 cars."
+test-140,0,3,0,0,61,0.8404590105346786,3.2653274536132812,0.0,-0.011828818396679708,"There are 20 available cars in total. Out of these, 12 are automatic and 4 are manual. To find the number of semi-automatic cars, we subtract the number of automatic and manual cars from the total:  
+20 - 12 - 4 = 4."
+test-140,1,3,1,0,64,0.2789960200671917,4.874591827392578,0.0,0.013362474031964666,"Recall: There are 20 available cars in total. Out of these, 12 are automatic and 4 are manual. To find the number of semi-automatic cars, we subtract the number of automatic and manual cars from the total:  
+20 - 12 - 4 = 4."
+test-140,2,3,0,0,48,0.35210354864297055,2.2621240615844727,0.00328132975846529,0.7514140385228529,"The percentage of semi-automatic cars is calculated by dividing the number of semi-automatic cars by the total number of cars and multiplying by 100:  
+(4 / 20) * 100 = 20%."
+test-866,0,7,0,0,84,0.9946691500756418,3.4531784057617188,0.0,-4.973799150320701e-14,"Sofie, Anne, and Fawn have a total of 85 books. Let's denote the number of books Anne has as $ A $. According to the problem, Sofie has 25 more books than Anne, so Sofie has $ A + 25 $ books. Fawn has 12 more books than Anne, so Fawn has $ A + 12 $ books."
+test-866,1,7,0,0,40,0.10728537706325991,2.4392828941345215,0.0,1.430509549038561e-06,"The total number of books is the sum of the books each person has:
+$$
+A + (A + 25) + (A + 12) = 85
+$$"
+test-866,2,7,0,1,20,0.8996256313138141,0.5273997783660889,0.0,4.7683681714261184e-07,"Simplifying the equation:
+$$
+3A + 37 = 85
+$$"
+test-866,3,7,1,0,43,0.6100819970747507,4.364121913909912,0.0,-4.768370445162873e-07,"Recall: The total number of books is the sum of the books each person has:
+$$
+A + (A + 25) + (A + 12) = 85
+$$"
+test-866,4,7,0,0,20,0.7890377134172993,1.733873724937439,0.0,1.66892881026115e-06,"Subtracting 37 from both sides:
+$$
+3A = 48
+$$"
+test-866,5,7,0,1,15,0.7110679469752405,1.2417069673538208,0.0,-2.384184938364342e-07,"Dividing by 3:
+$$
+A = 16
+$$"
+test-866,6,7,0,1,33,0.7774643558396669,2.0740537643432617,12.840618240647018,12.840617644600691,"So, Anne has 16 books. Fawn has $ A + 12 = 16 + 12 = 28 $ books."
+test-618,0,6,0,1,21,0.5140354678382717,1.3564348220825195,0.0,-1.311304913542699e-06,The total number of seats in the auditorium is 4 * 18 = 72.
+test-618,1,6,0,0,28,0.46207744282607,0.730434775352478,0.0,6.198786138611467e-06,"One-fourth of the seats were occupied by administrators, so 72 / 4 = 18 seats were occupied by administrators."
+test-618,2,6,0,1,20,0.6343562920465169,0.8757319450378418,0.0,0.4981983900338207,The remaining seats after accounting for administrators are 72 - 18 = 54.
+test-618,3,6,0,0,28,0.27254621857246664,0.4069312512874603,0.0,0.1471107751397085,"One-third of these remaining seats were occupied by parents, so 54 / 3 = 18 seats were occupied by parents."
+test-618,4,6,1,0,24,0.016558424522952975,1.4806840419769287,0.0,1.3947235373734657e-05,Recall: The total number of seats in the auditorium is 4 * 18 = 72.
+test-618,5,6,0,1,25,0.6148716567717017,1.3868796825408936,15.303238868713379,15.303228974369176,"The rest of the seats, which is 54 - 18 = 36, were occupied by students."
+test-640,0,7,0,0,15,0.7119066573597548,0.8598619699478149,-0.7151009043736849,0.23413372226060147,"The base price of the truck is $30,000."
+test-640,1,7,1,0,18,0.17257617960039529,2.0212924480438232,-0.07834371382341487,1.48127634823323,"Recall: The base price of the truck is $30,000."
+test-640,2,7,0,1,41,0.41465974039415787,4.156322479248047,1.4271429502696265,0.2751605119552849,"The king cab upgrade costs $7,500, so the leather seats cost one-third of that, which is $7,500 / 3 = $2,500."
+test-640,3,7,0,1,36,0.21806470516739018,0.25794121623039246,1.5175755388627294,1.1095798620953943,"The running boards cost $500 less than the leather seats, so they cost $2,500 - $500 = $2,000."
+test-640,4,7,0,0,13,0.8797884787327306,0.03282923251390457,0.18684253332321532,-0.6355460025370121,"The upgraded exterior light package costs $1,500."
+test-640,5,7,0,1,59,0.9971497033508181,3.25691556930542,-0.8052428727969527,1.3114003236399938,"Adding all the extra costs: $7,500 (king cab) + $2,500 (leather seats) + $2,000 (running boards) + $1,500 (light package) = $13,500."
+test-640,6,7,0,1,31,0.006439244314443648,1.0922787189483643,24.310557878574798,18.738997083155887,"The total cost of the truck is $30,000 + $13,500 = $43,500."
+test-518,0,5,0,1,67,0.5355241113549698,2.5297882556915283,0.0,2.2649721813650103e-06,"Ali has four $10 bills, which is 4 * 10 = 40 dollars, and six $20 bills, which is 6 * 20 = 120 dollars. The total amount of money Ali has is 40 + 120 = 160 dollars."
+test-518,1,5,0,1,49,0.428269623660265,2.680391788482666,0.0,2.0622992508378957e-05,"Ali gives his sister half of the total money, which is 160 / 2 = 80 dollars. After giving his sister the money, Ali has 160 - 80 = 80 dollars left."
+test-518,2,5,0,1,38,0.0497703561320445,3.0151376724243164,0.0,0.00010537538787502854,"Of the remaining 80 dollars, Ali uses 3/5 to buy dinner. The amount used for dinner is 80 * 3/5 = 48 dollars."
+test-518,3,5,1,0,52,0.3846945959716809,7.382652282714844,0.0,-2.3841846541472478e-07,"Recall: Ali gives his sister half of the total money, which is 160 / 2 = 80 dollars. After giving his sister the money, Ali has 160 - 80 = 80 dollars left."
+test-518,4,5,0,1,20,0.27248481749180187,1.3824902772903442,14.281254887580864,14.281254172325355,"After buying dinner, Ali has 80 - 48 = 32 dollars left."
+test-11,0,5,0,1,37,0.9711494351721061,1.0305379629135132,0.0,-0.46868480082230235,"Toula bought 3 dozen donuts at $68 per dozen, so the cost for the donuts is 3 * 68 = 204 dollars."
+test-11,1,5,1,0,39,0.5646669518865992,0.88055419921875,0.0,-0.1249144200446608,"Recall: Toula bought 3 dozen donuts at $68 per dozen, so the cost for the donuts is 3 * 68 = 204 dollars."
+test-11,2,5,0,1,34,0.22956269737245216,0.5154649615287781,0.0,-14.203243253703477,"She bought 2 dozen mini cupcakes at $80 per dozen, so the cost for the cupcakes is 2 * 80 = 160 dollars."
+test-11,3,5,0,1,38,0.7165492601952248,0.052029792219400406,0.0,-9.52243196775089,"She bought 6 dozen mini cheesecakes at $55 per dozen, so the cost for the cheesecakes is 6 * 55 = 330 dollars."
+test-11,4,5,0,1,30,0.5466375027642284,1.0268595218658447,32.443769887089616,17.412427621940765,"Adding these amounts together, the total cost is 204 + 160 + 330 = 694 dollars."
+test-702,0,6,0,0,17,0.2821670936164109,0.01988820917904377,-2.859375,-0.5156248807907318,"Gissela's truck can haul 4,000 pounds of gravel."
+test-702,1,6,0,1,44,0.7398695784196249,0.5231580138206482,1.21875,0.5625001192092682,"Gordy's truck can haul 800 pounds more than Gissela's truck, so it can haul 4,000 + 800 = 4,800 pounds."
+test-702,2,6,1,0,46,0.9015687423954613,1.2240140438079834,2.515625,0.8437503576277621,"Recall: Gordy's truck can haul 800 pounds more than Gissela's truck, so it can haul 4,000 + 800 = 4,800 pounds."
+test-702,3,6,0,1,36,0.06478718309218656,2.931429147720337,-0.109375,-0.18749856948976884,"The combined weight of Gissela's and Gordy's trucks is 4,000 + 4,800 = 8,800 pounds."
+test-702,4,6,0,0,23,0.3075184499818515,2.982361316680908,-0.90625,1.25,"When Gary joins, the total weight hauled by all three trucks is 11,600 pounds."
+test-702,5,6,0,1,30,0.32730937178137276,1.3106789588928223,15.75,20.718749880790718,"Therefore, Gary's truck can haul 11,600 - 8,800 = 2,800 pounds."
+test-174,0,7,0,1,32,0.373196919474838,1.0499236583709717,0.0,7.152554033496017e-07,Billy needs to peel and cut 60 potatoes. It takes him 1.5 minutes to peel each potato and 5 seconds to cut each one.
+test-174,1,7,0,0,17,0.48026967262350795,1.2335619926452637,0.0,0.0,"To find the total time, we calculate the time for peeling and cutting separately."
+test-174,2,7,0,1,20,0.5820603979481933,0.4257911741733551,0.0,0.00050084333634004,For peeling: 60 potatoes * 1.5 minutes = 90 minutes.
+test-174,3,7,0,1,18,0.1372879505883815,0.00017959304386749864,0.0,2.38418529363571e-07,For cutting: 60 potatoes * 5 seconds = 300 seconds.
+test-174,4,7,1,0,21,0.015498761483451418,3.9122262001037598,0.0,4.768359765705554e-06,Recall: For cutting: 60 potatoes * 5 seconds = 300 seconds.
+test-174,5,7,0,0,22,0.5048497045627587,0.7387084364891052,0.0,1.1920926823449918e-07,Convert 300 seconds to minutes: 300 / 60 = 5 minutes.
+test-174,6,7,0,1,17,0.36698725510709684,2.033918857574463,14.156264185859072,14.15626406664979,Total time is 90 minutes + 5 minutes = 95 minutes.
+test-940,0,4,0,0,11,0.6348155217266559,1.0864262580871582,0.0,0.0,The number of children in one row is 8.
+test-940,1,4,1,0,14,0.811995686067811,1.2042325735092163,0.0,0.0,Recall: The number of children in one row is 8.
+test-940,2,4,0,1,23,0.8768405645756486,1.4222052097320557,0.0,7.507750851640424,"There are 7 rows, so the total number of children is 8 * 7 = 56."
+test-940,3,4,0,1,28,0.1552431358080847,0.5990314483642578,26.599584551528096,26.599584551528096,"Each row is for 5 different schools, so the total number of children is 56 * 5 = 280."
+test-665,0,4,0,1,56,0.1767648869043179,3.0895261764526367,0.0,2.5033918831240953e-06,"Out of the 150 teachers, 60% are history teachers. To find the number of history teachers, we calculate 60% of 150, which is 0.60 * 150 = 90 history teachers."
+test-665,1,4,0,0,46,0.991228648099722,2.96382474899292,0.0,0.0002251619930149218,"The remaining teachers are math teachers. Since there are 150 teachers in total and 90 are history teachers, the number of math teachers is 150 - 90 = 60 math teachers."
+test-665,2,4,1,0,59,0.13558077637136434,3.664945363998413,0.0,9.53669497505416e-06,"Recall: Out of the 150 teachers, 60% are history teachers. To find the number of history teachers, we calculate 60% of 150, which is 0.60 * 150 = 90 history teachers."
+test-665,3,4,0,1,35,0.20650423900368708,0.9277220368385315,7.7504389286040976,7.750438690185533,"Each teacher sleeps for 6 hours a day. Therefore, the total time the math teachers collectively spend sleeping is 60 * 6 = 360 hours."
+test-1299,0,7,0,0,12,0.9151210693627757,0.14067089557647705,1.1920906217710581e-07,-0.14604604244232178,Janet spends $3.50 on ice cream.
+test-1299,1,7,0,1,33,0.49673738754911745,2.925999641418457,-2.145762550753716e-06,-0.1758882999420166,"She spends $7.50 on movie tickets for herself and her sister, totaling $7.50 * 2 = $15.00."
+test-1299,2,7,1,0,36,0.7672539256192649,3.4200406074523926,-2.9802270375967055e-06,-0.16105937957763672,"Recall: She spends $7.50 on movie tickets for herself and her sister, totaling $7.50 * 2 = $15.00."
+test-1299,3,7,0,0,11,0.969306850533619,0.15544866025447845,7.271717322510085e-06,0.08961445093154907,She spends $8.50 on a bracelet.
+test-1299,4,7,0,1,32,0.23531586477578126,1.814562201499939,-1.788135136848723e-06,-0.5035416483879374,The total amount she spends is $3.50 + $15.00 + $8.50 = $27.00.
+test-1299,5,7,0,1,11,0.13212860983739783,1.0618242025375366,7.510133173127542e-06,0.3712430000305176,Her parents gave her $40.00.
+test-1299,6,7,0,0,27,0.23368957459901674,1.1973716020584106,9.089515686040386,8.280975222587585,The amount she has left is $40.00 - $27.00 = $13.00.
+test-836,0,5,0,1,26,0.38460662479298113,1.14874267578125,0.0,-1.1920928244535389e-07,"Jada makes twice as many clay dishes as Rory, so if Rory makes x dishes, Jada makes 2x dishes."
+test-836,1,5,1,0,29,0.6084990843462054,1.902667760848999,0.0,-1.1920928244535389e-07,"Recall: Jada makes twice as many clay dishes as Rory, so if Rory makes x dishes, Jada makes 2x dishes."
+test-836,2,5,0,1,37,0.1325407149567407,1.4255518913269043,0.0,-1.1920928244535389e-07,"Rory makes 20 more dishes than Kora, and Kora made 20 dishes, so Rory makes 20 + 20 = 40 dishes."
+test-836,3,5,0,1,17,0.4984659545183915,1.0349688529968262,0.0,13.719958648551263,"Therefore, Jada makes 2 * 40 = 80 dishes."
+test-836,4,5,0,1,40,0.9178662904203972,2.106170654296875,18.07093819975671,18.07093808054743,The total number of clay dishes they all make is 80 (Jada) + 40 (Rory) + 20 (Kora) = 140 dishes.
+test-158,0,5,0,1,33,0.6160167741323543,2.481754779815674,0.0,1.1920923270736239e-07,"Raphael bought 4 pens at $1.5 each, so the total cost for the pens is 4 * 1.5 = 6 dollars."
+test-158,1,5,0,1,29,0.02601445858505036,0.08959900587797165,0.0,4.7683632260486775e-06,"He also bought 2 notebooks at $4 each, so the total cost for the notebooks is 2 * 4 = 8 dollars."
+test-158,2,5,0,0,14,0.596125612844632,0.5346782207489014,0.0,2.3841855067985307e-07,"Additionally, he bought a rim of bond paper for $20."
+test-158,3,5,1,0,35,0.48919913512172475,1.2874423265457153,0.0,-2.38418529363571e-07,"Recall: Raphael bought 4 pens at $1.5 each, so the total cost for the pens is 4 * 1.5 = 6 dollars."
+test-158,4,5,0,1,20,0.30869925031539414,1.984794020652771,16.276362657545747,16.276362299917935,Adding these amounts together: 6 + 8 + 20 = 34 dollars.
+test-57,0,3,0,1,135,0.9586301909392594,10.850797653198242,0.0,-7.152556236178498e-07,"The total weight of the truck and boxes is 3755 + (number of boxes * 15) pounds.  
+We need to find the maximum number of boxes such that the total weight does not exceed 5000 pounds.  
+Let the number of boxes be $ x $. Then the equation is:  
+$ 3755 + 15x \leq 5000 $.  
+Subtracting 3755 from both si"
+test-57,1,3,1,0,138,0.5555224541780607,8.103031158447266,0.0,-7.152556236178498e-07,"Recall: The total weight of the truck and boxes is 3755 + (number of boxes * 15) pounds.  
+We need to find the maximum number of boxes such that the total weight does not exceed 5000 pounds.  
+Let the number of boxes be $ x $. Then the equation is:  
+$ 3755 + 15x \leq 5000 $.  
+Subtracting 3755 from"
+test-57,2,3,0,0,10,0.16303723797834868,1.343075156211853,0.0,1.0490357453818433e-05,The maximum number of boxes is 83.
+test-1051,0,3,0,1,34,0.8790785483620981,0.5908846259117126,0.0,-3.5762517995863163e-06,"Ingrid drinks 8 cups of water each day. Over 30 days, she drinks 8 * 30 = 240 cups of water."
+test-1051,1,3,1,0,37,0.8092366229990562,2.9188127517700195,0.0,1.490089658773286e-05,"Recall: Ingrid drinks 8 cups of water each day. Over 30 days, she drinks 8 * 30 = 240 cups of water."
+test-1051,2,3,0,1,32,0.7373715302416316,1.3789613246917725,7.219482421875,7.219472289133648,"Since there are 16 cups in a gallon, the number of gallons she drinks is 240 / 16 = 15 gallons."
+test-526,0,5,0,1,54,0.5460288399006699,3.776829242706299,-0.036339260812383145,-0.612329790368392,"Ada's daily electric consumption is 12 kilowatts per hour, and she adds a device that consumes 2 kilowatts per hour. This means her total consumption per day is 12 + 2 = 14 kilowatts per hour."
+test-526,1,5,0,1,40,0.7042240787132147,4.328367233276367,-0.03579289943445474,-0.5048861205573871,"The cost of electricity is $1.50 per kilowatt per hour. Before adding the device, her daily cost is 12 * 1.50 = $18."
+test-526,2,5,1,0,43,0.07877233817546292,4.543337345123291,-0.0361364993150346,-0.8002701848741367,"Recall: The cost of electricity is $1.50 per kilowatt per hour. Before adding the device, her daily cost is 12 * 1.50 = $18."
+test-526,3,5,0,1,23,0.13744427713979768,0.03801371902227402,-0.013646554201869776,0.6598586626353153,"After adding the device, her daily cost is 14 * 1.50 = $21."
+test-526,4,5,0,0,35,0.40185422229333856,3.58500599861145,2.334680732318702,1.1477214992050335,The difference between the weekly bill before and after adding the device is (21 - 18) * 7 = 3 * 7 = $21.
+test-601,0,7,0,0,19,0.1910666288561843,1.393294334411621,0.0,-5.483563136010616e-06,"Steve starts with 1 console and 5 games, so he has 5 games initially."
+test-601,1,7,0,1,44,0.31642065037316636,2.532041549682617,0.0,-8.225361398217501e-06,"In the first year, he buys 1 game per month, so he buys 12 games. Adding these to his initial 5 games, he has 5 + 12 = 17 games."
+test-601,2,7,0,1,45,0.2917281417853558,0.031189247965812683,0.0,2.5867747048380352e-05,"In the second year, he buys 2 games per month, so he buys 24 games. Adding these to his 17 games, he has 17 + 24 = 41 games."
+test-601,3,7,1,0,47,0.9437754009602987,5.484476089477539,0.0,-1.1563208943243808e-05,"Recall: In the first year, he buys 1 game per month, so he buys 12 games. Adding these to his initial 5 games, he has 5 + 12 = 17 games."
+test-601,4,7,0,1,45,0.20866341172373193,0.0746215432882309,0.0,0.25923251922421997,"In the third year, he buys 4 games per month, so he buys 48 games. Adding these to his 41 games, he has 41 + 48 = 89 games."
+test-601,5,7,0,1,29,0.3151573145870893,2.5556373596191406,0.0,4.048938748507744,"He also gets 5 games for Christmas every year. Over 3 years, he receives 5 * 3 = 15 games."
+test-601,6,7,0,1,25,0.7470721078045024,0.4237051010131836,11.311122020240873,11.311107715221688,"Adding these to his 89 games, he has 89 + 15 = 104 games."
+test-606,0,4,0,1,74,0.24960896628473228,6.4654717445373535,0.0,-0.9782099723815918,"Each 2 miles of driving results in 725 tire rotations. Jeremy drives 400 miles a month, so the total number of rotations for the month is (400 miles / 2 miles) * 725 rotations = 200 * 725 = 145,000 rotations per month."
+test-606,1,4,1,0,77,0.8629627260654799,6.021032333374023,0.0,-2.4728639125823975,"Recall: Each 2 miles of driving results in 725 tire rotations. Jeremy drives 400 miles a month, so the total number of rotations for the month is (400 miles / 2 miles) * 725 rotations = 200 * 725 = 145,000 rotations per month."
+test-606,2,4,0,1,37,0.6684326881602258,4.030474662780762,0.0,-2.830351710326795,"The total number of rotations per year is 145,000 rotations/month * 12 months = 1,740,000 rotations/year."
+test-606,3,4,0,1,63,0.6597695027130189,2.702021837234497,15.39062714576653,11.033957719802174,"Each tire can undergo 10,440,000 rotations before needing replacement. The number of years before the tire needs to be replaced is 10,440,000 rotations / 1,740,000 rotations/year ≈ 6 years."
+test-81,0,4,0,1,59,0.22591717735012307,4.976640224456787,0.0,-2.682180584656635e-05,"Charlie initially has 10 stickers. He buys 21 stickers, so he now has 10 + 21 = 31 stickers. He also receives 23 stickers for his birthday, making the total 31 + 23 = 54 stickers."
+test-81,1,4,1,0,62,0.3441717078654829,4.442199230194092,0.0,-2.396079037225718e-05,"Recall: Charlie initially has 10 stickers. He buys 21 stickers, so he now has 10 + 21 = 31 stickers. He also receives 23 stickers for his birthday, making the total 31 + 23 = 54 stickers."
+test-81,2,4,0,1,22,0.16233220178561225,1.7920070886611938,0.0,12.378861129569486,"Charlie gives 9 stickers to his sister, leaving 54 - 9 = 45 stickers."
+test-81,3,4,0,1,26,0.01697652307419406,0.9816377758979797,30.05616569519043,30.05613708524652,"He uses 28 stickers to decorate a greeting card, leaving 45 - 28 = 17 stickers."
+test-760,0,6,0,1,31,0.5735931064152219,0.8809165358543396,0.0,-1.0013494943450496e-05,20% of 50 people is 0.20 * 50 = 10 people who think horse #2 will win.
+test-760,1,6,0,1,17,0.05818297514553228,0.7280328869819641,0.0,0.01213403986386652,The remaining people are 50 - 10 = 40 people.
+test-760,2,6,1,0,35,0.6304378073753134,2.6208231449127197,0.0,-7.510117036702013e-06,Recall: 20% of 50 people is 0.20 * 50 = 10 people who think horse #2 will win.
+test-760,3,6,0,1,32,0.35341956482818127,1.2845182418823242,0.0,0.029738892699668895,60% of these 40 people is 0.60 * 40 = 24 people who think horse #7 will win.
+test-760,4,6,0,1,17,0.49110709598533775,0.9392843842506409,0.0,7.169252753347905,The remaining people are 40 - 24 = 16 people.
+test-760,5,6,0,0,14,0.06132304686728618,0.2776499390602112,0.0,0.008343971423528274,"Therefore, 16 people think horse #12 will win."
+test-881,0,6,0,1,19,0.24146702174069912,0.9607714414596558,0.0,9.536711047530844e-07,Melanie's current age is 18 - 10 = 8 years old.
+test-881,1,6,0,0,20,0.012441234482642782,0.9100021719932556,0.0,-2.861015218513785e-06,Let the number of years from now until her age is thrice her present age be $ x $.
+test-881,2,6,0,0,16,0.9455344576677447,0.7259024977684021,0.0,-9.536709058011184e-07,"In $ x $ years, her age will be $ 8 + x $."
+test-881,3,6,0,1,17,0.3266678829978785,0.5572773218154907,0.0,-4.053107211632323e-06,We are given that $ 8 + x = 3 \times 8 $.
+test-881,4,6,1,0,20,0.820956849026723,3.2719082832336426,0.0,-4.172316494077677e-06,Recall: We are given that $ 8 + x = 3 \times 8 $.
+test-881,5,6,0,1,24,0.34492851027915805,3.515988826751709,11.64939304953441,11.649388877217916,"Solving this equation: $ 8 + x = 24 $, so $ x = 16 $."
+test-277,0,6,0,0,48,0.6639756368298299,1.2840745449066162,0.0,1.1444008173100428e-05,"Matthew digs a small hole in 3 minutes and a large hole in 10 minutes. To find the total time for 30 small holes and 15 large holes, we calculate the time for each type of hole separately."
+test-277,1,6,0,1,21,0.13585073420724958,1.9756660461425781,0.0,2.264971442400565e-06,"For the small holes, 30 holes * 3 minutes per hole = 90 minutes."
+test-277,2,6,0,1,23,0.9219835342207869,1.1659122719720472e-05,0.0,2.503389509911358e-06,"For the large holes, 15 holes * 10 minutes per hole = 150 minutes."
+test-277,3,6,1,0,51,0.44896684911260887,3.412472724914551,0.0,1.2636083795314335e-05,"Recall: Matthew digs a small hole in 3 minutes and a large hole in 10 minutes. To find the total time for 30 small holes and 15 large holes, we calculate the time for each type of hole separately."
+test-277,4,6,0,1,20,0.1420549627992148,2.556674003601074,0.0,2.2112444639215028,"Adding these times together, 90 + 150 = 240 minutes."
+test-277,5,6,0,1,26,0.3119518323014343,1.9635645151138306,7.625487804412842,7.625486135483754,"To convert minutes to hours, we divide by 60. 240 / 60 = 4 hours."
+test-896,0,4,0,1,40,0.6490756968320398,2.7374396324157715,0.0,-3.57626959157642e-07,"John rents his car out 10 times a month, each for 3 hours, so the total hours he rents out per month is 10 * 3 = 30 hours."
+test-896,1,4,1,0,43,0.7280642389267371,1.6759408712387085,0.0,2.6225941383017926e-06,"Recall: John rents his car out 10 times a month, each for 3 hours, so the total hours he rents out per month is 10 * 3 = 30 hours."
+test-896,2,4,0,1,30,0.7852833252199665,2.890042304992676,0.0,1.9073323755947058e-05,"He is paid $25 per hour, so his total earnings per month are 30 * 25 = 750 dollars."
+test-896,3,4,0,1,29,0.40863068686923587,0.4674738049507141,19.343821047086294,19.343818424485335,"His car payment is $500, so his profit is 750 - 500 = 250 dollars."
+test-921,0,5,0,1,30,0.009633238682779877,1.6092559099197388,0.0,-1.1920926823449918e-07,"Abby eats 2 slices a day. Josh eats twice as much, so he eats 2 * 2 = 4 slices a day."
+test-921,1,5,0,1,16,0.8909238596539266,1.2152609825134277,0.0,-1.1920926823449918e-07,"Together, they eat 2 + 4 = 6 slices per day."
+test-921,2,5,0,0,8,0.533705581213062,1.089301586151123,0.0,-2.3841855067985307e-07,The loaf has 24 slices.
+test-921,3,5,1,0,32,0.8046005274030336,3.6311025619506836,0.0,-2.3841855067985307e-07,"Recall: Abby eats 2 slices a day. Josh eats twice as much, so he eats 2 * 2 = 4 slices a day."
+test-921,4,5,0,0,20,0.9806276909012095,1.7732599973678589,0.050130266693713565,4.197851651071716,The number of days the loaf will last is 24 ÷ 6 = 4.
+test-983,0,4,0,1,29,0.7049346898693578,1.4284744262695312,0.0,0.0,"Charlie's boots are 5 times the size of Sophie's, so Charlie's boots are 5 * 5 = 25 sizes."
+test-983,1,4,1,0,32,0.7590860206033218,3.6977174282073975,0.0,0.0,"Recall: Charlie's boots are 5 times the size of Sophie's, so Charlie's boots are 5 * 5 = 25 sizes."
+test-983,2,4,0,1,22,0.5647284680717275,2.869345188140869,0.0,0.04484879598021507,The total size of the shoes worn by the two is 5 + 25 = 30.
+test-983,3,4,0,1,15,0.12259546226958773,0.03789959475398064,0.2590045034421564,0.2590045034421564,The average size is 30 / 2 = 15.
+test-1258,0,6,0,0,9,0.9539533584587191,0.21419446170330048,5.960460498499742e-07,0.002605424265084366,The main phone plan costs $20.
+test-1258,1,6,1,0,12,0.1713156178825357,0.48989441990852356,-2.38418529363571e-07,-0.003169570696059054,Recall: The main phone plan costs $20.
+test-1258,2,6,0,1,24,0.5005542720722199,0.8090415596961975,1.4305099398370658e-06,0.011771415363000415,"Each additional phone costs half of the main phone plan, which is $20 / 2 = $10."
+test-1258,3,6,0,1,15,0.621843985236089,1.4132448434829712,5.960460498499742e-07,-0.0011671758236388996,"There are five phones in total, so there are 4 additional phones."
+test-1258,4,6,0,1,18,0.6619765424276485,0.5284479856491089,-1.1920926112907182e-07,0.023270588838386175,The cost of the additional phones is 4 * 10 = $40.
+test-1258,5,6,0,1,28,0.8400519693824264,2.03951358795166,14.980207562446651,14.97543840948947,The total cost of the phone plan is $20 (main phone) + $40 (additional phones) = $60.
+test-287,0,8,0,1,23,0.699601591737329,1.0092345476150513,0.0,0.00023886037888587452,"The flag has three rows of 8 stars, which totals 3 * 8 = 24 stars."
+test-287,1,8,0,1,23,0.07964741684534404,0.29137516021728516,0.0,-3.588033723644912e-05,"It also has two rows of 6 stars, which totals 2 * 6 = 12 stars."
+test-287,2,8,0,1,28,0.23738047361475634,1.594377040863037,0.0,1.0488251064089127e-05,"Adding these together, the total number of stars in the first five rows is 24 + 12 = 36 stars."
+test-287,3,8,1,0,26,0.8282556520451495,3.9190547466278076,0.0,-1.6449994291178882e-05,"Recall: It also has two rows of 6 stars, which totals 2 * 6 = 12 stars."
+test-287,4,8,0,0,13,0.1762738246231843,0.9523357152938843,0.0,1.4780300261918455e-05,The total number of stars on the flag is 76.
+test-287,5,8,0,1,30,0.9459581227747745,2.8139753341674805,0.0,6.448279054893646e-05,"Subtracting the stars in the first five rows from the total, we get 76 - 36 = 40 stars left."
+test-287,6,8,0,0,13,0.9565644324307663,1.316957712173462,0.0,0.0007458856297262173,These 40 stars are in rows of 5 stars.
+test-287,7,8,0,0,17,0.8963269305888116,2.8578405380249023,1.0334603786468506,0.6930381092570315,Dividing 40 by 5 gives 8 rows of 5 stars.
+test-1262,0,5,0,1,29,0.7428117304122551,1.675811529159546,0.0,-2.6940741520320444e-05,"John's speaking speed after training is 150 WPM multiplied by 2.5, which equals 375 WPM."
+test-1262,1,5,0,0,23,0.8383436924491765,3.1532998085021973,0.0,-2.86090369172598e-06,"Each page has 450 words, and to speak one page, he needs 450 words."
+test-1262,2,5,0,1,25,0.5614087817692366,0.16760557889938354,0.0,0.00013230807576292136,"To speak 10 pages, he needs 10 * 450 = 4500 words."
+test-1262,3,5,1,0,32,0.7177928021437573,1.6450872421264648,0.0,-3.087461482209619e-05,"Recall: John's speaking speed after training is 150 WPM multiplied by 2.5, which equals 375 WPM."
+test-1262,4,5,0,1,39,0.4271772721979724,2.2451331615448,3.154150567948818,3.1541075340196585,"At a speed of 375 WPM, the time required to speak 4500 words is 4500 / 375 = 12 minutes."
+test-630,0,5,0,0,47,0.8646648421725511,3.4517643451690674,0.0,1.0728726849151826e-06,"Tiffany observes that when a wave over 30 feet arrives, 25% of the riders can stay upright. Out of these riders, 60% are women. There are 100 riders in total."
+test-630,1,5,1,0,49,0.10365846470378459,2.5136430263519287,0.0,5.602763849310577e-06,"Recall: Tiffany observes that when a wave over 30 feet arrives, 25% of the riders can stay upright. Out of these riders, 60% are women. There are 100 riders in total."
+test-630,2,5,0,0,26,0.6285317276232824,3.6774208545684814,0.0,0.00016401688480272014,"First, we calculate how many riders can stay upright: 25% of 100 is 25 riders."
+test-630,3,5,0,1,29,0.7101075213407797,1.784714937210083,0.0,8.833023547794028e-05,"Next, we find how many of these 25 riders are women: 60% of 25 is 15 riders."
+test-630,4,5,0,1,27,0.6149371087697887,3.7193763256073,5.8363497531972826,5.836339620458602,"Finally, we determine how many men can stay upright: 25 total riders - 15 women = 10 men."
+test-985,0,3,0,1,37,0.0400488022899097,2.1301050186157227,0.0,-1.1920926823449918e-07,"Edgar eats 18 pretzels a day. His brother eats half as many, so he eats 18 / 2 = 9 pretzels a day."
+test-985,1,3,1,0,39,0.34025031183581533,1.6648938655853271,0.0,-2.3841855067985307e-07,"Recall: Edgar eats 18 pretzels a day. His brother eats half as many, so he eats 18 / 2 = 9 pretzels a day."
+test-985,2,3,0,1,20,0.7380159626358669,0.2705923318862915,0.003080387134104967,0.0030801487155542873,"In a week, his brother eats 9 * 7 = 63 pretzels."
+test-1155,0,4,0,0,48,0.3765176313166855,3.471904993057251,0.0,5.209166556596756e-05,"John buys a cassette with 2 songs. The first song is 5 minutes long. The second song is 60% longer than the first, so its duration is 5 minutes + 60% of 5 minutes."
+test-1155,1,4,1,0,51,0.6257641682954356,2.5543835163116455,0.0,4.732366505777463e-05,"Recall: John buys a cassette with 2 songs. The first song is 5 minutes long. The second song is 60% longer than the first, so its duration is 5 minutes + 60% of 5 minutes."
+test-1155,2,4,0,1,28,0.8894786539399329,1.8761518001556396,0.0,0.0002796185719944333,"60% of 5 minutes is 3 minutes, so the second song is 5 + 3 = 8 minutes long."
+test-1155,3,4,0,1,18,0.4963449395419606,0.581138551235199,16.81270718513042,16.812679648162884,The total duration of the cassette is 5 + 8 = 13 minutes.
+test-815,0,10,0,0,49,0.3583651728386771,3.242090940475464,0.0,-1.7761649360181764e-05,"Tanya uses the same amount of citrus zest as fragrance, so let the amount of citrus zest be $ x $ ounces. Since she uses the same amount of salt as sugar, let the amount of salt be $ x $ ounces as well."
+test-815,1,10,0,1,22,0.6716454412848432,0.045374758541584015,0.0,1.4304569049272686e-06,"She uses twice as much oil as salt, so the amount of oil is $ 2x $ ounces."
+test-815,2,10,0,0,53,0.45811681625355094,7.418375492095947,0.0,-2.0145787857472897e-05,"The total amount of ingredients in the scrub is the sum of salt, oil, fragrance, citrus zest, and sugar. Since the amount of citrus zest and fragrance is $ x $, and the amount of salt and sugar is $ x $, the total is:"
+test-815,3,10,0,1,53,0.5074379917667022,1.6169787645339966,0.0,6.675440090475604e-06,"$$
+x \text{ (citrus zest)} + x \text{ (fragrance)} + x \text{ (salt)} + 2x \text{ (oil)} + x \text{ (sugar)} = 5x
+$$"
+test-815,4,10,0,0,14,0.16228475224599026,2.5917749404907227,0.0,-1.6211963156820275e-05,"The total amount of the scrub is 10 ounces, so:"
+test-815,5,10,0,0,10,0.7529781863444399,0.09988821297883987,0.0,-3.075527274631895e-05,"$$
+5x = 10
+$$"
+test-815,6,10,0,0,7,0.3376457636791449,0.247624933719635,0.0,-1.585434438311495e-05,Solving for $ x $:
+test-815,7,10,0,0,8,0.8033239356600728,0.09933287650346756,0.0,9.655530448071659e-06,"$$
+x = 2
+$$"
+test-815,8,10,1,0,25,0.9444207727357242,4.683897495269775,0.0,2.83703047898598e-05,"Recall: She uses twice as much oil as salt, so the amount of oil is $ 2x $ ounces."
+test-815,9,10,0,1,22,0.014783921172948133,2.8231797218322754,4.41837739944458,4.418338537972886,The amount of oil is $ 2x = 2 \times 2 = 4 $ ounces.
+test-652,0,4,0,1,41,0.5303420268039528,1.6994587182998657,-0.0004840937763219699,-0.007465431815923296,"James hires a horse-drawn carriage from 5 PM to 9 PM, which is a total of 4 hours. He gets 1 hour free, so he is charged for 3 hours."
+test-652,1,4,0,1,60,0.2882277186993394,2.8331081867218018,-0.00032234558602795005,-0.006521954259341101,"The first paid hour is $15, and each subsequent hour is twice the cost. So, the first hour is $15, the second hour is 2 * $15 = $30, and the third hour is also 2 * $15 = $30."
+test-652,2,4,1,0,44,0.4689175335863792,3.2085206508636475,-0.000508769530824793,-0.008255947497701754,"Recall: James hires a horse-drawn carriage from 5 PM to 9 PM, which is a total of 4 hours. He gets 1 hour free, so he is charged for 3 hours."
+test-652,3,4,0,1,20,0.03492832759702502,0.6296771764755249,19.80940584925702,19.8007576260716,The total cost is $15 + $30 + $30 = $75.
+test-134,0,3,0,1,30,0.5317931441254861,1.6301029920578003,0.0,-4.768370445162873e-07,"Tom gets 4 car washes a month, so in a year he gets 4 * 12 = 48 car washes."
+test-134,1,3,1,0,33,0.552095437515129,1.9770656824111938,0.0,-1.1920923270736239e-07,"Recall: Tom gets 4 car washes a month, so in a year he gets 4 * 12 = 48 car washes."
+test-134,2,3,0,1,30,0.9340898594770107,0.5128841996192932,14.704402893778251,14.704402416941207,"Each car wash costs $15, so the total cost for the year is 48 * 15 = 720 dollars."
+test-400,0,3,0,1,35,0.03830085289416996,3.1610209941864014,0.0,-4.19592070102226e-05,"John drinks 2 glasses of milk, each containing 8 ounces. So, the total ounces of milk he drinks is 2 * 8 = 16 ounces."
+test-400,1,3,1,0,38,0.3950652682884612,4.359618663787842,0.0,0.00015816562518011779,"Recall: John drinks 2 glasses of milk, each containing 8 ounces. So, the total ounces of milk he drinks is 2 * 8 = 16 ounces."
+test-400,2,3,0,1,28,0.1200155720396251,0.5067307949066162,4.32867777347564,4.3285981448425375,"Milk has 3 calories per ounce, so the total calories he consumes is 16 * 3 = 48 calories."
+test-1116,0,4,0,0,47,0.34658884626630715,3.342745065689087,0.0,0.0,"Last year, there were 50 students enrolled in the calligraphy class. This year, there is a 20% increase in enrollment, which means 20% of 50 is added to the original number."
+test-1116,1,4,1,0,50,0.051152415727703016,3.6012988090515137,0.0,0.0,"Recall: Last year, there were 50 students enrolled in the calligraphy class. This year, there is a 20% increase in enrollment, which means 20% of 50 is added to the original number."
+test-1116,2,4,0,1,22,0.2730496953424699,2.4557292461395264,0.0,0.0,20% of 50 is 0.20 * 50 = 10.
+test-1116,3,4,0,1,21,0.9956802504828091,1.8014308214187622,16.859375,16.859375,"So, the number of students this year is 50 + 10 = 60."
+test-498,0,5,0,1,28,0.25391998649183944,0.9341708421707153,0.0,0.0,"Ashley brought 5 boxes with 10 oranges each, so she brought 5 * 10 = 50 oranges."
+test-498,1,5,1,0,30,0.6803935586065328,1.0641604661941528,0.0,0.0,"Recall: Ashley brought 5 boxes with 10 oranges each, so she brought 5 * 10 = 50 oranges."
+test-498,2,5,0,1,27,0.7027090324157298,0.02029639296233654,0.0,4.768370445162873e-07,"Brianne brought 20 more oranges than Ashley, so she brought 50 + 20 = 70 oranges."
+test-498,3,5,0,1,19,0.9291230685247301,0.5544633269309998,0.0,0.0021743958350270987,"In total, they have 50 + 70 = 120 oranges."
+test-498,4,5,0,1,24,0.9949404722907454,2.9270107746124268,8.53163765109889,8.53163765109889,"Each pie needs 3 oranges, so they can make 120 / 3 = 40 pies."
+test-185,0,3,0,1,26,0.7620813713006523,0.7788832783699036,0.0,2.1457645118516666e-06,"Jenna picked half as many apples as her mom, so she picked 20 / 2 = 10 apples."
+test-185,1,3,1,0,28,0.7625973189567923,2.0922255516052246,0.0,1.4305101387890318e-06,"Recall: Jenna picked half as many apples as her mom, so she picked 20 / 2 = 10 apples."
+test-185,2,3,0,1,21,0.5162610213479427,2.094388008117676,9.910131454467773,9.910131216049223,The total number of apples they picked is 10 + 20 = 30 apples.
+test-549,0,4,0,1,40,0.3860717563215982,3.1379919052124023,0.0,4.768370445162873e-07,"Jonathan needs 5 times as many toys as James's play set, which has 80 toys. This means he needs 5 * 80 = 400 toys in total."
+test-549,1,4,0,0,36,0.8343975914408754,3.0812325477600098,0.0,5.96046362488778e-07,"He needs 2 more toys than he currently has. Let the number of toys Jonathan currently has be $ x $. Then, $ x + 2 = 400 $."
+test-549,2,4,1,0,43,0.2506337702942619,2.119927167892456,0.0,0.0,"Recall: Jonathan needs 5 times as many toys as James's play set, which has 80 toys. This means he needs 5 * 80 = 400 toys in total."
+test-549,3,4,0,1,25,0.11599539642064438,2.2324228286743164,6.9141146923357155e-06,6.9141146923357155e-06,"Solving for $ x $, we get $ x = 400 - 2 = 398 $."
+test-90,0,5,0,0,40,0.9817240858781537,3.994422197341919,0.0,3.349689723108895e-05,"Ted needs to calculate the total amount of potato salad required for the picnic. An adult dinosaur eats 10 lbs, and a child eats half as much, so a child eats 5 lbs."
+test-90,1,5,0,1,28,0.8047994372884794,1.7279869318008423,0.0,0.15593259041963847,"For the 20 adults, the total amount of salad needed is 20 * 10 = 200 lbs."
+test-90,2,5,0,1,24,0.9431012043694105,1.993028672586661e-05,0.0,-2.8609974833671004e-06,"For the 5 children, the total amount of salad needed is 5 * 5 = 25 lbs."
+test-90,3,5,1,0,27,0.24264659424234813,4.422869682312012,0.0,2.3841585061745718e-07,"Recall: For the 5 children, the total amount of salad needed is 5 * 5 = 25 lbs."
+test-90,4,5,0,1,27,0.6738638931519124,2.6333377361297607,4.079560160636866,4.0795496702739555,"Adding these together, the total amount of potato salad needed is 200 + 25 = 225 lbs."
+test-1238,0,6,0,1,33,0.5327800265053269,2.150052070617676,-1.1920928244535389e-07,-0.00010322369780624285,"Bud buys pasta for $1.00 per box, so for one week he spends 1 * 1 = $1.00 on pasta."
+test-1238,1,6,0,0,12,0.8756440829735669,0.793279230594635,-1.1920928244535389e-07,-6.114623829489574e-05,He spends $3.00 on cheddar cheese.
+test-1238,2,6,0,1,26,0.16255101499230828,2.0867648124694824,-1.1920928244535389e-07,0.00048307879478670657,"For gruyere cheese, he spends twice that amount, which is 2 * 3 = $6.00."
+test-1238,3,6,0,1,22,0.8680483691353614,1.9839057922363281,-1.1920928244535389e-07,-5.459043313038592e-05,"In one week, he spends 1 + 3 + 6 = $10.00."
+test-1238,4,6,1,0,25,0.15305579700066485,1.3748832941055298,-1.1920928244535389e-07,-6.746371217758451e-05,"Recall: In one week, he spends 1 + 3 + 6 = $10.00."
+test-1238,5,6,0,0,22,0.8462165202751376,1.0214821100234985,12.09402112662793,12.093857704050613,"In one year, he spends 10 * 52 = $520.00."
+test-1245,0,6,0,0,81,0.8200801239095041,7.7788190841674805,0.0,5.36440387577386e-06,"Mary makes some strawberry cubes, let's call that number $ s $. She makes 5 times as many blueberry cubes as strawberry cubes minus 4, which can be written as $ 5s - 4 $. The total number of ice cubes is 116, so we can set up the equation:  
+$ s + (5s - 4) = 116 $."
+test-1245,1,6,0,1,20,0.5849326984313064,0.7831711173057556,0.0,1.1920923270736239e-07,"Simplifying the equation:  
+$ 6s - 4 = 116 $."
+test-1245,2,6,0,1,18,0.05125489506773162,0.008257417008280754,0.0,2.3841846541472478e-07,"Adding 4 to both sides:  
+$ 6s = 120 $."
+test-1245,3,6,0,1,16,0.156166769208809,0.6787452101707458,0.0,4.649153936497896e-06,"Dividing both sides by 6:  
+$ s = 20 $."
+test-1245,4,6,1,0,21,0.34458118202681143,5.655928134918213,0.0,5.960455666809139e-07,"Recall: Adding 4 to both sides:  
+$ 6s = 120 $."
+test-1245,5,6,0,1,35,0.291190613997825,1.5256800651550293,12.211448850488523,12.21144753918685,"Substituting back, the number of blueberry cubes is $ 5(20) - 4 = 100 - 4 = 96 $."
+test-257,0,4,0,1,70,0.29342424365134856,4.936792850494385,0.0,-1.9073205692166084e-05,"Each solid 10-foot section of the redwood tree weighs 400 pounds. The tree is 200 feet tall, so it has 200 ÷ 10 = 20 sections. The total weight of the tree is 20 * 400 = 8000 pounds."
+test-257,1,4,1,0,73,0.49485912757206985,1.2113078832626343,0.0,1.5496703831274772e-05,"Recall: Each solid 10-foot section of the redwood tree weighs 400 pounds. The tree is 200 feet tall, so it has 200 ÷ 10 = 20 sections. The total weight of the tree is 20 * 400 = 8000 pounds."
+test-257,2,4,0,1,32,0.40365829021262367,2.011436700820923,0.0,0.009325581719224374,"Termites ate 30% of the wood, which is 0.30 * 8000 = 2400 pounds."
+test-257,3,4,0,1,26,0.43100562682353716,0.2829424738883972,2.0994699001312256,2.0994452241048407,The remaining weight of the tree is 8000 - 2400 = 5600 pounds.
+test-496,0,5,0,1,30,0.17003546655932655,0.6272394061088562,0.0,2.3841856489070778e-07,"Brett is currently 14 years old. In four years, he will be 14 + 4 = 18 years old."
+test-496,1,5,0,0,25,0.788340085303476,1.0321671962738037,0.0,0.0,"Let Angela's current age be $ x $. In four years, she will be $ x + 4 $ years old."
+test-496,2,5,1,0,28,0.5686027559906347,2.425757884979248,0.0,0.0,"Recall: Let Angela's current age be $ x $. In four years, she will be $ x + 4 $ years old."
+test-496,3,5,0,0,35,0.44188886974638586,2.428809404373169,0.0,2.8013793773595808e-05,"According to the problem, in four years Angela will be three times as old as Brett is now:  
+$ x + 4 = 3 \times 14 $"
+test-496,4,5,0,1,35,0.3413461590512491,2.0894827842712402,8.793588504195213,8.793588504195213,"Solving the equation:  
+$ x + 4 = 42 $  
+$ x = 42 - 4 $  
+$ x = 38 $"
+test-1272,0,5,0,1,40,0.009317740415098474,3.3222179412841797,0.0,-7.152549201805414e-07,"Helen booked a hotel for 3 nights, and each night cost $80. So, the total cost for the hotel is 3 * 80 = 240 dollars."
+test-1272,1,5,1,0,42,0.72162474304745,4.716655731201172,0.0,-1.5497195136049413e-06,"Recall: Helen booked a hotel for 3 nights, and each night cost $80. So, the total cost for the hotel is 3 * 80 = 240 dollars."
+test-1272,2,5,0,1,45,0.9099060293040379,4.742678165435791,0.0,5.960460143228374e-07,"Each bus trip was 10% of the hotel night's price, so each bus trip cost 10% of $80, which is 0.10 * 80 = 8 dollars."
+test-1272,3,5,0,1,28,0.6642090292154819,3.1347880363464355,0.0,0.0012423801539611645,"She took the bus 7 times, so the total cost for the bus travels is 7 * 8 = 56 dollars."
+test-1272,4,5,0,1,27,0.6628365798191557,0.708960235118866,19.34375,19.343748211861936,The total amount Helen paid for the hotel and bus travels is 240 + 56 = 296 dollars.
+test-275,0,5,0,0,23,0.2575988974219705,0.7352635860443115,0.0,-2.8610120352823287e-06,Sean has to memorize lines for two scenes and a solo song. The solo song has 54 lines.
+test-275,1,5,1,0,26,0.6122127561841502,3.9766812324523926,0.0,-4.172312060291006e-06,Recall: Sean has to memorize lines for two scenes and a solo song. The solo song has 54 lines.
+test-275,2,5,0,1,54,0.07024606726227145,4.736266613006592,0.0,0.001106072638151545,"For the first scene, it has twice the number of lines as the solo song, so 2 * 54 = 108 lines. Of these, a third are his lines, so 108 / 3 = 36 lines."
+test-275,3,5,0,1,55,0.936077955543095,0.6580385565757751,0.0,0.3362975206828125,"For the second scene, it has six more lines than the solo song, so 54 + 6 = 60 lines. Of these, four-fifths are his lines, so 60 * (4/5) = 48 lines."
+test-275,4,5,0,1,41,0.27870721332570936,1.3856797218322754,34.26187515258789,34.26186990739279,Adding all the lines Sean has to memorize: 54 (solo song) + 36 (first scene) + 48 (second scene) = 138 lines.
+test-967,0,4,0,1,30,0.8301443917589898,0.9371262788772583,0.0,18.965017371810973,"Nani is 8 years old. His brother is twice his age, so he is 8 * 2 = 16 years old."
+test-967,1,4,0,1,40,0.5295296249528143,1.2571918964385986,0.0,0.0001003691868390888,"Nani's sister is 25% younger than him, which means she is 8 - (25% of 8) = 8 - 2 = 6 years old."
+test-967,2,4,1,0,43,0.06328696503387199,4.090172290802002,0.0,0.0002982171718031168,"Recall: Nani's sister is 25% younger than him, which means she is 8 - (25% of 8) = 8 - 2 = 6 years old."
+test-967,3,4,0,1,24,0.639390097241117,0.7531535625457764,21.982481718063354,21.982481718063354,The total age of all three family members is 8 + 16 + 6 = 30 years.
+test-993,0,4,0,1,56,0.579686955437464,3.728916645050049,0.0,0.00012193529843784745,"The first plane flies to Greece for three-quarters of its flights, which means it flies to France and Germany for the remaining one-quarter. Since the flights are split equally between France and Germany, the first plane flies to France and Germany for 1/8 of its total flights."
+test-993,1,4,0,1,50,0.9416538141960143,2.6300714015960693,0.0,-5.5310715424639056e-05,"The other plane flies exclusively to Poland and makes 44 trips, which is half the number of trips the first plane makes throughout each day. This means the first plane makes 44 * 2 = 88 trips in a day."
+test-993,2,4,1,0,59,0.6321291610349786,4.7024641036987305,0.0,5.9599558142053866e-06,"Recall: The first plane flies to Greece for three-quarters of its flights, which means it flies to France and Germany for the remaining one-quarter. Since the flights are split equally between France and Germany, the first plane flies to France and Germany for 1/8 of its total flights."
+test-993,3,4,0,1,50,0.5434228748459046,5.233837604522705,4.887569048150908e-06,-6.663553017460799e-05,"Since the first plane makes 88 trips in a day, and it flies to France and Germany for 1/8 of its total flights, it flies to France for 88 / 8 = 11 flights in a day."
+test-755,0,3,0,1,42,0.38469874676133664,0.369162380695343,0.0,0.0,"Joey played 2 matches on Monday and 1 match on Friday. On Saturday, he played double the number of matches he played on Monday, which is 2 * 2 = 4 matches."
+test-755,1,3,1,0,44,0.434637548519362,4.396872520446777,0.0,1.9073465935548484e-06,"Recall: Joey played 2 matches on Monday and 1 match on Friday. On Saturday, he played double the number of matches he played on Monday, which is 2 * 2 = 4 matches."
+test-755,2,3,0,1,26,0.31139777068021024,0.8980692625045776,15.906252026557915,15.906251907348633,Adding these together: 2 (Monday) + 1 (Friday) + 4 (Saturday) = 7 matches.
+test-1071,0,5,0,1,71,0.01363511702942577,6.221142768859863,-4.529939587882836e-06,-0.010888783866903395,"Kayla's party has 25 classmates, 7 girls in her dance class, and 13 family members, totaling 25 + 7 + 13 = 45 people. However, 4 people said they could not come, so the actual number of attendees is 45 - 4 = 41."
+test-1071,1,5,1,0,74,0.7785312160167684,5.500545978546143,-5.1259858153684945e-06,-0.014397141162589833,"Recall: Kayla's party has 25 classmates, 7 girls in her dance class, and 13 family members, totaling 25 + 7 + 13 = 45 people. However, 4 people said they could not come, so the actual number of attendees is 45 - 4 = 41."
+test-1071,2,5,0,1,43,0.8197509625398982,5.680675983428955,-3.576260496629402e-07,-0.0053086836414877325,"The base fee for the theater is $125 for a party of 20. Since there are 41 attendees, there are 41 - 20 = 21 additional guests."
+test-1071,3,5,0,1,18,0.28044077713976767,1.1043953895568848,-3.218639221813646e-06,0.025016831146757568,The cost for additional guests is 21 * $6 = $126.
+test-1071,4,5,0,1,22,0.2581907625337724,1.228460431098938,37.11013817788535,37.091393134061946,The total cost of the party is $125 + $126 = $251.
+test-472,0,8,0,1,61,0.5272652548146236,5.903728008270264,0.0,-0.004907163426878469,"Matt wants to eat five cookies in total. According to the problem, the number of cookies he eats is half the number of carrot sticks he eats, plus two extra. Let the number of carrot sticks be $ x $. Then the number of cookies is $ \frac{x}{2} + 2 $."
+test-472,1,8,0,1,15,0.3179301097250754,3.469877243041992,0.0,-0.00480119352789643,"We are told that the total number of cookies is 5, so:"
+test-472,2,8,1,0,64,0.3422638341038545,4.963993549346924,0.0,-0.004917415332499786,"Recall: Matt wants to eat five cookies in total. According to the problem, the number of cookies he eats is half the number of carrot sticks he eats, plus two extra. Let the number of carrot sticks be $ x $. Then the number of cookies is $ \frac{x}{2} + 2 $."
+test-472,3,8,0,0,16,0.7055726929201963,0.01805909164249897,0.0,-0.004921349230585292,"$$
+\frac{x}{2} + 2 = 5
+$$"
+test-472,4,8,0,0,9,0.43169639849300545,0.19244889914989471,0.0,1.7738204873163568,Subtracting 2 from both sides:
+test-472,5,8,0,0,13,0.14170724037842175,3.4118356779799797e-06,0.0,-0.004921826067459278,"$$
+\frac{x}{2} = 3
+$$"
+test-472,6,8,0,0,8,0.0059275683019511805,0.004613819066435099,0.0,-0.004553656500320358,Multiplying both sides by 2:
+test-472,7,8,0,1,8,0.5113413643489257,2.436809722894395e-07,0.185125932097435,0.1802037484021639,"$$
+x = 6
+$$"
+test-903,0,4,0,1,75,0.7846494738841625,4.0030927658081055,0.0,8.940668180912326e-06,"Jo needs to calculate the total material required for 20 small masks and 8 large masks. For the small masks, she needs 2 yards per 4 masks, so each small mask requires 2 / 4 = 0.5 yards. For 20 small masks, she needs 20 * 0.5 = 10 yards."
+test-903,1,4,0,1,60,0.7013909140505133,8.295802217617165e-06,0.0,5.960462274856582e-07,"For the large masks, she needs 2.25 yards per 3 masks, so each large mask requires 2.25 / 3 = 0.75 yards. For 8 large masks, she needs 8 * 0.75 = 6 yards."
+test-903,2,4,1,0,63,0.7815279332048084,4.895827293395996,0.0,3.8146895420254623e-06,"Recall: For the large masks, she needs 2.25 yards per 3 masks, so each large mask requires 2.25 / 3 = 0.75 yards. For 8 large masks, she needs 8 * 0.75 = 6 yards."
+test-903,3,4,0,1,17,0.38414456219182536,0.7410799264907837,3.9568096399306683,3.956809520721386,The total material needed is 10 + 6 = 16 yards.
+test-216,0,4,0,1,73,0.4641305725985776,6.691065788269043,0.0,-2.3125439135185388e-05,"Janeth borrowed $2000 and is promised to return it with an additional 10% of the amount, which is 2000 * 0.10 = 200 dollars. So, the total amount she needs to repay is 2000 + 200 = 2200 dollars."
+test-216,1,4,0,1,41,0.036369164001931575,1.9439135789871216,0.0,-2.5151827202307686e-05,"She is going to pay $165 a month for 12 months, so the total amount she will pay is 165 * 12 = 1980 dollars."
+test-216,2,4,1,0,76,0.9124290899309246,5.434535026550293,0.0,-6.150981901242858e-05,"Recall: Janeth borrowed $2000 and is promised to return it with an additional 10% of the amount, which is 2000 * 0.10 = 200 dollars. So, the total amount she needs to repay is 2000 + 200 = 2200 dollars."
+test-216,3,4,0,1,24,0.6366653413633517,1.3428046703338623,0.0010777992838484352,0.001009017723646366,Her remaining balance by then is 2200 - 1980 = 220 dollars.
+test-129,0,5,0,1,87,0.798477007479407,5.272947311401367,3.2187398673395364,1.343751073409301,"The hospital sees 500 people a day, and each patient is seen for an average of 24 minutes. To find the total time spent by all patients, we calculate 500 * 24 = 12,000 minutes. Converting this to hours, we divide by 60, giving 12,000 / 60 = 200 hours."
+test-129,1,5,0,1,35,0.7602358551941967,4.428411960601807,-1.8437651394249315,3.6406154652596,"The doctors charge $150 per hour, so the total doctor's payment is 200 * 150 = $30,000."
+test-129,2,5,1,0,90,0.899814300356001,2.984879970550537,2.2499890328804213,1.5937103063224924,"Recall: The hospital sees 500 people a day, and each patient is seen for an average of 24 minutes. To find the total time spent by all patients, we calculate 500 * 24 = 12,000 minutes. Converting this to hours, we divide by 60, giving 12,000 / 60 = 200 hours."
+test-129,3,5,0,1,36,0.3622224295816935,2.2109603881835938,-5.218720555856635,-2.161176768413206,"The hospital charges patients $200 per hour, so the total charge to patients is 200 * 200 = $40,000."
+test-129,4,5,0,1,38,0.9815510059994267,2.406804323196411,9.273084225000048,10.179255432114424,"The profit is the total charge to patients minus the doctor's payment: 40,000 - 30,000 = $10,000."
+test-1228,0,3,0,1,28,0.15851660579635174,0.0318654328584671,0.0,0.00016735559722746984,"Samantha has 12 fewer paintings than Shelley, so Shelley has 27 + 12 = 39 paintings."
+test-1228,1,3,1,0,29,0.19450942151924966,1.7986115217208862,0.0,0.0001783209455652468,"Recall: Samantha has 12 fewer paintings than Shelley, so Shelley has 27 + 12 = 39 paintings."
+test-1228,2,3,0,1,26,0.35447317829590397,0.1109413430094719,17.592405557632446,17.592404127121995,"Shelley has 8 paintings more than Kim, so Kim has 39 - 8 = 31 paintings."
+test-344,0,5,0,0,9,0.700089123077614,0.22998780012130737,0.0,-1.6689280641912774e-06,Juice Box A costs 4 dollars.
+test-344,1,5,1,0,11,0.019141470871264166,0.912592351436615,0.0,3.0994303870102158e-06,Recall: Juice Box A costs 4 dollars.
+test-344,2,5,0,1,27,0.7352582011311831,0.5447788834571838,0.0,4.982707977296961,"Juice Box B is 5 dollars more than Juice Box A, so it costs 4 + 5 = 9 dollars."
+test-344,3,5,0,1,28,0.5715587801616956,3.0594866984756663e-05,3.2186455882765586e-06,0.4775615930468575,"Juice Box C is 7 dollars more than Juice Box A, so it costs 4 + 7 = 11 dollars."
+test-344,4,5,0,1,21,0.24207966979200135,0.7875533699989319,0.04434063656935905,0.04433861001348305,Juice Box C is 11 - 9 = 2 dollars more than Juice Box B.
+test-1164,0,8,0,1,23,0.18514161515939986,0.27936652302742004,0.0,0.0,"Cole hid 3 dozen eggs, which is 3 * 12 = 36 eggs in total."
+test-1164,1,8,0,0,7,0.7580746928341441,0.012426330707967281,0.0,0.0,Lamar finds 5 eggs.
+test-1164,2,8,1,0,26,0.4199819570625165,2.9604392051696777,0.0,0.0,"Recall: Cole hid 3 dozen eggs, which is 3 * 12 = 36 eggs in total."
+test-1164,3,8,0,1,23,0.5731405723704375,1.8913483619689941,0.0,0.0,"Stacy finds twice as many as Lamar, so she finds 5 * 2 = 10 eggs."
+test-1164,4,8,0,1,22,0.23673356878784502,0.0001221559359692037,0.0,0.0,"Charlie finds 2 less than Stacy, so he finds 10 - 2 = 8 eggs."
+test-1164,5,8,0,1,22,0.7138158488992904,2.309566298208665e-05,0.0,0.0,"Mei finds half as many as Charlie, so she finds 8 / 2 = 4 eggs."
+test-1164,6,8,0,1,25,0.8637627475626694,0.7962667942047119,0.0,2.3603161025675945e-05,The total number of eggs found is 5 + 10 + 8 + 4 = 27 eggs.
+test-1164,7,8,0,1,21,0.8949592620642776,0.7466394901275635,22.28125,22.28125,The number of eggs still hidden in the yard is 36 - 27 = 9.
+test-35,0,3,0,1,105,0.8103115760161889,4.603717803955078,0.0,1.3231996490503661e-05,"Mike plays ping pong for a total of 40 minutes. In the first 20 minutes, he scores 4 points. In the second 20 minutes, he scores 25% more points than in the first 20 minutes. To find the number of points he scores in the second 20 minutes, we calculate 25% of 4, which is 1 point. Therefore, he score"
+test-35,1,3,1,0,108,0.1004216369837837,6.880378246307373,0.0,9.655799658503383e-06,"Recall: Mike plays ping pong for a total of 40 minutes. In the first 20 minutes, he scores 4 points. In the second 20 minutes, he scores 25% more points than in the first 20 minutes. To find the number of points he scores in the second 20 minutes, we calculate 25% of 4, which is 1 point. Therefore, "
+test-35,2,3,0,1,18,0.18827941391234093,0.7231862545013428,2.3841830625315197e-06,-8.702219020051416e-06,The total number of points he scores is 4 + 5 = 9 points.
+test-288,0,5,0,1,41,0.44049583318501173,2.4583823680877686,0.0,0.014708723290816295,"Each flagstone weighs 75 pounds, and there are 80 flagstones. The total weight of the flagstones is 80 * 75 = 6000 pounds."
+test-288,1,5,0,0,42,0.06522983258952386,3.635178565979004,0.0,0.005386413889929997,"The delivery trucks can carry a total weight of 2000 pounds per trip. Since 6000 pounds is more than 2000 pounds, the company will need multiple trips."
+test-288,2,5,1,0,45,0.42674703623912436,7.101664066314697,0.0,0.0037210265871294723,"Recall: The delivery trucks can carry a total weight of 2000 pounds per trip. Since 6000 pounds is more than 2000 pounds, the company will need multiple trips."
+test-288,3,5,0,1,36,0.3947422574489625,5.852560997009277,0.0,0.019837937667034566,"To find the number of trips needed, we divide the total weight by the weight capacity of one truck: 6000 / 2000 = 3."
+test-288,4,5,0,0,20,0.27185274848852736,3.8204174041748047,0.0,-0.0014896007492097851,"Since the flagstones must be transported in one trip, the number of trucks needed is 3."
+test-547,0,5,0,0,12,0.43721657158275895,0.13424479961395264,0.0,6.520515160701734e-05,Ali starts by calling 3 families in the first round.
+test-547,1,5,0,1,31,0.7577296702077931,1.6383728981018066,0.0,0.00022528196178228654,"In the second round, each of those 3 families calls 3 other families, so 3 * 3 = 9 new families are notified."
+test-547,2,5,1,0,15,0.3561631337530091,3.186077833175659,0.0,8.34461395982089e-07,Recall: Ali starts by calling 3 families in the first round.
+test-547,3,5,0,1,32,0.3277620307403001,0.20692968368530273,0.0,1.656999257448888e-05,"In the third round, each of those 9 families calls 3 other families, so 9 * 3 = 27 new families are notified."
+test-547,4,5,0,1,34,0.30701912216942273,0.0059371571987867355,23.093761444027216,23.093757867754448,"In the fourth round, each of those 27 families calls 3 other families, so 27 * 3 = 81 new families are notified."
+test-634,0,6,0,0,10,0.492518074892234,0.026215894147753716,0.0,9.893600690702442e-05,Tommy caught 3 more fish than Darren.
+test-634,1,6,1,0,12,0.7625268269371841,0.1395842432975769,0.0,3.1827470593270846e-05,Recall: Tommy caught 3 more fish than Darren.
+test-634,2,6,0,0,9,0.2027877178963453,0.02652445062994957,0.0,-2.5868017019092804e-05,Darren caught 6 less than Naomi.
+test-634,3,6,0,0,8,0.39789846082497404,0.028165966272354126,0.0,-2.1814919364260277e-05,Naomi caught 17 fish.
+test-634,4,6,0,1,16,0.4356119392473006,0.25417447090148926,0.0,0.0015566901365389185,"So, Darren caught 17 - 6 = 11 fish."
+test-634,5,6,0,1,22,0.6353731723550147,1.3652372360229492,15.500368788838387,15.50034041742947,"Tommy caught 3 more than Darren, so 11 + 3 = 14 fish."
+test-739,0,5,0,1,23,0.673076446274384,0.6806955337524414,4.172304898020229e-06,0.05602566693414701,"A gallon jar costs $5, and a half-gallon jar costs $5 - $2 = $3."
+test-739,1,5,0,1,20,0.6970991483341651,1.5462759733200073,-2.503391243635633e-06,-0.015145475498457017,The cost of 10 gallon jars is 10 * $5 = $50.
+test-739,2,5,1,0,23,0.8225488218547198,1.720499038696289,-2.503391243635633e-06,-0.015146667589419849,Recall: The cost of 10 gallon jars is 10 * $5 = $50.
+test-739,3,5,0,1,22,0.5826892216899469,0.00012351758778095245,2.8610108984139515e-06,0.06392541994864587,The cost of 16 half-gallon jars is 16 * $3 = $48.
+test-739,4,5,0,1,18,0.3545830833155835,1.043144702911377,21.32695937157058,21.30641484820802,The total amount she spent is $50 + $48 = $98.
+test-1182,0,6,0,0,16,0.5687886411459258,0.8309606313705444,0.0,-0.0019423982578246068,Bob spends $27000 to buy books for 3 schools.
+test-1182,1,6,0,1,35,0.564415288794693,0.8676480054855347,0.0,0.006040390582256805,"He can buy 100 books for $500, so the cost per book is $500 / 100 = $5 per book."
+test-1182,2,6,0,0,14,0.2783497745403337,1.6083346605300903,0.0,-0.0035381983014985963,The total amount of money available is $27000.
+test-1182,3,6,1,0,19,0.8220051901362931,5.866248607635498,0.0,-0.0008532975314494706,Recall: Bob spends $27000 to buy books for 3 schools.
+test-1182,4,6,0,1,33,0.39809270556066123,4.826447486877441,0.0,0.007135542416904173,"To find out how many books can be bought in total, we divide $27000 by $5, which gives 5400 books."
+test-1182,5,6,0,1,33,0.9209203386432881,0.7989370822906494,21.799714952207296,21.79537181878959,"Since the books are distributed equally among 3 schools, we divide 5400 by 3, which gives 1800 books per school."
+test-1216,0,5,0,1,41,0.13533998311747797,3.3543365001678467,0.0,0.0,"The bus initially had 20 people. At the first stop, 40 people entered, making the total number of people on the bus 20 + 40 = 60."
+test-1216,1,5,0,1,69,0.08148203466772541,3.690613269805908,0.0,0.0,"At the second station, 3/4 of the people who entered at the first station (which was 40) entered the bus. This is 3/4 * 40 = 30 people. Adding this to the previous total, the bus now has 60 + 30 = 90 people."
+test-1216,2,5,1,0,44,0.8649487446802395,5.318276405334473,0.0,0.0,"Recall: The bus initially had 20 people. At the first stop, 40 people entered, making the total number of people on the bus 20 + 40 = 60."
+test-1216,3,5,0,1,29,0.36102136972914045,2.393566608428955,1.1920928244535389e-07,9.989240788144116e-05,"At the third station, the number of passengers on the bus doubled. This means 90 * 2 = 180 people."
+test-1216,4,5,0,0,34,0.06937329613248533,2.191098690032959,16.96875,15.53125,"The bus has a capacity of 200 people. Therefore, the number of remaining spaces is 200 - 180 = 20."
+test-1195,0,3,0,1,103,0.7172877126247486,7.516133785247803,0.0,-0.20661221446970757,"Mr. Maxim observes that 50 people entered the restaurant in the morning. At 10:00, 40 more people entered and ordered the same amount of food as the first group. Then, twice as many people as the 10:00 group entered, so 40 * 2 = 80 people. Finally, by evening, 3 times as many people as the first gro"
+test-1195,1,3,1,0,106,0.671396341477498,5.403980731964111,0.0,-0.287002706857173,"Recall: Mr. Maxim observes that 50 people entered the restaurant in the morning. At 10:00, 40 more people entered and ordered the same amount of food as the first group. Then, twice as many people as the 10:00 group entered, so 40 * 2 = 80 people. Finally, by evening, 3 times as many people as the f"
+test-1195,2,3,0,1,27,0.47110224547326685,1.4158531427383423,17.93821940763155,17.64517284381146,Adding these together: 50 + 40 + 80 + 150 = 320 people.
+test-284,0,4,0,1,98,0.3145322421799046,4.656147003173828,0.0,0.0006040874338850699,"Alani wrote 20 stories in the first week, Braylen wrote 40 stories, and Margot wrote 60 stories. In the second week, each of them doubled the number of stories they wrote in the first week. So, Alani wrote 20 * 2 = 40 stories, Braylen wrote 40 * 2 = 80 stories, and Margot wrote 60 * 2 = 120 stories."
+test-284,1,4,1,0,101,0.8413649413366762,5.830921649932861,0.0,-3.0994362987257773e-06,"Recall: Alani wrote 20 stories in the first week, Braylen wrote 40 stories, and Margot wrote 60 stories. In the second week, each of them doubled the number of stories they wrote in the first week. So, Alani wrote 20 * 2 = 40 stories, Braylen wrote 40 * 2 = 80 stories, and Margot wrote 60 * 2 = 120 "
+test-284,2,4,0,1,31,0.9545082818366412,0.8163672089576721,0.0,0.0008268710531140755,The total number of stories they wrote in the second week is 40 + 80 + 120 = 240 stories.
+test-284,3,4,0,1,32,0.02538948740661906,0.03386777266860008,19.40538263320923,19.405378937726546,The total number of stories they wrote altogether is 20 + 40 + 60 + 240 = 360 stories.
+test-1210,0,4,0,1,38,0.39264862168779513,0.5569224953651428,0.0,1.1920918296937089e-07,"They fill up 10 packs of balloons, each with 30 balloons, so the total number of balloons is 10 * 30 = 300 balloons."
+test-1210,1,4,0,0,14,0.12527064222330164,0.948205828666687,0.0,9.536733571735567e-07,"By the end of the afternoon, 12 balloons are left."
+test-1210,2,4,1,0,41,0.9928151500577586,3.235435724258423,0.0,2.0980604013232096e-05,"Recall: They fill up 10 packs of balloons, each with 30 balloons, so the total number of balloons is 10 * 30 = 300 balloons."
+test-1210,3,4,0,1,21,0.6355716010561779,0.8356247544288635,12.687505483623909,12.687505006786814,The number of balloons thrown is 300 - 12 = 288 balloons.
+test-16,0,4,0,0,28,0.40641678624517696,4.8007683753967285,0.0,2.2649725792689424e-06,"The two trains travel westward for 80 miles each.  
+Therefore, each train covers 80 miles in the first day."
+test-16,1,4,1,0,31,0.1421319514189895,3.71460223197937,0.0,8.344641742041858e-07,"Recall: The two trains travel westward for 80 miles each.  
+Therefore, each train covers 80 miles in the first day."
+test-16,2,4,0,0,31,0.14748951348813844,0.6389219760894775,0.0,2.0265549025566543e-06,"The two trains then travel northward for 150 miles each.  
+Therefore, each train covers 150 miles in the second day."
+test-16,3,4,0,1,27,0.8666090764559645,0.23846492171287537,9.843880057334843,9.843879461288566,The total distance covered by each train in the two days is 80 + 150 = 230 miles.
+test-1117,0,3,0,1,81,0.5114920143771782,8.156054496765137,0.0,-0.00034193741115018383,"The light blinks 255 times in 5 minutes, so the blinking rate is 255 times per 5 minutes.  
+To find the time it takes to blink 459 times, we first determine how many 255-time intervals are in 459 times:  
+459 ÷ 255 = 1.800..."
+test-1117,1,3,1,0,84,0.16291179601388028,6.330657005310059,0.0,-0.00025849822816326196,"Recall: The light blinks 255 times in 5 minutes, so the blinking rate is 255 times per 5 minutes.  
+To find the time it takes to blink 459 times, we first determine how many 255-time intervals are in 459 times:  
+459 ÷ 255 = 1.800..."
+test-1117,2,3,0,1,27,0.8928293074217152,5.156887054443359,0.00042429513993624823,3.574797344185754e-05,"Since each interval takes 5 minutes, the total time is 1.800... × 5 = 9 minutes."
+test-737,0,6,0,1,27,0.9106207302279238,1.5789010524749756,0.0,1.394721221004147e-05,"Peter uses 4 ounces for each giant cube, so 3 giant cubes use 3 * 4 = 12 ounces."
+test-737,1,6,1,0,30,0.7053130391381187,0.9773527979850769,0.0,8.582903888054716e-06,"Recall: Peter uses 4 ounces for each giant cube, so 3 giant cubes use 3 * 4 = 12 ounces."
+test-737,2,6,0,1,27,0.7162737307255599,0.39668211340904236,0.0,2.264918066430255e-06,"He uses 2 ounces for each medium cube, so 7 medium cubes use 7 * 2 = 14 ounces."
+test-737,3,6,0,0,30,0.7235742512845528,0.00013513195153791457,0.0,0.0005171126822460792,"He uses 0.5 ounces for each small cube, so 8 small cubes use 8 * 0.5 = 4 ounces."
+test-737,4,6,0,1,21,0.7298089625221481,1.2623947858810425,0.0,5.376233002607478e-05,The total water used is 12 + 14 + 4 = 30 ounces.
+test-737,5,6,0,0,25,0.5196081403156461,2.3881521224975586,9.7500581741333,9.468814849892624,"Peter started with 32 ounces, so the remaining water is 32 - 30 = 2 ounces."
+test-419,0,3,0,1,65,0.823493134639761,1.1099056005477905,0.8125,0.5457366036280291,"Stanley is at an elevation of 10,000 feet, and the comb falls 4,000 feet to a ledge below. This means the comb is now at an elevation of 10,000 - 4,000 = 6,000 feet."
+test-419,1,3,1,0,67,0.6911885197769689,4.608870983123779,2.796875,2.4347383256899775,"Recall: Stanley is at an elevation of 10,000 feet, and the comb falls 4,000 feet to a ledge below. This means the comb is now at an elevation of 10,000 - 4,000 = 6,000 feet."
+test-419,2,3,0,0,59,0.6973164426626367,1.4956692457199097,4.3014524430036545,5.188373051918461,"Oliver is at an elevation of 3,000 feet. To reach the elevation of Stanley's comb, which is 6,000 feet, Oliver must climb 6,000 - 3,000 = 3,000 feet."
+test-270,0,3,0,1,92,0.38726457915960755,2.12288761138916,0.0,0.0,"Mary buys 3 bags of M&Ms. The first bag has 300 M&Ms. The second bag has 12 more M&Ms than the first, so it has 300 + 12 = 312 M&Ms. The third bag has half the number of M&Ms as the first bag, so it has 300 / 2 = 150 M&Ms."
+test-270,1,3,1,0,95,0.18022138882203653,5.941166877746582,0.0,0.0,"Recall: Mary buys 3 bags of M&Ms. The first bag has 300 M&Ms. The second bag has 12 more M&Ms than the first, so it has 300 + 12 = 312 M&Ms. The third bag has half the number of M&Ms as the first bag, so it has 300 / 2 = 150 M&Ms."
+test-270,2,3,0,1,32,0.8001465394041192,2.7115070819854736,21.099883452056588,21.099883452056588,"Adding these together, the total number of M&Ms is 300 + 312 + 150 = 762."
+test-745,0,6,0,1,34,0.8129994204848935,0.7965008616447449,0.0,-1.704673008617874e-05,"Mark buys 3 packs at $1800 each, so the total cost is 3 * 1800 = 5400 dollars."
+test-745,1,6,1,0,37,0.08072942167368968,4.4283952713012695,0.0,-1.8000401674100885e-05,"Recall: Mark buys 3 packs at $1800 each, so the total cost is 3 * 1800 = 5400 dollars."
+test-745,2,6,0,1,48,0.17442535469903642,1.4781970977783203,0.0,1.99073474789202e-05,"He gets 1 card worth $4000 and another worth $1000, so the total value of these two cards is 4000 + 1000 = 5000 dollars."
+test-745,3,6,0,1,39,0.26558344961408153,1.0018433332443237,0.0,1.6569629110563255e-05,"There are 30 more cards worth an average of $50 each, so the total value of these cards is 30 * 50 = 1500 dollars."
+test-745,4,6,0,1,27,0.8002006207478382,0.3754105567932129,0.0,0.017103586548437022,The total value of all the cards is 5000 + 1500 = 6500 dollars.
+test-745,5,6,0,1,35,0.3279381595582189,2.3113276958465576,29.368539661163823,29.368519157369803,His profit is the total value of the cards minus the cost of the packs: 6500 - 5400 = 1100 dollars.
+test-58,0,6,0,0,15,0.7086727191051987,1.5487709045410156,0.0,0.0,Stephen's final bill before any fees is $40.00.
+test-58,1,6,0,1,28,0.7823295314553788,1.4332340955734253,0.0,2.0265558760002023e-06,"The delivery vendor added a 25% fee, which is 0.25 * 40 = 10 dollars."
+test-58,2,6,0,1,19,0.5174360046946651,3.119391679763794,0.0,0.0007830193478142178,The total fee and delivery cost is 10 + 3 = 13 dollars.
+test-58,3,6,1,0,31,0.45647885649310815,4.776943683624268,0.0,-1.1920928244535389e-07,"Recall: The delivery vendor added a 25% fee, which is 0.25 * 40 = 10 dollars."
+test-58,4,6,0,0,11,0.9099967640280606,0.818254292011261,0.0,5.960462274856582e-07,Stephen also added a $4.00 tip.
+test-58,5,6,0,1,24,0.7566722996545016,1.572701096534729,20.44671833514849,20.446718215939207,The final price of Stephen's groceries is 40 + 13 + 4 = 57 dollars.
+test-91,0,4,0,1,33,0.44882496858184395,0.43374547362327576,0.0,0.0,"Jan has three times the number of pets as Marcia, so if Cindy has 4 pets, Marcia has 4 + 2 = 6 pets."
+test-91,1,4,0,1,26,0.15281911968142636,0.7524682879447937,0.0,7.152555099310121e-07,"Jan has 3 times as many pets as Marcia, so Jan has 3 * 6 = 18 pets."
+test-91,2,4,1,0,36,0.6325441046469116,1.071347951889038,0.0,1.1920928244535389e-07,"Recall: Jan has three times the number of pets as Marcia, so if Cindy has 4 pets, Marcia has 4 + 2 = 6 pets."
+test-91,3,4,0,1,32,0.1769660088535372,1.5101724863052368,17.238850423134863,17.238850423134863,The total number of pets is 4 (Cindy) + 6 (Marcia) + 18 (Jan) = 28 pets.
+test-1100,0,6,0,0,12,0.5122224095001495,0.34427765011787415,0.0,-7.986680429894477e-06,Bobby takes a 30-minute lunch each day.
+test-1100,1,6,0,0,33,0.8959696721858674,1.372626781463623,0.0,0.000733549349945406,"He also takes 2 breaks, each 15 minutes, so the total break time per day is 2 * 15 = 30 minutes."
+test-1100,2,6,0,1,25,0.31608020378500323,1.5503840446472168,0.0,0.006097639718063874,"Thus, his total time for lunch and breaks per day is 30 + 30 = 60 minutes."
+test-1100,3,6,0,1,22,0.9467436825606468,0.03840715065598488,0.0,0.3577211212177076,"After 5 days, the total time is 60 * 5 = 300 minutes."
+test-1100,4,6,1,0,14,0.1928870204716916,3.5213825702667236,0.0,5.8646503021009266e-05,Recall: Bobby takes a 30-minute lunch each day.
+test-1100,5,6,0,0,19,0.7910187054913302,0.4090428054332733,0.9740798473358154,10.344817997123755,"Converting minutes to hours, 300 / 60 = 5 hours."
+test-860,0,6,0,0,10,0.6108926701450443,1.313429832458496,0.0,1.1920913038920844e-06,Jennifer bought a total of 12 oranges.
+test-860,1,6,0,1,23,0.8122678209742187,1.2318354845046997,0.0,0.0020605530591808474,"She gave her three daughters 2 oranges each, so that's 3 * 2 = 6 oranges."
+test-860,2,6,0,0,7,0.5222627979471512,1.7869406938552856,0.0,-2.3841846541472478e-07,Her boy got 3 oranges.
+test-860,3,6,1,0,13,0.7095307583634994,1.2516388893127441,0.0,5.006774017601856e-06,Recall: Jennifer bought a total of 12 oranges.
+test-860,4,6,0,1,16,0.9126687247694082,1.1657216548919678,0.0,-7.152555099310121e-07,"In total, she gave away 6 + 3 = 9 oranges."
+test-860,5,6,0,0,23,0.13487625477079712,3.405334234237671,12.390628814697266,7.812903642654646,"She originally had 12 oranges, so she remained with 12 - 9 = 3 oranges."
+test-1196,0,4,0,1,39,0.7715208720856912,1.235978364944458,0.0,4.4940869088350155e-05,"Alain's mom bought 5 packs of red pens, and each pack has 5 pens, so the total number of red pens is 5 * 5 = 25 pens."
+test-1196,1,4,0,1,31,0.05716454642595936,2.116671562194824,0.0,2.288792165927589e-05,"She also bought twice the amount of black pens than the red pens, which means she bought 2 * 25 = 50 black pens."
+test-1196,2,4,1,0,42,0.08241654053773162,3.2987382411956787,0.0,1.3351345046430652e-05,"Recall: Alain's mom bought 5 packs of red pens, and each pack has 5 pens, so the total number of red pens is 5 * 5 = 25 pens."
+test-1196,3,4,0,1,25,0.5176706786705761,0.6152985095977783,11.71876156330108,11.718761086464035,The total number of pens is 25 (red) + 50 (black) = 75 pens.
+test-830,0,6,0,1,31,0.0024604932439482585,3.191141366958618,0.0,0.00016401521122588747,"Britany records 18 4-minute TikTok videos each week, which totals 18 * 4 = 72 minutes per week."
+test-830,1,6,0,1,28,0.774865046739482,0.1595936119556427,0.0,0.003829118638691398,"She spends 2 hours a week writing amateur songs, which is 2 * 60 = 120 minutes per week."
+test-830,2,6,0,1,31,0.10398133417765076,1.4168777465820312,0.0,0.00020334489613560436,"She spends 15 minutes each day for 6 days a week, which totals 15 * 6 = 90 minutes per week."
+test-830,3,6,0,1,35,0.6075408633971222,4.499123573303223,0.0,8.569409746977605,"Adding these times together, the total time spent on TikTok in a week is 72 + 120 + 90 = 282 minutes."
+test-830,4,6,1,0,31,0.5702741924791085,4.446440696716309,0.0,0.0002545903215320777,"Recall: She spends 2 hours a week writing amateur songs, which is 2 * 60 = 120 minutes per week."
+test-830,5,6,0,1,30,0.335807396721168,1.5644910335540771,23.26217833161354,23.26214578790939,"In a month with four weeks, the total time spent on TikTok is 282 * 4 = 1128 minutes."
+test-1025,0,4,0,1,39,0.3780654483467295,0.6904959678649902,0.0,5.125904863234609e-06,"The team hid a total of 100 eggs. The Smith twins found 30 eggs each, so together they found 30 + 30 = 60 eggs."
+test-1025,1,4,0,1,27,0.36205489178930694,1.3249688148498535,1.1920928244535389e-07,0.018877315680583706,The total number of eggs found by the twins and their friends is 100 - 10 = 90 eggs.
+test-1025,2,4,1,0,42,0.8413126085807436,2.9103496074676514,0.0,-1.1324768365739146e-05,"Recall: The team hid a total of 100 eggs. The Smith twins found 30 eggs each, so together they found 30 + 30 = 60 eggs."
+test-1025,3,4,0,0,24,0.6365683683667089,1.4557695388793945,11.375011444091797,5.348500728730869,"Therefore, the number of eggs found by their friends is 90 - 60 = 30 eggs."
+test-1308,0,4,0,0,11,0.13610848275491239,0.3523228168487549,0.0,2.7417950150265824e-06,There are 10 eggs in the first basket.
+test-1308,1,4,1,0,14,0.9255182446742467,2.015357494354248,0.0,9.179022072203225e-06,Recall: There are 10 eggs in the first basket.
+test-1308,2,4,0,1,27,0.18259927432055334,1.0588657855987549,0.0,-5.483611410284084e-06,"The second basket has twice as many eggs as the first, so it has 10 * 2 = 20 eggs."
+test-1308,3,4,0,1,22,0.12509989752770068,0.1761290431022644,18.781314609346737,18.781309006526044,The total number of eggs in both baskets is 10 + 20 = 30 eggs.
+test-949,0,4,0,1,32,0.33788945440902196,2.4310081005096436,0.0,3.576278118089249e-07,"Marcus is five years younger than Deanna, who is 26. So, Marcus's age is 26 - 5 = 21."
+test-949,1,4,0,1,30,0.607477949510089,1.8205981254577637,1.1920928244535389e-07,22.4221373796463,"Marcus is half of Leo’s age. Let Leo's age be $ x $. Then, $ \frac{x}{2} = 21 $."
+test-949,2,4,1,0,35,0.04413950751599882,3.9521915912628174,0.0,0.0,"Recall: Marcus is five years younger than Deanna, who is 26. So, Marcus's age is 26 - 5 = 21."
+test-949,3,4,0,1,22,0.6453929548117466,5.0555620193481445,1.1920928244535389e-07,1.1920928244535389e-07,"Solving for $ x $, we multiply both sides by 2: $ x = 42 $."
+test-131,0,3,0,1,40,0.6988419541065013,1.9750515222549438,0.0,1.1563131948832961e-05,"Joseph's expenditure in May was $500. In June, his expenditure was $60 less, so it is 500 - 60 = 440 dollars."
+test-131,1,3,1,0,43,0.7967664255910738,4.002633094787598,0.0,4.887524511332231e-06,"Recall: Joseph's expenditure in May was $500. In June, his expenditure was $60 less, so it is 500 - 60 = 440 dollars."
+test-131,2,3,0,1,35,0.9116718921976609,2.9986379146575928,3.623870833325782,3.6238622502915234,"To find the total expenditure for the two months, we add the amounts from May and June: 500 + 440 = 940 dollars."
+test-1127,0,3,0,1,58,0.600448770579328,4.522620677947998,0.0,3.5762710126618913e-07,"Rani learns that the 2nd fastest car is 5 times faster than the average car. Since the average car can go 120 miles per hour, the 2nd fastest car can go 5 * 120 = 600 miles per hour."
+test-1127,1,3,1,0,61,0.7944487907838055,3.827056407928467,0.0,-1.1920937481590954e-07,"Recall: Rani learns that the 2nd fastest car is 5 times faster than the average car. Since the average car can go 120 miles per hour, the 2nd fastest car can go 5 * 120 = 600 miles per hour."
+test-1127,2,3,0,1,45,0.1681613799771936,1.3714179992675781,23.156499370241363,23.156498058939775,"The fastest car is 1.25 times faster than the 2nd fastest car. Therefore, the fastest car can go 1.25 * 600 = 750 miles per hour."
+test-1119,0,5,0,0,11,0.9183995562433641,1.0118122100830078,0.0,-1.692743899184279e-05,Amalia spent 4 hours mowing the lawn.
+test-1119,1,5,1,0,14,0.9268586566852167,1.6222604513168335,0.0,0.0,Recall: Amalia spent 4 hours mowing the lawn.
+test-1119,2,5,0,1,30,0.40822611044352053,2.002072334289551,0.0,1.1920928244535389e-07,"Megan walked the dog, which took her 2 hours longer than Amalia, so she spent 4 + 2 = 6 hours."
+test-1119,3,5,0,1,29,0.4407066729290805,0.9456812143325806,0.0,0.00019476478610158665,"Dior did laundry and took well over 4 hours longer than Amalia, so she spent 4 + 4 = 8 hours."
+test-1119,4,5,0,1,31,0.6041418306666712,3.6894609928131104,23.207014202887876,23.206989169249937,Adding up the time: 4 (Amalia) + 6 (Megan) + 8 (Dior) = 18 hours.
+test-347,0,3,0,1,33,0.6201352905963935,1.615749716758728,0.0,-3.552713678800501e-14,"Davos bought 2 shirts, each costing $30. The total cost before the discount is 2 * 30 = 60 dollars."
+test-347,1,3,1,0,35,0.25582819932935885,4.404448509216309,0.0,-1.1920931797249068e-07,"Recall: Davos bought 2 shirts, each costing $30. The total cost before the discount is 2 * 30 = 60 dollars."
+test-347,2,3,0,1,40,0.3097428572381714,3.7918803691864014,6.127766847348511,6.1277661320929155,"He receives a 40% discount, which means he pays 60 - (40% of 60) = 60 - 24 = 36 dollars."
+test-1208,0,4,0,0,10,0.8490920052212889,0.30668848752975464,0.0,2.0265533748897724e-06,Trinity buys the magazines at $72.
+test-1208,1,4,1,0,12,0.453637908490201,1.7692821025848389,0.0,5.364397338780691e-06,Recall: Trinity buys the magazines at $72.
+test-1208,2,4,0,1,33,0.18066627555108494,2.7613420486450195,0.0,0.002255534943060411,"She sells them at 11/8 of the price she bought them, which is 11/8 * 72 = 99 dollars."
+test-1208,3,4,0,1,16,0.4537290543496928,0.3345438838005066,15.468753576275276,15.468752384183063,Her profit is 99 - 72 = 27 dollars.
+test-461,0,4,0,0,11,0.2641493990309046,0.02096184715628624,0.0,3.3378476018697256e-06,Shondra has 7 fewer plants than Toni.
+test-461,1,4,0,1,48,0.9492851375614021,0.7163006067276001,0.0,1.4305076092568925e-06,"Toni has 60% more plants than Frederick. Since Frederick has 10 plants, Toni has 10 + (60% of 10) = 10 + 6 = 16 plants."
+test-461,2,4,1,0,50,0.06409274308092405,2.0427613258361816,0.0,2.551041166043433e-05,"Recall: Toni has 60% more plants than Frederick. Since Frederick has 10 plants, Toni has 10 + (60% of 10) = 10 + 6 = 16 plants."
+test-461,3,4,0,1,25,0.09630522223834415,0.4721478521823883,2.0176851749417892,2.0176831483859132,"Shondra has 7 fewer plants than Toni, so she has 16 - 7 = 9 plants."
+test-281,0,6,0,1,35,0.02618666999626429,3.313962459564209,0.0,-2.3841855067985307e-07,"A cobra has 70 spots, and a mamba has half as many, so 70 / 2 = 35 spots for a mamba."
+test-281,1,6,0,1,24,0.02133712304448243,0.4582698941230774,0.0,8.344644868429896e-07,The total number of spots for all cobras is 40 * 70 = 2800.
+test-281,2,6,0,1,25,0.40376331371079255,8.520508345100097e-06,0.0,-1.1920926823449918e-07,The total number of spots for all mambas is 60 * 35 = 2100.
+test-281,3,6,1,0,28,0.6905719463038024,2.437041759490967,0.0,-2.3841855067985307e-07,Recall: The total number of spots for all mambas is 60 * 35 = 2100.
+test-281,4,6,0,1,25,0.8969992176715027,0.329316645860672,0.0,8.414719939004527,The total number of spots combined is 2800 + 2100 = 4900.
+test-281,5,6,0,1,23,0.32280326974746465,0.9695362448692322,13.721256256103516,13.721256017684965,Half of the total number of spots is 4900 / 2 = 2450.
+test-55,0,3,0,1,34,0.790755737975632,0.8573966026306152,0.0,0.0,"Jean starts with 30 lollipops. After eating 2, there are 30 - 2 = 28 lollipops left."
+test-55,1,3,1,0,37,0.7460115169857665,1.6351770162582397,0.0,0.0,"Recall: Jean starts with 30 lollipops. After eating 2, there are 30 - 2 = 28 lollipops left."
+test-55,2,3,0,1,27,0.6948475129606672,1.1679353713989258,8.875140190124512,8.875140190124512,"With 2 lollipops in each bag, Jean can fill 28 ÷ 2 = 14 bags."
+test-809,0,4,0,0,57,0.47653257906772517,6.766202449798584,0.0,1.549719407023531e-06,"Dale initially ordered 100 butterscotch candies and started selling them. He sold 150 candies, but since he only had 100, he didn't have enough to sell all of them. Then he ordered 100 more candies."
+test-809,1,4,0,1,32,0.8579766307154586,3.677922010421753,0.0,0.013811022043235255,"Now, Dale has 100 + 100 = 200 candies in total. He has sold 150 of them."
+test-809,2,4,1,0,59,0.5356136848189613,4.707809925079346,0.0,-1.1920928244535389e-07,"Recall: Dale initially ordered 100 butterscotch candies and started selling them. He sold 150 candies, but since he only had 100, he didn't have enough to sell all of them. Then he ordered 100 more candies."
+test-809,3,4,0,1,24,0.4019331618452773,0.5107164978981018,0.0036297645419836044,0.003629645332701159,The number of candies Dale still needs to sell is 200 - 150 = 50.
+test-534,0,5,0,1,34,0.783713898498177,3.387359857559204,0.0,0.0,"The total number of kids is 20, and they were divided into two equal groups. Each group has 20 / 2 = 10 kids."
+test-534,1,5,0,1,36,0.9254696984756191,2.121781349182129,0.0,0.0,"Each boy brought 60 seashells, so the total number of seashells brought by the boys is 10 * 60 = 600."
+test-534,2,5,0,1,62,0.0277966234683793,2.8144075870513916,0.0,6.759051029092689e-05,The girls brought an amount equal to the number of shells brought by the boys plus four times as many seashells as the boys. This is 600 + 4 * 600 = 600 + 2400 = 3000 seashells.
+test-534,3,5,1,0,39,0.5158650286176655,2.138867139816284,0.0,0.0,"Recall: Each boy brought 60 seashells, so the total number of seashells brought by the boys is 10 * 60 = 600."
+test-534,4,5,0,1,21,0.8365998776746773,1.333876132965088,0.0008138681878335774,0.0008138681878335774,Each girl brought 3000 / 10 = 300 seashells.
+test-1237,0,4,0,0,13,0.08009244005093674,0.6806949973106384,0.0,0.0,There are 82 teachers at Rydell Elementary School.
+test-1237,1,4,0,1,29,0.35854963179787425,3.148362159729004,0.0,0.0,"Last Friday, 13 teachers were sick, so the number of teachers present was 82 - 13 = 69."
+test-1237,2,4,1,0,32,0.0984859129144442,1.5419833660125732,0.0,0.0,"Recall: Last Friday, 13 teachers were sick, so the number of teachers present was 82 - 13 = 69."
+test-1237,3,4,0,1,33,0.9681463616569913,1.7294325828552246,23.895511150360107,23.895511150360107,"There were 9 substitute teachers called in to help, so the total number of teachers at school that day was 69 + 9 = 78."
+test-337,0,5,0,0,7,0.1542718478221884,4.115675619686954e-05,0.0,3.3020146474882495e-05,Luke ate 2 hot dogs.
+test-337,1,5,0,1,23,0.5165971564168642,1.7173103094100952,0.0,-2.9802117751387414e-06,"Thomas ate three times more hot dogs than Luke, which is 2 * 3 = 6 hot dogs."
+test-337,2,5,0,0,21,0.8047430089643692,2.847432369890157e-05,0.0,0.0014694797823722183,"John ate half the amount Thomas ate, which is 6 / 2 = 3 hot dogs."
+test-337,3,5,1,0,26,0.9598305824160865,2.7591042518615723,0.0,-7.86777781058845e-06,"Recall: Thomas ate three times more hot dogs than Luke, which is 2 * 3 = 6 hot dogs."
+test-337,4,5,0,1,23,0.0007265089205383823,3.4461050033569336,13.468759894357845,13.468751430533757,"John ate 3 hot dogs, which is 3 - 2 = 1 more hot dog than Luke."
+test-938,0,6,0,1,32,0.33769105491683293,1.8891594409942627,0.0,0.0,"John earns 50 dollars per hour and works 6 hours, so his weekly earnings are 50 * 6 = 300 dollars."
+test-938,1,6,0,1,55,0.9444140087685011,5.511929512023926,0.0,0.0,"He spends 50 dollars on gas, and wants to deposit 100 dollars in the bank. The total amount he has left after gas and before depositing is 300 - 50 - 100 = 150 dollars."
+test-938,2,6,0,0,33,0.6959768172121321,1.275198221206665,0.0,0.0,"He buys 5 pencils that cost 10 dollars each, so the total cost of the pencils is 5 * 10 = 50 dollars."
+test-938,3,6,0,0,23,0.16055826227824588,0.23210963606834412,0.0,0.0,"After buying the pencils, he has 150 - 50 = 100 dollars left."
+test-938,4,6,1,0,26,0.7793255516951493,2.106523275375366,0.0,0.0,"Recall: After buying the pencils, he has 150 - 50 = 100 dollars left."
+test-938,5,6,0,1,33,0.1589752259859445,1.7970216274261475,2.50339189733495e-06,2.50339189733495e-06,He wants to buy pens that cost 25 dollars each. The number of pens he can buy is 100 / 25 = 4.
+test-588,0,4,0,1,45,0.6798370424105331,3.0565292835235596,0.0,-4.410711426316993e-06,"Jared's initial typing speed is 47 WPM. After some lessons, his speed increases to 52 WPM. He then increases his speed by 5 words, making it 57 WPM."
+test-588,1,4,1,0,47,0.9431536263145228,3.6730778217315674,0.0,-5.483590030053165e-06,"Recall: Jared's initial typing speed is 47 WPM. After some lessons, his speed increases to 52 WPM. He then increases his speed by 5 words, making it 57 WPM."
+test-588,2,4,0,1,31,0.9341404857092784,1.2029587030410767,0.0,4.470206294371337e-05,"To find the average of the three measurements, we add them together: 47 + 52 + 57 = 156."
+test-588,3,4,0,0,24,0.32827049453258017,2.8169803619384766,6.189552903175347,8.156552910850053,We then divide by 3 to find the average: 156 ÷ 3 = 52.
+test-1229,0,6,0,0,9,0.023848105094706917,1.8344073295593262,0.0,-0.004821258829906583,The price in November was $40.
+test-1229,1,6,1,0,12,0.9585798448912861,3.4020752906799316,0.0,-0.007365211618889589,Recall: The price in November was $40.
+test-1229,2,6,0,1,28,0.6258377632382796,4.332688808441162,0.0,-0.005440420063678175,"In December, the price increased by 80%, which is 0.80 * 40 = 32 dollars."
+test-1229,3,6,0,1,20,0.3981042954636257,1.0017729997634888,0.0,0.0016490695998072624,"So, the price in December is 40 + 32 = 72 dollars."
+test-1229,4,6,0,1,28,0.2264255750200933,0.000212158149224706,0.0,4.19491957616264,"In January, the price decreased by 50%, which is 0.50 * 72 = 36 dollars."
+test-1229,5,6,0,0,18,0.6356717667101055,0.0820106491446495,0.006931076291721183,0.928787135053426,The price in January is 72 - 36 = 36 dollars.
+test-139,0,4,0,0,10,0.328569085672622,0.2664366364479065,0.0,-9.571794544172008e-05,There are 12 blue gumballs.
+test-139,1,4,0,1,23,0.9662245753272395,0.23387064039707184,0.0,-8.665831774123944e-05,The number of pink gumballs is 4 times the number of blue gumballs plus 22.
+test-139,2,4,1,0,26,0.3520821722301851,1.7525237798690796,0.0,-0.00010608893171593081,Recall: The number of pink gumballs is 4 times the number of blue gumballs plus 22.
+test-139,3,4,0,1,25,0.16362135021644642,0.5830123424530029,19.738463163375627,19.73834098131897,"So, 4 * 12 + 22 = 48 + 22 = 70."
+test-663,0,4,0,0,58,0.42074777530803376,4.30506706237793,0.0,-7.152548917588319e-07,"James delivers a total of 600 newspapers in a day. He delivers 198 newspapers to District A and 209 to District C. To find out how many he delivers to District B, we subtract the total delivered to A and C from the overall total."
+test-663,1,4,1,0,61,0.36328644213461747,6.934566974639893,0.0,-1.0728826183026285e-06,"Recall: James delivers a total of 600 newspapers in a day. He delivers 198 newspapers to District A and 209 to District C. To find out how many he delivers to District B, we subtract the total delivered to A and C from the overall total."
+test-663,2,4,0,1,13,0.5653807754665455,0.9497480392456055,0.0,2.622597207846411e-06,198 + 209 = 407
+test-663,3,4,0,1,13,0.3865100485452896,0.0654761865735054,20.417177408932048,20.417175978421596,600 - 407 = 193
+test-1036,0,3,0,1,28,0.7707594112565195,1.2742928266525269,0.0,-7.390945143015415e-06,"There are 40 apples in one box, so two boxes have 40 * 2 = 80 apples in total."
+test-1036,1,3,1,0,31,0.16214085318372695,3.4025514125823975,0.0,-1.3112926353642251e-06,"Recall: There are 40 apples in one box, so two boxes have 40 * 2 = 80 apples in total."
+test-1036,2,3,0,1,32,0.5836514905515098,4.557870864868164,3.4086477756500244,3.408639907867837,"He plans to pack 8 apples in one pack, so the number of packs he can make is 80 / 8 = 10 packs."
+test-862,0,4,0,1,35,0.6869400768720183,2.142533540725708,0.0,9.298267286794726e-06,"Paige bakes 2 banana bread loaves per hour for 5 hours, so she bakes 2 * 5 = 10 loaves in total."
+test-862,1,4,0,1,24,0.718467099976435,0.9009995460510254,0.0,-6.079659044644359e-06,"Each loaf is cut into 8 slices, so she has 10 * 8 = 80 slices."
+test-862,2,4,1,0,27,0.17196229100139104,2.7216923236846924,0.0,-6.079659222280043e-06,"Recall: Each loaf is cut into 8 slices, so she has 10 * 8 = 80 slices."
+test-862,3,4,0,1,31,0.14887881293527583,0.5634939670562744,11.502636270815856,11.50262911827349,"Each slice is sold for 50 cents, so the total amount raised is 80 * 0.50 = 40 dollars."
+test-659,0,4,0,0,70,0.025166107893626943,4.569079399108887,0.0,0.014185142470523715,"The cost of 1/2 pound of almonds is 1/2 * 10 = 5 dollars.  
+The cost of 1/3 pound of walnuts is 1/3 * 15 = 5 dollars.  
+The total cost for the first mixture is 5 + 5 = 10 dollars."
+test-659,1,4,0,1,43,0.32332346968418324,0.30315014719963074,0.0,-0.000977590898401104,"The cost of 1/5 pound of almonds is 1/5 * 10 = 2 dollars.  
+The total cost for the second mixture is 2 + 5 = 7 dollars."
+test-659,2,4,1,0,73,0.003696799562737496,2.6505842208862305,0.0,0.0025932013522833586,"Recall: The cost of 1/2 pound of almonds is 1/2 * 10 = 5 dollars.  
+The cost of 1/3 pound of walnuts is 1/3 * 15 = 5 dollars.  
+The total cost for the first mixture is 5 + 5 = 10 dollars."
+test-659,3,4,0,0,16,0.04720529747843194,0.6881822943687439,2.8119696378707815,3.345876008970656,The difference in cost is 10 - 7 = 3 dollars.
+test-1184,0,3,0,1,53,0.9255571895234466,3.1467292308807373,0.0,-2.1814425110733282e-05,"Ali orders 850 kilos of coal, which is delivered in 50 kg bags. Each bag costs $18. To find the number of bags, we divide 850 by 50, which gives 17 bags."
+test-1184,1,3,1,0,56,0.573001262631075,4.2081379890441895,0.0,0.0005981022804917302,"Recall: Ali orders 850 kilos of coal, which is delivered in 50 kg bags. Each bag costs $18. To find the number of bags, we divide 850 by 50, which gives 17 bags."
+test-1184,2,3,0,1,26,0.14769469781462263,0.6666067242622375,14.54542847280186,14.54537792934002,"Each bag costs $18, so the total cost is 17 * 18 = 306 dollars."
+test-828,0,6,0,1,37,0.15315209085934545,1.4977409839630127,0.0,0.0,"Mulan starts with $40. Her father gives her $100, so she has 40 + 100 = 140 dollars in total."
+test-828,1,6,1,0,40,0.7868491215994531,2.625415563583374,0.0,-2.3841856489070778e-07,"Recall: Mulan starts with $40. Her father gives her $100, so she has 40 + 100 = 140 dollars in total."
+test-828,2,6,0,1,26,0.7877029182496789,1.3423378467559814,0.0,1.1920921991759315e-06,"She buys two pairs of jeans at $30 each, which costs 30 * 2 = 60 dollars."
+test-828,3,6,0,0,10,0.4187372508366701,0.02728392742574215,0.0,2.7418091264053146e-06,She also buys a bag for $20.
+test-828,4,6,0,1,17,0.5680438273675328,0.5407710075378418,0.0,5.96046263012795e-07,The total cost is 60 + 20 = 80 dollars.
+test-828,5,6,0,0,18,0.6864311496386182,1.7314951419830322,22.218750119209282,17.093755722045884,Her remaining money is 140 - 80 = 60 dollars.
+test-586,0,7,0,1,39,0.7112052310106062,1.0742055177688599,0.0,0.0,"Hannah burns 2 hours of aerobics, which burns 500 calories/hour, so she burns 2 * 500 = 1000 calories."
+test-586,1,7,0,0,35,0.9225367392437966,0.10843328386545181,0.0,0.0,"She burns 1 hour of running, which burns 600 calories/hour, so she burns 1 * 600 = 600 calories."
+test-586,2,7,1,0,41,0.36402675889620517,3.238023042678833,0.0,0.0,"Recall: Hannah burns 2 hours of aerobics, which burns 500 calories/hour, so she burns 2 * 500 = 1000 calories."
+test-586,3,7,0,1,23,0.21666285047939615,0.11374983191490173,0.0,1.54972008203913e-06,"In total, she burns 1000 + 600 = 1600 calories."
+test-586,4,7,0,0,19,0.40038769746607716,1.458937644958496,0.0,0.0,"For every 200 calories burned, she needs 100 ml of water."
+test-586,5,7,0,1,25,0.12979762559949215,1.4108681678771973,0.0,0.0007981451926752925,"So, she needs 1600 / 200 = 8 sets of 100 ml."
+test-586,6,7,0,1,20,0.5661089096865166,0.6897501945495605,0.0,0.0,"Therefore, she needs 8 * 100 = 800 ml of water."
+test-501,0,4,0,1,31,0.350592866287013,1.1182103157043457,0.0,3.576278118089249e-07,"Mariah used 1/4 of a skein of yarn, which is 364 * 1/4 = 91 yards."
+test-501,1,4,0,1,32,0.09655676358596321,0.000229185214266181,0.0,0.0013955647577930108,"Her grandma used 1/2 of a skein of yarn, which is 364 * 1/2 = 182 yards."
+test-501,2,4,1,0,34,0.8957043173613797,1.6456362009048462,0.0,-1.1920928244535389e-07,"Recall: Mariah used 1/4 of a skein of yarn, which is 364 * 1/4 = 91 yards."
+test-501,3,4,0,1,21,0.24564542972396286,0.0898275375366211,12.937523245806233,12.93752312659695,"Together, they used 91 + 182 = 273 yards of yarn."
+test-732,0,5,0,0,9,0.3817592950540295,0.45766204595565796,0.0,0.0,Dora is 15 years old.
+test-732,1,5,0,1,23,0.9163373365613642,0.12930536270141602,0.0,0.0,Dora's father's age is 2 * 15 + 8 = 38 years old.
+test-732,2,5,1,0,26,0.24005472395766314,1.618141770362854,0.0,0.0,Recall: Dora's father's age is 2 * 15 + 8 = 38 years old.
+test-732,3,5,0,1,18,0.4811830401201487,0.2722904086112976,0.0,0.0,Dora's mother is 38 - 4 = 34 years old.
+test-732,4,5,0,1,31,0.9204180358452778,0.8773645758628845,34.79124629497369,34.79124629497369,"The combined age of Dora, her father, and her mother is 15 + 38 + 34 = 87 years."
+test-824,0,4,0,1,42,0.06901768472479497,1.192398190498352,0.0,2.8610177764676337e-06,"Kimberly bought 8 packages of cat food, each containing 11 tins, so the total number of cat food tins is 8 * 11 = 88 tins."
+test-824,1,4,1,0,43,0.25236871091997304,3.7755649089813232,0.0,9.179069877518486e-06,"Recall: Kimberly bought 8 packages of cat food, each containing 11 tins, so the total number of cat food tins is 8 * 11 = 88 tins."
+test-824,2,4,0,1,39,0.2758752397078251,0.7044361233711243,0.0,3.4570657021504303e-06,"She also bought 6 packages of dog food, each containing 6 tins, so the total number of dog food tins is 6 * 6 = 36 tins."
+test-824,3,4,0,1,23,0.526585946767007,0.5586187243461609,22.05054337135425,22.05054301372644,The difference in the number of tins is 88 - 36 = 52 tins.
+test-756,0,7,0,0,23,0.5423400552699501,2.2372794151306152,0.0,-2.8610157869479735e-06,"The council has 33 people, and the vote passed with twice as many votes in favor as against it."
+test-756,1,7,0,1,25,0.6040332809955223,0.802783727645874,0.0,-3.933898824470816e-06,Let the number of votes against the regulation be $ x $. Then the number of votes in favor is $ 2x $.
+test-756,2,7,0,1,17,0.7795947303962014,1.1171815395355225,0.0,-3.218643314539804e-06,The total number of votes is $ x + 2x = 3x $.
+test-756,3,7,0,0,22,0.8767515811101877,2.4038069248199463,0.0,-3.5762710126618913e-06,"We know the total number of votes is 33, so $ 3x = 33 $."
+test-756,4,7,1,0,20,0.27628184885013174,1.6671860218048096,0.0,-3.8146895420254623e-06,Recall: The total number of votes is $ x + 2x = 3x $.
+test-756,5,7,0,0,16,0.6109665581700968,1.6915254592895508,0.0,0.0003114442301637155,"Solving for $ x $, we get $ x = 11 $."
+test-756,6,7,0,1,18,0.8673330381368943,0.5187354683876038,0.05009421333670616,0.05009027943788169,"Therefore, the number of votes in favor is $ 2x = 22 $."
+test-720,0,3,0,1,41,0.39077563557117434,2.335304021835327,0.0,-1.7562894825605326,"Castle bought 3 boxes of Coco Crunch and 5 boxes of Fruit Loops this week, totaling 3 + 5 = 8 boxes. Last week, she bought 4 boxes of cereal."
+test-720,1,3,1,0,44,0.6261021875341246,2.3803253173828125,0.0,-2.858240375360765,"Recall: Castle bought 3 boxes of Coco Crunch and 5 boxes of Fruit Loops this week, totaling 3 + 5 = 8 boxes. Last week, she bought 4 boxes of cereal."
+test-720,2,3,0,0,17,0.5344719952169016,0.6378828287124634,12.000005722045898,0.8694049122786893,The difference in the number of boxes is 8 - 4 = 4.
+test-709,0,6,0,0,41,0.8525626141482417,1.368924856185913,0.0,-9.536734069115482e-07,"The factory makes 100 quarts of chocolate ice cream in 2 hours, so its rate is 100 quarts / 2 hours = 50 quarts per hour."
+test-709,1,6,1,0,44,0.1442072370162294,3.090327262878418,0.0,-3.5762741390499286e-07,"Recall: The factory makes 100 quarts of chocolate ice cream in 2 hours, so its rate is 100 quarts / 2 hours = 50 quarts per hour."
+test-709,2,6,0,1,41,0.39242938925918713,0.02622845023870468,0.0,-8.344641742041858e-07,"The factory makes 50 quarts of vanilla ice cream in 4 hours, so its rate is 50 quarts / 4 hours = 12.5 quarts per hour."
+test-709,3,6,0,1,35,0.7677442686337953,1.898209571838379,0.0,0.46833389997425456,"In 48 hours, the factory would make 50 quarts/hour * 48 hours = 2400 quarts of chocolate ice cream."
+test-709,4,6,0,1,36,0.7310024639236243,0.010628764517605305,0.0,0.00018880944218579998,"In 48 hours, the factory would make 12.5 quarts/hour * 48 hours = 600 quarts of vanilla ice cream."
+test-709,5,6,0,1,29,0.976490023680837,1.8006309270858765,15.625,15.624998569489549,Total quarts made in 48 hours is 2400 + 600 = 3000 quarts.
+test-109,0,4,0,1,30,0.432956620488795,1.4245682954788208,0.0,-7.509997772103816e-06,The cost of 10 gallons of gas at $3.00 per gallon is 10 * 3 = 30 dollars.
+test-109,1,4,0,1,37,0.10481875176128097,0.9119774699211121,0.0,0.0012988599124241773,"The app company offers $.20 cashback per gallon, so for 10 gallons, the cashback is 10 * 0.20 = 2 dollars."
+test-109,2,4,1,0,33,0.4606863677813431,3.091660261154175,0.0,-1.6927372428199305e-05,Recall: The cost of 10 gallons of gas at $3.00 per gallon is 10 * 3 = 30 dollars.
+test-109,3,4,0,1,20,0.461987586031698,1.9782075881958008,2.9717118740081787,2.971681833700302,The total amount paid after cashback is 30 - 2 = 28 dollars.

@@ -1002,3 +1002,24 @@ full 74.6 (base 73.2) | random_m −5.6 [−9.4, −1.8] (0.93×) | loo_cal −3
   1.7B model re-derives the answer from the question without them. Interpretation (not tested here): a leave-one-out score
   measures how necessary a step is for a READER of the chain; the value of a step as a training TARGET (it teaches the
   model to produce intermediate computations) is a different quantity, and that is what the collapse in SFT measures.
+
+### Round 14c, H-P7 verdict (Qwen2.5-7B, 282 chains, 300 test questions; `results/compress/compress_qwen-7b_sft`)
+full 91.7 (base 91.0). random −13.3 [−17.7, −9.0] (0.83× tokens), yu −17.0 [−22.0, −12.0] (0.69×), loo_g −26.3 [−32.0, −21.0] (0.58×).
+**H-P7 GO (as predicted):** no pruning rule is non-inferior at 7B, yu and random both ≥ 2 points below full, loo_g the worst. The
+Round 14 conclusion therefore holds from 1.5B to 7B (SFT on score-pruned GSM8K chains always loses 5–46 points).
+
+### Round 15, final verdicts (3 pre-registered small models: Qwen2.5-1.5B, Qwen2.5-3B, Qwen3-1.7B; `results/blind/`, `tools/analyze_blind.py`)
+| Hypothesis | 1.5B / 3B / Q3-1.7B | Verdict |
+|---|---|---|
+| H-Q1: AUROC(bloo) ≥ 0.80 and bloo − loo ≥ +0.08 | bloo 0.61 / 0.70 / 0.71; bloo − loo −0.20 / −0.04 / **+0.05** | **NO-GO (0/3).** Answer-blind scores rank planted vs load-bearing steps worse than plain LOO (0.81 / 0.74 / 0.66) in 2 of 3 models, and below 0.80 in all |
+| H-Q2: blind-readout bloo_g − loo_g at m50 ≥ +10 | +3.5 [0.5, 6.5] / +3.5 [1.0, 6.0] / +7.5 [3.5, 12.0] | **NO-GO (0/3).** Sign positive, CI excludes 0, magnitude below the registered effect |
+| H-Q3: bloo_cal non-inferior to full, ≤ 0.92× tokens, ≥ +2 over random_m | vs full −13.0 / −13.2 / −10.4; vs random_m −0.8 / +0.6 / −4.8 | **NO-GO (0/3)** |
+| H-Q4: bloo_g − loo_g (SFT, 40%) ≥ +10 | −1.0 / −0.8 / +1.0 | **NO-GO (0/3)** |
+Answer-blind attribution is falsified as an improvement of step importance in this setting. Both greedy arms collapse alike (−30…−39
+vs full) and keep one answer-bearing step.
+**What survives (not pre-registered as a hypothesis, reported as a finding with its limits):** placebo calibration of the *plain* LOO score
+(loo_cal) is the only pruning arm near full-chain SFT: −4.4 [−8.0, −0.6], −3.0 [−5.8, +0.2], −3.6 [−6.6, −0.6] (single-run noise is of
+that order, see the Qwen3-1.7B note), and it beats random removal of the same number of steps by +7.8 [3.4, 12.2] / +10.8 [6.8, 14.8] /
++2.0 [−1.6, 5.8] — but it removes only 4–6% of the real steps and saves 3–9% of the tokens. The planted-duplicate placebo acts as a
+safety rule: the estimator that cannot see redundancy deletes almost nothing instead of deleting useful steps. It is a safeguard, not a
+compression method.
