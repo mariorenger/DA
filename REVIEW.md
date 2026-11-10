@@ -1083,3 +1083,19 @@ models, against the deletion line.
 If compact lands on the deletion line (loss of about 25–35 points at its token ratio), account (T) is supported and (C) rejected; in between
 the result is "partial", reported with the number. Limitations stated up front: equation extraction by regex (steps without an equation
 stay verbose), GSM8K only, single seed (noise 3–4 points), the generated-token ratio is a property of the trained model.
+
+## Round 18 (pre-registered before any GPU run): scale curve of "read the stated result" (GSM8K) and scale check of Round 13 (7B/8B)
+*Why.* The user asked to go beyond ≤ 3B. Round 8 measured the wrong-answer follow rate only on CLUTRR up to 7B (66.5 / 58.2 / 56.3 / 46.2 /
+22.9% at 0.5B…7B; conditioned on solvable 70.8 … 10.3%). Round 18 repeats the idea on GSM8K with a scale axis of one model family
+(Qwen2.5-Instruct 0.5B, 1.5B, 3B, 7B fp16; 14B, 32B in 4-bit NF4) plus Qwen3-1.7B/4B. `hgcd/scalecopy.py`: for each question the model
+solves by itself (greedy chain correct, 150–200 per model), the stated result is replaced by gold + d (d ∈ ±{1,2,3}) in the last
+stating step (`last`) or everywhere in the chain (`all`); readout after "The answer is". follow = answer equals the wrong number.
+*Hypotheses (question-clustered bootstrap CIs; Qwen2.5 family only for H-S1/H-S2).*
+- **H-S1 (monotone decline).** follow rate (`last`) is non-increasing from 1.5B → 3B → 7B → 14B → 32B (each step may rise by at most 3 points) and the
+  14B rate is ≤ 0.5 × the 3B rate.
+- **H-S2 (persistence).** The follow rate (`last`) of the largest model run (32B, else 14B) is > 5% (CI lower bound > 0). No prediction made.
+- **H-S3.** follow(`all`) ≥ follow(`last`) at every scale.
+*Also (scale check of Round 13, `hgcd.hall`, arms p_inst, s_plain, s_abs, s_abs_cf; no DPO/RL/probe; 1000 training questions):* Qwen2.5-7B and
+Qwen3-8B on MuSiQue. Rule: Round 13's findings are carried to 7B/8B if abstain rate on `unans` rises ≥ 30 points over p_inst and follow-context on
+`conflict` rises ≥ +15 points over s_plain (the Round 13 thresholds were abstain 0 → 56–71% and +21…+24); exact-match change on `ans` is reported.
+Limitations stated up front: 4-bit weights for 14B/32B (not identical to fp16), single seed, GSM8K only, solvable-by-construction set differs per model.

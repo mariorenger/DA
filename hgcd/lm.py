@@ -13,7 +13,7 @@ import torch.nn.functional as F
 
 class LM:
     def __init__(self, name: str, device: Optional[str] = None, dtype=None,
-                 device_map: Optional[str] = None):
+                 device_map: Optional[str] = None, load_in_4bit: bool = False):
         from transformers import AutoModelForCausalLM, AutoTokenizer
         self.name = name
         self.tok = AutoTokenizer.from_pretrained(name)
@@ -24,10 +24,16 @@ class LM:
         dtype = dtype or (torch.float16 if cuda else torch.float32)
         import transformers
         kw = dict(device_map=device_map) if device_map else {}
+        if load_in_4bit:   # NF4 weights, fp16 compute (14B/32B on two T4s); needs bitsandbytes and device_map
+            from transformers import BitsAndBytesConfig
+            kw["quantization_config"] = BitsAndBytesConfig(load_in_4bit=True, bnb_4bit_quant_type="nf4",
+                                                           bnb_4bit_compute_dtype=dtype, bnb_4bit_use_double_quant=True)
+            kw.setdefault("device_map", "auto")
+            device_map = kw["device_map"]
         major_minor = tuple(int(x) for x in transformers.__version__.split(".")[:2])
         kw["dtype" if major_minor >= (4, 56) else "torch_dtype"] = dtype
         self.model = AutoModelForCausalLM.from_pretrained(name, **kw)
-        if next(self.model.parameters()).dtype != dtype:  # never silently fall back to fp32
+        if not load_in_4bit and next(self.model.parameters()).dtype != dtype:  # never silently fall back to fp32
             self.model.to(dtype)
         if not device_map:
             self.model.to(device or ("cuda" if cuda else "cpu"))

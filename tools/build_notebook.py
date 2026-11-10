@@ -13,7 +13,7 @@ import nbformat as nbf
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 MODULES = ["__init__", "data", "chain", "prompts", "lm", "decoding", "experiments", "metrics",
-           "report", "pipeline", "causaldec", "cftrain", "egen", "cfrl", "hall", "compress", "blind"]
+           "report", "pipeline", "causaldec", "cftrain", "egen", "cfrl", "hall", "compress", "blind", "scalecopy"]
 
 INTRO = """# Read, not reasoned? Kaggle run-all
 
@@ -60,6 +60,8 @@ def run_job(label, model, preset, extra, gpus):
                if preset.startswith("compress") else
                [sys.executable, "-m", "hgcd.blind", "--model", model, "--outdir", out, *extra]
                if preset.startswith("blind") else
+               [sys.executable, "-m", "hgcd.scalecopy", "--model", model, "--outdir", out, *extra]
+               if preset.startswith("scale") else
                [sys.executable, "-m", "hgcd.egen", "--model", model, "--outdir", out, *extra]
                if preset.startswith("egen") else
                [sys.executable, "-m", "hgcd.cftrain", "--model", model, "--outdir", out, *extra]
@@ -528,6 +530,33 @@ NOTEBOOKS = {
                    ("--phase", "compact", "--n_train", "300", "--n_eval", "300", "--bs", "4", "--mb", "1",
                     "--accum", "16", "--device_map", "auto"))]},
 }""",
+    "R18_scale_small": """{
+    "s": {"0": [("q25-0.5b", "Qwen/Qwen2.5-0.5B-Instruct", "scale", ("--n", "200", "--n_pool", "800", "--bs", "8")),
+                ("q25-1.5b", "Qwen/Qwen2.5-1.5B-Instruct", "scale", ("--n", "200", "--n_pool", "500", "--bs", "8")),
+                ("q25-3b", "Qwen/Qwen2.5-3B-Instruct", "scale", ("--n", "200", "--n_pool", "400", "--bs", "6"))],
+          "1": [("q3-1.7b", "Qwen/Qwen3-1.7B", "scale", ("--n", "200", "--n_pool", "400", "--bs", "8")),
+                ("q3-4b", "Qwen/Qwen3-4B", "scale", ("--n", "200", "--n_pool", "300", "--bs", "6"))]},
+}""",
+    "R18_scale_big": """{
+    "s": {"0,1": [("q25-7b", "Qwen/Qwen2.5-7B-Instruct", "scale",
+                   ("--n", "200", "--n_pool", "300", "--bs", "4", "--device_map", "auto")),
+                  ("q25-14b-4bit", "Qwen/Qwen2.5-14B-Instruct", "scale",
+                   ("--n", "200", "--n_pool", "300", "--bs", "4", "--load_in_4bit")),
+                  ("q25-32b-4bit", "Qwen/Qwen2.5-32B-Instruct", "scale",
+                   ("--n", "150", "--n_pool", "220", "--bs", "4", "--load_in_4bit"))]},
+}""",
+    "R18_hall_q25_7b": """{
+    "h": {"0,1": [("qwen-7b", "Qwen/Qwen2.5-7B-Instruct", "hall",
+                   ("--arms", "p_inst", "s_plain", "s_abs", "s_abs_cf", "--n_train", "1000", "--bs", "4",
+                    "--mb", "1", "--accum", "16", "--device_map", "auto", "--probe", "0", "--seed", "0",
+                    "--max_minutes", "520"))]},
+}""",
+    "R18_hall_q3_8b": """{
+    "h": {"0,1": [("qwen3-8b", "Qwen/Qwen3-8B", "hall",
+                   ("--arms", "p_inst", "s_plain", "s_abs", "s_abs_cf", "--n_train", "1000", "--bs", "4",
+                    "--mb", "1", "--accum", "16", "--device_map", "auto", "--probe", "0", "--seed", "0",
+                    "--max_minutes", "520"))]},
+}""",
 }
 
 
@@ -540,7 +569,7 @@ def build_one(name, phases):
     nb = nbf.v4.new_notebook()
     cells = [nbf.v4.new_markdown_cell(INTRO),
              nbf.v4.new_code_cell("!pip -q uninstall -y torchao 2>/dev/null | tail -1\n"
-                                  "!pip -q install -U \"transformers>=4.44\" accelerate scikit-learn peft 2>/dev/null | tail -1\n"
+                                  "!pip -q install -U \"transformers>=4.44\" accelerate scikit-learn peft bitsandbytes 2>/dev/null | tail -1\n"
                                   "!nvidia-smi --query-gpu=name,memory.total --format=csv || true"),
              nbf.v4.new_code_cell("import os\nos.makedirs('hgcd', exist_ok=True)\n"
                                   "os.environ.setdefault('HGCD_DATA', os.path.abspath('hgcd_data'))")]
