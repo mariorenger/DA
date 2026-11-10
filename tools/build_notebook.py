@@ -458,6 +458,22 @@ NOTEBOOKS = {
           "1": [("qwen-3b", "Qwen/Qwen2.5-3B-Instruct", "compress",
                  ("--phase", "sft", "--n_train", "400", "--k", "4", "--bs", "6", "--mb", "2", "--accum", "8"))]},
 }""",
+    "R14c_score_q25_7b": """{
+    "s": {"0,1": [("qwen-7b", "Qwen/Qwen2.5-7B-Instruct", "compress",
+                   ("--phase", "score", "--n", "100", "--n_pool", "200", "--k", "4", "--n_alt", "3",
+                    "--bs", "4", "--device_map", "auto"))]},
+}""",
+    "R14c_score_q3_8b": """{
+    "s": {"0,1": [("qwen3-8b", "Qwen/Qwen3-8B", "compress",
+                   ("--phase", "score", "--n", "100", "--n_pool", "200", "--k", "4", "--n_alt", "3",
+                    "--bs", "4", "--roll_tokens", "400", "--device_map", "auto"))]},
+}""",
+    "R14c_sft_q25_7b": """{
+    "t": {"0,1": [("qwen-7b", "Qwen/Qwen2.5-7B-Instruct", "compress",
+                   ("--phase", "sft", "--n_train", "300", "--n_eval", "300", "--k", "3", "--n_alt", "3",
+                    "--bs", "4", "--mb", "1", "--accum", "16", "--device_map", "auto",
+                    "--arms", "base", "full", "random", "yu", "loo_g"))]},
+}""",
 }
 
 

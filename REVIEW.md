@@ -895,3 +895,19 @@ entropy −5.4 [−8.8, −2.0]; yu −14.2 [−18.8, −10.0]; cal −15.6 [−
 (generates 0.41 × the tokens of full). So on this model H-P5 fails for every pruning method, loo_g worst.
 H-P5 needs ≥ 2 of 3 SFT runs; the Qwen2.5-1.5B and 3B SFT runs (mario123475, corrected format) are still
 running, the verdict follows when they finish. Not rescued after the fact: no pruning method is non-inferior to full-chain SFT on Qwen3-1.7B.
+
+### Round 14c (pre-registered before the run): do the Round 14 findings hold at 7B/8B?
+Requested by the user (Kaggle 2×T4 = 32 GB, model sharded with `--device_map auto`). Same code and prompt as
+Round 14 (`hgcd/compress.py`, format demos included); smaller budgets because a sharded 7B runs one GPU at a time:
+score phase n = 100 chains, k = 4, 3 alternatives per step (Qwen2.5-7B-Instruct, Qwen3-8B non-thinking);
+SFT phase only for Qwen2.5-7B: 300 training questions, k = 3, arms base/full/random/yu/loo_g (no cal, no
+entropy: cal ≈ yu and entropy ≈ random at small scale), 300 test questions, LoRA mb 1 × accum 16.
+Predictions written now from the small-model results:
+- **H-P6 (scale of the bias).** Yu's PN on planted duplicates < 0.10 for both models (regeneration success
+  ≥ 0.95), so Yu's assumption holds from 7B on. Falsified if either model gives ≥ 0.10.
+- **H-P7 (SFT on pruned chains, 7B).** random, yu and loo_g SFT are each below full-chain SFT by ≥ 2 points
+  (CI upper bound < 0), loo_g by the most. Falsified if yu or random is non-inferior (difference ≥ −2, lower
+  CI bound ≥ −5) at ≤ 0.8 × the generated tokens of full-chain SFT; that would be the first positive result for
+  chain pruning in this project.
+- Reported without threshold: loo_g − yu readout accuracy at m50 (the label-informed benchmark, same caveat).
+Deviation from Round 14 stated: 100 instead of 150–200 chains, so CIs are wider; verdicts use the same rules.
