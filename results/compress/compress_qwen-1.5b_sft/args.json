@@ -1,0 +1,30 @@
+{
+ "model": "Qwen/Qwen2.5-1.5B-Instruct",
+ "outdir": "/kaggle/working/results/compress_qwen-1.5b",
+ "phase": "sft",
+ "n": 200,
+ "n_pool": 400,
+ "k": 4,
+ "n_alt": 5,
+ "bs": 8,
+ "roll_tokens": 320,
+ "alpha": 0.3,
+ "seed": 0,
+ "n_train": 400,
+ "n_eval": 500,
+ "sft_prune": 0.4,
+ "arms": [
+  "base",
+  "full",
+  "random",
+  "entropy",
+  "yu",
+  "cal",
+  "loo_g"
+ ],
+ "lr": 0.0001,
+ "epochs": 2.0,
+ "mb": 4,
+ "accum": 4,
+ "device_map": null
+}

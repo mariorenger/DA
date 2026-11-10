@@ -911,3 +911,20 @@ Predictions written now from the small-model results:
   chain pruning in this project.
 - Reported without threshold: loo_g − yu readout accuracy at m50 (the label-informed benchmark, same caveat).
 Deviation from Round 14 stated: 100 instead of 150–200 chains, so CIs are wider; verdicts use the same rules.
+
+### Round 14: H-P5 verdict (3 SFT runs; 500 test questions each; paired bootstrap; `results/compress/analysis_sft.csv`)
+Accuracy difference to full-chain SFT [95% CI] and generated tokens relative to full-chain SFT:
+| Arm | Qwen2.5-1.5B | Qwen2.5-3B | Qwen3-1.7B |
+|---|---|---|---|
+| full (reference acc.) | 54.0 | 79.0 | 78.2 |
+| random | −17.2 [−21.8, −12.6] (0.74×) | −10.0 [−14.2, −6.2] (0.84×) | −9.8 [−13.8, −6.0] (0.85×) |
+| entropy | −9.4 [−13.8, −5.0] (0.84×) | −8.0 [−11.6, −4.4] (0.88×) | −5.4 [−8.8, −2.0] (0.94×) |
+| yu | −22.2 [−27.0, −17.2] (0.65×) | −10.4 [−14.4, −6.4] (0.77×) | −14.2 [−18.6, −9.8] (0.75×) |
+| cal | −22.4 [−27.0, −17.4] (0.64×) | −11.4 [−15.6, −7.4] (0.82×) | −15.6 [−19.6, −11.2] (0.74×) |
+| loo_g | −35.2 [−40.2, −30.2] (0.43×) | −35.6 [−40.2, −31.0] (0.53×) | −45.8 [−50.6, −41.0] (0.41×) |
+**H-P5: NO-GO (0/3).** loo_g reaches ≤ 0.75× tokens in 3/3 runs but is never non-inferior (−35…−46 points);
+yu and cal are also never non-inferior. Every pruning rule loses accuracy in every run, and loo_g loses most,
+as predicted from the answer-in-chain mechanism. Full-chain SFT itself does not beat the few-shot base model
+here (0.0, +1.0, +2.8 points), so the SFT stage mostly fixes format; the comparison between pruning rules is
+what carries the information. Round 14 conclusion on small models: causal step scores (Yu, calibrated, LOO)
+do not give a usable chain compression; step entropy is no better than random.
