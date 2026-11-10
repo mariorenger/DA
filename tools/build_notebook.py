@@ -13,7 +13,7 @@ import nbformat as nbf
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 MODULES = ["__init__", "data", "chain", "prompts", "lm", "decoding", "experiments", "metrics",
-           "report", "pipeline", "causaldec", "cftrain", "egen", "cfrl", "hall", "compress", "blind", "scalecopy"]
+           "report", "pipeline", "causaldec", "cftrain", "egen", "cfrl", "hall", "compress", "blind", "scalecopy", "stride"]
 
 INTRO = """# Read, not reasoned? Kaggle run-all
 
@@ -62,6 +62,8 @@ def run_job(label, model, preset, extra, gpus):
                if preset.startswith("blind") else
                [sys.executable, "-m", "hgcd.scalecopy", "--model", model, "--outdir", out, *extra]
                if preset.startswith("scale") else
+               [sys.executable, "-m", "hgcd.stride", "--model", model, "--outdir", out, *extra]
+               if preset.startswith("stride") else
                [sys.executable, "-m", "hgcd.egen", "--model", model, "--outdir", out, *extra]
                if preset.startswith("egen") else
                [sys.executable, "-m", "hgcd.cftrain", "--model", model, "--outdir", out, *extra]
@@ -570,6 +572,17 @@ NOTEBOOKS = {
     "R18b_scale_32b": """{
     "s": {"0,1": [("q25-32b-bnb4", "unsloth/Qwen2.5-32B-Instruct-bnb-4bit", "scale",
                    ("--n", "150", "--n_pool", "220", "--bs", "4", "--load_in_4bit"))]},
+}""",
+    "R20_stride_a": """{
+    "t": {"0": [("qwen-1.5b", "Qwen/Qwen2.5-1.5B-Instruct", "stride", ("--bs", "16"))],
+          "1": [("qwen3-1.7b", "Qwen/Qwen3-1.7B", "stride", ("--bs", "16"))]},
+}""",
+    "R20_stride_b": """{
+    "t": {"0": [("qwen-3b", "Qwen/Qwen2.5-3B-Instruct", "stride", ("--bs", "12", "--mb", "4", "--accum", "4"))]},
+}""",
+    "R20_stride_7b": """{
+    "t": {"0,1": [("qwen-7b", "Qwen/Qwen2.5-7B-Instruct", "stride",
+                   ("--bs", "8", "--mb", "2", "--accum", "8", "--n_train", "2000", "--device_map", "auto"))]},
 }""",
 }
 

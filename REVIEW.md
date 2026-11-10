@@ -1177,3 +1177,18 @@ Wrong-result follow rate, %, [95% CI] (`last` = one wrong claim at the end of th
 - The compact arm re-run in Round 19 reproduces Round 17 (49.2 / 57.0 / 71.2 vs 49.6 / 57.0 / 71.6): same-seed, same-data reruns agree to within 0.4 points.
 - Interpretation (pre-registered failure branch): the remaining loss is due to the style change (equation-only chains, which drop the natural-language scaffolding), not to information loss; it is largest for Qwen3-1.7B (−17) and smallest for
   Qwen2.5-1.5B (−4.6). Together with Round 17 the picture is: keeping the computations is worth 10–12 points over deleting steps at the same generated length, but a sizeable loss remains whatever the compactor.
+
+## Round 20 (pre-registered before any GPU run): hop capacity per written step on a task with a known minimal chain
+*Why.* Rounds 16–19 show that SFT accuracy falls with the number of written tokens and that keeping computations helps by 10–12 points, but on GSM8K the minimal chain is unknown and
+the benchmark is saturated at 7B. BAPO (arXiv 2602.02909) proves token lower bounds for abstract tasks and tests frontier models only. Here the minimal chain is known by construction.
+*Task* (`hgcd/stride.py`): a random function f over 24 two-digit nodes is listed as "37 -> 52" facts; "start at s and follow the arrows k times"; the answer f^k(s) needs k lookups
+(depth k ∈ {4, 6, 8, 12}). A chain with stride m writes every m-th node (m = 1 all nodes; m = 12 the answer only), so each written step must compose m lookups in one forward pass.
+SFT separately per stride (3000 training items, 2 epochs, LoRA), evaluation 150 items per depth, greedy.
+Models: Qwen2.5-1.5B, Qwen3-1.7B, Qwen2.5-3B (rule), Qwen2.5-7B (extra for H-T3).
+*Hypotheses.*
+- **H-T1 (sanity).** Mean accuracy over k at stride 1 ≥ 0.85 for each of the three small models.
+- **H-T2 (knee, not a gradual decline).** For ≥ 2 of the 3 small models there is a pair of consecutive strides in {1, 2, 3, 4} whose mean accuracies differ by ≥ 0.30.
+- **H-T3 (capacity grows with scale).** Capacity h = largest stride in {1, 2, 3, 4} with mean accuracy ≥ 0.80. h(1.5B) ≤ h(3B) ≤ h(7B) and h(7B) > h(1.5B).
+Prediction written now: H-T1 yes; H-T2 yes; H-T3 uncertain (if per-step capacity does not grow with size, the collapse of pruned chains in Rounds 14–19 is independent of scale).
+Also reported without threshold: accuracy by depth k and stride, mean generated tokens (does the accuracy-versus-tokens curve of this task lie on the GSM8K line of Round 16?).
+Limitations stated up front: one seed, a synthetic task, 24-node functions (random cycles), LoRA SFT with 3000 items, Qwen3 in non-thinking mode.
