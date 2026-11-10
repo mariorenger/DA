@@ -567,6 +567,10 @@ NOTEBOOKS = {
     "c": {"0": [("qwen-3b_compact2", "Qwen/Qwen2.5-3B-Instruct", "blind",
                  ("--phase", "compact2", "--n_train", "800", "--bs", "6", "--mb", "2", "--accum", "8"))]},
 }""",
+    "R18b_scale_32b": """{
+    "s": {"0,1": [("q25-32b-bnb4", "unsloth/Qwen2.5-32B-Instruct-bnb-4bit", "scale",
+                   ("--n", "150", "--n_pool", "220", "--bs", "4", "--load_in_4bit"))]},
+}""",
 }
 
 

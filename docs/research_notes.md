@@ -27,6 +27,8 @@ Tạo lại: `python tools/export_transcript.py <session.jsonl> docs/conversatio
 | Round 14c (7B/8B) | Same estimators at Qwen2.5-7B / Qwen3-8B | H-P6 GO: Yu bias ≈ 0 (0.003 / 0.018); H-P7 GO: SFT on pruned chains loses 13–26 points at 7B |
 | Round 15 (answer-blind attribution, placebo calibration) | New estimator + decision rule, 3 small models + 7B audit | H-Q1..H-Q4 all NO-GO (0/3): bloo AUROC 0.61–0.71 < loo in 2/3; bloo_cal −10…−13 vs full. Placebo-calibrated plain LOO is the only arm near full (−3…−4.4) but removes only 4–6% of steps |
 | Round 16 (order-reversal control) | Delete least vs most important vs random steps, same count | H-R2 NO-GO, H-R1 GO 2/3: LOO order carries no information about training value; across 42 arms Δacc ≈ 63·token_ratio − 64 (r = 0.94) |
+| Round 17 (chuỗi chỉ giữ phép tính, GSM8K) | Giữ phép tính nhưng giảm token vs xóa bước | H-C2 GO 3/3 (hơn xóa ngẫu nhiên +19…+30), H-C1 NO-GO 0/3 (vẫn kém chuỗi đầy đủ 3…17 điểm); nằm trên đường xóa bước ~10–12 điểm. Bộ rút gọn làm mất số ở 15% chuỗi → Round 19 |
+| Round 18 (đường cong chép kết quả sai, GSM8K, 0.5B–14B) | Tỷ lệ chép theo kết quả cuối sai khi mô hình tự giải được | 99 → 92 → 85.5 → 66% (1.5B, 3B, 7B, 14B 4-bit); H-S1 NO-GO (14B/3B = 0.72), H-S2 GO (14B vẫn 66%), H-S3 GO; 32B chạy lại |
 
 ## 3. Số liệu chính (xem paper/main.tex, paper/baocao_vi.pdf)
 - CLUTRR extract+rules SC5 so với baseline tốt nhất: validation k2–4 +32.0/+32.0/+36.7 (1.5B/3B/7B); task chưa thấy k2–4 +20.9/+27.2/+33.5; k5–8 −1.0/+9.5/+24.0 (7B là kiểm định chính đăng ký trước, GO).

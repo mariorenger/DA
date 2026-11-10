@@ -26,8 +26,10 @@ class LM:
         kw = dict(device_map=device_map) if device_map else {}
         if load_in_4bit:   # NF4 weights, fp16 compute (14B/32B on two T4s); needs bitsandbytes and device_map
             from transformers import BitsAndBytesConfig
-            kw["quantization_config"] = BitsAndBytesConfig(load_in_4bit=True, bnb_4bit_quant_type="nf4",
-                                                           bnb_4bit_compute_dtype=dtype, bnb_4bit_use_double_quant=True)
+            if "bnb-4bit" not in name:   # a checkpoint that is already quantized carries its own config
+                kw["quantization_config"] = BitsAndBytesConfig(load_in_4bit=True, bnb_4bit_quant_type="nf4",
+                                                               bnb_4bit_compute_dtype=dtype,
+                                                               bnb_4bit_use_double_quant=True)
             kw.setdefault("device_map", "auto")
             device_map = kw["device_map"]
         major_minor = tuple(int(x) for x in transformers.__version__.split(".")[:2])

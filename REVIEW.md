@@ -1140,3 +1140,27 @@ Qwen2.5-1.5B, Qwen3-1.7B (m81extend), Qwen2.5-3B (mario123475).
 - **H-D2.** compact2 − compact ≥ +5 points (CI excluding 0) on ≥ 2/3: the information loss of the first compactor explains the residual gap.
 Prediction written now: H-D2 yes; H-D1 uncertain (at Qwen3-1.7B the first gap is −17, which is unlikely to close by 10+ points from number preservation alone).
 If H-D2 fails the remaining gap is due to the style change (equation-only chains), not lost numbers. Limitations: one seed (noise 3–4 points), GSM8K only.
+
+### Round 17, final (adds Qwen2.5-3B): `results/blind/blind_qwen-3b_compact`
+full 80.8; compact −9.2 [−13.0, −5.2] (0.75× tokens); random40 −39.6 [−44.2, −34.6]; **compact − random40 +30.4 [+25.6, +35.4]**.
+Final rule outcome: **H-C1 NO-GO (0/3)**, **H-C2 GO (3/3)**. Compact lies above the Round 16 deletion line at all four scales (3B: predicted −24.7 at ratio 0.75, observed −9.2).
+
+### Round 16, 7B extra (not in the rule): `results/blind/blind_qwen-7b_order` (300 test questions)
+full 92.0; loo_low 66.0; loo_high 56.7; random40 61.0. loo_low − loo_high **+9.3 [+2.7, +15.7]**; loo_low − random40 +5.0 [−1.3, +11.3].
+Exploratory pattern of loo_low − loo_high over the four models run: 1.5B −9.4, Qwen3-1.7B +1.6, 3B +2.8, 7B +9.3 — the order of the LOO score becomes informative about
+training value as the model grows. This is outside the pre-registered rule (H-R1 GO 2/3 and H-R2 NO-GO 0/3 stand), single seed, and the 7B value is just under the +10 band.
+
+### Round 18, verdicts on the Qwen2.5 family 0.5B…14B (`results/scale`, `tools/analyze_scale.py`); the 32B run failed and is relaunched
+Wrong-result follow rate, %, [95% CI] (`last` = one wrong claim at the end of the chain, `all` = every occurrence), only on questions the model solved itself:
+| | 0.5B | 1.5B | 3B | 7B | 14B (4-bit) | Qwen3-1.7B | Qwen3-4B |
+|---|---|---|---|---|---|---|---|
+| last | 99.0 [97.4, 100] | 99.5 [98.5, 100] | 92.0 [88.0, 95.5] | 85.5 [80.5, 90.0] | **66.0 [59.5, 72.5]** | 100 | 88.4 [83.9, 93.0] |
+| all | 100 | 100 | 99.0 [97.5, 100] | 96.0 [93.0, 98.5] | 78.5 [72.5, 84.0] | 100 | 89.4 [85.4, 93.5] |
+- **H-S1 NO-GO as registered.** The decline is monotone (no rise > 3 points; 99.5 → 92.0 → 85.5 → 66.0), but the 14B rate is 0.72 × the 3B rate, not ≤ 0.5 ×.
+- **H-S2 GO** (largest model run so far = 14B: 66.0%, CI lower bound 59.5% > 5%): a model of 14B still follows a wrong stated result in two thirds of the cases it could solve.
+- **H-S3 GO** (follow(all) ≥ follow(last) at every scale).
+- **32B:** `Qwen/Qwen2.5-32B-Instruct` failed while downloading 65 GB of fp16 weights (read-only file system, disk full). Relaunched with the 19 GB pre-quantized checkpoint
+  `unsloth/Qwen2.5-32B-Instruct-bnb-4bit` (`nguyenpn/hgcd-r18b-scale-32b`); this is a different quantization source than the 14B run (bitsandbytes NF4 on-the-fly), stated as a limitation.
+- **Correction of a promise in the Round 18 pre-registration:** the text says conditioned and unconditioned rates would be reported. The design only evaluates questions the model solves
+  by itself (a stated wrong result requires a known gold result), so no unconditioned rate or selection gap exists for GSM8K. The CLUTRR selection gap (Round 8 data) is the only one available.
+- Validity limit: the follow rate is close to 100% for small models partly because the answer is read directly after the last stated result; the comparison across scale is informative, the absolute level is not.
