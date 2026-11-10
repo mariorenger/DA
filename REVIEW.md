@@ -975,3 +975,15 @@ placebo per chain gives a noisy threshold.
   (delete PN < 0.3) keeps 0.58 / 0.70 accuracy at 31% / 45% of the tokens, i.e. it still destroys the answer readout
   for 30–42% of chains although its planted-duplicate score is ≈ 0 (it removes real steps).
 - H-P7 (SFT at 7B) is pending: `ngpnguyen/hgcd-r14c-sft-q25-7b` is still running.
+
+### Round 15: interim, extra model only (Qwen2.5-7B audit, 100 chains; the pre-registered verdicts use the 3 small models and are pending)
+`results/blind/blind_qwen-7b`, `tools/analyze_blind.py`. Not a verdict on H-Q1..H-Q4 (7B was not in the rule), recorded so that it cannot be selectively reported later:
+- AUROC planted-vs-load-bearing: entropy 0.21 [0.17, 0.25] (below chance, as in Round 14), loo 0.81 [0.77, 0.85], **bloo 0.69
+  [0.64, 0.74]**; bloo − loo = −0.12 [−0.17, −0.07]. At 7B the answer-blind score ranks steps worse than plain LOO, the
+  opposite of what H-Q1 predicts.
+- The answer-blind readout is not harder for a 7B model: full chain 0.98 vs plain 1.00. Hence bloo_g − loo_g in the blind
+  readout at m50 is +3.0 [−1.0, +8.0] (H-Q2 would not be met at this scale: the readout cannot separate them).
+- Placebo calibration at 7B: loo_cal removes only 3.1% of real steps (the plain LOO score of the planted duplicate is
+  usually high), bloo_cal removes 18.5% with acc_plain 0.98 / acc_blind 0.96, while random removal of the same number of
+  steps gives 0.90 / 0.85. Calibration therefore adapts the amount removed to the estimator, and with the
+  answer-blind score it removes real steps without damaging the readout; whether this holds under SFT is H-Q3.

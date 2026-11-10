@@ -1,0 +1,30 @@
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+Fetching 4 files:   0%|          | 0/4 [00:00<?, ?it/s]Fetching 4 files:  25%|██▌       | 1/4 [01:15<03:46, 75.64s/it]Fetching 4 files: 100%|██████████| 4/4 [01:15<00:00, 18.91s/it]
+Loading weights:   0%|          | 0/339 [00:00<?, ?it/s]Loading weights:   0%|          | 1/339 [00:06<39:21,  6.99s/it]Loading weights:  40%|████      | 136/339 [00:08<00:09, 22.45it/s]Loading weights:  42%|████▏     | 143/339 [00:09<00:10, 19.55it/s]Loading weights:  44%|████▎     | 148/339 [00:09<00:11, 17.04it/s]Loading weights:  45%|████▍     | 151/339 [00:10<00:11, 16.64it/s]Loading weights:  47%|████▋     | 160/339 [00:10<00:09, 18.87it/s]Loading weights:  51%|█████     | 172/339 [00:11<00:11, 14.41it/s]Loading weights:  54%|█████▍    | 184/339 [00:12<00:10, 14.14it/s]Loading weights:  55%|█████▍    | 186/339 [00:13<00:15,  9.78it/s]Loading weights:  58%|█████▊    | 196/339 [00:14<00:14,  9.97it/s]Loading weights:  58%|█████▊    | 198/339 [00:15<00:17,  8.16it/s]Loading weights:  61%|██████▏   | 208/339 [00:15<00:11, 10.94it/s]Loading weights:  65%|██████▍   | 220/339 [00:16<00:08, 14.02it/s]Loading weights:  68%|██████▊   | 232/339 [00:16<00:05, 20.20it/s]Loading weights:  70%|██████▉   | 237/339 [00:16<00:05, 20.04it/s]Loading weights:  72%|███████▏  | 244/339 [00:17<00:04, 21.61it/s]Loading weights:  76%|███████▌  | 256/339 [00:17<00:02, 30.21it/s]Loading weights:  77%|███████▋  | 261/339 [00:17<00:02, 32.11it/s]Loading weights:  79%|███████▉  | 268/339 [00:18<00:06, 11.32it/s]Loading weights:  83%|████████▎ | 280/339 [00:19<00:04, 14.71it/s]Loading weights:  84%|████████▍ | 284/339 [00:19<00:03, 15.12it/s]Loading weights:  85%|████████▍ | 288/339 [00:19<00:03, 16.52it/s]Loading weights:  86%|████████▌ | 292/339 [00:21<00:07,  6.71it/s]Loading weights:  90%|████████▉ | 304/339 [00:22<00:04,  8.14it/s]Loading weights:  90%|█████████ | 306/339 [00:23<00:05,  6.60it/s]Loading weights:  93%|█████████▎| 316/339 [00:24<00:02,  7.73it/s]Loading weights:  94%|█████████▍| 318/339 [00:25<00:03,  6.77it/s]Loading weights:  97%|█████████▋| 328/339 [00:25<00:01,  9.93it/s]Loading weights: 100%|██████████| 339/339 [00:25<00:00, 13.19it/s]
+[   2.0 min] loaded Qwen/Qwen2.5-7B-Instruct
+[  18.9 min] chains: 200 generated, 0.895 correct, 173 kept (2-10 body steps)
+[  18.9 min]   scored 1/100 chains
+[  21.9 min]   scored 26/100 chains
+[  24.9 min]   scored 51/100 chains
+[  28.2 min]   scored 76/100 chains
+                     acc_plain  acc_blind  tok_frac  planted_removed  real_removed_frac
+budget method                                                                          
+cal    bloo_cal           0.98       0.96     0.650             1.00              0.185
+       control_only       1.00       0.98     0.797             1.00              0.000
+       loo_cal            1.00       0.98     0.772             1.00              0.030
+       random_m           0.90       0.85     0.643             1.00              0.185
+m30    bloo               0.98       0.95     0.626             0.71              0.303
+       bloo_g             0.99       0.98     0.624             0.72              0.303
+       entropy            0.72       0.66     0.667             0.02              0.489
+       loo                1.00       0.96     0.626             0.88              0.271
+       loo_g              1.00       0.95     0.627             0.78              0.301
+       none               1.00       0.98     1.000             0.00              0.000
+       random             0.69       0.60     0.615             0.43              0.374
+m50    bloo               0.96       0.93     0.460             0.81              0.484
+       bloo_g             0.99       0.98     0.458             0.87              0.472
+       entropy            0.56       0.52     0.503             0.06              0.686
+       loo                1.00       0.94     0.456             0.98              0.447
+       loo_g              1.00       0.95     0.461             0.94              0.458
+       none               1.00       0.98     1.000             0.00              0.000
+       random             0.58       0.54     0.457             0.57              0.546
+[  90.9 min] done

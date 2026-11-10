@@ -1,0 +1,27 @@
+{
+ "model": "Qwen/Qwen2.5-7B-Instruct",
+ "outdir": "/kaggle/working/results/blind_qwen-7b",
+ "phase": "audit",
+ "n": 100,
+ "n_pool": 200,
+ "bs": 4,
+ "cap": 0.5,
+ "seed": 0,
+ "n_train": 800,
+ "n_eval": 500,
+ "sft_prune": 0.4,
+ "arms": [
+  "base",
+  "full",
+  "random_m",
+  "loo_cal",
+  "bloo_cal",
+  "loo_g",
+  "bloo_g"
+ ],
+ "lr": 0.0001,
+ "epochs": 2.0,
+ "mb": 4,
+ "accum": 4,
+ "device_map": "auto"
+}
