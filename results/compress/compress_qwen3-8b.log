@@ -1,0 +1,35 @@
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+Fetching 5 files:   0%|          | 0/5 [00:00<?, ?it/s]Fetching 5 files:  20%|██        | 1/5 [00:52<03:30, 52.54s/it]Fetching 5 files:  40%|████      | 2/5 [01:16<01:47, 35.77s/it]Fetching 5 files: 100%|██████████| 5/5 [01:16<00:00, 15.31s/it]
+Loading weights:   0%|          | 0/399 [00:00<?, ?it/s]Loading weights:   0%|          | 1/399 [00:16<1:48:19, 16.33s/it]Loading weights:   1%|▏         | 5/399 [00:16<16:06,  2.45s/it]  Loading weights:  37%|███▋      | 149/399 [00:16<00:14, 17.59it/s]Loading weights:  45%|████▍     | 179/399 [00:18<00:11, 18.58it/s]Loading weights:  49%|████▉     | 197/399 [00:19<00:11, 17.45it/s]Loading weights:  52%|█████▏    | 208/399 [00:20<00:12, 14.75it/s]Loading weights:  54%|█████▍    | 216/399 [00:21<00:12, 14.11it/s]Loading weights:  56%|█████▌    | 222/399 [00:21<00:11, 14.77it/s]Loading weights:  57%|█████▋    | 227/399 [00:23<00:15, 11.07it/s]Loading weights:  59%|█████▉    | 235/399 [00:24<00:17,  9.22it/s]Loading weights:  60%|█████▉    | 238/399 [00:24<00:16,  9.75it/s]Loading weights:  62%|██████▏   | 246/399 [00:26<00:17,  8.76it/s]Loading weights:  64%|██████▍   | 257/399 [00:26<00:12, 11.46it/s]Loading weights:  67%|██████▋   | 268/399 [00:26<00:08, 14.81it/s]Loading weights:  70%|██████▉   | 279/399 [00:26<00:06, 19.59it/s]Loading weights:  73%|███████▎  | 290/399 [00:27<00:04, 22.78it/s]Loading weights:  75%|███████▌  | 301/399 [00:28<00:05, 18.87it/s]Loading weights:  78%|███████▊  | 312/399 [00:28<00:05, 16.06it/s]Loading weights:  80%|████████  | 320/399 [00:29<00:04, 18.08it/s]Loading weights:  81%|████████  | 323/399 [00:30<00:07,  9.86it/s]Loading weights:  84%|████████▎ | 334/399 [00:32<00:07,  8.58it/s]Loading weights:  86%|████████▋ | 345/399 [00:33<00:06,  8.31it/s]Loading weights:  87%|████████▋ | 347/399 [00:33<00:06,  8.33it/s]Loading weights:  89%|████████▉ | 356/399 [00:35<00:05,  7.85it/s]Loading weights:  90%|████████▉ | 358/399 [00:35<00:05,  8.12it/s]Loading weights:  92%|█████████▏| 367/399 [00:36<00:04,  7.42it/s]Loading weights:  95%|█████████▍| 378/399 [00:38<00:02,  7.52it/s]Loading weights:  97%|█████████▋| 389/399 [00:39<00:01,  7.54it/s]Loading weights: 100%|██████████| 399/399 [00:39<00:00, 10.09it/s]
+[   2.5 min] loaded Qwen/Qwen3-8B
+[  18.4 min] chains: 200 generated, 0.900 correct, 179 kept (2-10 body steps)
+[  39.7 min] alternatives: 286/534 found
+[  45.7 min]   rollouts 64/920 jobs (6.0 min)
+[ 113.4 min]   rollouts 704/920 jobs (73.6 min)
+[ 140.4 min] scores written; pruning
+                  acc  tok_frac  planted_removed
+budget method                                   
+alpha  yu_alpha  0.70     0.450             0.98
+m1     cal       0.94     0.791             0.46
+       entropy   0.97     0.826             0.04
+       loo       1.00     0.800             0.66
+       loo_g     1.00     0.817             0.37
+       none      1.00     1.000             0.00
+       random    0.97     0.791             0.23
+       yu        0.99     0.788             0.38
+m30    cal       0.85     0.581             0.77
+       entropy   0.84     0.630             0.10
+       loo       1.00     0.615             0.85
+       loo_g     1.00     0.626             0.72
+       none      1.00     1.000             0.00
+       random    0.82     0.587             0.42
+       yu        0.86     0.580             0.75
+m50    cal       0.64     0.440             0.93
+       entropy   0.67     0.496             0.18
+       loo       0.99     0.478             0.97
+       loo_g     1.00     0.488             0.89
+       none      1.00     1.000             0.00
+       random    0.69     0.451             0.55
+       yu        0.71     0.446             0.90
+planted mean yu / cal / loo: 0.0175 0.015 -0.00019127772993478233
+[ 176.9 min] done

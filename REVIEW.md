@@ -963,3 +963,15 @@ fraction are reported per arm.
 not above loo in AUROC, the answer-blind idea is falsified for this setting. Limitation stated up front: the
 load-bearing label is a proxy (number dependencies), planted duplicates are lexically marked ("Recall:") and one
 placebo per chain gives a noisy threshold.
+
+### Round 14c: phase 1 at 7B/8B (100 chains each, k = 4; `results/compress/analysis_score.csv`)
+- **H-P6 GO (2/2, as predicted).** Yu's PN on planted duplicates: Qwen2.5-7B 0.0025, Qwen3-8B 0.0175 (< 0.10);
+  regeneration success 0.98 / 0.99; cal ≈ 0 (−0.03 / +0.015). The bias of Yu's estimator seen at Qwen2.5-1.5B
+  (0.28) is absent from 3B upward, so its Lemma 1 assumption holds for models of this size on GSM8K and the
+  failure is specific to the smallest model tested.
+- Same pattern as the small models for the rest of phase 1: loo_g − yu at m50 +33.0 [+24.0, +42.0] / +29.0 [+21.0,
+  +38.0] (label-informed readout, caveat of Round 14 applies); cal − yu planted detection +8.0 [−5.0, +22.0] / +8.0
+  [−5.0, +19.0] (not distinguishable from 0); entropy − random −4.0 [−17, +10] / −2.0 [−15, +12]; Yu's own rule
+  (delete PN < 0.3) keeps 0.58 / 0.70 accuracy at 31% / 45% of the tokens, i.e. it still destroys the answer readout
+  for 30–42% of chains although its planted-duplicate score is ≈ 0 (it removes real steps).
+- H-P7 (SFT at 7B) is pending: `ngpnguyen/hgcd-r14c-sft-q25-7b` is still running.
