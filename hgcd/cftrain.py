@@ -225,11 +225,16 @@ def train_sft(lm: LM, data: List[Tuple[str, str]], args) -> Dict:
                 _log(f"  sft step {step}/{n_steps} loss {np.mean(losses[-10 * args.accum:]):.4f} "
                      f"({(time.time() - t_start) / 60:.1f} min)")
     pm.eval()
-    merged = pm.merge_and_unload()
-    merged.gradient_checkpointing_disable()
-    merged.config.use_cache = True
-    merged.eval()
-    lm.model = merged
+    if getattr(args, "no_merge", False):   # 4-bit base: keep the adapter separate (merging into NF4 weights is lossy)
+        pm.base_model.model.gradient_checkpointing_disable()
+        pm.config.use_cache = True
+        lm.model = pm
+    else:
+        merged = pm.merge_and_unload()
+        merged.gradient_checkpointing_disable()
+        merged.config.use_cache = True
+        merged.eval()
+        lm.model = merged
     return dict(steps=step, final_loss=float(np.mean(losses[-20:])), n_train=len(enc),
                 minutes=(time.time() - t_start) / 60)
 

@@ -1309,3 +1309,21 @@ Because H-G1 failed for the 3B model, the scale trend at stride 4 needs more see
 - **H-W1 (seed dependence of 3B).** Over seeds 0–4 the range of the mean stride-4 accuracy of Qwen2.5-3B is ≥ 0.25 and that of Qwen2.5-1.5B is ≤ 0.10.
 - **H-W2 (7B capacity is robust).** Qwen2.5-7B mean stride-4 accuracy ≥ 0.80 in each of seeds 0, 1, 2.
 Prediction written now: H-W1 yes (already 0.57–0.91 for 3B with three seeds and 0.33–0.37 for 1.5B); H-W2 unknown. Reported without threshold: final SFT loss of each run and its correlation with the stride-4 accuracy of that run.
+
+### Round 24 verdicts (stride-4 mean accuracy over depths; `results/stride/stride_qwen-*_s{1..4}`)
+| | seed 0 | 1 | 2 | 3 | 4 | range | mean |
+|---|---|---|---|---|---|---|---|
+| Qwen2.5-1.5B | 0.352 | 0.330 | 0.373 | 0.390 | 0.328 | **0.062** | 0.355 |
+| Qwen2.5-3B | 0.583 | 0.913 | 0.568 | 0.782 | 0.632 | **0.345** | 0.696 |
+| Qwen2.5-7B | 0.962 | 0.950 | 0.840 | | | 0.122 | 0.917 |
+- **H-W1 GO:** the range of the 3B model is 0.345 (≥ 0.25), that of the 1.5B model 0.062 (≤ 0.10). **H-W2 GO:** the 7B model is ≥ 0.80 in all three seeds (0.96, 0.95, 0.84).
+- The scale trend at stride 4 holds in the means (0.36 → 0.70 → 0.92) with a wide seed dispersion at 3B (0.57–0.91; 1 of 5 seeds above 0.80), narrow at 1.5B and 7B. The registered capacity "≥ 0.80" is reached by 0/5 seeds at 1.5B, 1/5 at 3B, 3/3 at 7B.
+- Exploratory, not registered: across the 13 runs the final SFT loss of the stride-4 run predicts its accuracy (Spearman −0.96, n = 13; within 1.5B and within 3B −0.70). The loss is measured on the same targets as the evaluation, so this is an association: whether a run reaches the compositional solution is visible in its fit.
+
+## Round 25 (pre-registered before any GPU run): does the stride capacity continue to grow at 14B?
+Qwen2.5-14B-Instruct in 4-bit (bitsandbytes NF4, QLoRA adapters kept unmerged: `--load_in_4bit --no_merge`), pointer task, 2000 training items, 2 epochs, device_map auto over the two T4s, seed 0 (a single seed: expensive; see limitations).
+One notebook per stride so that they run in parallel: `nguyenpn`: stride 4; `m81extend`: stride 6. (Stride 1 is not run; the sanity check H-T1 is replaced by the final SFT loss of each run.)
+- **H-X1.** Mean accuracy at stride 4 ≥ 0.80 (the scale trend of Round 24: 1.5B 0.36, 3B 0.70, 7B 0.92 continues).
+- **H-X2.** Mean accuracy at stride 6 ≥ 0.50 (for reference Qwen3-4B 0.59, Qwen3-1.7B 0.32 at stride 6).
+Both are registered with no confident prediction for H-X2; H-X1 is expected to hold. A run whose final SFT loss ≥ 0.05 is flagged as not converged and its accuracy is not read as capacity (Round 24 correlation of loss with accuracy: Spearman −0.96).
+Limitations stated up front: one seed per stride (the 3B model varied by 0.35 across seeds, so a single 14B point near 0.5–0.8 would be uninterpretable), 4-bit weights with an unmerged adapter (not identical to fp16 LoRA), the 4-bit training path has not been exercised before in this project (a failure is reported as a failure of the run, not as a result).

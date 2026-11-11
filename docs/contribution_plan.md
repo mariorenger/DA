@@ -111,3 +111,7 @@ Phần chưa có: tác vụ cộng modulo (Round 22) không đo được vì kh�
 1. **Điểm gãy không đúng cho mọi phép tính.** Với phép tra con trỏ, mỗi bước viết ra chỉ gộp được khoảng 3 đến 4 phép tra; với phép cộng dồn các số 1 đến 5, ngay cả chuỗi chỉ có đáp án vẫn cộng đúng 12 số ở 79 đến 85% (không có điểm gãy; độ đúng giảm theo độ sâu k chứ không theo bước nhảy). Vậy khẳng định đóng góp phải là: **sức chứa mỗi bước viết ra phụ thuộc phép tính**, chứ không phải một hằng số "số bước". (Tác vụ cộng modulo 10 không dùng được vì không hội tụ.)
 2. **Xu hướng theo quy mô yếu hơn đã nói.** Điểm gãy của Qwen2.5-1.5B lặp lại qua 3 seed (độ đúng ở bước 4: 0.35, 0.33, 0.37) nhưng Qwen2.5-3B thì không (0.58, 0.91, 0.57). Xu hướng 0.35 → 0.58 → 0.96 cho 1.5B, 3B, 7B chỉ dựa trên một seed mỗi cỡ, và điểm 3B không đáng tin. Round 24 (đang chạy) thêm seed cho 3B, 1.5B và 7B.
 Còn thiếu cho một bài hoàn chỉnh: ít nhất một phép tính thứ ba (để nói về "phụ thuộc phép tính" cần hơn hai điểm), mô hình từ 14B trở lên, liên kết với đường token GSM8K, và bản nháp cấu trúc bài.
+
+## 11. Cập nhật 11/11/2026 (đêm): Round 24 và bản nháp cấu trúc bài
+
+Round 24 (thêm seed) xác nhận cả hai giả thuyết: 3B dao động mạnh (độ đúng ở bước 4: 0.57 đến 0.91, độ rộng 0.35), 1.5B ổn định (0.33 đến 0.39), 7B luôn ≥ 0.84. Xu hướng theo quy mô ở bước 4 giữ được ở trung bình (0.36 → 0.70 → 0.92). Loss cuối dự đoán độ đúng (Spearman −0.96, 13 lần chạy). Round 25 (14B 4-bit, bước 4 và 6) đang chạy. Bản nháp cấu trúc bài 1 ở `docs/paper1_outline.md`, kèm danh sách khoảng trống.

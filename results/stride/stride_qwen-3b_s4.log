@@ -1,0 +1,45 @@
+Loading weights:   0%|          | 0/434 [00:00<?, ?it/s]Loading weights:   0%|          | 1/434 [00:01<07:22,  1.02s/it]Loading weights:  31%|███       | 135/434 [00:01<00:01, 159.35it/s]Loading weights:  45%|████▌     | 196/434 [00:01<00:01, 150.08it/s]Loading weights:  54%|█████▍    | 236/434 [00:01<00:01, 145.19it/s]Loading weights:  61%|██████▏   | 266/434 [00:02<00:01, 155.80it/s]Loading weights:  68%|██████▊   | 293/434 [00:02<00:00, 146.82it/s]Loading weights:  73%|███████▎  | 315/434 [00:02<00:00, 145.34it/s]Loading weights:  77%|███████▋  | 334/434 [00:02<00:00, 144.73it/s]Loading weights:  81%|████████  | 352/434 [00:02<00:00, 144.52it/s]Loading weights:  85%|████████▌ | 369/434 [00:02<00:00, 144.11it/s]Loading weights:  89%|████████▉ | 387/434 [00:02<00:00, 142.21it/s]Loading weights:  93%|█████████▎| 403/434 [00:03<00:00, 138.84it/s]Loading weights:  97%|█████████▋| 423/434 [00:03<00:00, 152.83it/s]Loading weights: 100%|██████████| 434/434 [00:03<00:00, 136.48it/s]
+[   0.2 min] loaded Qwen/Qwen2.5-3B-Instruct
+/kaggle/working/hgcd/cftrain.py:222: UserWarning: Detected call of `lr_scheduler.step()` before `optimizer.step()`. In PyTorch 1.1.0 and later, you should call them in the opposite order: `optimizer.step()` before `lr_scheduler.step()`.  Failure to do this will result in PyTorch skipping the first value of the learning rate schedule. See more details at https://pytorch.org/docs/stable/optim.html#how-to-adjust-learning-rate
+  sched.step()
+[09:40:13]   sft step 10/375 loss 4.5894 (1.0 min)
+[09:41:17]   sft step 20/375 loss 0.7564 (2.1 min)
+[09:42:22]   sft step 30/375 loss 0.5920 (3.2 min)
+[09:43:27]   sft step 40/375 loss 0.5565 (4.3 min)
+[09:44:33]   sft step 50/375 loss 0.4940 (5.4 min)
+[09:45:39]   sft step 60/375 loss 0.4732 (6.5 min)
+[09:46:45]   sft step 70/375 loss 0.4864 (7.6 min)
+[09:47:51]   sft step 80/375 loss 0.4291 (8.7 min)
+[09:48:57]   sft step 90/375 loss 0.4496 (9.8 min)
+[09:50:04]   sft step 100/375 loss 0.4021 (10.9 min)
+[09:51:10]   sft step 110/375 loss 0.3459 (12.0 min)
+[09:52:16]   sft step 120/375 loss 0.3105 (13.1 min)
+[09:53:23]   sft step 130/375 loss 0.3032 (14.2 min)
+[09:54:30]   sft step 140/375 loss 0.3000 (15.3 min)
+[09:55:36]   sft step 150/375 loss 0.2956 (16.4 min)
+[09:56:42]   sft step 160/375 loss 0.2791 (17.5 min)
+[09:57:48]   sft step 170/375 loss 0.2990 (18.6 min)
+[09:58:54]   sft step 180/375 loss 0.2651 (19.7 min)
+[10:00:00]   sft step 190/375 loss 0.2695 (20.8 min)
+[10:01:06]   sft step 200/375 loss 0.2266 (21.9 min)
+[10:02:12]   sft step 210/375 loss 0.2078 (23.0 min)
+[10:03:18]   sft step 220/375 loss 0.2212 (24.1 min)
+[10:04:25]   sft step 230/375 loss 0.2284 (25.2 min)
+[10:05:31]   sft step 240/375 loss 0.1913 (26.3 min)
+[10:06:37]   sft step 250/375 loss 0.1810 (27.5 min)
+[10:07:44]   sft step 260/375 loss 0.1905 (28.6 min)
+[10:08:50]   sft step 270/375 loss 0.1883 (29.7 min)
+[10:09:56]   sft step 280/375 loss 0.1676 (30.8 min)
+[10:11:02]   sft step 290/375 loss 0.1794 (31.9 min)
+[10:12:08]   sft step 300/375 loss 0.1474 (33.0 min)
+[10:13:14]   sft step 310/375 loss 0.1163 (34.1 min)
+[10:14:20]   sft step 320/375 loss 0.1470 (35.2 min)
+[10:15:26]   sft step 330/375 loss 0.1307 (36.3 min)
+[10:16:31]   sft step 340/375 loss 0.1156 (37.4 min)
+[10:17:37]   sft step 350/375 loss 0.1500 (38.5 min)
+[10:18:44]   sft step 360/375 loss 0.1205 (39.6 min)
+[10:19:50]   sft step 370/375 loss 0.1215 (40.7 min)
+[10:20:23]   sft step 375/375 loss 0.1271 (41.2 min)
+[  41.5 min] [stride 4] sft {'steps': 375, 'final_loss': 0.1340047700330615, 'n_train': 3000, 'minutes': 41.215284593900044}
+[  43.8 min] [stride 4] acc by k {4: 0.92, 6: 0.387, 8: 0.473, 12: 0.747}  mean gen tokens 8.3
+[  43.8 min] done

@@ -35,6 +35,8 @@ Tạo lại: `python tools/export_transcript.py <session.jsonl> docs/conversatio
 
 | Round 22 (seed) và 23 (cộng dồn) | Độ vững qua seed; tác vụ thứ hai | H-G1 NO-GO: điểm gãy 1.5B vững (0.33–0.37 ở bước 4) nhưng 3B không (0.57–0.91); cộng dồn không modulo: không có điểm gãy (H-V2 NO-GO), cộng được ≥ 12 số mỗi bước → sức chứa phụ thuộc phép tính |
 
+| Round 24 (thêm seed) | Độ dao động của điểm gãy qua seed | 3B: 0.57–0.91 (độ rộng 0.35), 1.5B: 0.33–0.39, 7B ≥ 0.84; trung bình 0.36 → 0.70 → 0.92; loss cuối dự đoán độ đúng (Spearman −0.96). Round 25 (14B) đang chạy |
+
 ## 3. Số liệu chính (xem paper/main.tex, paper/baocao_vi.pdf)
 - CLUTRR extract+rules SC5 so với baseline tốt nhất: validation k2–4 +32.0/+32.0/+36.7 (1.5B/3B/7B); task chưa thấy k2–4 +20.9/+27.2/+33.5; k5–8 −1.0/+9.5/+24.0 (7B là kiểm định chính đăng ký trước, GO).
 - Ablation C7 (cùng fact, đổi bên hợp thành): luật − LLM = +13.3/+25.9/+35.4 (ngắn), +4.0/+5.0/+13.0 (dài; chỉ 7B có ý nghĩa).

@@ -1,0 +1,17 @@
+{
+ "model": "Qwen/Qwen2.5-7B-Instruct",
+ "outdir": "/kaggle/working/results/stride_qwen-7b_s1",
+ "strides": [
+  4
+ ],
+ "n_train": 2000,
+ "n_eval": 150,
+ "bs": 8,
+ "lr": 0.0002,
+ "epochs": 2.0,
+ "mb": 2,
+ "accum": 8,
+ "seed": 1,
+ "device_map": "auto",
+ "task": "pointer"
+}

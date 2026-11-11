@@ -1,0 +1,43 @@
+Loading weights:   0%|          | 0/338 [00:00<?, ?it/s]Loading weights:   0%|          | 1/338 [00:00<03:32,  1.59it/s]Loading weights:  47%|████▋     | 159/338 [00:00<00:00, 271.73it/s]Loading weights:  66%|██████▋   | 224/338 [00:01<00:00, 269.53it/s]Loading weights:  80%|████████  | 272/338 [00:01<00:00, 254.84it/s]Loading weights:  92%|█████████▏| 310/338 [00:01<00:00, 252.44it/s]Loading weights: 100%|██████████| 338/338 [00:01<00:00, 230.71it/s]
+[   0.2 min] loaded Qwen/Qwen2.5-1.5B-Instruct
+[09:21:35]   sft step 10/375 loss 2.3356 (0.6 min)
+[09:22:11]   sft step 20/375 loss 0.7575 (1.2 min)
+[09:22:48]   sft step 30/375 loss 0.6464 (1.8 min)
+[09:23:25]   sft step 40/375 loss 0.6691 (2.4 min)
+[09:24:03]   sft step 50/375 loss 0.5653 (3.1 min)
+[09:24:41]   sft step 60/375 loss 0.5156 (3.7 min)
+[09:25:19]   sft step 70/375 loss 0.5083 (4.3 min)
+[09:25:56]   sft step 80/375 loss 0.4646 (5.0 min)
+[09:26:35]   sft step 90/375 loss 0.4794 (5.6 min)
+[09:27:13]   sft step 100/375 loss 0.4665 (6.2 min)
+[09:27:52]   sft step 110/375 loss 0.4399 (6.9 min)
+[09:28:30]   sft step 120/375 loss 0.4267 (7.5 min)
+[09:29:08]   sft step 130/375 loss 0.4126 (8.2 min)
+[09:29:47]   sft step 140/375 loss 0.4222 (8.8 min)
+[09:30:25]   sft step 150/375 loss 0.3825 (9.4 min)
+[09:31:04]   sft step 160/375 loss 0.3820 (10.1 min)
+[09:31:42]   sft step 170/375 loss 0.4045 (10.7 min)
+[09:32:20]   sft step 180/375 loss 0.3457 (11.4 min)
+[09:32:59]   sft step 190/375 loss 0.3636 (12.0 min)
+[09:33:37]   sft step 200/375 loss 0.3393 (12.6 min)
+[09:34:16]   sft step 210/375 loss 0.2827 (13.3 min)
+[09:34:54]   sft step 220/375 loss 0.3078 (13.9 min)
+[09:35:33]   sft step 230/375 loss 0.3075 (14.6 min)
+[09:36:11]   sft step 240/375 loss 0.2967 (15.2 min)
+[09:36:49]   sft step 250/375 loss 0.2859 (15.8 min)
+[09:37:28]   sft step 260/375 loss 0.2865 (16.5 min)
+[09:38:06]   sft step 270/375 loss 0.2871 (17.1 min)
+[09:38:45]   sft step 280/375 loss 0.2435 (17.8 min)
+[09:39:23]   sft step 290/375 loss 0.2745 (18.4 min)
+[09:40:02]   sft step 300/375 loss 0.2811 (19.0 min)
+[09:40:39]   sft step 310/375 loss 0.2536 (19.7 min)
+[09:41:18]   sft step 320/375 loss 0.2592 (20.3 min)
+[09:41:56]   sft step 330/375 loss 0.2806 (21.0 min)
+[09:42:35]   sft step 340/375 loss 0.2379 (21.6 min)
+[09:43:13]   sft step 350/375 loss 0.2530 (22.2 min)
+[09:43:52]   sft step 360/375 loss 0.2529 (22.9 min)
+[09:44:30]   sft step 370/375 loss 0.2625 (23.5 min)
+[09:44:49]   sft step 375/375 loss 0.2594 (23.8 min)
+[  24.1 min] [stride 4] sft {'steps': 375, 'final_loss': 0.25941615998744966, 'n_train': 3000, 'minutes': 23.839409291744232}
+[  25.5 min] [stride 4] acc by k {4: 0.46, 6: 0.36, 8: 0.233, 12: 0.26}  mean gen tokens 8.2
+[  25.5 min] done

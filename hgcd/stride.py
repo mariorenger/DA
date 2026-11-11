@@ -118,6 +118,8 @@ def main():
     ap.add_argument("--seed", type=int, default=0)
     ap.add_argument("--device_map", default=None)
     ap.add_argument("--task", choices=["pointer", "sum", "cumsum"], default="pointer")
+    ap.add_argument("--load_in_4bit", action="store_true")
+    ap.add_argument("--no_merge", action="store_true")
     args = ap.parse_args()
     os.makedirs(args.outdir, exist_ok=True)
     json.dump(vars(args), open(f"{args.outdir}/args.json", "w"), indent=1)
@@ -127,14 +129,14 @@ def main():
     evals = [mk(random.Random(10_000 + i * 7 + k), k) for k in KS for i in range(args.n_eval)]
     from .cftrain import train_sft
     rows, base_done = [], False
-    lm = LM(args.model, device_map=args.device_map)
+    lm = LM(args.model, device_map=args.device_map, load_in_4bit=args.load_in_4bit)
     _log(f"loaded {args.model}")
     for m in args.strides:
         if m != args.strides[0] or base_done:
             del lm
             gc.collect()
             torch.cuda.empty_cache()
-            lm = LM(args.model, device_map=args.device_map)
+            lm = LM(args.model, device_map=args.device_map, load_in_4bit=args.load_in_4bit)
         base_done = True
         data = [(prompt(lm, it["q"]), chain_text(it["path"], m)) for it in train]
         info = train_sft(lm, data, args)
