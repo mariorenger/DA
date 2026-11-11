@@ -617,6 +617,20 @@ NOTEBOOKS = {
     "t": {"0": [("cumsum_qwen-3b", "Qwen/Qwen2.5-3B-Instruct", "stride",
                  ("--bs", "12", "--mb", "4", "--accum", "4", "--task", "cumsum", "--strides", "1", "2", "3", "4", "5", "6", "12"))]},
 }""",
+    "R24_seeds_a": """{
+    "t": {"0": [("qwen-3b_s3", "Qwen/Qwen2.5-3B-Instruct", "stride",
+                 ("--bs", "12", "--mb", "4", "--accum", "4", "--seed", "3", "--strides", "4")),
+                ("qwen-3b_s4", "Qwen/Qwen2.5-3B-Instruct", "stride",
+                 ("--bs", "12", "--mb", "4", "--accum", "4", "--seed", "4", "--strides", "4"))],
+          "1": [("qwen-1.5b_s3", "Qwen/Qwen2.5-1.5B-Instruct", "stride", ("--bs", "16", "--seed", "3", "--strides", "4")),
+                ("qwen-1.5b_s4", "Qwen/Qwen2.5-1.5B-Instruct", "stride", ("--bs", "16", "--seed", "4", "--strides", "4"))]},
+}""",
+    "R24_seeds_7b": """{
+    "t": {"0,1": [("qwen-7b_s1", "Qwen/Qwen2.5-7B-Instruct", "stride",
+                   ("--bs", "8", "--mb", "2", "--accum", "8", "--n_train", "2000", "--device_map", "auto", "--seed", "1", "--strides", "4")),
+                  ("qwen-7b_s2", "Qwen/Qwen2.5-7B-Instruct", "stride",
+                   ("--bs", "8", "--mb", "2", "--accum", "8", "--n_train", "2000", "--device_map", "auto", "--seed", "2", "--strides", "4"))]},
+}""",
 }
 
 

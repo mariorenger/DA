@@ -1282,3 +1282,30 @@ Same training budget as Round 20 (3000 items, 2 epochs). **Validity criterion fi
 - **H-V2 (knee on a different task).** Some pair of consecutive converged strides in {1, 2, 3, 4, 5, 6} differs by ≥ 0.30 in mean accuracy.
 - **H-V3 (position).** Report the capacity (largest stride with accuracy ≥ 0.80); no threshold. Registered expectation: the capacity for addition differs from the capacity for lookups (3 for Qwen2.5-1.5B/3B).
 If no model converges at stride ≥ 2, the second-task claim is dropped and the knee is reported for the lookup task only.
+
+### Round 22, H-G1 verdict (seed robustness of the knee, `results/stride/stride_qwen-*_s{1,2}`): NO-GO as registered
+Mean accuracy over the four depths, seeds 0 / 1 / 2:
+| | stride 3 | stride 4 |
+|---|---|---|
+| Qwen2.5-1.5B | 0.987 / 0.993 / 0.997 | 0.352 / 0.330 / 0.373 |
+| Qwen2.5-3B | 0.997 / 0.995 / 1.000 | 0.583 / **0.913** / 0.568 |
+- The rule required stride 3 ≥ 0.90 and stride 4 ≤ 0.70 for both models in every seed; Qwen2.5-3B seed 1 gives 0.913 at stride 4, so H-G1 fails. The knee of Qwen2.5-1.5B is reproducible (0.33–0.37). For the 3B model the stride-4 accuracy ranges from 0.57 to 0.91 across seeds (final SFT loss 0.0207 for the 0.91 run, 0.115 and 0.1 for the 0.57 runs): at the margin of its capacity the outcome depends on the training run.
+- Consequence for the Round 20/21 summary: the scale trend at stride 4 (0.35 → 0.58 → 0.96 for 1.5B, 3B, 7B) rests on one seed per size and the 3B point is unreliable; "capacity 3 for 3B" is a seed-0 value. Qwen2.5-7B has a single seed.
+
+### Round 23 verdicts (`results/stride/stride_cumsum_*`; run interpreted only if final SFT loss < 0.05; \* = not converged)
+Mean accuracy by stride (k = 12 in brackets):
+| | 1 | 2 | 3 | 4 | 5 | 6 | answer only |
+|---|---|---|---|---|---|---|---|
+| Qwen2.5-1.5B | 1.00 (1.00) | 0.92 (0.91) | 0.90 (0.72) | 0.87 (0.67) | 0.87 (0.65) | 0.92 (0.77) | 0.92 (0.79) |
+| Qwen3-1.7B | 1.00 (1.00) | 0.99 (0.95) | 0.98 (0.92) | 0.95\* (0.84) | 0.88 (0.59) | 0.95\* (0.84) | 0.96 (0.85) |
+| Qwen2.5-3B | 1.00 (1.00) | 0.99 (0.97) | 0.92 (0.71) | 0.89\* (0.62) | 0.89 (0.63) | 0.93 (0.76) | 0.95 (0.83) |
+- **H-V1 GO (3/3):** stride-1 accuracy 1.00, all stride-1 runs converged. **H-V2 NO-GO (0/3):** no pair of consecutive converged strides differs by 0.30; the largest drop is 0.12 (Qwen3-1.7B, stride 4 → 5, 0.95\* → 0.88). Accuracy depends on the depth k
+  (k = 12 is 0.6–0.85, k ≤ 6 is ≈ 1.0) and hardly on the stride: even the answer-only chain adds 12 numbers correctly in 79–85% of the cases.
+- **H-V3 (reported):** capacity ≥ 12 additions per written step for all three models, against 3 (Qwen2.5-1.5B, 3B) and 4 (Qwen3-1.7B, Qwen2.5-7B ≥ 4) lookups. As registered at Round 22, the knee is therefore a property of the lookup chain, not of "number of operations per step": the claim is restricted to lookup (pointer) chains
+  and the capacity depends on the operation.
+
+## Round 24 (pre-registered before any GPU run): how seed-dependent is the capacity at the margin?
+Because H-G1 failed for the 3B model, the scale trend at stride 4 needs more seeds. Pointer task, stride 4 only. `m81extend`: Qwen2.5-3B seeds 3 and 4, Qwen2.5-1.5B seeds 3 and 4; `nguyenpn`: Qwen2.5-7B seeds 1 and 2 (2000 training items as in Round 20).
+- **H-W1 (seed dependence of 3B).** Over seeds 0–4 the range of the mean stride-4 accuracy of Qwen2.5-3B is ≥ 0.25 and that of Qwen2.5-1.5B is ≤ 0.10.
+- **H-W2 (7B capacity is robust).** Qwen2.5-7B mean stride-4 accuracy ≥ 0.80 in each of seeds 0, 1, 2.
+Prediction written now: H-W1 yes (already 0.57–0.91 for 3B with three seeds and 0.33–0.37 for 1.5B); H-W2 unknown. Reported without threshold: final SFT loss of each run and its correlation with the stride-4 accuracy of that run.

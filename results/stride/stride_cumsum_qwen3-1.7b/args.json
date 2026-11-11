@@ -1,0 +1,23 @@
+{
+ "model": "Qwen/Qwen3-1.7B",
+ "outdir": "/kaggle/working/results/stride_cumsum_qwen3-1.7b",
+ "strides": [
+  1,
+  2,
+  3,
+  4,
+  5,
+  6,
+  12
+ ],
+ "n_train": 3000,
+ "n_eval": 150,
+ "bs": 16,
+ "lr": 0.0002,
+ "epochs": 2.0,
+ "mb": 8,
+ "accum": 2,
+ "seed": 0,
+ "device_map": null,
+ "task": "cumsum"
+}

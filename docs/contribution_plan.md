@@ -105,3 +105,9 @@ Các kết quả âm của Round 13 ở 7B/8B nên chuyển bài 2 thành bài �
 | Qwen3-4B | 1.00 | | 1.00 | | 0.59 | 0.39 | 0.36 |
 H-T1, H-T2 (2/3), H-T3 và hai giả thuyết thăm dò của Round 21 đều đạt. Điều bài 1 có thể khẳng định: (i) ngưỡng ngân sách token là một điểm gãy chứ không phải suy giảm từ từ; (ii) vị trí điểm gãy khoảng 3 đến 4 phép tra mỗi bước viết ra cho 1.5B đến 7B; (iii) quy mô làm sự sụp đổ nhẹ đi (độ đúng ở bước 4: 0.35, 0.58, 0.96 cho 1.5B, 3B, 7B); (iv) họ mô hình quan trọng hơn kích thước (Qwen3-1.7B bằng Qwen2.5-7B ở bước 4).
 Phần chưa có: tác vụ cộng modulo (Round 22) không đo được vì không hội tụ; Round 23 (cộng dồn không modulo, có tiêu chí hội tụ) đang chạy; kiểm tra seed (Round 22 H-G1) đang chạy. Chưa có mô hình ≥ 14B và chưa có liên kết trực tiếp giữa điểm gãy này và đường token của GSM8K.
+
+## 10. Cập nhật 11/11/2026 (tối): hai điều chỉnh quan trọng cho bài 1
+
+1. **Điểm gãy không đúng cho mọi phép tính.** Với phép tra con trỏ, mỗi bước viết ra chỉ gộp được khoảng 3 đến 4 phép tra; với phép cộng dồn các số 1 đến 5, ngay cả chuỗi chỉ có đáp án vẫn cộng đúng 12 số ở 79 đến 85% (không có điểm gãy; độ đúng giảm theo độ sâu k chứ không theo bước nhảy). Vậy khẳng định đóng góp phải là: **sức chứa mỗi bước viết ra phụ thuộc phép tính**, chứ không phải một hằng số "số bước". (Tác vụ cộng modulo 10 không dùng được vì không hội tụ.)
+2. **Xu hướng theo quy mô yếu hơn đã nói.** Điểm gãy của Qwen2.5-1.5B lặp lại qua 3 seed (độ đúng ở bước 4: 0.35, 0.33, 0.37) nhưng Qwen2.5-3B thì không (0.58, 0.91, 0.57). Xu hướng 0.35 → 0.58 → 0.96 cho 1.5B, 3B, 7B chỉ dựa trên một seed mỗi cỡ, và điểm 3B không đáng tin. Round 24 (đang chạy) thêm seed cho 3B, 1.5B và 7B.
+Còn thiếu cho một bài hoàn chỉnh: ít nhất một phép tính thứ ba (để nói về "phụ thuộc phép tính" cần hơn hai điểm), mô hình từ 14B trở lên, liên kết với đường token GSM8K, và bản nháp cấu trúc bài.
