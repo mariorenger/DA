@@ -1,0 +1,5 @@
+arm,em_ans,abstain_on_ans,wrong_on_ans,abstain_on_unans,follow_ctx,follow_param,hallucination_among_answered,utility
+p_inst,26.667,47.333,26.0,85.333,9.333,2.333,60.396,0.24
+s_abs,47.667,17.333,35.0,68.333,27.333,7.0,58.309,0.206
+s_abs_cf,53.667,13.0,33.333,56.667,41.667,3.0,58.824,0.136
+s_plain,54.333,0.0,45.667,0.0,29.0,9.0,72.833,-0.456

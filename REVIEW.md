@@ -1192,3 +1192,32 @@ Models: Qwen2.5-1.5B, Qwen3-1.7B, Qwen2.5-3B (rule), Qwen2.5-7B (extra for H-T3)
 Prediction written now: H-T1 yes; H-T2 yes; H-T3 uncertain (if per-step capacity does not grow with size, the collapse of pruned chains in Rounds 14–19 is independent of scale).
 Also reported without threshold: accuracy by depth k and stride, mean generated tokens (does the accuracy-versus-tokens curve of this task lie on the GSM8K line of Round 16?).
 Limitations stated up front: one seed, a synthetic task, 24-node functions (random cycles), LoRA SFT with 3000 items, Qwen3 in non-thinking mode.
+
+### Round 18, Round 13 scale check at Qwen2.5-7B (`results/hall/q25_7b`, 300 questions per condition; Qwen3-8B still running)
+| arm | EM on ans | abstain on ans | abstain on unans | follow-context on conflict | utility (hall.summarize) |
+|---|---|---|---|---|---|
+| p_inst (prompt only) | 26.7 | 47.3 | **85.3** | 9.3 | **0.240** |
+| s_plain | 54.3 | 0.0 | 0.0 | 29.0 | −0.456 |
+| s_abs | 47.7 | 17.3 | 68.3 | 27.3 | 0.206 |
+| s_abs_cf | 53.7 | 13.0 | 56.7 | 41.7 | 0.136 |
+- **Rule as registered: NO-GO.** Abstention on `unans` rose by −28.7 [−34.3, −23.0] points over p_inst (rule: ≥ +30) because a prompted 7B model already abstains on 85% of the unanswerable questions; follow-context on `conflict`
+  s_abs_cf − s_plain +12.7 [+7.7, +18.0] (rule: ≥ +15).
+- What the 7B data say instead: prompting alone gives the best utility (0.240) by abstaining heavily, also on answerable questions (47%, EM 26.7); fine-tuning raises EM on answerable questions by +27 points (53.7 vs 26.7) and follow-context
+  by +12.7 over s_plain, but loses 29 points of abstention and ends below the prompt in utility (0.136). The Round 13 gain from abstention training was measured against small models that did not abstain when asked; it does not carry to 7B.
+  (A mean-of-rewards utility computed outside `hall.summarize` gives −0.009 / −0.443 / 0.017 / 0.055; the ordering p_inst vs s_abs_cf differs, so the utility definition matters and the headline claim is limited to the registered rule above.)
+
+### Round 20, interim (Qwen2.5-1.5B and Qwen3-1.7B finished; Qwen2.5-3B and Qwen2.5-7B still running; `results/stride`)
+Accuracy by stride, mean over depths k ∈ {4, 6, 8, 12} (stride m = lookups composed per written step; generated tokens fall from 30 to 5):
+| stride | 1 | 2 | 3 | 4 | 12 (answer only) |
+|---|---|---|---|---|---|
+| Qwen2.5-1.5B | 1.00 | 1.00 | 0.99 | **0.35** | 0.24 |
+| Qwen3-1.7B | 1.00 | 1.00 | 1.00 | 0.95 | 0.29 |
+- H-T1 holds for both (stride-1 accuracy 1.00). Qwen2.5-1.5B has a sharp knee between stride 3 and 4 (0.99 → 0.35): composing 3 lookups per written step is possible, 4 is not (capacity h = 3).
+  Qwen3-1.7B has no knee inside {1, 2, 3, 4} (0.95 at stride 4); its capacity is at least 4, so the two ~1.7B models differ by more than one hop although their sizes are almost equal: capacity is not a function of parameter count alone.
+- H-T2 is decided by Qwen2.5-3B: with one knee already (1.5B) it needs the 3B model to show a ≥ 0.30 drop inside strides 1–4.
+
+## Round 21 (exploratory, planned AFTER seeing the Round 20 interim results; not part of the confirmatory rule): where is the knee of Qwen3?
+Qwen3-1.7B is still at 0.95 at stride 4 and at 0.29 for the answer only, so its knee lies in (4, 12). Strides 5, 6, 8 are added for Qwen3-1.7B; Qwen3-4B is run on strides 1, 4, 6, 8, 12.
+- **H-U1.** For Qwen3-1.7B some consecutive pair in {4, 5, 6, 8, 12} drops by ≥ 0.30 (a knee exists in the extended range).
+- **H-U2.** The capacity s* (largest stride with mean accuracy ≥ 0.80) of Qwen3-4B is ≥ that of Qwen3-1.7B.
+Stated as exploratory because the stride grid was extended after seeing results; one seed.

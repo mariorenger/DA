@@ -584,6 +584,11 @@ NOTEBOOKS = {
     "t": {"0,1": [("qwen-7b", "Qwen/Qwen2.5-7B-Instruct", "stride",
                    ("--bs", "8", "--mb", "2", "--accum", "8", "--n_train", "2000", "--device_map", "auto"))]},
 }""",
+    "R21_stride_ext": """{
+    "t": {"0": [("qwen3-1.7b-ext", "Qwen/Qwen3-1.7B", "stride", ("--bs", "16", "--strides", "5", "6", "8"))],
+          "1": [("qwen3-4b", "Qwen/Qwen3-4B", "stride", ("--bs", "12", "--mb", "4", "--accum", "4",
+                                                         "--strides", "1", "4", "6", "8", "12"))]},
+}""",
 }
 
 
