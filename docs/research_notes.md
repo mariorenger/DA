@@ -30,6 +30,9 @@ Tạo lại: `python tools/export_transcript.py <session.jsonl> docs/conversatio
 | Round 17 (chuỗi chỉ giữ phép tính, GSM8K) | Giữ phép tính nhưng giảm token vs xóa bước | H-C2 GO 3/3 (hơn xóa ngẫu nhiên +19…+30), H-C1 NO-GO 0/3 (vẫn kém chuỗi đầy đủ 3…17 điểm); nằm trên đường xóa bước ~10–12 điểm. Bộ rút gọn làm mất số ở 15% chuỗi → Round 19 |
 | Round 18 (đường cong chép kết quả sai, GSM8K, 0.5B–14B) | Tỷ lệ chép theo kết quả cuối sai khi mô hình tự giải được | 99 → 92 → 85.5 → 66% (1.5B, 3B, 7B, 14B 4-bit); H-S1 NO-GO (14B/3B = 0.72), H-S2 GO (14B vẫn 66%), H-S3 GO; 32B chạy lại |
 
+| Round 20-21 (con trỏ tổng hợp, bước nhảy) | Số phép tra gộp mỗi bước viết ra; chuỗi tối thiểu biết trước | H-T1..H-T3 GO: điểm gãy ở bước 4 (độ đúng 0.35, 0.58, 0.96 cho Qwen2.5 1.5B/3B/7B); Qwen3-1.7B gãy giữa bước 4 và 5; sức chứa không là hàm của số tham số |
+| Round 22 (cộng modulo 10; seed) | Tác vụ thứ hai và độ vững qua seed | Cộng modulo không hội tụ (H-G2 không đánh giá được); H-G1 (seed) đang chạy; Round 23 thay bằng cộng dồn không modulo |
+
 ## 3. Số liệu chính (xem paper/main.tex, paper/baocao_vi.pdf)
 - CLUTRR extract+rules SC5 so với baseline tốt nhất: validation k2–4 +32.0/+32.0/+36.7 (1.5B/3B/7B); task chưa thấy k2–4 +20.9/+27.2/+33.5; k5–8 −1.0/+9.5/+24.0 (7B là kiểm định chính đăng ký trước, GO).
 - Ablation C7 (cùng fact, đổi bên hợp thành): luật − LLM = +13.3/+25.9/+35.4 (ngắn), +4.0/+5.0/+13.0 (dài; chỉ 7B có ý nghĩa).
