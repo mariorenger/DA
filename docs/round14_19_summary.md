@@ -1,4 +1,4 @@
-# Tổng hợp Round 14 đến 19 (cập nhật 10/11/2026)
+# Tổng hợp Round 14 đến 21 (cập nhật 11/11/2026)
 
 Các Round 18b (32B), Round 13 ở 7B/8B (hall) còn đang chạy. Mọi số liệu dưới đây lấy từ `REVIEW.md` (mỗi vòng đều đăng ký giả thuyết trước khi chạy).
 
@@ -21,6 +21,14 @@ Các phép đo tầm quan trọng của bước trong chuỗi suy luận (Yu PNS
 1. Các đối chứng chuẩn (cùng số bước, đảo thứ tự, token-matched random) cho thấy các điểm quan trọng của bước không dự đoán giá trị huấn luyện của bước ở 1.5B–3B; ở 7B bắt đầu có (+9.3).
 2. Độ đúng sau SFT trên chuỗi đã rút gọn phụ thuộc chủ yếu vào lượng token giữ lại.
 3. Việc chép kết quả sai giảm theo quy mô nhưng không biến mất ở 14B.
+
+## Bổ sung Round 18 đến 21
+| Vòng | Kết quả | Kết luận |
+|---|---|---|
+| 18 (copy test, 0.5B–32B) | Chép kết quả sai: 99.5 → 92 → 85.5 → 66 → 76.7% (1.5B, 3B, 7B, 14B, 32B) | Giảm đến 14B, không giảm thêm ở 32B (khác nguồn lượng tử hóa); chưa biến mất |
+| 18 (Round 13 ở 7B/8B) | Quy tắc không đạt ở cả Qwen2.5-7B và Qwen3-8B | Huấn luyện từ chối không hơn prompt ở 7B/8B (prompt đã từ chối 73–85% câu thiếu bằng chứng) |
+| 20 (con trỏ tổng hợp) | Điểm gãy ở bước nhảy 4: 1.5B 0.35, 3B 0.59, Qwen3-1.7B 0.95; sức chứa 3, 3, ≥4 | Sức chứa mỗi bước viết không chỉ phụ thuộc tham số (Qwen3-1.7B > Qwen2.5-3B) |
+| 21 (thăm dò) | Đang chạy: tìm điểm gãy của Qwen3 | |
 
 ## Giới hạn
 Một benchmark (GSM8K, đã bão hòa ở 7B), một seed mỗi cách (cùng cấu hình lặp lại sai khác ≤ 0.4 điểm, nhưng nhiễu giữa các cách huấn luyện khác nhau khoảng 3–4 điểm), nhiều kiểm định, các mô hình 14B và 32B ở dạng 4-bit.

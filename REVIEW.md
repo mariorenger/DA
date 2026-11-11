@@ -1221,3 +1221,25 @@ Qwen3-1.7B is still at 0.95 at stride 4 and at 0.29 for the answer only, so its 
 - **H-U1.** For Qwen3-1.7B some consecutive pair in {4, 5, 6, 8, 12} drops by ≥ 0.30 (a knee exists in the extended range).
 - **H-U2.** The capacity s* (largest stride with mean accuracy ≥ 0.80) of Qwen3-4B is ≥ that of Qwen3-1.7B.
 Stated as exploratory because the stride grid was extended after seeing results; one seed.
+
+### Round 20, verdicts on the three small models (Qwen2.5-1.5B, Qwen3-1.7B, Qwen2.5-3B; `results/stride`, `tools/analyze_stride.py`); Qwen2.5-7B (extra for H-T3) still running
+Mean accuracy over depths k ∈ {4, 6, 8, 12}: 
+| stride | 1 | 2 | 3 | 4 | answer only |
+|---|---|---|---|---|---|
+| Qwen2.5-1.5B | 1.00 | 1.00 | 0.99 | 0.35 | 0.24 |
+| Qwen2.5-3B | 1.00 | 1.00 | 1.00 | 0.59 | 0.29 |
+| Qwen3-1.7B | 1.00 | 1.00 | 1.00 | 0.95 | 0.29 |
+- **H-T1 GO (3/3):** stride-1 accuracy 1.00. **H-T2 GO (2/3):** the largest drop between consecutive strides in {1, 2, 3, 4} is 0.63 (1.5B) and 0.41 (3B); Qwen3-1.7B has none (0.05).
+- Capacity h (largest stride with accuracy ≥ 0.80): Qwen2.5-1.5B 3, Qwen2.5-3B 3, Qwen3-1.7B ≥ 4. Doubling the Qwen2.5 size does not raise h by the registered criterion; it softens the collapse at stride 4 (0.35 → 0.59 mean, deepest depth 0.32 → 0.47).
+  H-T3 is still open: it needs Qwen2.5-7B (running). Stated as a caution already: capacity is not a function of parameter count alone (Qwen3-1.7B > Qwen2.5-3B).
+
+### Round 18, final (32B added; `results/scale/scale_q25-32b-bnb4`, 150 questions, unsloth bnb-4bit checkpoint)
+follow(last) 76.7 [69.3, 83.3]; follow(all) 80.7 [74.7, 87.3]; intact 0.0, correct under `last` 23.3%.
+- **H-S1 NO-GO (final):** the curve is not monotone, 14B 66.0 [59.5, 72.5] → 32B 76.7 (+10.7, intervals overlap slightly; different quantization source and n), and 14B/3B = 0.72.
+- **H-S2 GO (final):** the largest model (32B) follows a wrong stated result in 76.7% of the questions it solved. **H-S3 GO (6/6 scales):** follow(all) ≥ follow(last).
+- Reading: copying does decrease from 0.5B to 14B (99.5 → 66.0) but there is no evidence of a further decline at 32B in these runs; the 32B figure is subject to the quantization-source difference.
+
+### Round 18, Round 13 scale check at Qwen3-8B (`results/hall/q3_8b`; same rule as for Qwen2.5-7B)
+abstain on unans s_abs_cf − p_inst −5.3 [−10.7, 0.0] (rule ≥ +30); follow-context s_abs_cf − s_plain +12.7 [+7.3, +17.3] (rule ≥ +15) → **NO-GO**, as at 7B.
+Utility (hall.summarize): p_inst 0.198, s_abs **0.239**, s_abs_cf 0.193, s_plain −0.428; the prompted 8B model abstains on 73.3% of unanswerable and 33.0% of answerable questions.
+Round 13 scale check overall: the abstention-training gain of Round 13 is not reproduced at 7B/8B (prompting already abstains); the context-conflict gain (+12.7 points over plain SFT) is smaller than at ≤ 4B and below the registered +15 at both sizes.

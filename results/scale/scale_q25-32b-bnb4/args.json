@@ -1,0 +1,10 @@
+{
+ "model": "unsloth/Qwen2.5-32B-Instruct-bnb-4bit",
+ "outdir": "/kaggle/working/results/scale_q25-32b-bnb4",
+ "n": 150,
+ "n_pool": 220,
+ "bs": 4,
+ "seed": 0,
+ "device_map": null,
+ "load_in_4bit": true
+}

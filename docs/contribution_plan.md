@@ -83,3 +83,12 @@ Rủi ro mới: có nhiều bài cùng thời. Trước khi viết cần đọc 
 | 7 | LoRi (2606.05315), Do Latent-CoT think step by step (2602.00449) | Suy luận ngầm; "fusion muộn" ở bước đọc đáp án | Cùng hiện tượng với phát hiện "đọc đáp án"; chưa có mô hình để thử | Cao, bỏ qua |
 
 Đề xuất thứ tự: (3) làm ngay vì rẻ và sửa lỗi của chính ta; (4) đưa vào bài 1; (1) là hướng có thể thành đóng góp chính vì nối lý thuyết với đường token của ta; (2) làm nếu còn thời gian.
+
+## 8. Cập nhật 11/11/2026: Round 20 là ứng viên đóng góp chính
+
+Round 20 (con trỏ tổng hợp với chuỗi tối thiểu biết trước) cho kết quả sạch ở ba mô hình nhỏ: mọi mô hình đạt 1.00 khi viết mọi bước, có điểm gãy rõ khi mỗi bước viết ra phải gộp 4 phép tra ở Qwen2.5-1.5B (0.99 → 0.35) và Qwen2.5-3B (1.00 → 0.59), còn Qwen3-1.7B giữ 0.95. Điều nó hỗ trợ cho bài 1:
+- Ngưỡng ngân sách token là hiện tượng thật, có điểm gãy, khác với suy giảm từ từ mà đường GSM8K gợi ý (r = 0.94 là trung bình trên nhiều tác vụ).
+- Sức chứa mỗi bước viết ra không là hàm của số tham số: Qwen3-1.7B hơn Qwen2.5-3B. Điều này cảnh báo không kết luận quy mô từ một họ mô hình.
+- Còn chờ: Qwen2.5-7B (H-T3, sức chứa có tăng theo quy mô không) và phần mở rộng Round 21 (điểm gãy của Qwen3).
+Việc cần làm để nâng thành đóng góp chính: (1) nhiều seed cho điểm gãy, (2) một tác vụ thứ hai có chuỗi tối thiểu biết trước (hợp thành quan hệ), (3) liên hệ với đường token GSM8K, (4) mô hình 14B trở lên (4-bit).
+Các kết quả âm của Round 13 ở 7B/8B nên chuyển bài 2 thành bài đánh giá (huấn luyện từ chối không hơn prompt ở quy mô này) thay vì bài phương pháp.
