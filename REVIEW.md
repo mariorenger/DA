@@ -1243,3 +1243,13 @@ follow(last) 76.7 [69.3, 83.3]; follow(all) 80.7 [74.7, 87.3]; intact 0.0, corre
 abstain on unans s_abs_cf − p_inst −5.3 [−10.7, 0.0] (rule ≥ +30); follow-context s_abs_cf − s_plain +12.7 [+7.3, +17.3] (rule ≥ +15) → **NO-GO**, as at 7B.
 Utility (hall.summarize): p_inst 0.198, s_abs **0.239**, s_abs_cf 0.193, s_plain −0.428; the prompted 8B model abstains on 73.3% of unanswerable and 33.0% of answerable questions.
 Round 13 scale check overall: the abstention-training gain of Round 13 is not reproduced at 7B/8B (prompting already abstains); the context-conflict gain (+12.7 points over plain SFT) is smaller than at ≤ 4B and below the registered +15 at both sizes.
+
+## Round 22 (pre-registered before any GPU run): is the knee of Round 20 robust and general?
+Two checks that a main-contribution claim needs. (a) **Seeds:** Qwen2.5-1.5B and Qwen2.5-3B, pointer task, seeds 1 and 2 (training data and LoRA initialisation change; the 600 evaluation items are the same), strides 3 and 4 only (the region of the knee).
+(b) **Second task with a known minimal chain:** running total modulo 10 of k ∈ {4, 6, 8, 12} digits (`--task sum`); stride m shows every m-th total, so each written step composes m additions; strides 1, 2, 3, 4, 6 and answer-only; Qwen2.5-1.5B, Qwen3-1.7B, Qwen2.5-3B.
+*Hypotheses.*
+- **H-G1 (seed robustness).** For both Qwen2.5-1.5B and Qwen2.5-3B, in each of seeds 0, 1, 2: mean accuracy at stride 3 ≥ 0.90 and at stride 4 ≤ 0.70 (the knee between 3 and 4 reproduces).
+- **H-G2 (generality).** On the running-sum task, stride-1 accuracy ≥ 0.85 for ≥ 2/3 of the small models, and for ≥ 2/3 of the small models some pair of consecutive strides in {1, 2, 3, 4, 6} drops by ≥ 0.30.
+Prediction written now: H-G1 yes. H-G2 uncertain: a modular addition is a different computation from a lookup, and the stride at which it breaks can differ or be absent.
+Interpretation rule written now: if the knee on the sum task sits at a different stride per model than on the pointer task, "capacity" is task-dependent and the paper claim becomes "a knee exists, its position depends on the task and model"; if the sum task shows no knee, the hop-capacity claim is restricted to lookup chains.
+Limitations stated up front: synthetic tasks, LoRA SFT with 3000 items, Qwen3 in non-thinking mode, 3 seeds only on two models.

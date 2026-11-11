@@ -35,6 +35,17 @@ def _log(msg: str):
     print(f"[{(time.time() - T0) / 60:6.1f} min] {msg}", flush=True)
 
 
+def make_sum_item(rng: random.Random, k: int) -> Dict:
+    """Running total modulo 10 of k single digits; path[i] = total after i additions, so stride m shows every m-th total."""
+    d = [rng.randint(0, 9) for _ in range(k)]
+    path = [0]
+    for x in d:
+        path.append((path[-1] + x) % 10)
+    q = ("Numbers: " + " ".join(str(x) for x in d) + ".\nAdd the numbers one by one starting from 0, keeping only the last digit "
+         "of the running total each time (total modulo 10). What is the final total?")
+    return dict(q=q, k=k, path=path, answer=path[-1])
+
+
 def make_item(rng: random.Random, k: int, n_nodes: int = 24) -> Dict:
     nodes = rng.sample(range(10, 100), n_nodes)
     f = {a: rng.choice([b for b in nodes if b != a]) for a in nodes}
@@ -96,12 +107,14 @@ def main():
     ap.add_argument("--accum", type=int, default=2)
     ap.add_argument("--seed", type=int, default=0)
     ap.add_argument("--device_map", default=None)
+    ap.add_argument("--task", choices=["pointer", "sum"], default="pointer")
     args = ap.parse_args()
     os.makedirs(args.outdir, exist_ok=True)
     json.dump(vars(args), open(f"{args.outdir}/args.json", "w"), indent=1)
     rng = random.Random(args.seed)
-    train = [make_item(rng, rng.choice(KS)) for _ in range(args.n_train)]
-    evals = [make_item(random.Random(10_000 + i * 7 + k), k) for k in KS for i in range(args.n_eval)]
+    mk = make_sum_item if args.task == "sum" else make_item
+    train = [mk(rng, rng.choice(KS)) for _ in range(args.n_train)]
+    evals = [mk(random.Random(10_000 + i * 7 + k), k) for k in KS for i in range(args.n_eval)]
     from .cftrain import train_sft
     rows, base_done = [], False
     lm = LM(args.model, device_map=args.device_map)

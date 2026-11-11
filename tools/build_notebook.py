@@ -589,6 +589,24 @@ NOTEBOOKS = {
           "1": [("qwen3-4b", "Qwen/Qwen3-4B", "stride", ("--bs", "12", "--mb", "4", "--accum", "4",
                                                          "--strides", "1", "4", "6", "8", "12"))]},
 }""",
+    "R22_seeds": """{
+    "t": {"0": [("qwen-1.5b_s1", "Qwen/Qwen2.5-1.5B-Instruct", "stride", ("--bs", "16", "--seed", "1", "--strides", "3", "4")),
+                ("qwen-1.5b_s2", "Qwen/Qwen2.5-1.5B-Instruct", "stride", ("--bs", "16", "--seed", "2", "--strides", "3", "4"))],
+          "1": [("qwen-3b_s1", "Qwen/Qwen2.5-3B-Instruct", "stride",
+                 ("--bs", "12", "--mb", "4", "--accum", "4", "--seed", "1", "--strides", "3", "4")),
+                ("qwen-3b_s2", "Qwen/Qwen2.5-3B-Instruct", "stride",
+                 ("--bs", "12", "--mb", "4", "--accum", "4", "--seed", "2", "--strides", "3", "4"))]},
+}""",
+    "R22_sum_a": """{
+    "t": {"0": [("sum_qwen-1.5b", "Qwen/Qwen2.5-1.5B-Instruct", "stride",
+                 ("--bs", "16", "--task", "sum", "--strides", "1", "2", "3", "4", "6", "12"))],
+          "1": [("sum_qwen3-1.7b", "Qwen/Qwen3-1.7B", "stride",
+                 ("--bs", "16", "--task", "sum", "--strides", "1", "2", "3", "4", "6", "12"))]},
+}""",
+    "R22_sum_b": """{
+    "t": {"0": [("sum_qwen-3b", "Qwen/Qwen2.5-3B-Instruct", "stride",
+                 ("--bs", "12", "--mb", "4", "--accum", "4", "--task", "sum", "--strides", "1", "2", "3", "4", "6", "12"))]},
+}""",
 }
 
 
