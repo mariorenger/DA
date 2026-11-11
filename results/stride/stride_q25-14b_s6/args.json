@@ -1,0 +1,19 @@
+{
+ "model": "Qwen/Qwen2.5-14B-Instruct",
+ "outdir": "/kaggle/working/results/stride_q25-14b_s6",
+ "strides": [
+  6
+ ],
+ "n_train": 2000,
+ "n_eval": 150,
+ "bs": 6,
+ "lr": 0.0002,
+ "epochs": 2.0,
+ "mb": 1,
+ "accum": 16,
+ "seed": 0,
+ "device_map": "auto",
+ "task": "pointer",
+ "load_in_4bit": true,
+ "no_merge": true
+}

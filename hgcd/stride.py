@@ -56,6 +56,22 @@ def make_cumsum_item(rng: random.Random, k: int) -> Dict:
     return dict(q=q, k=k, path=path, answer=path[-1])
 
 
+def make_swap_item(rng: random.Random, k: int) -> Dict:
+    """Permutation tracking: five digits, k swaps; path[i] = the arrangement after i swaps as a five-digit integer."""
+    state = [1, 2, 3, 4, 5]
+    ops = []
+    path = [int("".join(map(str, state)))]
+    for _ in range(k):
+        i, j = rng.sample(range(1, 6), 2)
+        ops.append((i, j))
+        state[i - 1], state[j - 1] = state[j - 1], state[i - 1]
+        path.append(int("".join(map(str, state))))
+    q = ("Start with the arrangement 1 2 3 4 5. Apply these swaps of positions in order: "
+         + ", ".join(f"swap({i},{j})" for i, j in ops)
+         + ".\nWhat is the final arrangement? Answer with the five digits.")
+    return dict(q=q, k=k, path=path, answer=path[-1])
+
+
 def make_item(rng: random.Random, k: int, n_nodes: int = 24) -> Dict:
     nodes = rng.sample(range(10, 100), n_nodes)
     f = {a: rng.choice([b for b in nodes if b != a]) for a in nodes}
@@ -117,14 +133,14 @@ def main():
     ap.add_argument("--accum", type=int, default=2)
     ap.add_argument("--seed", type=int, default=0)
     ap.add_argument("--device_map", default=None)
-    ap.add_argument("--task", choices=["pointer", "sum", "cumsum"], default="pointer")
+    ap.add_argument("--task", choices=["pointer", "sum", "cumsum", "swap"], default="pointer")
     ap.add_argument("--load_in_4bit", action="store_true")
     ap.add_argument("--no_merge", action="store_true")
     args = ap.parse_args()
     os.makedirs(args.outdir, exist_ok=True)
     json.dump(vars(args), open(f"{args.outdir}/args.json", "w"), indent=1)
     rng = random.Random(args.seed)
-    mk = {"sum": make_sum_item, "cumsum": make_cumsum_item}.get(args.task, make_item)
+    mk = {"sum": make_sum_item, "cumsum": make_cumsum_item, "swap": make_swap_item}.get(args.task, make_item)
     train = [mk(rng, rng.choice(KS)) for _ in range(args.n_train)]
     evals = [mk(random.Random(10_000 + i * 7 + k), k) for k in KS for i in range(args.n_eval)]
     from .cftrain import train_sft

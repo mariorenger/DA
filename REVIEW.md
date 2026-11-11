@@ -1327,3 +1327,28 @@ One notebook per stride so that they run in parallel: `nguyenpn`: stride 4; `m81
 - **H-X2.** Mean accuracy at stride 6 ≥ 0.50 (for reference Qwen3-4B 0.59, Qwen3-1.7B 0.32 at stride 6).
 Both are registered with no confident prediction for H-X2; H-X1 is expected to hold. A run whose final SFT loss ≥ 0.05 is flagged as not converged and its accuracy is not read as capacity (Round 24 correlation of loss with accuracy: Spearman −0.96).
 Limitations stated up front: one seed per stride (the 3B model varied by 0.35 across seeds, so a single 14B point near 0.5–0.8 would be uninterpretable), 4-bit weights with an unmerged adapter (not identical to fp16 LoRA), the 4-bit training path has not been exercised before in this project (a failure is reported as a failure of the run, not as a result).
+
+### Round 25 verdicts (Qwen2.5-14B-Instruct, 4-bit QLoRA with an unmerged adapter, pointer task, one seed; `results/stride/stride_q25-14b_s{4,6}`)
+| | stride 4 | stride 6 |
+|---|---|---|
+| mean accuracy (by depth k = 4 / 6 / 8 / 12) | **0.972** (1.00 / 0.96 / 0.97 / 0.96) | **0.410** (0.55 / 0.39 / 0.37 / 0.33) |
+| final SFT loss | 0.0074 (converged) | 0.190 (≥ 0.05: flagged, not read as a capacity estimate) |
+- **H-X1 GO** (stride 4 ≥ 0.80, converged). **H-X2 NO-GO** (stride 6 = 0.41 < 0.50; the run is also flagged as not converged, so the figure is at most a lower bound of what 14B could do with a longer schedule).
+- The stride-4 trend over scale is now 0.36 (1.5B), 0.70 (3B), 0.92 (7B), 0.97 (14B). At stride 6 the 4B Qwen3 model (0.59) and Qwen3-1.7B (0.32) bracket Qwen2.5-14B (0.41): family differences are larger than the size differences in this range.
+- The 4-bit QLoRA path worked (250 steps, 2.7 h per run; loss at step 10 was 5.5 / 4.7 as for the other sizes). Limitations unchanged: one seed, 4-bit weights, the stride-6 run did not converge.
+
+## Round 26 (pre-registered before any GPU run): a third operation, permutation tracking
+Lookups (capacity 3–4 per written step) and additions of small numbers (≥ 12) differ; a third operation is needed to say that the capacity depends on the operation. State tracking under swaps is the canonical hard case for fixed-depth models: 5 digits, k ∈ {4, 6, 8, 12} swaps "swap(i, j)"; the written chain shows the whole arrangement after every m-th swap; answer = final arrangement as a five-digit number, exact match (chance 1/120 = 0.008). `hgcd/stride.py --task swap`, Qwen2.5-1.5B, Qwen3-1.7B, Qwen2.5-3B, strides 1, 2, 3, 4, answer only; 3000 training items, 2 epochs, one seed. A run is interpreted only if its final SFT loss < 0.05 (as in Round 23).
+- **H-Y1 (sanity).** Stride-1 accuracy ≥ 0.85 with a converged run for ≥ 2/3 models.
+- **H-Y2 (knee).** Among converged strides in {1, 2, 3, 4} some consecutive pair differs by ≥ 0.30 in mean accuracy, for ≥ 2/3 models.
+- **H-Y3 (position, no threshold).** Capacity (largest converged stride with accuracy ≥ 0.80). Registered expectation: capacity ≤ 2 for permutation tracking, i.e. lower than the 3 of the lookup chain for Qwen2.5-1.5B and 3B.
+If stride 1 does not converge for a model the model is excluded; if fewer than two models converge the third-operation claim is dropped. Limitations: synthetic task, one seed, exact match of five digits.
+
+### Exploratory (post hoc, CPU only): the GSM8K deletion line with predictors known before training (`results/blind/effective_stride_vs_accuracy.csv`)
+The Round 16 line used the generated-token ratio, which is an outcome of the trained model. Over 59 pruned arms of 18 SFT runs (Rounds 14–19) the change of test accuracy relative to full-chain SFT correlates with two statistics of the TRAINING chains only:
+training-token ratio r = +0.76 (Spearman +0.79; fit Δacc ≈ 65 × ratio − 60, residual SD 8.4 points) and **effective stride** (original steps per kept step, the quantity the stride experiments vary) r = −0.86 (Spearman −0.83).
+By bin of effective stride: ≤ 1.05 (compaction, no step removed) mean −9.4 (n = 11); 1.05–1.3 −4.3 (3); 1.3–1.6 −11.1 (7); 1.6–2.0 −14.3 (12); > 2.0 −34.2 (26).
+Reading: removing steps costs more as more original steps must be composed into each kept step, and the cost is already large at an effective stride of about 2 on GSM8K, whereas the pointer task tolerates 3 lookups per step — the capacity per written step is operation-specific, consistent with Rounds 20–23. Not a causal estimate: the arms differ in many ways at once, and the effective stride is computed over heterogeneous GSM8K steps.
+
+### Round 26 execution note
+All four Kaggle accounts (m81extend, nguyenpn, mario123475, ngpnguyen) have reached the weekly GPU quota (30 h); the Round 26 notebooks (`R26_swap_a/b`) are built and were refused at push. Pre-registration unchanged; launch when the quota resets.

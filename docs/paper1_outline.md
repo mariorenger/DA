@@ -22,9 +22,9 @@ Bước thừa cài sẵn và nhãn "mang phép tính" (đồ thị phụ thuộ
 Một benchmark thật (GSM8K, bão hòa ở 7B); nhiễu SFT 3–4 điểm và nhiều seed chỉ ở một vài ô; 14B, 32B ở 4-bit; tác vụ tổng hợp; Qwen3 ở chế độ không thinking; nhiều kiểm định.
 
 ## 5. Khoảng trống phải lấp trước khi viết bản thảo
-1. **Phép tính thứ ba** để khẳng định "phụ thuộc phép tính" (hiện có hai: tra bảng và cộng).
-2. **Mô hình ≥ 14B trên tra con trỏ** (Round 25 đang chạy; cần cả bước nhảy 6 để đo vị trí gãy).
-3. **Liên kết trực tiếp giữa điểm gãy và đường token GSM8K** (ví dụ: ước lượng số phép tra tối thiểu của một bài GSM8K và so với độ dài chuỗi bị cắt).
+1. **Phép tính thứ ba** để khẳng định "phụ thuộc phép tính" (hiện có hai: tra bảng và cộng). Round 26 (theo dõi hoán vị) đã đăng ký và chờ hạn mức GPU.
+2. **Mô hình ≥ 14B trên tra con trỏ**: đã có 14B ở bước nhảy 4 (0.97, hội tụ); bước nhảy 6 chưa hội tụ (0.41) nên vị trí gãy của 14B vẫn nằm giữa 4 và 6.
+3. **Liên kết điểm gãy với đường token GSM8K**: đã có phân tích thăm dò dùng thống kê trước huấn luyện (bước nhảy hiệu dụng r = −0.86 so với tỷ lệ token r = +0.76, 59 cách cắt); cần đối chứng sạch hơn (chuỗi GSM8K có bước đồng nhất hơn).
 4. Một mô hình frontier qua API cho phần chép kết quả sai (cần ngân sách).
 5. Đọc toàn văn Breaking the Chain, NLDD, Performative traces, Readout Shortcut, BAPO để định vị chính xác.
 
