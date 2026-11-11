@@ -92,3 +92,16 @@ Round 20 (con trỏ tổng hợp với chuỗi tối thiểu biết trước) ch
 - Còn chờ: Qwen2.5-7B (H-T3, sức chứa có tăng theo quy mô không) và phần mở rộng Round 21 (điểm gãy của Qwen3).
 Việc cần làm để nâng thành đóng góp chính: (1) nhiều seed cho điểm gãy, (2) một tác vụ thứ hai có chuỗi tối thiểu biết trước (hợp thành quan hệ), (3) liên hệ với đường token GSM8K, (4) mô hình 14B trở lên (4-bit).
 Các kết quả âm của Round 13 ở 7B/8B nên chuyển bài 2 thành bài đánh giá (huấn luyện từ chối không hơn prompt ở quy mô này) thay vì bài phương pháp.
+
+## 9. Cập nhật 11/11/2026 (chiều): Round 20 và 21 đã chốt
+
+Điểm gãy theo bước nhảy trên tác vụ tra con trỏ (chuỗi tối thiểu biết trước), độ đúng trung bình:
+| | bước 1 | 3 | 4 | 5 | 6 | 8 | chỉ đáp án |
+|---|---|---|---|---|---|---|---|
+| Qwen2.5-1.5B | 1.00 | 0.99 | 0.35 | | | | 0.24 |
+| Qwen2.5-3B | 1.00 | 1.00 | 0.58 | | | | 0.29 |
+| Qwen2.5-7B | 1.00 | 1.00 | 0.96 | | | | 0.30 |
+| Qwen3-1.7B | 1.00 | 1.00 | 0.95 | 0.46 | 0.32 | 0.31 | 0.29 |
+| Qwen3-4B | 1.00 | | 1.00 | | 0.59 | 0.39 | 0.36 |
+H-T1, H-T2 (2/3), H-T3 và hai giả thuyết thăm dò của Round 21 đều đạt. Điều bài 1 có thể khẳng định: (i) ngưỡng ngân sách token là một điểm gãy chứ không phải suy giảm từ từ; (ii) vị trí điểm gãy khoảng 3 đến 4 phép tra mỗi bước viết ra cho 1.5B đến 7B; (iii) quy mô làm sự sụp đổ nhẹ đi (độ đúng ở bước 4: 0.35, 0.58, 0.96 cho 1.5B, 3B, 7B); (iv) họ mô hình quan trọng hơn kích thước (Qwen3-1.7B bằng Qwen2.5-7B ở bước 4).
+Phần chưa có: tác vụ cộng modulo (Round 22) không đo được vì không hội tụ; Round 23 (cộng dồn không modulo, có tiêu chí hội tụ) đang chạy; kiểm tra seed (Round 22 H-G1) đang chạy. Chưa có mô hình ≥ 14B và chưa có liên kết trực tiếp giữa điểm gãy này và đường token của GSM8K.

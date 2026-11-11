@@ -1255,3 +1255,30 @@ Interpretation rule written now: if the knee on the sum task sits at a different
 Limitations stated up front: synthetic tasks, LoRA SFT with 3000 items, Qwen3 in non-thinking mode, 3 seeds only on two models.
 
 Round 22 execution note: `mario123475` and `ngpnguyen` have reached the Kaggle weekly GPU quota (30 h), so they cannot start new notebooks until the quota resets; the sum-task notebooks for Qwen2.5-1.5B and Qwen3-1.7B (`hgcd-r22-sum-a`) were launched on `nguyenpn`, Qwen2.5-3B (`hgcd-r22-sum-b`) on `m81extend`, the seed runs (`hgcd-r22-seeds`) on `nguyenpn`. No change of the design.
+
+### Round 20 final and Round 21 verdicts (`results/stride`; 150 items per depth k ∈ {4, 6, 8, 12}; mean accuracy)
+| stride | 1 | 2 | 3 | 4 | 5 | 6 | 8 | answer only |
+|---|---|---|---|---|---|---|---|---|
+| Qwen2.5-1.5B | 1.00 | 1.00 | 0.99 | **0.35** | | | | 0.24 |
+| Qwen2.5-3B | 1.00 | 1.00 | 1.00 | **0.58** | | | | 0.29 |
+| Qwen2.5-7B | 1.00 | 0.99 | 1.00 | **0.96** | | | | 0.30 |
+| Qwen3-1.7B | 1.00 | 1.00 | 1.00 | 0.95 | **0.46** | 0.32 | 0.31 | 0.29 |
+| Qwen3-4B | 1.00 | | | 1.00 | | 0.59 | 0.39 | 0.36 |
+- **H-T3 GO** (capacity h = largest stride ≥ 0.80: 1.5B 3, 3B 3, 7B ≥ 4; non-decreasing and h(7B) > h(1.5B)). The 7B value is a lower bound (the grid stops at 4 for the Qwen2.5 family); with H-T1 (3/3) and H-T2 (2/3) all three
+  Round 20 hypotheses hold. The accuracy at stride 4 grows with scale within the family (0.35 → 0.58 → 0.96), i.e. scale mostly softens the collapse; the stride at which the knee sits is 3–4 lookups for 1.5B–7B.
+- **Round 21 (exploratory) H-U1 GO:** Qwen3-1.7B drops from 0.95 (stride 4) to 0.46 (stride 5), a 0.49 knee; capacity 4. **H-U2 GO (non-strict):** Qwen3-4B has capacity 4 as well (1.00 at stride 4, 0.59 at stride 6; stride 5 not run), softer collapse than 1.7B at stride 6 (0.59 vs 0.32).
+- Within Qwen3 the capacity (4) is the same for 1.7B and 4B, within Qwen2.5 it moves from 3 to ≥ 4, so a single hop count per size is not a function of parameter count (Qwen3-1.7B equals Qwen2.5-7B at stride 4).
+
+### Round 22 verdict, running-sum task: NOT EVALUABLE (H-G2); seed check (H-G1) still running
+`results/stride/stride_sum_*`. The mod-10 running total did not converge: the final SFT loss is 1e-5 at stride 1 but 0.12–0.67 at strides ≥ 2 for all three models; accuracy is non-monotone in the stride and at chance (0.07–0.13) at stride 2–3 for Qwen2.5-3B and Qwen3-1.7B while
+the same models reach 0.97–1.0 at stride 4/6 and, for Qwen2.5-3B, 0.97–1.0 with the answer only at k ≤ 6. A model that can sum six digits in one pass but is at chance with a stride-2 chain shows an optimisation failure (modular addition is a parity-like function that SGD learns slowly), not a capacity limit.
+The registered H-G2 could therefore not be decided; this is reported as a failure of the task design, not as support or rejection of generality. The accuracy values of these runs must not be used as hop-capacity estimates.
+
+## Round 23 (pre-registered before any GPU run): a second task whose chain is learnable, with a convergence criterion
+Task `cumsum` (`hgcd/stride.py --task cumsum`): k ∈ {4, 6, 8, 12} numbers in 1..5, running total WITHOUT modulo (path[i] = total after i additions, values up to 60); strides 1, 2, 3, 4, 5, 6, answer only. Plain addition is learned quickly by LMs, unlike modular addition.
+Same training budget as Round 20 (3000 items, 2 epochs). **Validity criterion fixed now:** a (model, stride) run is interpreted only if its final SFT loss < 0.05; runs above it are listed as non-converged and excluded from H-V2; stride 1 must converge for a model to enter at all.
+*Hypotheses* (Qwen2.5-1.5B, Qwen3-1.7B, Qwen2.5-3B; "≥ 2/3" over models that satisfy the criterion at stride 1):
+- **H-V1 (sanity).** Stride-1 accuracy ≥ 0.85.
+- **H-V2 (knee on a different task).** Some pair of consecutive converged strides in {1, 2, 3, 4, 5, 6} differs by ≥ 0.30 in mean accuracy.
+- **H-V3 (position).** Report the capacity (largest stride with accuracy ≥ 0.80); no threshold. Registered expectation: the capacity for addition differs from the capacity for lookups (3 for Qwen2.5-1.5B/3B).
+If no model converges at stride ≥ 2, the second-task claim is dropped and the knee is reported for the lookup task only.

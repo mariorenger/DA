@@ -1,0 +1,22 @@
+{
+ "model": "Qwen/Qwen2.5-3B-Instruct",
+ "outdir": "/kaggle/working/results/stride_sum_qwen-3b",
+ "strides": [
+  1,
+  2,
+  3,
+  4,
+  6,
+  12
+ ],
+ "n_train": 3000,
+ "n_eval": 150,
+ "bs": 12,
+ "lr": 0.0002,
+ "epochs": 2.0,
+ "mb": 4,
+ "accum": 4,
+ "seed": 0,
+ "device_map": null,
+ "task": "sum"
+}

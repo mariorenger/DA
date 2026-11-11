@@ -607,6 +607,16 @@ NOTEBOOKS = {
     "t": {"0": [("sum_qwen-3b", "Qwen/Qwen2.5-3B-Instruct", "stride",
                  ("--bs", "12", "--mb", "4", "--accum", "4", "--task", "sum", "--strides", "1", "2", "3", "4", "6", "12"))]},
 }""",
+    "R23_cumsum_a": """{
+    "t": {"0": [("cumsum_qwen-1.5b", "Qwen/Qwen2.5-1.5B-Instruct", "stride",
+                 ("--bs", "16", "--task", "cumsum", "--strides", "1", "2", "3", "4", "5", "6", "12"))],
+          "1": [("cumsum_qwen3-1.7b", "Qwen/Qwen3-1.7B", "stride",
+                 ("--bs", "16", "--task", "cumsum", "--strides", "1", "2", "3", "4", "5", "6", "12"))]},
+}""",
+    "R23_cumsum_b": """{
+    "t": {"0": [("cumsum_qwen-3b", "Qwen/Qwen2.5-3B-Instruct", "stride",
+                 ("--bs", "12", "--mb", "4", "--accum", "4", "--task", "cumsum", "--strides", "1", "2", "3", "4", "5", "6", "12"))]},
+}""",
 }
 
 
