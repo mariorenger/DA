@@ -1253,3 +1253,5 @@ Two checks that a main-contribution claim needs. (a) **Seeds:** Qwen2.5-1.5B and
 Prediction written now: H-G1 yes. H-G2 uncertain: a modular addition is a different computation from a lookup, and the stride at which it breaks can differ or be absent.
 Interpretation rule written now: if the knee on the sum task sits at a different stride per model than on the pointer task, "capacity" is task-dependent and the paper claim becomes "a knee exists, its position depends on the task and model"; if the sum task shows no knee, the hop-capacity claim is restricted to lookup chains.
 Limitations stated up front: synthetic tasks, LoRA SFT with 3000 items, Qwen3 in non-thinking mode, 3 seeds only on two models.
+
+Round 22 execution note: `mario123475` and `ngpnguyen` have reached the Kaggle weekly GPU quota (30 h), so they cannot start new notebooks until the quota resets; the sum-task notebooks for Qwen2.5-1.5B and Qwen3-1.7B (`hgcd-r22-sum-a`) were launched on `nguyenpn`, Qwen2.5-3B (`hgcd-r22-sum-b`) on `m81extend`, the seed runs (`hgcd-r22-seeds`) on `nguyenpn`. No change of the design.
