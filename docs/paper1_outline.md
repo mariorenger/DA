@@ -26,7 +26,7 @@ Một benchmark thật (GSM8K, bão hòa ở 7B); nhiễu SFT 3–4 điểm và 
 2. **Mô hình ≥ 14B trên tra con trỏ**: đã có 14B ở bước nhảy 4 (0.97, hội tụ); bước nhảy 6 chưa hội tụ (0.41) nên vị trí gãy của 14B vẫn nằm giữa 4 và 6.
 3. **Liên kết điểm gãy với đường token GSM8K**: đã có phân tích thăm dò dùng thống kê trước huấn luyện (bước nhảy hiệu dụng r = −0.86 so với tỷ lệ token r = +0.76, 59 cách cắt); cần đối chứng sạch hơn (chuỗi GSM8K có bước đồng nhất hơn).
 4. Một mô hình frontier qua API cho phần chép kết quả sai (cần ngân sách).
-5. Đọc toàn văn Breaking the Chain, NLDD, Performative traces, Readout Shortcut, BAPO để định vị chính xác.
+5. ~~Đọc toàn văn~~ Đã đọc (xem `docs/related_work_positioning.md`): điểm gãy theo bước nhảy được BAPO dự đoán về lý thuyết; phải đổi cách phát biểu đóng góp thành phép thử thực nghiệm của dự đoán đó.
 
 ## 6. Hội nghị
 ACL 2027 qua ARR (04/01/2027) nếu 1, 2 và 5 xong kịp; dự phòng ICML 2027 (khoảng 22/01/2027), COLM 2027 (khoảng 30/03/2027, tạm thời), TMLR.
