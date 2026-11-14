@@ -693,6 +693,20 @@ NOTEBOOKS = {
     "t": {"0": [("ptr9k_qwen-3b_s8", "Qwen/Qwen2.5-3B-Instruct", "stride", ("--bs", "12", "--mb", "4", "--accum", "4", "--n_train", "9000", "--epochs", "3", "--strides", "8"))],
           "1": [("ptr9k_qwen-3b_s12", "Qwen/Qwen2.5-3B-Instruct", "stride", ("--bs", "12", "--mb", "4", "--accum", "4", "--n_train", "9000", "--epochs", "3", "--strides", "12"))]},
 }""",
+    "R31_ptr_a": """{
+    "t": {"0": [("ptr27k_qwen-1.5b_s6", "Qwen/Qwen2.5-1.5B-Instruct", "stride",
+                 ("--bs", "16", "--n_train", "27000", "--epochs", "3", "--strides", "6"))]},
+}""",
+    "R31_ptr_b": """{
+    "t": {"0": [("ptr27k_qwen3-1.7b_s8", "Qwen/Qwen3-1.7B", "stride",
+                 ("--bs", "16", "--n_train", "27000", "--epochs", "3", "--strides", "8"))]},
+}""",
+    "R32_gsm_big": """{
+    "t": {"0": [("qwen-1.5b_big", "Qwen/Qwen2.5-1.5B-Instruct", "blind",
+                 ("--phase", "compact", "--n_train", "2400", "--epochs", "3", "--bs", "8", "--arms", "full", "compact", "random40"))],
+          "1": [("qwen3-1.7b_big", "Qwen/Qwen3-1.7B", "blind",
+                 ("--phase", "compact", "--n_train", "2400", "--epochs", "3", "--bs", "8", "--arms", "full", "compact", "random40"))]},
+}""",
 }
 
 
