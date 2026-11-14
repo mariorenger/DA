@@ -1352,3 +1352,13 @@ Reading: removing steps costs more as more original steps must be composed into 
 
 ### Round 26 execution note
 All four Kaggle accounts (m81extend, nguyenpn, mario123475, ngpnguyen) have reached the weekly GPU quota (30 h); the Round 26 notebooks (`R26_swap_a/b`) are built and were refused at push. Pre-registration unchanged; launch when the quota resets.
+
+### Round 26 execution note (2026-11-14)
+The weekly Kaggle GPU quota had reset by 2026-11-14 06:00 UTC (the 4th retry succeeded; retries 1–3 were refused). **Mistake in the launch:** the retry loop had no stop after the first success, so `R26_swap_a` (Qwen2.5-1.5B + Qwen3-1.7B) was pushed to all four accounts. The three duplicates (nguyenpn, mario123475, ngpnguyen) were deleted within minutes with `kaggle kernels delete`; I could not verify whether their sessions had already started consuming GPU time. The kept runs are `m81extend/hgcd-r26-swap-a` (1.5B and Qwen3-1.7B) and `nguyenpn/hgcd-r26-swap-b` (3B). No change to the design or the pre-registration.
+
+## Round 27 (pre-registered before any GPU run): where is the knee of Qwen2.5-14B?
+The Round 25 stride-6 run of Qwen2.5-14B (4-bit QLoRA, 2 epochs) ended at a final SFT loss of 0.19 and accuracy 0.41 (flagged as not converged), so the position of the knee between strides 4 (0.97) and 6 is open. Two runs with a longer schedule (3 epochs, 2000 items; otherwise as Round 25, seed 0):
+`mario123475`: stride 5; `ngpnguyen`: stride 6.
+- **H-Z1.** The stride-6 run converges (final SFT loss < 0.05) with 3 epochs.
+- **H-Z2.** If it converges, the stride-6 mean accuracy is ≥ 0.50 (Round 25 hypothesis H-X2 re-tested without the non-convergence confound). Stride 5 is reported without threshold (Qwen3-1.7B: 0.46 at stride 5).
+A run with final loss ≥ 0.05 is again flagged and its accuracy is a lower bound. Limitations as in Round 25 (one seed, 4-bit, unmerged adapter); the 3B model showed that one seed can mislead by up to 0.35 at the margin, so a single 14B value near 0.5 would not be conclusive.
