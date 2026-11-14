@@ -1402,3 +1402,23 @@ Same pointer task and evaluation as Round 20, with the budget of Round 28 (`--n_
 - **H-N2 (3B).** Stride-4 mean accuracy of Qwen2.5-3B ≥ 0.90 with a converged run.
 - **H-N3 (a limit remains).** Among converged runs of Qwen2.5-1.5B at strides 4, 6, 8 at least one has mean accuracy < 0.80; if none does, no capacity limit is found for the 1.5B model up to stride 8 at this budget (stated as a finding, not a failure).
 Qwen3-1.7B strides 5 and 6 are reported without threshold. Only converged runs (loss < 0.05) are read as capacity. No prediction on the direction: the swap result suggests H-N1 and H-N2 hold, BAPO's fixed-depth argument suggests a limit exists at some stride. Limitations: one seed per cell, one larger budget only (no budget curve), pointer task only.
+
+### Round 28 final (Qwen2.5-3B added; `results/stride/stride_swap2_*`; n_train 9000, 3 epochs, max_new 128, no truncation)
+Qwen2.5-3B: stride 1 / 2 / 3 mean accuracy 1.000 / 1.000 / 0.998, final losses 0 / 1e-5 / 5e-5 (all converged).
+- **H-M1 GO (3/3), H-M2 GO (1.000 for all three), H-M3 NO-GO:** stride-3 accuracy 0.998 (1.5B), 0.996 (Qwen3-1.7B), 0.998 (3B), none below 0.80. At the larger budget permutation tracking composes at least 3 swaps per written step in all three models; the "capacity ≤ 2" of Round 26 was an effect of the training budget.
+
+### Round 29, results of the finished runs (Qwen2.5-1.5B runs, m81extend, still pending; `results/stride/stride_ptr9k_*`; n_train 9000, 3 epochs)
+| model, stride | accuracy at 9000 × 3 (final loss) | accuracy at 3000 × 2 |
+|---|---|---|
+| Qwen2.5-3B, 4 | **1.000** (5e-5) | 0.57–0.91 over five seeds (mean 0.70) |
+| Qwen2.5-3B, 6 | 0.938 (0.045) | not run |
+| Qwen3-1.7B, 5 | **0.997** (2e-5) | 0.46 |
+| Qwen3-1.7B, 6 | 0.945 (0.019) | 0.32 |
+- **H-N2 GO** (3B stride 4 ≥ 0.90 with a converged run). H-N1 and H-N3 await the Qwen2.5-1.5B runs.
+- **The knee of Rounds 20–25 is, for these models, an effect of the training budget.** Qwen3-1.7B goes from 0.46 to 0.997 at stride 5 and from 0.32 to 0.945 at stride 6, and Qwen2.5-3B from a seed-dependent 0.57–0.91 to 1.000 at stride 4, with the same task, evaluation and models and three times the data and 1.5 times the epochs. The statements "capacity of k lookups per written step", the scale trend 0.36 → 0.70 → 0.92 → 0.97 and the "family matters more than size" reading of Round 20/21 are retracted as properties of the models; they describe (model, 3000 × 2 budget). What survives: SFT estimates of capacity are budget-sensitive; the final loss must be reported; the order-of-magnitude fact that a ~1.7B–3B model can be taught to compose at least 5–6 lookups per written step.
+- **Possible consequence for Rounds 14–19 (not tested):** the pruned-chain SFT experiments also used a small budget (about 500–800 training chains, 2 epochs, one budget). Their comparisons are between arms at equal budget, so the ordering of the estimators is not affected, but the size of the accuracy losses (5–46 points) and the token-line may shrink with more data. Round 31 should test one arm pair (full vs random40) at 3× budget.
+
+## Round 30 (pre-registered before any GPU run): where is the limit once the budget is large enough?
+Pointer task, budget 9000 × 3, `mario123475`: Qwen2.5-3B stride 8 (gpu0) and stride 12 = answer only (gpu1); `ngpnguyen`: Qwen3-1.7B stride 8 (gpu0) and stride 12 (gpu1). One seed; each run is classified as solved (final loss < 0.05 and accuracy ≥ 0.80), generalisation failure (loss < 0.05, accuracy < 0.80) or unconverged (loss ≥ 0.05; says that this budget is not enough, not that no budget is).
+- **H-B1.** Qwen3-1.7B stride 8 is solved. **H-B2.** The answer-only run (stride 12) is solved for at least one of the two models: composing 12 lookups in one forward pass is learnable at this budget. **H-B3.** At least one of the four runs is a generalisation failure or unconverged, i.e. some limit exists within strides ≤ 12 at this budget.
+No confident prediction: BAPO's fixed-depth argument says a limit exists for large κ, the swap and pointer results say the budget of Round 20 was far from it. If H-B2 holds, the lookup chain shows no capacity limit up to depth 12 for models of 1.7B–3B and the "token budget" story for this task is a budget story. Limitations: one seed, one task, one larger budget.

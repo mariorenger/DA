@@ -115,3 +115,7 @@ Còn thiếu cho một bài hoàn chỉnh: ít nhất một phép tính thứ ba
 ## 11. Cập nhật 11/11/2026 (đêm): Round 24 và bản nháp cấu trúc bài
 
 Round 24 (thêm seed) xác nhận cả hai giả thuyết: 3B dao động mạnh (độ đúng ở bước 4: 0.57 đến 0.91, độ rộng 0.35), 1.5B ổn định (0.33 đến 0.39), 7B luôn ≥ 0.84. Xu hướng theo quy mô ở bước 4 giữ được ở trung bình (0.36 → 0.70 → 0.92). Loss cuối dự đoán độ đúng (Spearman −0.96, 13 lần chạy). Round 25 (14B 4-bit, bước 4 và 6) đang chạy. Bản nháp cấu trúc bài 1 ở `docs/paper1_outline.md`, kèm danh sách khoảng trống.
+
+## 12. Cập nhật 14/11/2026 (tối): rút lại phần điểm gãy, trục bài mới
+
+Round 28 và 29 cho thấy điểm gãy theo bước nhảy là hiệu ứng của ngân sách SFT: ở 9000 mục × 3 epoch, Qwen3-1.7B và Qwen2.5-3B giải bước nhảy 4 đến 6 (độ đúng 0.94 đến 1.00) và hoán vị 3 phép mỗi bước, trong khi ngân sách nhỏ cho 0.32 đến 0.91. Hệ quả: bài 1 không thể là "ngưỡng token là điểm gãy"; trục có thể còn đứng là **chẩn đoán và đo lường có kiểm chứng** (các phép đo tầm quan trọng của bước không hơn ngẫu nhiên, bias PNS, đường cong chép kết quả sai đến 32B, độ lệch chọn mẫu) cộng một phát hiện về **phương pháp** (ước lượng sức chứa bằng SFT phụ thuộc ngân sách và seed; phải báo hội tụ). Khả năng vào main track A* thấp hơn nữa; mức Findings/COLM/TMLR hoặc workshop là thực tế. Round 30 (giới hạn thật khi ngân sách đủ lớn) đang chạy.

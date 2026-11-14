@@ -39,6 +39,8 @@ Tạo lại: `python tools/export_transcript.py <session.jsonl> docs/conversatio
 
 | Round 25 (14B, 4-bit) | Bước nhảy 4 và 6 ở 14B | H-X1 GO (0.97 ở bước 4, hội tụ), H-X2 NO-GO (0.41 ở bước 6, chưa hội tụ). Phân tích thăm dò: bước nhảy hiệu dụng của chuỗi huấn luyện dự đoán Δ độ đúng tốt hơn tỷ lệ token (r = −0.86 vs +0.76, 59 cách cắt). Round 26 (hoán vị) chờ hạn mức GPU |
 
+| Round 27-29 (14B, hoán vị 9000×3, con trỏ 9000×3) | Ngân sách huấn luyện lớn hơn | Rút lại điểm gãy: con trỏ Qwen3-1.7B bước 5: 0.46 → 0.997, bước 6: 0.32 → 0.945; Qwen2.5-3B bước 4: 0.57–0.91 → 1.000; hoán vị 3 phép mỗi bước được giải ở cả ba mô hình. 14B bước 6 vẫn chưa hội tụ ở 3 epoch (0.48). Round 30 tìm giới hạn thật |\n
+
 ## 3. Số liệu chính (xem paper/main.tex, paper/baocao_vi.pdf)
 - CLUTRR extract+rules SC5 so với baseline tốt nhất: validation k2–4 +32.0/+32.0/+36.7 (1.5B/3B/7B); task chưa thấy k2–4 +20.9/+27.2/+33.5; k5–8 −1.0/+9.5/+24.0 (7B là kiểm định chính đăng ký trước, GO).
 - Ablation C7 (cùng fact, đổi bên hợp thành): luật − LLM = +13.3/+25.9/+35.4 (ngắn), +4.0/+5.0/+13.0 (dài; chỉ 7B có ý nghĩa).
