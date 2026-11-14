@@ -672,6 +672,19 @@ NOTEBOOKS = {
                  ("--bs", "12", "--mb", "4", "--accum", "4", "--task", "swap", "--n_train", "9000", "--epochs", "3", "--max_new", "128",
                   "--strides", "1", "2", "3"))]},
 }""",
+    "R29_ptr_a": """{
+    "t": {"0": [("ptr9k_qwen-1.5b_s4", "Qwen/Qwen2.5-1.5B-Instruct", "stride", ("--bs", "16", "--n_train", "9000", "--epochs", "3", "--strides", "4")),
+                ("ptr9k_qwen-1.5b_s8", "Qwen/Qwen2.5-1.5B-Instruct", "stride", ("--bs", "16", "--n_train", "9000", "--epochs", "3", "--strides", "8"))],
+          "1": [("ptr9k_qwen-1.5b_s6", "Qwen/Qwen2.5-1.5B-Instruct", "stride", ("--bs", "16", "--n_train", "9000", "--epochs", "3", "--strides", "6"))]},
+}""",
+    "R29_ptr_b": """{
+    "t": {"0": [("ptr9k_qwen-3b_s4", "Qwen/Qwen2.5-3B-Instruct", "stride", ("--bs", "12", "--mb", "4", "--accum", "4", "--n_train", "9000", "--epochs", "3", "--strides", "4"))],
+          "1": [("ptr9k_qwen-3b_s6", "Qwen/Qwen2.5-3B-Instruct", "stride", ("--bs", "12", "--mb", "4", "--accum", "4", "--n_train", "9000", "--epochs", "3", "--strides", "6"))]},
+}""",
+    "R29_ptr_c": """{
+    "t": {"0": [("ptr9k_qwen3-1.7b_s5", "Qwen/Qwen3-1.7B", "stride", ("--bs", "16", "--n_train", "9000", "--epochs", "3", "--strides", "5"))],
+          "1": [("ptr9k_qwen3-1.7b_s6", "Qwen/Qwen3-1.7B", "stride", ("--bs", "16", "--n_train", "9000", "--epochs", "3", "--strides", "6"))]},
+}""",
 }
 
 

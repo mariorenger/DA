@@ -1382,3 +1382,23 @@ Two changes to Round 26, both aimed at validity and decided after seeing its res
 - **H-M2 (stride-1 validity).** Stride-1 mean accuracy over all four depths ≥ 0.95 (the truncation is gone).
 - **H-M3 (capacity of permutation tracking is below that of lookups).** Among converged runs, the stride-3 mean accuracy is < 0.80 for ≥ 2/3 models (capacity ≤ 2, against 3 for the lookup chain of Qwen2.5-1.5B and 3B).
 If stride 3 does not converge for a model, H-M3 is not evaluated for it; if fewer than two models converge at stride 3, the third-operation claim is dropped from the paper and the capacity ordering is stated for lookups and additions only. Limitations: synthetic task, one seed, exact match of five digits.
+
+### Round 27 verdicts (Qwen2.5-14B, 4-bit QLoRA, 3 epochs, one seed; `results/stride/stride_q25-14b_s{5,6}e3`)
+Stride 5: final SFT loss 0.0029 (converged), mean accuracy **0.957** (1.00 / 0.97 / 0.97 / 0.89). Stride 6: final loss 0.148 (not converged), mean accuracy 0.483 (0.65 / 0.47 / 0.45 / 0.36).
+- **H-Z1 NO-GO:** the stride-6 run still does not converge with 3 epochs (0.148 ≥ 0.05). **H-Z2 not evaluable** (it is conditional on convergence; the unconverged value 0.483 is in any case below 0.50). The knee of the 14B model lies above stride 5 (converged, 0.96) and its position is not established.
+
+### Round 28 results with the larger training budget (n_train 9000, 3 epochs, max_new 128; Qwen2.5-1.5B and Qwen3-1.7B finished, Qwen2.5-3B running; `results/stride/stride_swap2_*`)
+| stride | 1 | 2 | 3 |
+|---|---|---|---|
+| Qwen2.5-1.5B: final loss; mean accuracy | 3e-6; 1.000 | 2e-5; 1.000 | 7e-4; 0.998 |
+| Qwen3-1.7B | 7e-7; 1.000 | 4e-6; 1.000 | 7e-4; 0.996 |
+(no generation reached the limit; the evaluation defect of Round 26 is gone.)
+- **H-M1 GO** (stride 2 and 3 converge for 2 of 3 models already). **H-M2 GO** for both finished models (stride-1 accuracy 1.000). **H-M3 NO-GO:** the stride-3 accuracy is 0.998 and 0.996 (≥ 0.80), so it cannot be below 0.80 in ≥ 2/3 models.
+- **Consequence, which concerns earlier rounds as well:** with 3× data and 1.5× epochs the permutation task is solved at 3 swaps per written step by both ~1.7B models, whereas Round 26 (3000 items, 2 epochs) gave 0.24–0.45 at stride 3 and a "capacity ≤ 2". The capacity read from Round 26 was a property of the training budget, not of the models. The same statement may hold for the pointer task: all of Rounds 20–25 used 2000–3000 items and 2 epochs, the final SFT loss predicted accuracy (Spearman −0.96, Round 24) and the 3B model's stride-4 accuracy varied between 0.57 and 0.91 across seeds. **The "knee" of Rounds 20–25 therefore has to be treated as a property of (model, training budget), not of the model, until the next round shows otherwise.**
+
+## Round 29 (pre-registered before any GPU run): is the pointer knee a budget effect?
+Same pointer task and evaluation as Round 20, with the budget of Round 28 (`--n_train 9000 --epochs 3`, 3× data, 1.5× epochs), one seed (0). Qwen2.5-1.5B strides 4, 6, 8 (`m81extend`), Qwen2.5-3B strides 4 and 6 (`mario123475`), Qwen3-1.7B strides 5 and 6 (`ngpnguyen`). For comparison, at the small budget: 1.5B stride 4 = 0.33–0.39 (5 seeds), 3B stride 4 = 0.57–0.91 (5 seeds), Qwen3-1.7B stride 5 = 0.46.
+- **H-N1 (the knee moves with the budget, 1.5B).** Stride-4 mean accuracy of Qwen2.5-1.5B ≥ 0.80 with a converged run (final loss < 0.05).
+- **H-N2 (3B).** Stride-4 mean accuracy of Qwen2.5-3B ≥ 0.90 with a converged run.
+- **H-N3 (a limit remains).** Among converged runs of Qwen2.5-1.5B at strides 4, 6, 8 at least one has mean accuracy < 0.80; if none does, no capacity limit is found for the 1.5B model up to stride 8 at this budget (stated as a finding, not a failure).
+Qwen3-1.7B strides 5 and 6 are reported without threshold. Only converged runs (loss < 0.05) are read as capacity. No prediction on the direction: the swap result suggests H-N1 and H-N2 hold, BAPO's fixed-depth argument suggests a limit exists at some stride. Limitations: one seed per cell, one larger budget only (no budget curve), pointer task only.
