@@ -35,3 +35,6 @@ ACL 2027 qua ARR (04/01/2027) nếu 1, 2 và 5 xong kịp; dự phòng ICML 2027
 - `fig1_stride_pointer.png`: độ đúng theo bước nhảy trên tác vụ con trỏ cho sáu mô hình. Chú thích cần ghi: 14B chỉ có bước 4 và 6 (QLoRA 4-bit, một seed); dải bóng là khoảng min–max giữa các seed ở bước có nhiều seed và được nội suy giữa các điểm.
 - `fig2_seeds_and_cumsum.png`: trái, độ đúng ở bước 4 theo từng seed (1.5B: 5 seed, 3B: 5, 7B: 3, 14B: 1); phải, cộng dồn không có điểm gãy (các lần chạy chưa hội tụ ở Qwen3-1.7B bước 4 và 6 và Qwen2.5-3B bước 4 vẫn nằm trong hình, cần đánh dấu).
 - `fig3_copy_scale.png`: tỷ lệ chép kết quả sai theo quy mô, họ Qwen2.5 (14B và 32B ở 4-bit, nguồn lượng tử hóa khác nhau).
+
+## 8. Cập nhật 14/11/2026: phép tính thứ ba chưa có
+Round 26 (theo dõi hoán vị) không cho điểm thứ ba hợp lệ: huấn luyện chưa hội tụ ở bước nhảy ≥ 2 (loss 0.08–0.42) và tôi mắc một lỗi đánh giá (giới hạn 72 token cắt cụt chuỗi dài nhất, độ sâu 12 ở bước nhảy 1 bị chấm 0). Hướng quan sát được (chưa có giá trị kết luận): sức chứa mỗi bước viết ra theo thứ tự cộng ≥ 12 > tra bảng 3–4 > hoán vị 1–2. Round 28 (đã đăng ký, đang chạy) sửa giới hạn token và tăng ngân sách huấn luyện để kiểm tra hội tụ; nếu bước 3 không hội tụ ở ít nhất hai mô hình thì phép tính thứ ba bị bỏ khỏi bài.

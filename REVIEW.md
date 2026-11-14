@@ -1362,3 +1362,23 @@ The Round 25 stride-6 run of Qwen2.5-14B (4-bit QLoRA, 2 epochs) ended at a fina
 - **H-Z1.** The stride-6 run converges (final SFT loss < 0.05) with 3 epochs.
 - **H-Z2.** If it converges, the stride-6 mean accuracy is ≥ 0.50 (Round 25 hypothesis H-X2 re-tested without the non-convergence confound). Stride 5 is reported without threshold (Qwen3-1.7B: 0.46 at stride 5).
 A run with final loss ≥ 0.05 is again flagged and its accuracy is a lower bound. Limitations as in Round 25 (one seed, 4-bit, unmerged adapter); the 3B model showed that one seed can mislead by up to 0.35 at the margin, so a single 14B value near 0.5 would not be conclusive.
+
+### Round 26 verdicts (permutation tracking; `results/stride/stride_swap_*`; 150 items per depth k ∈ {4, 6, 8, 12}; one seed)
+Final SFT loss by stride (convergence rule: < 0.05) and mean accuracy over the four depths (k = 4 / 6 / 8 / 12 in brackets where relevant):
+| stride | 1 | 2 | 3 | 4 | answer only |
+|---|---|---|---|---|---|
+| Qwen2.5-1.5B: loss; acc | 7e-5 ✓; 0.75 (1.0 / 1.0 / 1.0 / **0.0**) | 0.105 ✗; 0.37 | 0.244 ✗; 0.24 | 0.348 ✗; 0.13 | 0.407 ✗; 0.05 |
+| Qwen3-1.7B | 2e-5 ✓; 0.75 (1.0 / 1.0 / 1.0 / **0.0**) | 0.076 ✗; 0.48 | 0.133 ✗; 0.42 | 0.320 ✗; 0.17 | 0.418 ✗; 0.05 |
+| Qwen2.5-3B | 3e-5 ✓; 0.75 (1.0 / 0.99 / 1.0 / **0.0**) | 0.024 ✓; 0.84 | 0.131 ✗; 0.45 | 0.277 ✗; 0.26 | 0.416 ✗; 0.07 |
+- **Evaluation defect (mine):** at stride 1 and depth 12, 100% of the generations reach exactly 72 tokens (`max_new_tokens` of `evaluate`): eleven five-digit states plus the answer line need about 85 tokens, so every such output is truncated before "Answer:" and scored 0. This is not a model result. Depths 4, 6, 8 at stride 1 are 1.00 for all three models.
+- **H-Y1 NO-GO as registered** (stride-1 mean over all depths 0.75 < 0.85 for all three models), solely because of the truncation; over k ∈ {4, 6, 8} (post hoc) it is 1.00 for all three, so the sanity condition is met in substance.
+- **H-Y2 NO-GO / not evaluable:** only stride 1 is converged for Qwen2.5-1.5B and Qwen3-1.7B, strides 1–2 for Qwen2.5-3B; no pair of converged strides differs by ≥ 0.30 (3B, stride 1 → 2, k ≤ 8: 1.00 → 0.93).
+- **H-Y3 (reported):** capacity 1 (Qwen2.5-1.5B), 1 (Qwen3-1.7B), 2 (Qwen2.5-3B), i.e. ≤ 2 as registered, but with strides ≥ 3 not converged this cannot be separated from an optimisation failure, as in Round 22.
+- Exploratory (non-converged runs, not a verdict): the accuracy falls with stride already at 2 for the two ~1.7B models (k = 6: 0.42 and 0.58) while the lookup task is at 1.00 up to stride 3; 3B holds 0.92 at stride 2 (k = 6). Directionally the per-step capacity ordering would be additions ≥ 12 > lookups 3–4 > swaps 1–2, but the third point is not established under the registered rule.
+
+## Round 28 (pre-registered before any GPU run): permutation tracking without the evaluation defect and with a convergence budget
+Two changes to Round 26, both aimed at validity and decided after seeing its results (stated as such): `--max_new 128` (no truncation of the longest chain: stride 1, k = 12) and a longer schedule `--n_train 9000 --epochs 3` (3× data, 1.5× epochs) at strides 1, 2, 3 (stride 4 and answer-only dropped to save quota). Same task, models Qwen2.5-1.5B, Qwen3-1.7B (`m81extend`), Qwen2.5-3B (`nguyenpn`), one seed.
+- **H-M1 (convergence).** The stride-2 and stride-3 runs reach a final SFT loss < 0.05 for ≥ 2/3 models.
+- **H-M2 (stride-1 validity).** Stride-1 mean accuracy over all four depths ≥ 0.95 (the truncation is gone).
+- **H-M3 (capacity of permutation tracking is below that of lookups).** Among converged runs, the stride-3 mean accuracy is < 0.80 for ≥ 2/3 models (capacity ≤ 2, against 3 for the lookup chain of Qwen2.5-1.5B and 3B).
+If stride 3 does not converge for a model, H-M3 is not evaluated for it; if fewer than two models converge at stride 3, the third-operation claim is dropped from the paper and the capacity ordering is stated for lookups and additions only. Limitations: synthetic task, one seed, exact match of five digits.

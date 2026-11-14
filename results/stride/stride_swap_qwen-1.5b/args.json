@@ -1,0 +1,23 @@
+{
+ "model": "Qwen/Qwen2.5-1.5B-Instruct",
+ "outdir": "/kaggle/working/results/stride_swap_qwen-1.5b",
+ "strides": [
+  1,
+  2,
+  3,
+  4,
+  12
+ ],
+ "n_train": 3000,
+ "n_eval": 150,
+ "bs": 16,
+ "lr": 0.0002,
+ "epochs": 2.0,
+ "mb": 8,
+ "accum": 2,
+ "seed": 0,
+ "device_map": null,
+ "task": "swap",
+ "load_in_4bit": false,
+ "no_merge": false
+}

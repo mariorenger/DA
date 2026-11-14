@@ -107,11 +107,11 @@ def prompt(lm: LM, q: str) -> str:
     return lm.prompt([{"role": "user", "content": q}])
 
 
-def evaluate(lm: LM, items: List[Dict], bs: int) -> pd.DataFrame:
+def evaluate(lm: LM, items: List[Dict], bs: int, max_new: int = 72) -> pd.DataFrame:
     outs: List[str] = []
     ps = [prompt(lm, it["q"]) for it in items]
     for i in range(0, len(ps), bs):
-        outs += lm.generate(ps[i:i + bs], max_new_tokens=72, batch_size=bs, stop="<|im_end|>")
+        outs += lm.generate(ps[i:i + bs], max_new_tokens=max_new, batch_size=bs, stop="<|im_end|>")
     rows = []
     for it, o in zip(items, outs):
         a = parse(o)
@@ -136,6 +136,7 @@ def main():
     ap.add_argument("--task", choices=["pointer", "sum", "cumsum", "swap"], default="pointer")
     ap.add_argument("--load_in_4bit", action="store_true")
     ap.add_argument("--no_merge", action="store_true")
+    ap.add_argument("--max_new", type=int, default=72, help="generation limit of the evaluation (Round 26 needed >= 90 for k=12 at stride 1)")
     args = ap.parse_args()
     os.makedirs(args.outdir, exist_ok=True)
     json.dump(vars(args), open(f"{args.outdir}/args.json", "w"), indent=1)
@@ -157,7 +158,7 @@ def main():
         data = [(prompt(lm, it["q"]), chain_text(it["path"], m)) for it in train]
         info = train_sft(lm, data, args)
         _log(f"[stride {m}] sft {info}")
-        r = evaluate(lm, evals, args.bs)
+        r = evaluate(lm, evals, args.bs, args.max_new)
         r["stride"] = m
         rows.append(r)
         g = r.groupby("k").correct.mean().round(3).to_dict()
