@@ -43,6 +43,8 @@ Tạo lại: `python tools/export_transcript.py <session.jsonl> docs/conversatio
 
 | Round 29-30 (con trỏ 9000×3, bước 4–12) | Biên được giải khi ngân sách lớn hơn | Hội tụ ⇒ độ đúng ≥ 0.937; chưa hội tụ ⇒ 0.40–0.64. Biên: 1.5B giữa bước 4 và 6, 3B và Qwen3-1.7B giữa 6 và 8; chỉ-đáp-án không giải được. Giới hạn tồn tại nhưng dịch theo ngân sách. Round 31 (27000×3) và 32 (GSM8K 3× dữ liệu) đang chạy |\n
 
+| Round 31-32 (27000×3 con trỏ; GSM8K 3× dữ liệu) | Biên có tiếp tục dịch? Mức giảm do cắt chuỗi có thu hẹp? | Biên tiếp tục dịch (Qwen3-1.7B bước 8: 0.31 → 0.64 → 0.99; 1.5B bước 6: 0.495 → 0.987): SFT không xác định được sức chứa. Mức giảm của chuỗi GSM8K bị cắt không thu hẹp (random40 −24.0, −33.4; compact −6.0, −12.2): kết quả cắt chuỗi vững. Viết bản thảo bài 1 |\n
+
 ## 3. Số liệu chính (xem paper/main.tex, paper/baocao_vi.pdf)
 - CLUTRR extract+rules SC5 so với baseline tốt nhất: validation k2–4 +32.0/+32.0/+36.7 (1.5B/3B/7B); task chưa thấy k2–4 +20.9/+27.2/+33.5; k5–8 −1.0/+9.5/+24.0 (7B là kiểm định chính đăng ký trước, GO).
 - Ablation C7 (cùng fact, đổi bên hợp thành): luật − LLM = +13.3/+25.9/+35.4 (ngắn), +4.0/+5.0/+13.0 (dài; chỉ 7B có ý nghĩa).

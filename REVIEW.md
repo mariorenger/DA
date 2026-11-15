@@ -1444,3 +1444,18 @@ The pruning experiments of Rounds 14–19 used about 530–610 training chains a
 - **H-K1.** random40 − full at the larger budget is smaller in magnitude than 0.7 × the small-budget gap in both models (−15.8 or less severe for 1.5B, −27.6 or less severe for Qwen3-1.7B).
 - **H-K2.** compact − full is smaller in magnitude than 0.7 × the small-budget gap in both models (−2.4 or less severe for 1.5B, −12.0 or less severe for Qwen3-1.7B).
 No prediction on the direction. If H-K1 and H-K2 hold, the size of the losses reported in Rounds 14–19 is partly a budget effect (the ordering of the estimators is unaffected, it was measured at equal budget); if neither holds, the losses are robust to the budget in this range. Limitations: one seed, 3× only, the full-chain arm also changes.
+
+### Round 31 verdicts (pointer task, 27000 items × 3 epochs, one seed; `results/stride/stride_ptr27k_*`)
+| run | 3000 × 2 | 9000 × 3 | **27000 × 3** (final loss) |
+|---|---|---|---|
+| Qwen2.5-1.5B, stride 6 | not run (stride 4: 0.35) | 0.495 (0.167, unconverged) | **0.987** (0.0057) solved |
+| Qwen3-1.7B, stride 8 | 0.31 | 0.635 (0.091, unconverged) | **0.987** (0.0116) solved |
+- **H-C1 GO, H-C2 GO.** By the reading fixed in advance: both solved → the frontier keeps moving with the budget, and an SFT-based capacity is not identifiable at accessible budgets. The progression of Qwen3-1.7B at stride 8 (0.31 → 0.64 → 0.99 for each tripling of the data) shows it directly. Whether any limit exists (the BAPO argument says one must for fixed depth and large κ) cannot be decided from SFT runs at these budgets; stride 12 (answer only) was unconverged at 9000 × 3 and was not rerun.
+
+### Round 32 verdicts (GSM8K pruning at 3× the training data: 1601 / 1819 chains, 3 epochs; `results/blind/blind_*_big`; 500 test questions; one seed)
+| | full | compact − full (small budget, Round 17) | random40 − full (small budget) | compact − random40 |
+|---|---|---|---|---|
+| Qwen2.5-1.5B | 56.4 (53.0) | **−6.0 [−10.8, −1.4]** (−3.4) | **−24.0 [−29.0, −19.2]** (−22.6) | +18.0 |
+| Qwen3-1.7B | 72.6 (74.2) | **−12.2 [−16.2, −8.2]** (−17.2) | **−33.4 [−38.2, −28.6]** (−39.4) | +21.2 |
+- **H-K1 NO-GO** (needed random40 gaps no larger than −15.8 / −27.6). **H-K2 NO-GO** (needed compact gaps no larger than −2.4 / −12.0; Qwen3-1.7B misses by 0.2 point, the ratio is 0.71 against the registered 0.7; for 1.5B the gap grew).
+- The loss of accuracy of pruned GSM8K chains is therefore robust to 3× data and 1.5× epochs in this range (random40: ratios 1.06 and 0.85; compact: 1.76 and 0.71). The Round 14–19 conclusions about step pruning do not appear to be a small-budget artefact, in contrast to the pointer-task knee. The order of the arms is the same as before (full > compact > random40). Caveats: one seed, 3× only; the full-chain 1.5B model is itself not at a small loss (0.055), as the chain tokens of a natural-language task keep an irreducible entropy, so the <0.05 convergence rule used for the synthetic tasks does not apply here.

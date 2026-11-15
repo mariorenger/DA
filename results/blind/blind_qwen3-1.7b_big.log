@@ -1,0 +1,143 @@
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+Fetching 2 files:   0%|          | 0/2 [00:00<?, ?it/s]Fetching 2 files:  50%|█████     | 1/2 [00:05<00:05,  5.27s/it]Fetching 2 files: 100%|██████████| 2/2 [00:36<00:00, 20.27s/it]Fetching 2 files: 100%|██████████| 2/2 [00:36<00:00, 18.02s/it]
+Loading weights:   0%|          | 0/311 [00:00<?, ?it/s]Loading weights:   0%|          | 1/311 [00:02<10:21,  2.00s/it]Loading weights:  44%|████▎     | 136/311 [00:02<00:02, 87.02it/s]Loading weights:  60%|██████    | 187/311 [00:02<00:01, 99.17it/s]Loading weights:  71%|███████   | 221/311 [00:02<00:00, 107.45it/s]Loading weights:  80%|███████▉  | 248/311 [00:02<00:00, 118.45it/s]Loading weights:  87%|████████▋ | 272/311 [00:03<00:00, 132.09it/s]Loading weights:  95%|█████████▌| 296/311 [00:03<00:00, 146.07it/s]Loading weights: 100%|██████████| 311/311 [00:03<00:00, 97.37it/s] 
+[   0.9 min] loaded Qwen/Qwen3-1.7B
+[  56.8 min] chains: 2400 generated, 0.792 correct, 1819 kept (2-10 body steps)
+[  56.8 min] compact statistics: {"full": {"train_token_ratio": 1.0, "mean_steps": 3.6404617921935127, "all_numbers_kept": 1.0}, "compact": {"train_token_ratio": 0.4862388004406704, "mean_steps": 3.6404617921935127, "all_numbers_kept": 0.8312259483232546}, "compact2": {"train_token_ratio": 0.5904154195630344, "mean_steps": 3.6404617921935127, "all_numbers_kept": 1.0}, "random40": {"train_token_ratio": 0.4642881516218035, "mean_steps": 1.7306212204507971, "all_numbers_kept": 0.057724024189114896}}
+Loading weights:   0%|          | 0/311 [00:00<?, ?it/s]Loading weights:   0%|          | 1/311 [00:01<05:34,  1.08s/it]Loading weights:  34%|███▍      | 105/311 [00:01<00:01, 121.48it/s]Loading weights:  52%|█████▏    | 163/311 [00:01<00:00, 151.31it/s]Loading weights:  66%|██████▌   | 205/311 [00:01<00:00, 157.13it/s]Loading weights:  76%|███████▌  | 237/311 [00:01<00:00, 161.74it/s]Loading weights:  85%|████████▍ | 264/311 [00:02<00:00, 172.00it/s]Loading weights:  93%|█████████▎| 290/311 [00:02<00:00, 166.27it/s]Loading weights: 100%|██████████| 311/311 [00:02<00:00, 140.19it/s]
+/usr/local/lib/python3.13/dist-packages/transformers/modeling_utils.py:3195: FutureWarning: `gradient_checkpointing_enable` is deprecated and will be removed in v6. Use `activation_checkpointing_enable` instead.
+  warnings.warn(
+/usr/local/lib/python3.13/dist-packages/transformers/modeling_utils.py:3303: FutureWarning: `is_gradient_checkpointing` is deprecated and will be removed in v6. Use `is_activation_checkpointing` instead.
+  warnings.warn(
+[00:49:05]   sft step 10/342 loss 0.0702 (1.3 min)
+[00:50:21]   sft step 20/342 loss 0.0519 (2.6 min)
+[00:51:38]   sft step 30/342 loss 0.0497 (3.9 min)
+[00:52:56]   sft step 40/342 loss 0.0474 (5.2 min)
+[00:54:14]   sft step 50/342 loss 0.0517 (6.5 min)
+[00:55:32]   sft step 60/342 loss 0.0391 (7.8 min)
+[00:56:49]   sft step 70/342 loss 0.0442 (9.1 min)
+[00:58:06]   sft step 80/342 loss 0.0404 (10.3 min)
+[00:59:22]   sft step 90/342 loss 0.0396 (11.6 min)
+[01:00:39]   sft step 100/342 loss 0.0394 (12.9 min)
+[01:01:58]   sft step 110/342 loss 0.0416 (14.2 min)
+[01:03:12]   sft step 120/342 loss 0.0301 (15.5 min)
+[01:04:31]   sft step 130/342 loss 0.0227 (16.8 min)
+[01:05:49]   sft step 140/342 loss 0.0207 (18.1 min)
+[01:07:07]   sft step 150/342 loss 0.0202 (19.4 min)
+[01:08:25]   sft step 160/342 loss 0.0195 (20.7 min)
+[01:09:42]   sft step 170/342 loss 0.0205 (21.9 min)
+[01:10:59]   sft step 180/342 loss 0.0215 (23.2 min)
+[01:12:17]   sft step 190/342 loss 0.0221 (24.5 min)
+[01:13:33]   sft step 200/342 loss 0.0203 (25.8 min)
+[01:14:53]   sft step 210/342 loss 0.0233 (27.1 min)
+[01:16:08]   sft step 220/342 loss 0.0228 (28.4 min)
+[01:17:24]   sft step 230/342 loss 0.0224 (29.7 min)
+[01:18:41]   sft step 240/342 loss 0.0137 (30.9 min)
+[01:19:58]   sft step 250/342 loss 0.0119 (32.2 min)
+[01:21:13]   sft step 260/342 loss 0.0139 (33.5 min)
+[01:22:32]   sft step 270/342 loss 0.0156 (34.8 min)
+[01:23:50]   sft step 280/342 loss 0.0132 (36.1 min)
+[01:25:06]   sft step 290/342 loss 0.0110 (37.4 min)
+[01:26:24]   sft step 300/342 loss 0.0175 (38.7 min)
+[01:27:41]   sft step 310/342 loss 0.0131 (39.9 min)
+[01:28:59]   sft step 320/342 loss 0.0140 (41.2 min)
+[01:30:16]   sft step 330/342 loss 0.0134 (42.5 min)
+[01:31:34]   sft step 340/342 loss 0.0133 (43.8 min)
+[01:31:42]   sft step 342/342 loss 0.0127 (43.9 min)
+/usr/local/lib/python3.13/dist-packages/transformers/modeling_utils.py:3280: FutureWarning: `gradient_checkpointing_disable` is deprecated and will be removed in v6. Use `activation_checkpointing_disable` instead.
+  warnings.warn(
+[ 101.0 min] [full] sft {'steps': 342, 'final_loss': 0.011664283007849007, 'n_train': 1819, 'minutes': 43.94589766661326}
+[ 112.1 min] [full] acc 0.726 gen_tokens 124.7
+Loading weights:   0%|          | 0/311 [00:00<?, ?it/s]Loading weights:   0%|          | 1/311 [00:01<06:48,  1.32s/it]Loading weights:  55%|█████▍    | 170/311 [00:01<00:00, 161.22it/s]Loading weights:  79%|███████▉  | 247/311 [00:01<00:00, 177.20it/s]Loading weights:  96%|█████████▌| 299/311 [00:02<00:00, 185.09it/s]Loading weights: 100%|██████████| 311/311 [00:02<00:00, 147.09it/s]
+/usr/local/lib/python3.13/dist-packages/transformers/modeling_utils.py:3195: FutureWarning: `gradient_checkpointing_enable` is deprecated and will be removed in v6. Use `activation_checkpointing_enable` instead.
+  warnings.warn(
+/usr/local/lib/python3.13/dist-packages/transformers/modeling_utils.py:3303: FutureWarning: `is_gradient_checkpointing` is deprecated and will be removed in v6. Use `is_activation_checkpointing` instead.
+  warnings.warn(
+[01:44:06]   sft step 10/342 loss 1.5108 (1.1 min)
+[01:45:14]   sft step 20/342 loss 0.3791 (2.3 min)
+[01:46:21]   sft step 30/342 loss 0.3023 (3.4 min)
+[01:47:27]   sft step 40/342 loss 0.2660 (4.5 min)
+[01:48:34]   sft step 50/342 loss 0.2722 (5.6 min)
+[01:49:42]   sft step 60/342 loss 0.2384 (6.7 min)
+[01:50:49]   sft step 70/342 loss 0.2278 (7.8 min)
+[01:51:55]   sft step 80/342 loss 0.1831 (9.0 min)
+[01:53:01]   sft step 90/342 loss 0.1977 (10.1 min)
+[01:54:08]   sft step 100/342 loss 0.1881 (11.2 min)
+[01:55:14]   sft step 110/342 loss 0.1981 (12.3 min)
+[01:56:19]   sft step 120/342 loss 0.1743 (13.4 min)
+[01:57:27]   sft step 130/342 loss 0.1392 (14.5 min)
+[01:58:34]   sft step 140/342 loss 0.1352 (15.6 min)
+[01:59:41]   sft step 150/342 loss 0.1540 (16.7 min)
+[02:00:48]   sft step 160/342 loss 0.1457 (17.8 min)
+[02:01:53]   sft step 170/342 loss 0.1470 (18.9 min)
+[02:03:01]   sft step 180/342 loss 0.1471 (20.0 min)
+[02:04:08]   sft step 190/342 loss 0.1525 (21.2 min)
+[02:05:14]   sft step 200/342 loss 0.1393 (22.3 min)
+[02:06:22]   sft step 210/342 loss 0.1350 (23.4 min)
+[02:07:28]   sft step 220/342 loss 0.1419 (24.5 min)
+[02:08:34]   sft step 230/342 loss 0.1430 (25.6 min)
+[02:09:41]   sft step 240/342 loss 0.1134 (26.7 min)
+[02:10:49]   sft step 250/342 loss 0.1091 (27.9 min)
+[02:11:55]   sft step 260/342 loss 0.0980 (29.0 min)
+[02:13:03]   sft step 270/342 loss 0.1048 (30.1 min)
+[02:14:09]   sft step 280/342 loss 0.1066 (31.2 min)
+[02:15:14]   sft step 290/342 loss 0.1023 (32.3 min)
+[02:16:22]   sft step 300/342 loss 0.1164 (33.4 min)
+[02:17:29]   sft step 310/342 loss 0.1058 (34.5 min)
+[02:18:36]   sft step 320/342 loss 0.1126 (35.6 min)
+[02:19:42]   sft step 330/342 loss 0.1004 (36.7 min)
+[02:20:49]   sft step 340/342 loss 0.0955 (37.9 min)
+[02:20:57]   sft step 342/342 loss 0.1042 (38.0 min)
+/usr/local/lib/python3.13/dist-packages/transformers/modeling_utils.py:3280: FutureWarning: `gradient_checkpointing_disable` is deprecated and will be removed in v6. Use `activation_checkpointing_disable` instead.
+  warnings.warn(
+[ 150.2 min] [compact] sft {'steps': 342, 'final_loss': 0.1088163179345429, 'n_train': 1819, 'minutes': 37.97776658535004}
+[ 158.7 min] [compact] acc 0.604 gen_tokens 68.4
+Loading weights:   0%|          | 0/311 [00:00<?, ?it/s]Loading weights:   0%|          | 1/311 [00:01<05:44,  1.11s/it]Loading weights:  45%|████▍     | 139/311 [00:01<00:01, 157.96it/s]Loading weights:  71%|███████   | 221/311 [00:01<00:00, 207.05it/s]Loading weights:  90%|█████████ | 281/311 [00:01<00:00, 203.22it/s]Loading weights: 100%|██████████| 311/311 [00:01<00:00, 166.13it/s]
+/usr/local/lib/python3.13/dist-packages/transformers/modeling_utils.py:3195: FutureWarning: `gradient_checkpointing_enable` is deprecated and will be removed in v6. Use `activation_checkpointing_enable` instead.
+  warnings.warn(
+/usr/local/lib/python3.13/dist-packages/transformers/modeling_utils.py:3303: FutureWarning: `is_gradient_checkpointing` is deprecated and will be removed in v6. Use `is_activation_checkpointing` instead.
+  warnings.warn(
+[02:30:39]   sft step 10/342 loss 1.7285 (1.1 min)
+[02:31:45]   sft step 20/342 loss 0.5307 (2.2 min)
+[02:32:50]   sft step 30/342 loss 0.3865 (3.3 min)
+[02:33:57]   sft step 40/342 loss 0.3436 (4.4 min)
+[02:35:02]   sft step 50/342 loss 0.3472 (5.5 min)
+[02:36:09]   sft step 60/342 loss 0.3240 (6.6 min)
+[02:37:13]   sft step 70/342 loss 0.3198 (7.7 min)
+[02:38:19]   sft step 80/342 loss 0.2996 (8.8 min)
+[02:39:24]   sft step 90/342 loss 0.3072 (9.9 min)
+[02:40:30]   sft step 100/342 loss 0.2910 (11.0 min)
+[02:41:35]   sft step 110/342 loss 0.3083 (12.1 min)
+[02:42:39]   sft step 120/342 loss 0.2732 (13.1 min)
+[02:43:46]   sft step 130/342 loss 0.2313 (14.2 min)
+[02:44:53]   sft step 140/342 loss 0.2450 (15.3 min)
+[02:45:59]   sft step 150/342 loss 0.2583 (16.5 min)
+[02:47:05]   sft step 160/342 loss 0.2449 (17.6 min)
+[02:48:09]   sft step 170/342 loss 0.2199 (18.6 min)
+[02:49:15]   sft step 180/342 loss 0.2467 (19.7 min)
+[02:50:20]   sft step 190/342 loss 0.2592 (20.8 min)
+[02:51:25]   sft step 200/342 loss 0.2559 (21.9 min)
+[02:52:33]   sft step 210/342 loss 0.2259 (23.0 min)
+[02:53:37]   sft step 220/342 loss 0.2367 (24.1 min)
+[02:54:42]   sft step 230/342 loss 0.2288 (25.2 min)
+[02:55:46]   sft step 240/342 loss 0.1920 (26.2 min)
+[02:56:52]   sft step 250/342 loss 0.1886 (27.3 min)
+[02:57:56]   sft step 260/342 loss 0.1834 (28.4 min)
+[02:59:02]   sft step 270/342 loss 0.1877 (29.5 min)
+[03:00:08]   sft step 280/342 loss 0.1916 (30.6 min)
+[03:01:14]   sft step 290/342 loss 0.1813 (31.7 min)
+[03:02:20]   sft step 300/342 loss 0.1975 (32.8 min)
+[03:03:25]   sft step 310/342 loss 0.1974 (33.9 min)
+[03:04:31]   sft step 320/342 loss 0.1932 (35.0 min)
+[03:05:36]   sft step 330/342 loss 0.1765 (36.1 min)
+[03:06:43]   sft step 340/342 loss 0.1970 (37.2 min)
+[03:06:50]   sft step 342/342 loss 0.1996 (37.3 min)
+/usr/local/lib/python3.13/dist-packages/transformers/modeling_utils.py:3280: FutureWarning: `gradient_checkpointing_disable` is deprecated and will be removed in v6. Use `activation_checkpointing_disable` instead.
+  warnings.warn(
+[ 196.1 min] [random40] sft {'steps': 342, 'final_loss': 0.19752844162285327, 'n_train': 1819, 'minutes': 37.30100363095601}
+[ 202.8 min] [random40] acc 0.392 gen_tokens 58.0
+        arm    acc  gen_tokens  train_steps
+0      full  0.726     124.652        3.640
+1   compact  0.604      68.446        3.640
+2  random40  0.392      58.042        1.731
+[ 202.8 min] done
