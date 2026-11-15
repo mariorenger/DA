@@ -71,7 +71,7 @@
 \newcommand{\dt}{\mathrm{do}_{\text{total}}}
 
 \title[Read, Not Reasoned?]{Read, Not Reasoned?}
-\subtitle{Phân tích can thiệp nhân quả có nhãn chuẩn đối với chuỗi suy luận nhiều bước trên mô hình ngôn ngữ nhỏ}
+\subtitle{Phân tích can thiệp nhân quả có nhãn chuẩn đối với chuỗi suy luận nhiều bước trên mô hình ngôn ngữ cỡ nhỏ và vừa}
 \author[Nguyễn Nam Hán]{\texorpdfstring{%
     \begin{tabular}{rl}
         \textbf{Học viên thực hiện:} & Nguyễn Nam Hán \\[0.3em]
@@ -96,6 +96,7 @@
   \item Giai đoạn 2. Can thiệp không cần huấn luyện
   \item Giai đoạn 3. Can thiệp bằng fine-tuning
   \item Giai đoạn 4. Ứng dụng: giảm hallucination khi trả lời từ tài liệu (RAG)
+  \item Giai đoạn 5. Kiểm chứng phép đo bước, cắt gọn chuỗi, ngân sách huấn luyện và quy mô
   \item Tổng hợp, hạn chế và hướng phát triển
 \end{enumerate}
 \end{frame}
@@ -106,8 +107,8 @@
 \textbf{Bối cảnh}
 \begin{itemize}
   \item Chain-of-Thought (CoT): mô hình viết các bước trung gian $Z = (z_1, \dots, z_k)$ trước khi đưa ra đáp án $Y$.
-  \item Một chuỗi đúng không bảo đảm đáp án được tính từ chuỗi đó. Mô hình có thể trả lời theo lối tắt, còn chuỗi chỉ là phần diễn giải đi kèm (vấn đề faithfulness; Lanham et al., 2023; Paul et al., 2024).
-  \item Mô hình nhỏ (0.5B đến 8B) được triển khai rộng rãi vì chi phí thấp và chạy được tại chỗ, nhưng ít được phân tích về mặt này.
+  \item Một chuỗi đúng không bảo đảm đáp án được tính từ chuỗi đó. Mô hình có thể trả lời theo lối tắt, còn chuỗi chỉ là phần diễn giải đi kèm (vấn đề faithfulness; Lanham et al., 2023).
+  \item Mô hình nhỏ và vừa (0.5B đến 14B, riêng một phép thử đến 32B) được triển khai rộng rãi vì chi phí thấp và chạy được tại chỗ, nhưng ít được phân tích về mặt này.
 \end{itemize}
 \vspace{4pt}
 \textbf{Vấn đề nghiên cứu}
@@ -115,6 +116,7 @@
   \item Các phép đo hiện có (masking một bước, resampling) chưa được kiểm chứng trên dữ liệu có ground truth.
   \item Chưa tách được hai năng lực: đọc thông tin có sẵn trong chuỗi và tự thực hiện composition để tạo thông tin mới.
   \item Chưa rõ nên can thiệp ở giai đoạn decoding hay giai đoạn huấn luyện.
+  \item Các điểm quan trọng của bước dùng để cắt gọn chuỗi (PNS, leave-one-out, step entropy) chưa được đối chiếu với ground truth, và các ước lượng sức chứa bằng fine-tuning chưa được kiểm tra theo ngân sách huấn luyện.
 \end{itemize}
 \end{frame}
 
@@ -130,11 +132,12 @@
   \item \textbf{Phương pháp đo.} Chỉ ra hai phép đo phổ biến cho kết quả lệch, kèm các control và cách hiệu chỉnh.
   \item \textbf{Chẩn đoán.} Mô hình nhỏ đọc đáp án có sẵn trong chuỗi nhưng không dùng chuỗi để thực hiện composition.
   \item \textbf{Can thiệp.} Can thiệp ở bước decoding cuối không hiệu quả. Hai cách hiệu quả: chuyển composition sang rule table, và fine-tuning trên chuỗi.
-  \item \textbf{Ứng dụng.} Dữ liệu huấn luyện có tài liệu thiếu bằng chứng và tài liệu mâu thuẫn giúp mô hình biết abstain và bám theo tài liệu.
+  \item \textbf{Ứng dụng.} Dữ liệu huấn luyện có tài liệu thiếu bằng chứng và tài liệu mâu thuẫn giúp mô hình biết abstain và bám theo tài liệu ở cỡ 3B và 4B. Lợi ích này không lặp lại ở 7B và 8B.
+  \item \textbf{Kiểm chứng phép đo bước và cắt gọn chuỗi.} Các điểm quan trọng của bước không dự đoán được giá trị huấn luyện của bước; sức chứa đo bằng fine-tuning phụ thuộc ngân sách huấn luyện; mô hình vẫn chép kết quả sai đến 32B.
 \end{enumerate}
 \end{frame}
 
-\begin{frame}{Giả thuyết nghiên cứu}
+\begin{frame}[shrink]{Giả thuyết nghiên cứu}
 \small
 \renewcommand{\arraystretch}{1.35}
 \begin{tabularx}{\textwidth}{@{}P{0.8cm}YP{2.4cm}@{}}
@@ -144,7 +147,9 @@
 H1 & Các phép đo tầm quan trọng của bước suy luận đang dùng (masking một bước, resampling) cho kết quả lệch khi đối chiếu với ground truth. & TN1, TN2\\
 H2 & Mô hình nhỏ chưa fine-tune dùng chuỗi suy luận như nơi đọc đáp án, không như nơi tính ra đáp án. & TN3, TN4\\
 H3 & Điểm nghẽn nằm ở composition, nên can thiệp ở bước decoding cuối không hiệu quả còn can thiệp vào composition thì hiệu quả. & TN5 đến TN8\\
-H4 & Cùng nguyên tắc intervention có ground truth áp dụng được cho bài toán thực tế: giảm hallucination khi trả lời từ tài liệu. & TN9\\
+H4 & Cùng nguyên tắc intervention có ground truth áp dụng được cho bài toán thực tế: giảm hallucination khi trả lời từ tài liệu. & TN9, TN14\\
+H5 & Điểm quan trọng của bước (PNS, leave-one-out, step entropy) không phân biệt đúng bước thừa với bước cần thiết, và cắt chuỗi theo các điểm này làm mất độ đúng khi fine-tuning. & TN10, TN11\\
+H6 & Sức chứa mỗi bước viết ra, đo bằng fine-tuning, phụ thuộc ngân sách huấn luyện; việc chép kết quả sai giảm theo quy mô nhưng không biến mất. & TN12, TN13\\
 \bottomrule
 \end{tabularx}
 \end{frame}
@@ -248,8 +253,10 @@ Abstain precision, recall, F1; coverage & Chất lượng của quyết định 
 CLUTRR & Composition quan hệ gia đình, chuỗi 2 đến 10 hop. Tập kiểm thử gồm câu cùng phân phối, tổ hợp quan hệ mới và chuỗi dài 5 đến 8 hop\\
 MuSiQue & Hỏi đáp bridge 2 đến 4 hop trên Wikipedia, mỗi câu kèm 4 hoặc 8 đoạn distractor\\
 2WikiMultihopQA & Hỏi đáp nhiều bước trên Wikipedia, dùng để kiểm tra khả năng tổng quát\\
-Mô hình & Qwen2.5 (0.5B, 1.5B, 3B, 7B), SmolLM2-1.7B, Qwen3 (1.7B, 4B, 8B)\\
-Tài nguyên & 2 GPU T4 16 GB (Kaggle)\\
+GSM8K & Bài toán số học lời văn, dùng cho TN10, TN11, TN13\\
+Tác vụ tổng hợp & Tra con trỏ, cộng dồn, theo dõi hoán vị: chuỗi tối thiểu biết trước (TN12)\\
+Mô hình & Qwen2.5 (0.5B, 1.5B, 3B, 7B; 14B và 32B ở dạng 4-bit cho một phép thử), SmolLM2-1.7B, Qwen3 (1.7B, 4B, 8B)\\
+Tài nguyên & 2 GPU T4 16 GB (Kaggle); mô hình 14B và 32B nạp ở dạng 4-bit\\
 Giao thức & Giả thuyết và ngưỡng chấp nhận được ghi trước khi chạy (pre-registration). Khoảng tin cậy 95\% bằng paired bootstrap\\
 \bottomrule
 \end{tabularx}
@@ -274,21 +281,24 @@ Lặp lại & Kết luận chính được kiểm tra trên nhiều cỡ mô hì
 
 \begin{frame}{Lộ trình thực nghiệm}
 \centering
-\begin{tikzpicture}[font=\footnotesize,
-  st/.style={draw=mid,rounded corners=3pt,inner sep=5pt,anchor=north west},
-  rs/.style={draw=light,fill=black!3,rounded corners=3pt,inner sep=5pt,anchor=north west},
-  ar/.style={-{Stealth[length=2.2mm]},thick,mid}]
-\node[st] (g1) at (0,0) {\parbox[t][2.35cm][t]{2.95cm}{\raggedright \textbf{Giai đoạn 1}\par\textbf{Chẩn đoán}\par TN1 đến TN4\par\vspace{3pt}Kiểm chứng phép đo, đo mức mô hình dùng chuỗi, phân tích tác động của distractor.}};
-\node[st] (g2) at (3.65,0) {\parbox[t][2.35cm][t]{2.95cm}{\raggedright \textbf{Giai đoạn 2}\par\textbf{Can thiệp không huấn luyện}\par TN5, TN6\par\vspace{3pt}Can thiệp ở bước decoding; chuyển composition sang rule table.}};
-\node[st] (g3) at (7.3,0) {\parbox[t][2.35cm][t]{2.95cm}{\raggedright \textbf{Giai đoạn 3}\par\textbf{Fine-tuning}\par TN7, TN8\par\vspace{3pt}Fine-tuning trên chuỗi, kiểm chứng trên mô hình mới và dữ liệu thật, đo lại cơ chế.}};
-\node[st] (g4) at (10.95,0) {\parbox[t][2.35cm][t]{2.95cm}{\raggedright \textbf{Giai đoạn 4}\par\textbf{Ứng dụng RAG}\par TN9\par\vspace{3pt}Giảm hallucination khi trả lời từ tài liệu.}};
+\begin{tikzpicture}[font=\scriptsize,
+  st/.style={draw=mid,rounded corners=3pt,inner sep=4pt,anchor=north west},
+  rs/.style={draw=light,fill=black!3,rounded corners=3pt,inner sep=4pt,anchor=north west},
+  ar/.style={-{Stealth[length=2mm]},thick,mid}]
+\node[st] (g1) at (0,0) {\parbox[t][2.5cm][t]{2.25cm}{\raggedright \textbf{Giai đoạn 1}\par\textbf{Chẩn đoán}\par TN1 đến TN4\par\vspace{2pt}Kiểm chứng phép đo, đo mức mô hình dùng chuỗi, tác động của distractor.}};
+\node[st] (g2) at (3.0,0) {\parbox[t][2.5cm][t]{2.25cm}{\raggedright \textbf{Giai đoạn 2}\par\textbf{Can thiệp không huấn luyện}\par TN5, TN6\par\vspace{2pt}Can thiệp ở decoding; chuyển composition sang rule table.}};
+\node[st] (g3) at (6.0,0) {\parbox[t][2.5cm][t]{2.25cm}{\raggedright \textbf{Giai đoạn 3}\par\textbf{Fine-tuning}\par TN7, TN8\par\vspace{2pt}Fine-tuning trên chuỗi, mô hình mới, dữ liệu thật, đo lại cơ chế.}};
+\node[st] (g4) at (9.0,0) {\parbox[t][2.5cm][t]{2.25cm}{\raggedright \textbf{Giai đoạn 4}\par\textbf{Ứng dụng RAG}\par TN9, TN14\par\vspace{2pt}Giảm hallucination khi trả lời từ tài liệu; kiểm tra ở 7B và 8B.}};
+\node[st] (g5) at (12.0,0) {\parbox[t][2.5cm][t]{2.25cm}{\raggedright \textbf{Giai đoạn 5}\par\textbf{Phép đo bước và cắt chuỗi}\par TN10 đến TN13\par\vspace{2pt}Đối chiếu điểm quan trọng với ground truth, cắt chuỗi, ngân sách, quy mô.}};
 \draw[ar] (g1.east)--(g2.west);
 \draw[ar] (g2.east)--(g3.west);
 \draw[ar] (g3.east)--(g4.west);
-\node[rs] at (0,-2.85) {\parbox[t][1.55cm][t]{2.95cm}{\raggedright \textbf{Phát hiện:} mô hình đọc đáp án có sẵn, không thực hiện composition; distractor tác động qua chuỗi.}};
-\node[rs] at (3.65,-2.85) {\parbox[t][1.55cm][t]{2.95cm}{\raggedright \textbf{Phát hiện:} can thiệp ở decoding không hiệu quả; rule table hiệu quả ở miền đóng.}};
-\node[rs] at (7.3,-2.85) {\parbox[t][1.55cm][t]{2.95cm}{\raggedright \textbf{Phát hiện:} fine-tuning trên chuỗi hiệu quả nhất và tổng quát hơn.}};
-\node[rs] at (10.95,-2.85) {\parbox[t][1.55cm][t]{2.95cm}{\raggedright \textbf{Phát hiện:} mô hình học được cách abstain và bám tài liệu.}};
+\draw[ar] (g4.east)--(g5.west);
+\node[rs] at (0,-3.0) {\parbox[t][1.9cm][t]{2.25cm}{\raggedright \textbf{Phát hiện:} mô hình đọc đáp án có sẵn, không thực hiện composition.}};
+\node[rs] at (3.0,-3.0) {\parbox[t][1.9cm][t]{2.25cm}{\raggedright \textbf{Phát hiện:} can thiệp ở decoding không hiệu quả; rule table hiệu quả ở miền đóng.}};
+\node[rs] at (6.0,-3.0) {\parbox[t][1.9cm][t]{2.25cm}{\raggedright \textbf{Phát hiện:} fine-tuning trên chuỗi hiệu quả nhất và tổng quát hơn.}};
+\node[rs] at (9.0,-3.0) {\parbox[t][1.9cm][t]{2.25cm}{\raggedright \textbf{Phát hiện:} dạy được abstain ở 3B và 4B, không lặp lại ở 7B và 8B.}};
+\node[rs] at (12.0,-3.0) {\parbox[t][1.9cm][t]{2.25cm}{\raggedright \textbf{Phát hiện:} điểm quan trọng của bước không giúp cắt chuỗi; sức chứa phụ thuộc ngân sách.}};
 \end{tikzpicture}
 \raggedright
 \vspace{4pt}
@@ -785,7 +795,7 @@ Qwen2.5-3B & 7.3 & 41 đến 44 & 47.7\% & 26 đến 32\%\\
 Qwen2.5-7B & 1.3 & 39 & 10.3\% & 47.5\%\\
 \bottomrule
 \end{tabularx}
-\nguon{Khoảng giá trị là kết quả của hai seed. Trên chuỗi tuyến tính, $\dt$ cắt mọi liên kết phía sau, nên đo việc dùng chuỗi chứ không cô lập riêng một hop.}
+\nguon{Khoảng giá trị là kết quả của hai seed. Tỷ lệ chép trước fine-tuning chỉ tính trên câu tự giải đúng; ở 7B, tỷ lệ chép chung là 22.9\% (xem TN13). Trên chuỗi tuyến tính, $\dt$ cắt mọi liên kết phía sau, nên đo việc dùng chuỗi chứ không cô lập riêng một hop.}
 \small
 \textbf{Kết quả}
 \begin{itemize}
@@ -888,9 +898,372 @@ Chain & -- & 0.00 & -- & 1.00 & 0.52 & -- & 0.00 & -- & 1.00 & 0.61\\
 \ketluan{Fine-tuning với unanswerable và conflict cho điểm cân bằng tốt nhất. DPO và GRPO dời điểm cân bằng theo hai hướng ngược nhau, không cải thiện đồng thời cả coverage và precision.}
 \end{frame}
 
+\section{Giai đoạn 5. Kiểm chứng phép đo bước và cắt gọn chuỗi}
+%% ============================================================================ TN10
+\begin{frame}[shrink]{TN10. Kiểm chứng điểm quan trọng của bước bằng ground truth: thiết kế}
+\small
+\textbf{Giả thuyết.} Các điểm quan trọng dùng để chọn bước cần cắt (PNS của Yu et al., leave-one-out, step entropy) không phân biệt đúng bước thừa với bước cần thiết khi đối chiếu với ground truth.\par
+\vspace{3pt}
+\textbf{Thiết kế.}
+\begin{itemize}
+  \item GSM8K. Mô hình tự sinh chuỗi, giữ các chuỗi đúng có 2 đến 10 bước. Cài thêm một bước thừa bằng cách lặp lại một bước đã có và đánh dấu \ex{Recall:}. Bước này không thêm thông tin nên hiệu ứng thật bằng 0.
+  \item Nhãn cần thiết: bước đưa ra một số chưa có trong câu hỏi hay các bước trước, và số đó được một bước sau hoặc đáp án dùng lại.
+  \item Chỉ số: AUROC của việc xếp bước cần thiết cao hơn bước thừa. Qwen2.5-1.5B, 3B, 7B và Qwen3-1.7B, 4B, 8B, 100 đến 200 chuỗi mỗi mô hình.
+\end{itemize}
+\vspace{3pt}
+\footnotesize
+\renewcommand{\arraystretch}{1.25}
+\begin{tabularx}{\textwidth}{@{}P{3.2cm}Y@{}}
+\toprule
+\textbf{Ước lượng} & \textbf{Cách tính điểm của một bước}\\
+\midrule
+PNS (Yu et al.) & Thay bước bằng một bước khác, cho mô hình viết tiếp $k$ lần; điểm bằng 1 trừ tỷ lệ lần đúng\\
+PNS hiệu chỉnh & Tỷ lệ đúng khi giữ bước trừ tỷ lệ đúng khi thay bước (cùng các lần viết tiếp)\\
+Leave-one-out (LOO) & Mức giảm log-prob của đáp án đúng khi bỏ bước khỏi chuỗi\\
+LOO che đáp án & Như LOO, sau khi che mọi chỗ ghi đáp án đúng trong chuỗi\\
+Step entropy & Tổng entropy của các token trong bước\\
+\bottomrule
+\end{tabularx}
+\end{frame}
+
+\begin{frame}[shrink]{TN10. Kết quả: không điểm quan trọng nào xếp đủ tốt}
+\small
+\footnotesize
+\renewcommand{\arraystretch}{1.3}
+\begin{tabularx}{\textwidth}{@{}YQ{1.9cm}Q{1.9cm}Q{1.9cm}Q{1.9cm}@{}}
+\toprule
+\textbf{AUROC, bước cần thiết so với bước thừa} & \textbf{Qwen2.5-1.5B} & \textbf{Qwen2.5-3B} & \textbf{Qwen3-1.7B} & \textbf{Qwen2.5-7B}\\
+\midrule
+LOO & \textbf{0.81} & \textbf{0.74} & 0.66 & \textbf{0.81}\\
+LOO che đáp án & 0.61 & 0.70 & \textbf{0.71} & 0.69\\
+PNS hiệu chỉnh & 0.74 & 0.60 & 0.56 & --\\
+PNS (Yu et al.) & 0.68 & 0.56 & 0.55 & --\\
+Step entropy & 0.23 & 0.20 & 0.22 & 0.21\\
+\bottomrule
+\end{tabularx}
+\nguon{AUROC 0.5 tương ứng ngẫu nhiên. 200 chuỗi mỗi mô hình (7B: 100 chuỗi).}
+\small
+\begin{itemize}
+  \item LOO tốt nhất nhưng chỉ đạt 0.66 đến 0.81.
+  \item Step entropy xếp bước thừa cao hơn bước cần thiết, ngược với mục đích sử dụng.
+  \item Che đáp án trước khi tính LOO không cải thiện ở hai trong ba mô hình nhỏ.
+\end{itemize}
+\ketluan{Không điểm quan trọng nào phân biệt tốt bước thừa với bước cần thiết.}
+\end{frame}
+
+\begin{frame}[shrink]{TN10. PNS chỉ lệch ở mô hình nhỏ nhất}
+\small
+\footnotesize
+\renewcommand{\arraystretch}{1.3}
+\begin{tabularx}{\textwidth}{@{}YQ{1.15cm}Q{1.15cm}Q{1.15cm}Q{1.15cm}Q{1.15cm}Q{1.15cm}@{}}
+\toprule
+ & \textbf{Q2.5 1.5B} & \textbf{Q2.5 3B} & \textbf{Q3 1.7B} & \textbf{Q3 4B} & \textbf{Q2.5 7B} & \textbf{Q3 8B}\\
+\midrule
+Điểm PNS của bước thừa (kỳ vọng 0) & 0.28 & 0.07 & 0.06 & 0.02 & 0.003 & 0.018\\
+Tỷ lệ mô hình tự viết tiếp đúng & 0.83 & 0.96 & 0.97 & 0.98 & 0.98 & 0.99\\
+\bottomrule
+\end{tabularx}
+\small
+\vspace{4pt}
+\begin{itemize}
+  \item Giả định của Yu et al. là mô hình viết tiếp luôn đúng sau khi thay một bước. Ở 1.5B mô hình tự viết tiếp đúng chỉ 83\%, nên PNS chấm bước thừa tới 0.28.
+  \item Từ 3B trở lên tỷ lệ viết tiếp đúng từ 96\% và điểm PNS của bước thừa gần 0.
+  \item Đây là cùng cơ chế với TN2: ước lượng bằng resampling lệch theo tỷ lệ mô hình tự viết tiếp đúng.
+\end{itemize}
+\ketluan{Sai lệch của PNS giải thích được bằng tỷ lệ mô hình tự viết tiếp đúng, và chỉ đáng kể ở 1.5B.}
+\end{frame}
+
+%% ============================================================================ TN11
+\begin{frame}[shrink]{TN11. Cắt chuỗi theo điểm rồi fine-tuning: mọi cách cắt đều mất độ đúng}
+\small
+\textbf{Giả thuyết.} Cắt 40\% bước có điểm thấp nhất khỏi chuỗi huấn luyện sẽ giảm số token mà không mất độ đúng, nếu điểm quan trọng phản ánh đúng nhu cầu của mô hình.\par
+\textbf{Thiết kế.} LoRA trên khoảng 500 đến 600 chuỗi GSM8K do chính mô hình sinh, 2 epoch; 500 câu kiểm thử (7B: 300 câu). So sánh với chuỗi đầy đủ và với cắt ngẫu nhiên cùng số bước.\par
+\vspace{3pt}
+\footnotesize
+\renewcommand{\arraystretch}{1.22}
+\begin{tabularx}{\textwidth}{@{}YQ{1.9cm}Q{1.9cm}Q{1.9cm}Q{1.9cm}@{}}
+\toprule
+\textbf{Thay đổi so với chuỗi đầy đủ (điểm)} & \textbf{Q2.5 1.5B} & \textbf{Q2.5 3B} & \textbf{Q3 1.7B} & \textbf{Q2.5 7B}\\
+\midrule
+Độ đúng của chuỗi đầy đủ (\%) & 54.0 & 79.0 & 78.2 & 91.7\\
+Cắt ngẫu nhiên & $-17.2$ & $-10.0$ & $-9.8$ & $-13.3$\\
+Cắt theo step entropy & $-9.4$ & $-8.0$ & $-5.4$ & --\\
+Cắt theo PNS (Yu et al.) & $-22.2$ & $-10.4$ & $-14.2$ & $-17.0$\\
+Cắt theo PNS hiệu chỉnh & $-22.4$ & $-11.4$ & $-15.6$ & --\\
+Cắt theo LOO (tham lam) & $-35.2$ & $-35.6$ & $-45.8$ & $-26.3$\\
+\bottomrule
+\end{tabularx}
+\nguon{Khoảng tin cậy 95\% của các chênh lệch trên đều cách xa 0 (ví dụ Q3 1.7B, LOO: $-45.8$ [$-50.8$, $-40.8$]).}
+\small
+\begin{itemize}
+  \item Không cách chấm điểm nào giữ được độ đúng, ở cả bốn mô hình, kể cả 7B. Không cách nào tốt hơn cắt ngẫu nhiên khi số token ngang nhau.
+  \item LOO tham lam tệ nhất: 99\% chuỗi sau khi cắt vẫn chứa đáp án nhưng 60\% chỉ còn một bước, tức giữ bước nêu đáp án và bỏ bước tính (Q3 1.7B).
+\end{itemize}
+\ketluan{Điểm quan trọng của bước không cho phép nén chuỗi mà không mất độ đúng trong thiết lập này. Hai đối chứng ở trang sau kiểm tra nguyên nhân.}
+\end{frame}
+
+\begin{frame}[shrink]{TN11. Đối chứng đảo thứ tự cắt}
+\small
+\textbf{Thiết kế.} Xóa cùng số bước (40\%) nhưng chọn bước ít quan trọng nhất theo LOO, bước quan trọng nhất theo LOO, hoặc ngẫu nhiên. Nếu thứ tự điểm chứa thông tin về giá trị của bước, cắt bước ít quan trọng phải tốt hơn rõ rệt.\par
+\vspace{3pt}
+\footnotesize
+\renewcommand{\arraystretch}{1.25}
+\begin{tabularx}{\textwidth}{@{}YQ{2.3cm}Q{2.3cm}Q{2.3cm}Q{2.3cm}@{}}
+\toprule
+\textbf{Chênh lệch độ đúng (điểm)} & \textbf{Q2.5 1.5B} & \textbf{Q2.5 3B} & \textbf{Q3 1.7B} & \textbf{Q2.5 7B}\\
+\midrule
+Cắt ít quan trọng nhất $-$ cắt quan trọng nhất & $-9.4$ & $+2.8$ & $+1.6$ & $+9.3$\\
+\quad khoảng tin cậy 95\% & [$-14.0$, $-4.4$] & [$-2.4$, $8.2$] & [$-3.0$, $6.4$] & [$2.7$, $15.7$]\\
+Cắt ít quan trọng nhất $-$ cắt ngẫu nhiên & $-4.4$ & $-3.4$ & $+1.6$ & $+5.0$\\
+\bottomrule
+\end{tabularx}
+\small
+\vspace{3pt}
+\begin{itemize}
+  \item Từ 3B trở xuống, thứ tự điểm không chứa thông tin.
+  \item Chuỗi cắt bước quan trọng nhất mất bước nêu đáp án (chỉ 9 đến 10\% chuỗi còn đáp án ở bước cuối so với 97 đến 98\%), vậy mà độ đúng không thấp hơn.
+  \item Chỉ ở 7B thứ tự bắt đầu có ích. Kết quả 7B không thuộc quy tắc đăng ký trước.
+\end{itemize}
+\ketluan{Điểm quan trọng của bước không dự đoán được giá trị huấn luyện của bước ở 3B trở xuống.}
+\end{frame}
+
+\begin{frame}[shrink]{TN11. Bước nhảy hiệu dụng giải thích mức mất độ đúng}
+\small
+\textbf{Cách tính.} Bước nhảy hiệu dụng của một cách cắt bằng số bước gốc trên mỗi bước giữ lại, tính chỉ từ chuỗi huấn luyện nên có trước khi huấn luyện. Dữ liệu: 59 cách cắt ở 18 lần chạy.\par
+\vspace{4pt}
+\begin{columns}[T,onlytextwidth]
+\column{0.5\textwidth}
+\begin{itemize}
+  \item Thay đổi độ đúng tương quan với bước nhảy hiệu dụng ($r=-0.86$) tốt hơn với tỷ lệ token huấn luyện ($r=+0.76$).
+  \item Mức mất lớn nhất khi mỗi bước giữ lại phải gộp hơn 2 bước gốc: trung bình $-34.2$ điểm.
+  \item Phân tích thực hiện sau khi có dữ liệu và các cách cắt khác nhau ở nhiều mặt, nên chỉ là tương quan.
+\end{itemize}
+\column{0.46\textwidth}
+\centering
+\begin{tikzpicture}
+\begin{axis}[ybar, width=\linewidth, height=4.2cm, bar width=10pt, ymin=-40, ymax=0, symbolic x coords={{$\le 1.05$},{1.05 -- 1.3},{1.3 -- 1.6},{1.6 -- 2.0},{$>2.0$}}, xtick=data,
+  x tick label style={font=\tiny}, y tick label style={font=\scriptsize}, ylabel={Thay đổi độ đúng (điểm)}, xlabel={Bước nhảy hiệu dụng}, label style={font=\scriptsize}, enlarge x limits=0.15, ymajorgrids, grid style={light}]
+\addplot[fill=bar2,draw=none] coordinates {({$\le 1.05$},-9.4)({1.05 -- 1.3},-4.3)({1.3 -- 1.6},-11.1)({1.6 -- 2.0},-14.3)({$>2.0$},-34.2)};
+\end{axis}
+\end{tikzpicture}
+\end{columns}
+\ketluan{Mức mất độ đúng đi theo số bước bị gộp vào mỗi bước còn lại, không đi theo điểm quan trọng đã dùng để chọn bước.}
+\end{frame}
+
+\begin{frame}[shrink]{TN11. Chuỗi chỉ giữ phép tính (compact)}
+\small
+\textbf{Cách làm.} Mỗi bước chỉ giữ các biểu thức có dấu bằng; bước không có biểu thức (phần giả thiết) giữ nguyên. Số token giảm còn khoảng một nửa và mọi phép tính được giữ.\par
+\vspace{2pt}
+\footnotesize
+\renewcommand{\arraystretch}{1.25}
+\begin{tabularx}{\textwidth}{@{}P{2.0cm}Y@{}}
+\toprule
+\textbf{Dạng chuỗi} & \textbf{Một bước của cùng một chuỗi}\\
+\midrule
+Đầy đủ & \ex{Adding these together, the total number of pencils she has is 20 + 18 + 54 = 92 pencils.}\\
+Compact & \ex{20 + 18 + 54 = 92}\\
+\bottomrule
+\end{tabularx}
+\vspace{4pt}
+\renewcommand{\arraystretch}{1.22}
+\begin{tabularx}{\textwidth}{@{}YQ{2.1cm}Q{2.1cm}Q{2.1cm}@{}}
+\toprule
+\textbf{Chênh lệch độ đúng (điểm)} & \textbf{Q2.5 1.5B} & \textbf{Q3 1.7B} & \textbf{Q2.5 3B}\\
+\midrule
+Compact $-$ chuỗi đầy đủ & $-3.4$ & $-17.2$ & $-9.2$\\
+Cắt ngẫu nhiên 40\% $-$ chuỗi đầy đủ & $-22.6$ & $-39.4$ & $-39.6$\\
+Compact $-$ cắt ngẫu nhiên & $+19.2$ & $+22.2$ & $+30.4$\\
+Giữ nguyên mọi số $-$ compact & $-0.4$ & $+0.4$ & $+1.4$\\
+\bottomrule
+\end{tabularx}
+\small
+\begin{itemize}
+  \item Giữ phép tính tốt hơn cắt ngẫu nhiên 19 đến 30 điểm nhưng vẫn kém chuỗi đầy đủ.
+  \item Bản compact ban đầu làm mất số ở 15\% chuỗi. Bản sửa giữ mọi số cho kết quả không đổi, nên phần mất còn lại do đổi phong cách chuỗi.
+\end{itemize}
+\end{frame}
+
+\begin{frame}[shrink]{TN11. Kết quả cắt chuỗi không đổi khi tăng ngân sách huấn luyện}
+\small
+\textbf{Thiết kế.} Lặp lại TN11 với gấp 3 dữ liệu (1601 và 1819 chuỗi) và gấp 1.5 lần epoch (3 epoch), cho Qwen2.5-1.5B và Qwen3-1.7B, 500 câu kiểm thử, một seed.\par
+\vspace{3pt}
+\footnotesize
+\renewcommand{\arraystretch}{1.3}
+\begin{tabularx}{\textwidth}{@{}YQ{2.8cm}Q{2.8cm}Q{2.8cm}Q{2.8cm}@{}}
+\toprule
+ & \multicolumn{2}{c}{\textbf{Qwen2.5-1.5B}} & \multicolumn{2}{c}{\textbf{Qwen3-1.7B}}\\
+\cmidrule(lr){2-3}\cmidrule(l){4-5}
+\textbf{Chênh lệch so với chuỗi đầy đủ (điểm)} & \textbf{Ngân sách nhỏ} & \textbf{Gấp 3 dữ liệu} & \textbf{Ngân sách nhỏ} & \textbf{Gấp 3 dữ liệu}\\
+\midrule
+Cắt ngẫu nhiên 40\% & $-22.6$ & $-24.0$ [$-29.0$, $-19.2$] & $-39.4$ & $-33.4$ [$-38.2$, $-28.6$]\\
+Compact & $-3.4$ & $-6.0$ [$-10.8$, $-1.4$] & $-17.2$ & $-12.2$ [$-16.2$, $-8.2$]\\
+\bottomrule
+\end{tabularx}
+\small
+\vspace{4pt}
+\begin{itemize}
+  \item Giả thuyết đăng ký trước: mức mất thu hẹp xuống còn dưới 0.7 lần. Không đạt ở cả hai mô hình.
+  \item Ở 1.5B mức mất không thu hẹp (compact còn tăng). Ở Qwen3-1.7B mức mất thu hẹp 15\% (cắt ngẫu nhiên) và 29\% (compact).
+\end{itemize}
+\ketluan{Kết luận về cắt chuỗi không phải là hiệu ứng của ngân sách huấn luyện nhỏ trong khoảng đã thử. Đây là điểm khác với TN12.}
+\end{frame}
+
+%% ============================================================================ TN12
+\begin{frame}[shrink]{TN12. Mỗi bước viết ra gộp được mấy phép tính: thiết kế}
+\small
+\textbf{Giả thuyết.} Số phép tra mà mô hình gộp được trong một bước viết ra, đo bằng fine-tuning, phụ thuộc ngân sách huấn luyện, nên không xác định được một giá trị cố định cho mô hình.\par
+\vspace{3pt}
+\textbf{Tác vụ có chuỗi tối thiểu biết trước (tra con trỏ).} Cho 24 nút và các mũi tên, hỏi đi theo mũi tên $k$ lần ($k=4,6,8,12$) thì tới nút nào. Chuỗi với bước nhảy $m$ chỉ viết nút sau mỗi $m$ lần tra.\par
+\vspace{2pt}
+\footnotesize
+\renewcommand{\arraystretch}{1.25}
+\begin{tabularx}{\textwidth}{@{}P{2.3cm}Y@{}}
+\toprule
+\textbf{Dạng chuỗi} & \textbf{Ví dụ: bắt đầu ở 42, đi 6 lần (nút lần lượt: 59, 70, 27, 87, 59, 70)}\\
+\midrule
+$m=1$ & \ex{59 , 70 , 27 , 87 , 59}\newline\ex{Answer: 70}\\
+$m=3$ & \ex{27}\newline\ex{Answer: 70}\\
+$m=12$ (chỉ đáp án) & \ex{Answer: 70}\\
+\bottomrule
+\end{tabularx}
+\small
+\begin{itemize}
+  \item Mỗi bước viết ra phải gộp $m$ phép tra trong một lần mô hình chạy. Đo độ đúng trung bình theo bốn độ sâu $k$.
+  \item Ngân sách huấn luyện (số mục $\times$ epoch): 3000$\times$2, 9000$\times$3, 27000$\times$3, LoRA. Một lần chạy chỉ được coi là giải được khi loss cuối nhỏ hơn 0.05 và độ đúng từ 0.80.
+  \item Hai tác vụ khác có cùng cách thiết kế: cộng dồn các số từ 1 đến 5, và theo dõi hoán vị của 5 chữ số qua $k$ phép đổi chỗ.
+\end{itemize}
+\end{frame}
+
+\begin{frame}[shrink]{TN12. Kết quả: độ đúng theo ngân sách huấn luyện}
+\small
+\footnotesize
+\renewcommand{\arraystretch}{1.25}
+\begin{tabularx}{\textwidth}{@{}YQ{2.4cm}Q{2.4cm}Q{2.4cm}@{}}
+\toprule
+\textbf{Độ đúng trung bình (loss cuối)} & \textbf{3000$\times$2} & \textbf{9000$\times$3} & \textbf{27000$\times$3}\\
+\midrule
+Qwen2.5-1.5B, bước nhảy 4 & 0.35 (5 seed: 0.33 đến 0.39) & 0.987 (0.0007) & --\\
+Qwen2.5-1.5B, bước nhảy 6 & -- & 0.495 (0.167, chưa hội tụ) & \textbf{0.987} (0.006)\\
+Qwen2.5-3B, bước nhảy 4 & 0.70 (5 seed: 0.57 đến 0.91) & 1.000 (0.0001) & --\\
+Qwen2.5-3B, bước nhảy 6 & -- & 0.938 (0.045) & --\\
+Qwen3-1.7B, bước nhảy 5 & 0.46 & 0.997 (0.00002) & --\\
+Qwen3-1.7B, bước nhảy 6 & 0.32 & 0.945 (0.019) & --\\
+Qwen3-1.7B, bước nhảy 8 & 0.31 & 0.635 (0.091, chưa hội tụ) & \textbf{0.987} (0.012)\\
+\bottomrule
+\end{tabularx}
+\nguon{Mỗi ô là một lần chạy trừ khi ghi số seed. Qwen2.5-7B ở ngân sách nhỏ: 0.96, 0.95, 0.84 qua ba seed; Qwen2.5-14B (4-bit, một seed): 0.97.}
+\small
+\begin{itemize}
+  \item Cùng mô hình, cùng tác vụ: chỉ tăng dữ liệu và epoch, độ đúng ở bước nhảy 5 của Qwen3-1.7B tăng từ 0.46 lên 0.997.
+  \item Ở bước nhảy 8, Qwen3-1.7B qua ba ngân sách liên tiếp: 0.31, 0.64, 0.99.
+\end{itemize}
+\end{frame}
+
+\begin{frame}[shrink]{TN12. Kết luận: sức chứa đo bằng fine-tuning phụ thuộc ngân sách}
+\small
+\begin{columns}[T,onlytextwidth]
+\column{0.5\textwidth}
+\centering
+\begin{tikzpicture}
+\begin{axis}[width=\linewidth, height=4.6cm, xmin=3.5, xmax=12.5, ymin=0, ymax=1.05, xtick={4,5,6,8,12}, xlabel={Bước nhảy $m$}, ylabel={Độ đúng}, label style={font=\scriptsize}, tick label style={font=\scriptsize},
+  legend style={at={(0.02,0.04)},anchor=south west,font=\tiny,draw=none,fill=none}, ymajorgrids, grid style={light}]
+\addplot[mark=o,color=bar1,thick] coordinates {(4,0.948)(5,0.46)(6,0.322)(8,0.308)(12,0.285)};
+\addplot[mark=square,color=bar2,thick] coordinates {(5,0.997)(6,0.945)(8,0.635)(12,0.478)};
+\addplot[mark=*,color=bar3,thick] coordinates {(8,0.987)};
+\legend{3000$\times$2,9000$\times$3,27000$\times$3}
+\end{axis}
+\end{tikzpicture}\par
+{\tiny\color{mid}Qwen3-1.7B, tra con trỏ}
+\column{0.48\textwidth}
+\begin{itemize}
+  \item Ở 9000$\times$3 kết quả chia thành hai nhóm: mọi lần chạy hội tụ có độ đúng từ 0.937, mọi lần chưa hội tụ chỉ 0.40 đến 0.64.
+  \item Loss cuối dự đoán độ đúng (Spearman $-0.96$, 13 lần chạy ở ngân sách nhỏ).
+  \item Cộng dồn không có điểm gãy; hoán vị 3 phép mỗi bước được giải ở ba mô hình khi ngân sách đủ lớn.
+\end{itemize}
+\end{columns}
+\ketluan{Điểm gãy ở khoảng 3 đến 4 phép tra thấy ở ngân sách nhỏ là hiệu ứng của ngân sách. Sức chứa đo bằng fine-tuning cần ghi kèm ngân sách, số seed và trạng thái hội tụ. Chưa quyết định được bằng thực nghiệm này liệu có một giới hạn thật.}
+\end{frame}
+
+%% ============================================================================ TN13
+\begin{frame}[shrink]{TN13. Chép kết quả sai theo quy mô mô hình}
+\small
+\textbf{Giả thuyết.} Tỷ lệ mô hình chép theo một kết quả sai được ghi sẵn trong chuỗi giảm khi mô hình lớn hơn nhưng không biến mất.\par
+\textbf{Thiết kế.} GSM8K. Chọn các câu mô hình tự giải đúng, thay kết quả cuối trong chuỗi của nó bằng số sai (đúng cộng hoặc trừ 1 đến 3) rồi đọc đáp án. Hai biến thể: sửa một chỗ ở cuối chuỗi, hoặc sửa mọi chỗ ghi kết quả. Qwen2.5 từ 0.5B đến 32B (14B và 32B ở dạng 4-bit), cộng Qwen3-1.7B và 4B; 150 đến 200 câu mỗi mô hình.\par
+\vspace{3pt}
+\footnotesize
+\renewcommand{\arraystretch}{1.3}
+\begin{tabularx}{\textwidth}{@{}YQ{0.95cm}Q{0.95cm}Q{0.95cm}Q{0.95cm}Q{0.95cm}Q{0.95cm}Q{0.95cm}Q{0.95cm}@{}}
+\toprule
+\textbf{Chép theo (\%)} & \textbf{0.5B} & \textbf{1.5B} & \textbf{3B} & \textbf{7B} & \textbf{14B} & \textbf{32B} & \textbf{Q3 1.7B} & \textbf{Q3 4B}\\
+\midrule
+Sai một chỗ ở cuối & 99.0 & 99.5 & 92.0 & 85.5 & \textbf{66.0} & 76.7 & 100 & 88.4\\
+Sai ở mọi chỗ & 100 & 100 & 99.0 & 96.0 & 78.5 & 80.7 & 100 & 89.4\\
+\bottomrule
+\end{tabularx}
+\nguon{Chỉ tính trên các câu mô hình tự giải đúng, nên không có tỷ lệ không điều kiện cho tác vụ này. 14B và 32B dùng hai nguồn lượng tử hóa khác nhau.}
+\small
+\begin{itemize}
+  \item Chép theo giảm từ 99.5\% (1.5B) xuống 66\% (14B) nhưng không biến mất, kể cả ở 32B (76.7\%).
+  \item Chuỗi sai nhất quán bị chép theo nhiều hơn chuỗi sai một chỗ ở mọi quy mô.
+\end{itemize}
+\end{frame}
+
+\begin{frame}[shrink]{TN13. Độ lệch chọn mẫu của copy test}
+\small
+\textbf{Vấn đề.} Copy test ở TN3 chỉ tính trên các câu mô hình tự giải đúng. Việc chọn như vậy có thể làm thay đổi tỷ lệ đo được. Độ lệch được đo bằng $\Delta = P(\text{chép theo} \mid \text{tự giải đúng}) - P(\text{chép theo})$.\par
+\vspace{4pt}
+\footnotesize
+\renewcommand{\arraystretch}{1.25}
+\begin{tabularx}{\textwidth}{@{}YQ{1.4cm}Q{1.4cm}Q{1.4cm}Q{1.4cm}Q{1.4cm}@{}}
+\toprule
+\textbf{CLUTRR} & \textbf{0.5B} & \textbf{1.5B} & \textbf{SmolLM2 1.7B} & \textbf{3B} & \textbf{7B}\\
+\midrule
+Chép theo chung (\%) & 66.5 & 58.2 & 56.3 & 46.2 & 22.9\\
+Chép theo khi tự giải đúng (\%) & 70.8 & 63.0 & 57.1 & 47.7 & 10.3\\
+$\Delta$ (điểm) & $+4.4$ & $+4.7$ & $+0.8$ & $+1.5$ & $\mathbf{-12.6}$\\
+\quad khoảng tin cậy 95\% & [$-13.2$, $20.7$] & [$-14.0$, $21.6$] & [$-12.0$, $13.2$] & [$-11.3$, $14.4$] & [$-21.8$, $-2.7$]\\
+\bottomrule
+\end{tabularx}
+\small
+\vspace{4pt}
+\begin{itemize}
+  \item Đến 3B việc chọn câu tự giải đúng không làm đổi tỷ lệ đo được, nên kết luận mô hình chép cả khi tự giải được không do cách chọn mẫu.
+  \item Ở 7B độ lệch có ý nghĩa: câu tự giải đúng bị chép 10.3\%, câu còn lại 29.1\%.
+\end{itemize}
+\ketluan{Con số 10.3\% ở 7B không nên dùng làm tỷ lệ chép của mô hình, vì không phân biệt được việc bác bỏ lời sai thật với câu dễ vừa dễ giải vừa khó đánh lừa.}
+\end{frame}
+
+%% ============================================================================ TN14
+\begin{frame}[shrink]{TN14. Kiểm tra TN9 ở Qwen2.5-7B và Qwen3-8B}
+\small
+\textbf{Giả thuyết đăng ký trước.} Kết quả của TN9 lặp lại ở 7B và 8B nếu tỷ lệ abstain trên câu unanswerable tăng ít nhất 30 điểm so với mô hình chỉ được chỉ dẫn, và tỷ lệ theo tài liệu trên câu conflict tăng ít nhất 15 điểm so với fine-tune chain thông thường.\par
+\vspace{3pt}
+\footnotesize
+\renewcommand{\arraystretch}{1.2}
+\begin{tabularx}{\textwidth}{@{}YQ{1.0cm}Q{1.1cm}Q{1.1cm}Q{1.1cm}Q{1.0cm}Q{1.1cm}Q{1.1cm}Q{1.1cm}@{}}
+\toprule
+ & \multicolumn{4}{c}{\textbf{Qwen2.5-7B}} & \multicolumn{4}{c}{\textbf{Qwen3-8B}}\\
+\cmidrule(lr){2-5}\cmidrule(l){6-9}
+\textbf{Cách} & \textbf{Đúng} & \textbf{Abstain nhầm} & \textbf{Abstain đúng} & \textbf{Theo tài liệu} & \textbf{Đúng} & \textbf{Abstain nhầm} & \textbf{Abstain đúng} & \textbf{Theo tài liệu}\\
+\midrule
+Chỉ có chỉ dẫn abstain & 26.7 & 47.3 & \textbf{85.3} & 9.3 & 38.0 & 33.0 & \textbf{73.3} & 13.0\\
+Chain thông thường & 54.3 & 0.0 & 0.0 & 29.0 & 57.0 & 0.0 & 0.0 & 31.0\\
++ unanswerable & 47.7 & 17.3 & 68.3 & 27.3 & 46.7 & 19.3 & 72.3 & 25.0\\
++ unanswerable + conflict & 53.7 & 13.0 & 56.7 & 41.7 & 47.3 & 15.3 & 68.0 & 43.7\\
+\bottomrule
+\end{tabularx}
+\nguon{Đơn vị \%. 300 câu mỗi điều kiện, một seed. Tiện ích theo hall.summarize: Q2.5 7B lần lượt 0.240, $-0.456$, 0.206, 0.136; Qwen3 8B lần lượt 0.198, $-0.428$, 0.239, 0.193.}
+\small
+\begin{itemize}
+  \item Quy tắc không đạt ở cả hai mô hình: abstain trên câu unanswerable thay đổi $-28.7$ (7B) và $-5.3$ (8B) điểm so với mô hình chỉ có chỉ dẫn, và tỷ lệ theo tài liệu tăng $+12.7$ điểm ở cả hai (cần $+15$).
+  \item Ở 7B và 8B, chỉ dẫn abstain đã đủ để mô hình từ chối 73\% đến 85\% câu thiếu bằng chứng, nhưng cũng từ chối 33\% đến 47\% câu trả lời được. Fine-tuning tăng độ đúng trên câu trả lời được (+27 và +9 điểm) nhưng không vượt chỉ dẫn về tiện ích.
+\end{itemize}
+\ketluan{Lợi ích của việc dạy abstain ở TN9 được đo so với mô hình nhỏ không abstain theo chỉ dẫn, và không lặp lại ở 7B và 8B. Phần bám theo tài liệu khi conflict vẫn tăng nhưng dưới ngưỡng đăng ký trước.}
+\end{frame}
+
 \section{Tổng hợp và kết luận}
 %% ============================================================================
-\begin{frame}[shrink]{Tổng hợp kết quả}
+\begin{frame}[shrink]{Tổng hợp kết quả (1): TN1 đến TN9}
 \footnotesize
 \renewcommand{\arraystretch}{1.18}
 \begin{tabularx}{\textwidth}{@{}P{0.9cm}YP{4.8cm}P{1.6cm}@{}}
@@ -905,37 +1278,57 @@ TN5 & Can thiệp ở decoding cải thiện kết quả & Không khác CoT & B�
 TN6 & Rule table cải thiện kết quả & Hơn self-consistency 21 đến 37 điểm & Chấp nhận\\
 TN7 & Fine-tuning trên chuỗi dạy được composition & 3B: 36.3\% lên 94.7\%; chain hơn answer-only 9 đến 21 điểm & Chấp nhận\\
 TN8 & Sau fine-tuning mô hình dựa vào chuỗi & $\Delta$ khoảng 40 điểm & Chấp nhận\\
-TN9 & Dữ liệu unanswerable và conflict giảm hallucination & Abstain 56\% đến 71\%; theo tài liệu tăng 21 đến 24 điểm; độ chính xác giảm 4 đến 8 điểm & Chấp nhận một phần\\
+TN9 & Dữ liệu unanswerable và conflict giảm hallucination & Abstain 56\% đến 71\%; theo tài liệu tăng 21 đến 24 điểm; độ chính xác giảm 4 đến 8 điểm, vượt ngưỡng đặt trước 5 điểm & Chấp nhận một phần\\
 \bottomrule
 \end{tabularx}
 \end{frame}
 
-\begin{frame}{Hạn chế}
+\begin{frame}[shrink]{Tổng hợp kết quả (2): TN10 đến TN14}
+\footnotesize
+\renewcommand{\arraystretch}{1.18}
+\begin{tabularx}{\textwidth}{@{}P{0.9cm}YP{4.8cm}P{1.6cm}@{}}
+\toprule
+\textbf{TN} & \textbf{Giả thuyết} & \textbf{Kết quả chính} & \textbf{Đánh giá}\\
+\midrule
+TN10 & Điểm quan trọng của bước phân biệt bước thừa với bước cần thiết & AUROC cao nhất 0.81 (LOO); step entropy 0.20 đến 0.23; PNS lệch ở 1.5B (0.28 trên bước thừa) & Bác bỏ\\
+TN11 & Cắt chuỗi theo điểm giữ được độ đúng & Mọi cách mất 5 đến 46 điểm; thứ tự điểm không chứa thông tin đến 3B; không thu hẹp khi tăng dữ liệu gấp 3 & Bác bỏ\\
+TN12 & Sức chứa mỗi bước viết ra đo được bằng fine-tuning & Biên dịch theo ngân sách (Q3 1.7B, bước 8: 0.31, 0.64, 0.99) & Phụ thuộc ngân sách\\
+TN13 & Chép kết quả sai giảm theo quy mô & 99.5\% (1.5B), 66\% (14B), 76.7\% (32B) & Chấp nhận một phần\\
+TN14 & TN9 lặp lại ở 7B và 8B & Quy tắc không đạt ở cả hai & Bác bỏ\\
+\bottomrule
+\end{tabularx}
+\end{frame}
+
+\begin{frame}[shrink]{Hạn chế}
 \begin{itemize}
-  \setlength{\itemsep}{5pt}
-  \item Dữ liệu chủ yếu là CLUTRR (tổng hợp) và MuSiQue. Rule table ở TN6 chỉ dùng được ở miền có tập quan hệ đóng.
-  \item Mô hình từ 0.5B đến 8B. Chưa kiểm chứng trên mô hình rất lớn như GPT-5 hay Claude Opus.
-  \item Nhiều kết quả chỉ có một seed, và số câu tự giải đúng trong copy test nhỏ (24 đến 44 câu). Các kết luận chính đã được lặp lại trên nhiều mô hình.
-  \item Trên MuSiQue, $\dt$ đo việc đáp án có trong chuỗi, không đo riêng vai trò từng hop. Kết luận về suy luận dựa trên CLUTRR.
-  \item Nhãn unanswerable ở TN9 được dựng bằng cách bỏ đoạn văn, mô hình vẫn có thể trả lời từ kiến thức đã nhớ.
-  \item Chưa đo calibration của xác suất mô hình, và chưa hiệu chỉnh cho nhiều phép so sánh (Holm, Bonferroni). Các kết luận chính có khoảng tin cậy cách xa 0.
+  \setlength{\itemsep}{4pt}
+  \item Dữ liệu thật chủ yếu là CLUTRR (tổng hợp), MuSiQue và GSM8K, ba tác vụ tổng hợp cho TN12. Rule table ở TN6 chỉ dùng được ở miền có tập quan hệ đóng.
+  \item Mô hình đến 14B, riêng copy test đến 32B; 14B và 32B ở dạng 4-bit với hai nguồn lượng tử hóa khác nhau. Chưa kiểm chứng trên mô hình rất lớn như GPT-5 hay Claude Opus.
+  \item Nhiều kết quả chỉ có một seed. Với fine-tuning, nhiễu giữa các lần chạy khoảng 3 đến 4 điểm, và ở ranh giới sức chứa kết quả của một seed có thể sai lệch đến 0.35 (Qwen2.5-3B, bước nhảy 4: 0.57 đến 0.91 qua 5 seed).
+  \item Ở TN12 mới có ba mức ngân sách và chưa xác định được liệu có giới hạn thật; ở TN13 chỉ tính trên các câu mô hình tự giải đúng.
+  \item Một số phân tích được thực hiện sau khi có dữ liệu (bước nhảy hiệu dụng, đảo thứ tự ở 7B) và chỉ là tương quan.
+  \item Một số lỗi được phát hiện và sửa trong quá trình làm: giới hạn token cắt cụt một ô của TN12, bộ rút gọn làm mất số ở 15\% chuỗi (TN11), tác vụ cộng modulo không hội tụ nên bị loại.
+  \item Trên MuSiQue, $\dt$ đo việc đáp án có trong chuỗi. Nhãn unanswerable ở TN9 được dựng bằng cách bỏ đoạn văn, mô hình vẫn có thể trả lời từ kiến thức đã nhớ.
+  \item Chưa đo calibration của xác suất mô hình, và chưa hiệu chỉnh cho nhiều phép so sánh (Holm, Bonferroni).
 \end{itemize}
 \end{frame}
 
-\begin{frame}{Kết luận và hướng phát triển}
+\begin{frame}[shrink]{Kết luận và hướng phát triển}
 \textbf{Kết luận}
 \begin{enumerate}
   \item Masking một hop và resampling với baseline cố định cho kết quả lệch. Cần control và baseline hiệu chỉnh.
-  \item Mô hình nhỏ chưa fine-tune đọc đáp án có sẵn trong chuỗi nhưng không dùng chuỗi để làm composition, dù có đủ thông tin.
+  \item Mô hình nhỏ chưa fine-tune đọc đáp án có sẵn trong chuỗi nhưng không dùng chuỗi để làm composition, dù có đủ thông tin. Việc chép kết quả sai giảm theo quy mô nhưng còn 66\% ở 14B.
   \item Can thiệp ở bước decoding không hiệu quả. Rule table hiệu quả ở miền đóng. Fine-tuning trên chuỗi hiệu quả và tổng quát hơn.
-  \item Dữ liệu unanswerable và conflict giúp mô hình abstain và bám tài liệu khi trả lời từ tài liệu.
+  \item Dữ liệu unanswerable và conflict giúp mô hình 3B và 4B abstain và bám tài liệu, nhưng không lặp lại ở 7B và 8B.
+  \item Các điểm quan trọng của bước (PNS, leave-one-out, step entropy) không phân biệt tốt bước thừa với bước cần thiết, và không cho phép cắt chuỗi mà giữ độ đúng; kết luận này không đổi khi tăng dữ liệu huấn luyện gấp 3.
+  \item Sức chứa mỗi bước viết ra đo bằng fine-tuning phụ thuộc ngân sách huấn luyện, nên phải ghi kèm ngân sách, số seed và trạng thái hội tụ.
 \end{enumerate}
-\vspace{4pt}
+\vspace{3pt}
 \textbf{Hướng phát triển}
 \begin{itemize}
-  \item Nâng độ chính xác gốc khi trả lời từ tài liệu bằng dữ liệu chuỗi lớn và đa dạng hơn.
+  \item Chạy copy test và các intervention có ground truth trên mô hình lớn qua API, và thêm một seed cho các so sánh fine-tuning chính.
+  \item Xác định liệu có giới hạn thật của sức chứa mỗi bước viết ra bằng thực nghiệm không dựa vào fine-tuning.
   \item Kiểm chứng với hệ thống RAG dùng retriever thật.
-  \item Áp dụng copy test và các intervention có ground truth cho mô hình lớn qua API.
 \end{itemize}
 \end{frame}
 
@@ -953,13 +1346,13 @@ TN9 & Dữ liệu unanswerable và conflict giảm hallucination & Abstain 56\% 
   \setlength{\itemsep}{6pt}
   \item Lanham et al. Measuring Faithfulness in Chain-of-Thought Reasoning. arXiv:2307.13702, 2023.
   \item Dziri et al. Faith and Fate: Limits of Transformers on Compositionality. NeurIPS 2023.
-  \item Paul, West, Bosselut, Faltings. Making Reasoning Matter: Measuring and Improving Faithfulness of Chain-of-Thought Reasoning. Findings of EMNLP 2024.
+  \item Yu et al. Causal Sufficiency and Necessity Improves Chain-of-Thought Reasoning. NeurIPS 2025.
   \item Bogdan, Macar, Nanda, Conmy. Thought Anchors: Which LLM Reasoning Steps Matter. arXiv:2506.19143, 2025.
   \item Somov, Chaichuk, Seleznyov, Panchenko, Tutubalina. Breaking the Chain: A Causal Analysis of LLM Faithfulness to Intermediate Structures. arXiv:2603.16475, 2026.
 \end{enumerate}
 \end{frame}
 
-\begin{frame}{Phụ lục. Mã nguồn và kết quả}
+\begin{frame}[shrink]{Phụ lục. Mã nguồn và kết quả}
 \small
 \renewcommand{\arraystretch}{1.25}
 \begin{tabularx}{\textwidth}{@{}P{5.2cm}Y@{}}
@@ -971,7 +1364,10 @@ TN1 đến TN3, control & \code{results/reliance\_v2/}, \code{tools/check\_r1\_t
 TN4 & \code{results/mediation\_n500/}\\
 TN5, TN6 & \code{results/decoding/}, \code{results/causaldec/}\\
 TN7, TN8 & \code{results/cftrain/}, \code{results/cfrl/}, \code{results/egen/}\\
-TN9 & \code{hgcd/hall.py}, \code{results/hall/}, \code{tools/analyze\_hall\_abstain.py}\\
+TN9, TN14 & \code{hgcd/hall.py}, \code{results/hall/}, \code{tools/analyze\_hall\_abstain.py}\\
+TN10, TN11 & \code{hgcd/compress.py}, \code{hgcd/blind.py}, \code{results/compress/}, \code{results/blind/}, \code{tools/analyze\_compress.py}, \code{tools/analyze\_blind.py}\\
+TN12 & \code{hgcd/stride.py}, \code{results/stride/}, \code{tools/analyze\_stride.py}\\
+TN13 & \code{hgcd/scalecopy.py}, \code{results/scale/}, \code{tools/analyze\_selection\_gap.py}\\
 \bottomrule
 \end{tabularx}
 \end{frame}
