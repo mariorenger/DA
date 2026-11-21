@@ -13,7 +13,7 @@ import nbformat as nbf
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 MODULES = ["__init__", "data", "chain", "prompts", "lm", "decoding", "experiments", "metrics",
-           "report", "pipeline", "causaldec", "cftrain", "egen", "cfrl", "hall", "compress", "blind", "scalecopy", "stride", "waitfix", "loadweight"]
+           "report", "pipeline", "causaldec", "cftrain", "egen", "cfrl", "hall", "compress", "blind", "scalecopy", "stride", "waitfix", "loadweight", "intercheck"]
 
 INTRO = """# Read, not reasoned? Kaggle run-all
 
@@ -66,6 +66,8 @@ def run_job(label, model, preset, extra, gpus):
                if preset.startswith("stride") else
                [sys.executable, "-m", "hgcd.waitfix", "--model", model, "--outdir", out, *extra]
                if preset.startswith("waitfix") else
+               [sys.executable, "-m", "hgcd.intercheck", "--model", model, "--outdir", out, *extra]
+               if preset.startswith("intercheck") else
                [sys.executable, "-m", "hgcd.loadweight", "--model", model, "--outdir", out, *extra]
                if preset.startswith("loadweight") else
                [sys.executable, "-m", "hgcd.egen", "--model", model, "--outdir", out, *extra]
@@ -725,6 +727,15 @@ NOTEBOOKS = {
     "R34_loadw": """{
     "l": {"0": [("qwen-1.5b", "Qwen/Qwen2.5-1.5B-Instruct", "loadweight", ("--n_train", "1000", "--bs", "8"))],
           "1": [("qwen3-1.7b", "Qwen/Qwen3-1.7B", "loadweight", ("--n_train", "1000", "--bs", "8"))]},
+}""",
+    # round 35 (see REVIEW.md, pre-registered): interventions on the source text as a check of fact extraction
+    "R35_intercheck": """{
+    "i": {"0": [("q25-1.5b", "Qwen/Qwen2.5-1.5B-Instruct", "intercheck", ("--n_per_k", "60", "--bs", "8")),
+                ("q25-3b", "Qwen/Qwen2.5-3B-Instruct", "intercheck", ("--n_per_k", "60", "--bs", "6"))],
+          "1": [("q3-1.7b", "Qwen/Qwen3-1.7B", "intercheck", ("--n_per_k", "60", "--bs", "8")),
+                ("q3-4b", "Qwen/Qwen3-4B", "intercheck", ("--n_per_k", "60", "--bs", "6"))]},
+    "i7": {"0,1": [("q25-7b", "Qwen/Qwen2.5-7B-Instruct", "intercheck",
+                    ("--n_per_k", "60", "--bs", "4", "--device_map", "auto"))]},
 }""",
 }
 
