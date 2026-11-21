@@ -13,7 +13,7 @@ import nbformat as nbf
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 MODULES = ["__init__", "data", "chain", "prompts", "lm", "decoding", "experiments", "metrics",
-           "report", "pipeline", "causaldec", "cftrain", "egen", "cfrl", "hall", "compress", "blind", "scalecopy", "stride"]
+           "report", "pipeline", "causaldec", "cftrain", "egen", "cfrl", "hall", "compress", "blind", "scalecopy", "stride", "waitfix", "loadweight"]
 
 INTRO = """# Read, not reasoned? Kaggle run-all
 
@@ -64,6 +64,10 @@ def run_job(label, model, preset, extra, gpus):
                if preset.startswith("scale") else
                [sys.executable, "-m", "hgcd.stride", "--model", model, "--outdir", out, *extra]
                if preset.startswith("stride") else
+               [sys.executable, "-m", "hgcd.waitfix", "--model", model, "--outdir", out, *extra]
+               if preset.startswith("waitfix") else
+               [sys.executable, "-m", "hgcd.loadweight", "--model", model, "--outdir", out, *extra]
+               if preset.startswith("loadweight") else
                [sys.executable, "-m", "hgcd.egen", "--model", model, "--outdir", out, *extra]
                if preset.startswith("egen") else
                [sys.executable, "-m", "hgcd.cftrain", "--model", model, "--outdir", out, *extra]
@@ -706,6 +710,21 @@ NOTEBOOKS = {
                  ("--phase", "compact", "--n_train", "2400", "--epochs", "3", "--bs", "8", "--arms", "full", "compact", "random40"))],
           "1": [("qwen3-1.7b_big", "Qwen/Qwen3-1.7B", "blind",
                  ("--phase", "compact", "--n_train", "2400", "--epochs", "3", "--bs", "8", "--arms", "full", "compact", "random40"))]},
+}""",
+    # round 33 (see REVIEW.md, pre-registered): training-free recheck cue against copying a wrong stated result
+    "R33_wait": """{
+    "w": {"0": [("q25-0.5b", "Qwen/Qwen2.5-0.5B-Instruct", "waitfix", ("--n", "200", "--n_pool", "800", "--bs", "8")),
+                ("q25-1.5b", "Qwen/Qwen2.5-1.5B-Instruct", "waitfix", ("--n", "200", "--n_pool", "500", "--bs", "8")),
+                ("q25-3b", "Qwen/Qwen2.5-3B-Instruct", "waitfix", ("--n", "200", "--n_pool", "400", "--bs", "6"))],
+          "1": [("q3-1.7b", "Qwen/Qwen3-1.7B", "waitfix", ("--n", "200", "--n_pool", "400", "--bs", "8")),
+                ("q3-4b", "Qwen/Qwen3-4B", "waitfix", ("--n", "200", "--n_pool", "300", "--bs", "6"))]},
+    "w7": {"0,1": [("q25-7b", "Qwen/Qwen2.5-7B-Instruct", "waitfix",
+                    ("--n", "150", "--n_pool", "300", "--bs", "4", "--device_map", "auto"))]},
+}""",
+    # round 34 (see REVIEW.md, pre-registered): SFT loss weighted by a structural load-bearing label
+    "R34_loadw": """{
+    "l": {"0": [("qwen-1.5b", "Qwen/Qwen2.5-1.5B-Instruct", "loadweight", ("--n_train", "1000", "--bs", "8"))],
+          "1": [("qwen3-1.7b", "Qwen/Qwen3-1.7B", "loadweight", ("--n_train", "1000", "--bs", "8"))]},
 }""",
 }
 
