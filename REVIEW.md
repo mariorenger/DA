@@ -1476,3 +1476,16 @@ Advisor's hypothesis: an LLM alone cannot be causal, auxiliary structure (rule t
 - **H-I1 (detection).** On stories with k ≥ 5, the AUROC of the intervention disagreement for "base is wrong" is at least 0.70 and exceeds the AUROC of the sampling disagreement by at least 0.05 (paired bootstrap 95% CI above 0), in at least 3 of the 5 models.
 - **H-I2 (repair).** On k ≥ 5, int_vote beats samp_vote by at least 2 points (paired bootstrap CI above 0) and beats base, in at least 3 of the 5 models.
 Reading, written now: H-I1 and H-I2 hold → interventions are a better unsupervised check of extraction than resampling at equal compute, which supports using the thesis' interventions as a verifier for externalised structure; H-I1 holds, H-I2 fails → the interventions locate errors but voting does not repair them (a gate for abstention, as in TN9); neither holds → the extraction errors are not exposed by null interventions, and the structure-based route stays limited by recall (a negative result for this form of the advisor's hypothesis). If sampling AUROC ≥ intervention AUROC the contribution of the interventions is no more than test-time augmentation. Limitations: one seed, one task with a closed relation set, three interventions only, null interventions cannot expose a fact that is missing in every variant (systematic recall loss); relation direction conventions may count a correct inverted fact as missing, in the same way for both families of scores.
+
+### Round 34 verdicts (loss weighted by a structural load-bearing label; 660 / 755 own-generated train chains; 500 test questions; one seed; `results/loadweight/`)
+| arm | Qwen2.5-1.5B | Qwen3-1.7B |
+|---|---|---|
+| base (no training) | 54.0 | 73.2 |
+| uniform | 53.4 | 72.8 |
+| struct | 53.6 | 72.6 |
+| loo | 53.8 | 71.4 |
+| random | 54.4 | 72.0 |
+| anti | 56.0 | 72.0 |
+Paired bootstrap (points, 95% CI): struct − uniform +0.2 [−2.2, +2.8] / −0.2 [−2.4, +2.0]; struct − loo −0.2 [−2.4, +2.0] / +1.2 [−0.8, +3.2]; anti − uniform +2.6 [0.0, +5.4] / −0.8 [−3.0, +1.4]; uniform − base −0.6 [−4.6, +3.6] / −0.4 [−3.2, +2.4].
+- **H-L1 NO-GO, H-L2 NO-GO.** Weighting the loss by the load-bearing label does not beat uniform or leave-one-out weights in either model; every difference is within noise. **H-L3** holds for Qwen3-1.7B and is borderline for 1.5B (anti − uniform +2.6, CI lower edge 0.0), so the control does not rule out chance.
+- **Why the experiment cannot say more (limitations found after the run, to be read with the verdict).** (1) Plain SFT on the model's own correct chains does not change accuracy (uniform − base ≈ −0.5), so there is no gain for a weighting to amplify; the setting has no headroom. (2) 79–87% of the steps are load-bearing by the label, so the struct arm up-weights most steps and differs little from uniform (weak contrast); the weights ought to be applied where the label is selective. (3) one seed, one weight value (w = 3). The result is a null for this setting, not evidence against step-level credit in settings where SFT does help (for example distilling chains from a stronger teacher).

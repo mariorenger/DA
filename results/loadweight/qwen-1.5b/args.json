@@ -1,0 +1,22 @@
+{
+ "model": "Qwen/Qwen2.5-1.5B-Instruct",
+ "outdir": "/kaggle/working/results/loadweight_qwen-1.5b",
+ "n_train": 1000,
+ "n_eval": 500,
+ "bs": 8,
+ "w": 3.0,
+ "arms": [
+  "base",
+  "uniform",
+  "struct",
+  "loo",
+  "random",
+  "anti"
+ ],
+ "lr": 0.0001,
+ "epochs": 2.0,
+ "mb": 4,
+ "accum": 4,
+ "seed": 0,
+ "device_map": null
+}
