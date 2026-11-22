@@ -1,0 +1,11 @@
+{
+ "model": "Qwen/Qwen2.5-3B-Instruct",
+ "outdir": "/kaggle/working/results/waitfix_q25-3b",
+ "n": 200,
+ "n_pool": 400,
+ "bs": 6,
+ "max_cont": 160,
+ "seed": 0,
+ "device_map": null,
+ "load_in_4bit": false
+}

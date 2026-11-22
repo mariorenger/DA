@@ -1,0 +1,19 @@
+{
+ "model": "Qwen/Qwen2.5-3B-Instruct",
+ "outdir": "/kaggle/working/results/intercheck_q25-3b",
+ "ks": [
+  2,
+  3,
+  4,
+  5,
+  6,
+  7,
+  8
+ ],
+ "n_per_k": 60,
+ "seed": 11,
+ "n_samp": 3,
+ "bs": 6,
+ "device_map": null,
+ "task_name": "gen_train234_test2to10"
+}
