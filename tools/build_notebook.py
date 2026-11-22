@@ -13,7 +13,7 @@ import nbformat as nbf
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 MODULES = ["__init__", "data", "chain", "prompts", "lm", "decoding", "experiments", "metrics",
-           "report", "pipeline", "causaldec", "cftrain", "egen", "cfrl", "hall", "compress", "blind", "scalecopy", "stride", "waitfix", "loadweight", "intercheck"]
+           "report", "pipeline", "causaldec", "cftrain", "egen", "cfrl", "hall", "compress", "blind", "scalecopy", "stride", "waitfix", "loadweight", "intercheck", "cuedistill"]
 
 INTRO = """# Read, not reasoned? Kaggle run-all
 
@@ -68,6 +68,8 @@ def run_job(label, model, preset, extra, gpus):
                if preset.startswith("waitfix") else
                [sys.executable, "-m", "hgcd.intercheck", "--model", model, "--outdir", out, *extra]
                if preset.startswith("intercheck") else
+               [sys.executable, "-m", "hgcd.cuedistill", "--model", model, "--outdir", out, *extra]
+               if preset.startswith("cuedistill") else
                [sys.executable, "-m", "hgcd.loadweight", "--model", model, "--outdir", out, *extra]
                if preset.startswith("loadweight") else
                [sys.executable, "-m", "hgcd.egen", "--model", model, "--outdir", out, *extra]
@@ -736,6 +738,15 @@ NOTEBOOKS = {
                 ("q3-4b", "Qwen/Qwen3-4B", "intercheck", ("--n_per_k", "60", "--bs", "6"))]},
     "i7": {"0,1": [("q25-7b", "Qwen/Qwen2.5-7B-Instruct", "intercheck",
                     ("--n_per_k", "60", "--bs", "4", "--device_map", "auto"))]},
+}""",
+    # round 36 (see REVIEW.md, pre-registered): distil the recompute cue into the default behaviour
+    "R36_cued_a": """{
+    "d": {"0": [("q25-1.5b", "Qwen/Qwen2.5-1.5B-Instruct", "cuedistill", ("--n_train", "1000", "--bs", "8"))],
+          "1": [("q3-1.7b", "Qwen/Qwen3-1.7B", "cuedistill", ("--n_train", "1000", "--bs", "8"))]},
+}""",
+    "R36_cued_b": """{
+    "d": {"0": [("q25-3b", "Qwen/Qwen2.5-3B-Instruct", "cuedistill", ("--n_train", "1000", "--bs", "6"))],
+          "1": [("q3-4b", "Qwen/Qwen3-4B", "cuedistill", ("--n_train", "1000", "--bs", "6"))]},
 }""",
 }
 
