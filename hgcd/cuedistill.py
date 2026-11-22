@@ -13,7 +13,8 @@ changed by SFT instead of by a cue at inference, without a teacher and without a
      its own. Loss on the post-chain part only.
 
 Arms: base (no training); base_cue (no training, the cue appended at inference: the reference of Round 33);
-dist_mix (corrupted and intact chains); dist_intact (intact chains only: tests whether exposure to wrong results matters).
+dist_mix (corrupted and intact chains); dist_intact (intact chains only: tests whether exposure to wrong results matters);
+cond_mix (Round 37: recompute only after a corrupted chain, answer directly after an intact one: the model must decide).
 Evaluation on held-out test questions (the model solves them by itself): the chain is given as a prefix, the model
 continues freely (no forced readout, no cue), the last stated answer is parsed:
   copy_last / copy_all  corrupted prefix  -> follow (= planted wrong number), correct
@@ -38,7 +39,7 @@ import pandas as pd
 import torch
 
 from .cftrain import train_sft
-from .compress import eval_test, gen, load_gsm8k, make_chains, parse_answer, prefix
+from .compress import _fmt_gold, eval_test, gen, load_gsm8k, make_chains, parse_answer, prefix
 from .lm import LM
 from .scalecopy import corrupt
 
@@ -105,6 +106,7 @@ def evaluate_copy(lm: LM, cs: List[Dict], ws: List[Optional[float]], args, cue: 
             rows.append(dict(mode=mode, uid=c["uid"], gold=c["gold"], wrong=w, ans=a,
                              follow=float(a is not None and w is not None and abs(a - w) < 1e-4),
                              correct=float(a is not None and abs(a - c["gold"]) < 1e-4),
+                             triggered=float("recompute each step" in o),
                              gen_tokens=len(lm.tok(o, add_special_tokens=False).input_ids)))
     return rows
 
@@ -146,7 +148,7 @@ def main():
               open(f"{args.outdir}/info.json", "w"))
     rows, summ = [], []
     for arm in args.arms:
-        if arm.startswith("dist"):
+        if arm.startswith("dist") or arm.startswith("cond"):
             del lm
             gc.collect()
             torch.cuda.empty_cache()
@@ -157,11 +159,13 @@ def main():
             r2 = random.Random(args.seed + 7)
             r2.shuffle(corr)
             r2.shuffle(inta)
-            if arm == "dist_mix":
+            if arm in ("dist_mix", "cond_mix"):
                 sel = corr[:n_c] + inta[:n_c]
             else:       # dist_intact: same number of items, intact chains only (repeated if there are too few)
                 sel = [inta[i % len(inta)] for i in range(2 * n_c)]
-            data = [(prefix(lm, t["c"]["q"], t["body"]), t["target"]) for t in sel]
+            data = [(prefix(lm, t["c"]["q"], t["body"]),
+                     (t["target"] if (arm != "cond_mix" or t["corrupted"])
+                      else f"The answer is {_fmt_gold(t['c']['gold'])}.")) for t in sel]
             info = train_sft(lm, data, args)
             _log(f"[{arm}] sft on {len(data)} items {info}")
         r = evaluate_copy(lm, cs_test, ws, args, cue=(arm == "base_cue"))
@@ -177,6 +181,7 @@ def main():
             m = d[d["mode"] == mode]
             s[f"{mode}_follow"] = m.follow.mean()
             s[f"{mode}_correct"] = m.correct.mean()
+            s[f"{mode}_trig"] = m.triggered.mean()
         summ.append(s)
         _log(f"[{arm}] " + " ".join(f"{k}={v:.3f}" for k, v in s.items() if k != "arm"))
         pd.DataFrame(rows).to_csv(f"{args.outdir}/copy.csv", index=False)

@@ -748,6 +748,15 @@ NOTEBOOKS = {
     "d": {"0": [("q25-3b", "Qwen/Qwen2.5-3B-Instruct", "cuedistill", ("--n_train", "1000", "--bs", "6"))],
           "1": [("q3-4b", "Qwen/Qwen3-4B", "cuedistill", ("--n_train", "1000", "--bs", "6"))]},
 }""",
+    # round 37 (see REVIEW.md, pre-registered): recompute only after a corrupted chain (conditional trigger)
+    "R37_cond_a": """{
+    "c": {"0": [("q25-1.5b", "Qwen/Qwen2.5-1.5B-Instruct", "cuedistill", ("--n_train", "1000", "--bs", "8", "--arms", "base", "cond_mix"))],
+          "1": [("q3-1.7b", "Qwen/Qwen3-1.7B", "cuedistill", ("--n_train", "1000", "--bs", "8", "--arms", "base", "cond_mix"))]},
+}""",
+    "R37_cond_b": """{
+    "c": {"0": [("q25-3b", "Qwen/Qwen2.5-3B-Instruct", "cuedistill", ("--n_train", "1000", "--bs", "6", "--arms", "base", "cond_mix"))],
+          "1": [("q3-4b", "Qwen/Qwen3-4B", "cuedistill", ("--n_train", "1000", "--bs", "6", "--arms", "base", "cond_mix"))]},
+}""",
 }
 
 

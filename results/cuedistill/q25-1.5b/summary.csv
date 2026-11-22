@@ -1,0 +1,5 @@
+arm,clean_acc,clean_tokens,intact_follow,intact_correct,last_follow,last_correct,all_follow,all_correct
+base,0.54,108.548,0.0,1.0,0.99,0.01,1.0,0.0
+base_cue,0.54,108.548,0.0,0.585,0.055,0.43,0.05,0.41
+dist_mix,0.366,329.226,0.0,0.755,0.015,0.72,0.01,0.72
+dist_intact,0.402,340.488,0.0,0.72,0.06,0.64,0.055,0.65
