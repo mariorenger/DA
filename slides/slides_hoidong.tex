@@ -1327,7 +1327,7 @@ Qwen2.5-3B, trước & 91.5 & 100 & 78.0 & 140 & --\\
 Qwen2.5-3B, sau & 2.5 & 98.0 & 80.2 & 271 & 8.0\\
 \bottomrule
 \end{tabularx}
-\nguon{Một seed. Qwen3-4B bị dừng do hết bộ nhớ GPU, chạy lại ở Round 39.}
+\nguon{Một seed. Qwen3-4B chưa huấn luyện được ở TN16 (hết bộ nhớ GPU).}
 \small
 \begin{itemize}
   \item Tỷ lệ chép giảm từ 85 đến 99\% xuống 2 đến 13\%, đạt ngưỡng đăng ký trước (giảm ít nhất 40 điểm) ở cả ba mô hình.
@@ -1351,12 +1351,13 @@ Qwen2.5-1.5B (seed 1) & 99.0 & 97.5 & 2.5 & 53.6 sang 41.8 & 2.6 lần\\
 Qwen2.5-3B & 91.0 & 42.5 & 10.5 & 78.0 sang 79.8 & 1.46 lần\\
 Qwen3-1.7B (seed 0) & 99.5 & 0.0 & 8.0 & 73.2 sang 74.0 & 1.08 lần\\
 Qwen3-1.7B (seed 1) & 99.5 & 0.0 & 5.0 & 76.2 sang 72.8 & 1.01 lần\\
+Qwen3-4B & 100.0 & 0.0 & 1.0 & 87.0 sang 86.8 & 1.04 lần\\
 \bottomrule
 \end{tabularx}
-\nguon{Chuỗi bị thay: kết quả cuối thay bằng số sai. Qwen3-4B chưa chạy được (hết bộ nhớ), chạy lại ở Round 39.}
+\nguon{Chuỗi bị thay: kết quả cuối thay bằng số sai. Một seed trừ Qwen2.5-1.5B và Qwen3-1.7B (hai seed).}
 \small
 \begin{itemize}
-  \item Chỉ Qwen3-1.7B phân biệt được hai loại chuỗi (99.5 so với 0.0\%), lặp lại ở hai seed. Qwen2.5-1.5B tính lại sau gần như mọi chuỗi; 3B phân biệt một phần.
+  \item Hai mô hình Qwen3 (1.7B và 4B) phân biệt được hai loại chuỗi (99.5 đến 100 so với 0.0\%); Qwen2.5-1.5B tính lại sau gần như mọi chuỗi; 3B phân biệt một phần. Khác biệt theo họ mô hình, không theo kích thước.
 \end{itemize}
 \end{frame}
 
@@ -1374,11 +1375,13 @@ Qwen3-1.7B, trước & 0.0 & 1.1 & 98.9\\
 Qwen3-1.7B, sau & 3.3 & 0.0 & 93.3\\
 Qwen2.5-1.5B, trước & 0.0 & 0.8 & 97.6\\
 Qwen2.5-1.5B, sau & 97.6 & 17.9 & 30.9\\
+Qwen2.5-3B, sau (seed 0) & 66.7 & 5.6 & 87.0\\
+Qwen3-4B, sau (seed 0) & 2.2 & 2.2 & 93.3\\
 \bottomrule
 \end{tabularx}
 \small
 \begin{itemize}
-  \item Qwen3-1.7B kích hoạt 99.5\% sau chuỗi bị thay số sai nhưng chỉ 3.3\% sau chuỗi sai tự nhiên, và sửa đúng 0\%.
+  \item Qwen3-1.7B và Qwen3-4B kích hoạt 99.5 đến 100\% sau chuỗi bị thay số sai nhưng chỉ 3.3\% và 2.2\% sau chuỗi sai tự nhiên, và sửa đúng 0 đến 2.2\%.
   \item Qwen2.5-1.5B sửa được 17.9\% chuỗi sai, nhưng vì nó tính lại sau mọi chuỗi (kể cả chuỗi đúng, TN17 trang trước).
   \item Ngưỡng đăng ký trước: kích hoạt hơn trên chuỗi đúng ít nhất 0.30 và sửa đúng ít nhất 15\% ở mô hình có kích hoạt chọn lọc. Không đạt.
 \end{itemize}
@@ -1440,6 +1443,34 @@ Ngẫu nhiên & 54.4 & 72.0\\
 \ketluan{Kết quả không có hiệu lực trong thiết lập này. Chưa phải bằng chứng chống lại credit assignment ở thiết lập nơi fine-tuning thật sự có lợi.}
 \end{frame}
 
+%% ============================================================================ TN20
+\begin{frame}[shrink]{TN20. Huấn luyện trên lỗi thật của chính mô hình}
+\small
+\textbf{Giả thuyết.} Nếu dùng chính các chuỗi sai của mô hình làm mẫu dương (kèm phần tính lại được ground truth xác nhận) thì mô hình học được cách phát hiện và sửa lỗi của chính nó.\par
+\textbf{Thiết kế.} Với 1500 câu huấn luyện, giữ các chuỗi mô hình tự giải sai. Phần tính lại dưới câu nhắc recompute chỉ được giữ khi đáp án bằng ground truth. Chuỗi đúng được trả lời thẳng. Nhóm nat\_cond chỉ dùng lỗi tự nhiên; nat\_mix thêm lỗi chèn của TN17.\par
+\vspace{3pt}
+\footnotesize
+\renewcommand{\arraystretch}{1.2}
+\begin{tabularx}{\textwidth}{@{}YQ{1.4cm}Q{1.9cm}Q{2.2cm}Q{2.2cm}@{}}
+\toprule
+ & \textbf{Chuỗi sai} & \textbf{Sửa được bằng câu nhắc} & \textbf{Độ đúng sạch, nat\_cond} & \textbf{Độ đúng sạch, nat\_mix}\\
+\midrule
+Qwen2.5-1.5B & 372 & 37 (9.9\%) & $-31.0$ & $-11.6$\\
+Qwen3-1.7B & 302 & 21 (7.0\%) & $+0.2$ & $+0.4$\\
+Qwen2.5-3B & 129 & 18 (14.0\%) & $+4.8$ & $+3.6$\\
+Qwen3-4B & 123 & 11 (8.9\%) & $-0.6$ & $+1.0$\\
+\bottomrule
+\end{tabularx}
+\nguon{Chênh lệch độ đúng bài sạch so với không huấn luyện, điểm phần trăm. Một seed, 500 câu kiểm thử.}
+\small
+\begin{itemize}
+  \item Cơ chế kích hoạt không học được trên lỗi tự nhiên ở cả bốn mô hình (nat\_cond kích hoạt 0 đến 4.6\%). Ngưỡng đăng ký trước không đạt.
+  \item Điểm đáng chú ý: câu nhắc tính lại chỉ sửa được 7 đến 14\% chuỗi sai tự nhiên, so với 85 đến 100\% khi số sai được chèn từ ngoài (TN15).
+  \item Mức tăng $+4.8$ ở Qwen2.5-3B xuất hiện ở nhóm không bao giờ kích hoạt, nên không phải do sửa lỗi.
+\end{itemize}
+\ketluan{Lỗi của chính mô hình mang tính hệ thống: tính lại chỉ lặp lại lỗi. Mỗi mô hình chỉ có 11 đến 37 mẫu dương nên kết quả không kết luận được về khả năng phát hiện khi có nhiều dữ liệu hơn.}
+\end{frame}
+
 \section{Tổng hợp và kết luận}
 %% ============================================================================
 \begin{frame}[shrink]{Tổng hợp kết quả (1): TN1 đến TN9}
@@ -1478,7 +1509,7 @@ TN14 & TN9 lặp lại ở 7B và 8B & Quy tắc không đạt ở cả hai & B�
 \end{tabularx}
 \end{frame}
 
-\begin{frame}[shrink]{Tổng hợp kết quả (3): TN15 đến TN19}
+\begin{frame}[shrink]{Tổng hợp kết quả (3): TN15 đến TN20}
 \footnotesize
 \renewcommand{\arraystretch}{1.18}
 \begin{tabularx}{\textwidth}{@{}P{0.9cm}YP{4.8cm}P{1.6cm}@{}}
@@ -1487,9 +1518,10 @@ TN14 & TN9 lặp lại ở 7B và 8B & Quy tắc không đạt ở cả hai & B�
 \midrule
 TN15 & Một câu nhắc sau chuỗi giảm chép số sai & 85 đến 100\% xuống 1 đến 54\%; câu trung tính không đổi; giá phải trả ở 0.5B và 1.5B & Chấp nhận\\
 TN16 & Chưng cất câu nhắc thành hành vi mặc định & Chép giảm xuống 2 đến 13\%; độ đúng bài sạch $-17.4$, $-4.8$, $+2.2$ điểm; token gấp 1.9 đến 3 lần & Chấp nhận một phần\\
-TN17 & Mô hình tự học khi nào cần tính lại & Chỉ Qwen3-1.7B phân biệt (99.5 so với 0.0\%); trên chuỗi sai tự nhiên chỉ 3.3\% & Chấp nhận một phần\\
+TN17 & Mô hình tự học khi nào cần tính lại & Hai mô hình Qwen3 phân biệt (99.5 đến 100 so với 0.0\%); trên chuỗi sai tự nhiên chỉ 2.2 đến 3.3\% & Chấp nhận một phần\\
 TN18 & Can thiệp văn bản kiểm tra việc trích fact & Không phát hiện lỗi; bỏ phiếu hơn lấy mẫu 8 đến 10 điểm ở 3 trong 5 mô hình & Chấp nhận một phần\\
 TN19 & Trọng số loss theo bước chịu tải & Không hơn loss đều (thiết lập không có chỗ cải thiện) & Bác bỏ\\
+TN20 & Học phát hiện và sửa lỗi của chính mô hình & Không học được; câu nhắc chỉ sửa 7 đến 14\% chuỗi sai tự nhiên & Bác bỏ (ít mẫu dương)\\
 \bottomrule
 \end{tabularx}
 \end{frame}
@@ -1504,7 +1536,7 @@ TN19 & Trọng số loss theo bước chịu tải & Không hơn loss đều (th
   \item Một số phân tích được thực hiện sau khi có dữ liệu (bước nhảy hiệu dụng, đảo thứ tự ở 7B) và chỉ là tương quan.
   \item Một số lỗi được phát hiện và sửa trong quá trình làm: giới hạn token cắt cụt một ô của TN12, bộ rút gọn làm mất số ở 15\% chuỗi (TN11), tác vụ cộng modulo không hội tụ nên bị loại.
   \item Trên MuSiQue, $\dt$ đo việc đáp án có trong chuỗi. Nhãn unanswerable ở TN9 được dựng bằng cách bỏ đoạn văn, mô hình vẫn có thể trả lời từ kiến thức đã nhớ.
-  \item Ở TN15 đến TN17, số sai chèn vào lộ ra như một phép tính không khớp, huấn luyện và kiểm tra dùng cùng một loại chèn lỗi; cơ chế kích hoạt chưa nhận ra lỗi tự nhiên của mô hình (TN17). Qwen3-4B chưa chạy được ở TN16 và TN17 (hết bộ nhớ GPU). Phần lớn một seed.
+  \item Ở TN15 đến TN17, số sai chèn vào lộ ra như một phép tính không khớp, huấn luyện và kiểm tra dùng cùng một loại chèn lỗi; cơ chế kích hoạt chưa nhận ra lỗi tự nhiên của mô hình (TN17). Qwen3-4B chưa huấn luyện được ở TN16 (hết bộ nhớ GPU). Ở TN20 chỉ có 11 đến 37 mẫu dương mỗi mô hình. Phần lớn một seed.
   \item Chưa đo calibration của xác suất mô hình, và chưa hiệu chỉnh cho nhiều phép so sánh (Holm, Bonferroni).
 \end{itemize}
 \end{frame}
@@ -1519,13 +1551,13 @@ TN19 & Trọng số loss theo bước chịu tải & Không hơn loss đều (th
   \item Các điểm quan trọng của bước (PNS, leave-one-out, step entropy) không phân biệt tốt bước thừa với bước cần thiết, và không cho phép cắt chuỗi mà giữ độ đúng; kết luận này không đổi khi tăng dữ liệu huấn luyện gấp 3.
   \item Sức chứa mỗi bước viết ra đo bằng fine-tuning phụ thuộc ngân sách huấn luyện, nên phải ghi kèm ngân sách, số seed và trạng thái hội tụ.
   \item Việc chép số sai là hành vi mặc định khi đọc đáp án ngay sau chuỗi: một câu nhắc tính lại giảm nó từ 85 đến 100\% xuống 1 đến 54\%, và tự chưng cất đưa hành vi đó thành mặc định (2 đến 13\%) với chi phí phụ thuộc mô hình.
-  \item Cơ chế kích hoạt có điều kiện nhận ra loại mâu thuẫn được chèn ở Qwen3-1.7B, nhưng không nhận ra lỗi tự nhiên (3.3\%); trọng số loss theo bước chịu tải và can thiệp văn bản không cải thiện kết quả cuối.
+  \item Cơ chế kích hoạt có điều kiện nhận ra loại mâu thuẫn được chèn ở hai mô hình Qwen3 (1.7B, 4B), nhưng không nhận ra lỗi tự nhiên (2.2 đến 3.3\%), và huấn luyện trên lỗi thật không khắc phục được (TN20; câu nhắc chỉ sửa 7 đến 14\% chuỗi sai tự nhiên); trọng số loss theo bước chịu tải và can thiệp văn bản không cải thiện kết quả cuối.
 \end{enumerate}
 \vspace{3pt}
 \textbf{Hướng phát triển}
 \begin{itemize}
   \item Chạy copy test và các intervention có ground truth trên mô hình lớn qua API, và thêm seed cho các so sánh fine-tuning chính.
-  \item Huấn luyện cơ chế kích hoạt trên lỗi tự nhiên của mô hình (không chỉ lỗi chèn) để kiểm tra có phát hiện được lỗi suy luận thật không.
+  \item Lấy nhiều lần tính lại cho mỗi chuỗi sai (rejection sampling) để có đủ mẫu dương, rồi kiểm tra lại có phát hiện được lỗi suy luận thật không.
   \item Xác định liệu có giới hạn thật của sức chứa mỗi bước viết ra bằng thực nghiệm không dựa vào fine-tuning.
   \item Kiểm chứng với hệ thống RAG dùng retriever thật.
 \end{itemize}
@@ -1568,7 +1600,7 @@ TN10, TN11 & \code{hgcd/compress.py}, \code{hgcd/blind.py}, \code{results/compre
 TN12 & \code{hgcd/stride.py}, \code{results/stride/}, \code{tools/analyze\_stride.py}\\
 TN13 & \code{hgcd/scalecopy.py}, \code{results/scale/}, \code{tools/analyze\_selection\_gap.py}\\
 TN15 & \code{hgcd/waitfix.py}, \code{results/waitfix/}\\
-TN16, TN17 & \code{hgcd/cuedistill.py}, \code{results/cuedistill/}, \code{results/cuedistill\_cond/}\\
+TN16, TN17, TN20 & \code{hgcd/cuedistill.py}, \code{results/cuedistill/}, \code{results/cuedistill\_cond/}, \code{results/cuedistill\_nat/}\\
 TN18 & \code{hgcd/intercheck.py}, \code{results/intercheck/}, \code{tools/analyze\_intercheck.py}\\
 TN19 & \code{hgcd/loadweight.py}, \code{results/loadweight/}, \code{tools/analyze\_loadweight.py}\\
 \bottomrule
