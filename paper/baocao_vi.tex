@@ -58,7 +58,7 @@
 \title{\textbf{Read, Not Reasoned?}\\[4pt]
 \large Báo cáo chi tiết bằng tiếng Việt: thiết kế thí nghiệm, phương pháp và kết quả}
 \author{Nguyễn Nam Hán \quad·\quad GVHD: PGS.TS. Nguyễn Thị Kim Anh}
-\date{Bản cập nhật có kết quả các round 10 đến 32}
+\date{Bản cập nhật có kết quả các round 10 đến 38}
 
 \begin{document}
 \maketitle
@@ -88,6 +88,14 @@ Phần E: các điểm quan trọng của bước (PNS, leave-one-out, step entr
 bước cần thiết (AUROC cao nhất 0.66 đến 0.81) và không cho phép cắt chuỗi mà giữ độ đúng; sức chứa mỗi bước
 viết ra đo bằng fine-tuning phụ thuộc ngân sách huấn luyện; tỷ lệ chép kết quả sai giảm theo quy mô nhưng
 còn 66\% ở 14B và 76.7\% ở 32B.
+
+Phần F bổ sung kết quả quan trọng nhất của các round gần nhất: việc mô hình chép số sai là hành vi
+mặc định khi đáp án phải được đọc ra ngay sau chuỗi. Một câu nhắc tính lại giảm tỷ lệ chép từ
+85--100\% xuống 1--54\% (câu trung tính không giúp), và tự chưng cất đưa hành vi đó thành mặc định
+(tỷ lệ chép 2--13\%) với chi phí phụ thuộc mô hình. Cơ chế kích hoạt tính lại có điều kiện nhận ra
+loại mâu thuẫn được chèn ở Qwen3-1.7B (99.5\% so với 0.0\%) nhưng không nhận ra lỗi tự nhiên của mô
+hình (3.3\%), nên chưa phải phát hiện lỗi suy luận. Trọng số loss theo bước chịu tải không cải thiện
+fine-tuning, và can thiệp lên văn bản đa dạng hơn lấy mẫu nhưng không phát hiện được lỗi trích fact.
 \end{abstract}
 
 \tableofcontents
@@ -157,6 +165,17 @@ E3 & Sức chứa mỗi bước viết ra phụ thuộc ngân sách
    & Qwen3-1.7B, bước nhảy 8: 0.31, 0.64, 0.99 qua ba ngân sách; điểm gãy cũ bị rút lại \\
 E4 & Chép kết quả sai theo quy mô
    & 99.5\% (1.5B) xuống 66\% (14B), 76.7\% (32B); độ lệch chọn mẫu đáng kể ở 7B \\
+\midrule
+G1 & Một câu nhắc sau chuỗi: \textcolor{luc}{\textbf{đạt}}
+   & Chép số sai 85--100\% xuống 1--54\%; câu trung tính không giúp; giá phải trả ở 0.5B và 1.5B \\
+G2 & Chưng cất câu nhắc thành mặc định
+   & Chép xuống 2--13\%; độ đúng bài sạch $-17.4$, $-4.8$, $+2.2$ điểm; token gấp 1.9--3 lần \\
+G3 & Kích hoạt tính lại có điều kiện: \textcolor{doxam}{\textbf{chỉ nhận ra loại lỗi được chèn}}
+   & Qwen3-1.7B 99.5\% so với 0.0\%; trên lỗi tự nhiên chỉ 3.3\% và sửa đúng 0\% \\
+G4 & Can thiệp văn bản để kiểm tra việc trích fact
+   & Không phát hiện lỗi; bỏ phiếu qua can thiệp hơn lấy mẫu 8--10 điểm ở 3 trong 5 mô hình \\
+G5 & Trọng số loss theo bước chịu tải: \textcolor{doxam}{\textbf{không hơn loss đều}}
+   & Chênh lệch trong nhiễu; thiết lập không có chỗ cải thiện \\
 \bottomrule
 \end{tabularx}
 \end{table}
@@ -173,10 +192,12 @@ R5 và D1 kiểm tra các phương pháp decoding mà chẩn đoán dự đoán 
 D2--D3 kiểm tra phương pháp mà chẩn đoán dự đoán sẽ thành công, và chứng minh cơ chế bằng ablation $\Rightarrow$
 F1--F4 chuyển sang thay đổi chính mô hình bằng fine-tuning và áp dụng vào RAG $\Rightarrow$
 E1--E4 quay lại kiểm chứng chính các thước đo bước và việc cắt gọn chuỗi bằng ground truth, rồi mở rộng
-phép đo chép kết quả sai lên mô hình lớn.
+phép đo chép kết quả sai lên mô hình lớn $\Rightarrow$
+G1--G5 chỉ ra việc chép số sai là hành vi mặc định, thử đổi nó bằng câu nhắc và bằng chưng cất, rồi kiểm tra
+giới hạn của cơ chế vừa dạy.
 
 \paragraph{Đối chiếu với ký hiệu trong slide.} R1 = TN1, R2 = TN2, R3 = TN3, R4 = TN4, R5 = TN5, D1--D3 =
-TN6, F1 = TN7, F2 = TN8, F3 = TN9, F4 = TN14, E1 = TN10, E2 = TN11, E3 = TN12, E4 = TN13.
+TN6, F1 = TN7, F2 = TN8, F3 = TN9, F4 = TN14, E1 = TN10, E2 = TN11, E3 = TN12, E4 = TN13, G1 = TN15, G2 = TN16, G3 = TN17, G4 = TN18, G5 = TN19.
 
 % ==================================================================================
 \section{Bài toán và mô hình nhân quả}
@@ -1562,6 +1583,222 @@ chung 22.9\% mới là con số cần dùng.
 \end{ketluan}
 
 % ==================================================================================
+\section{Phần G: thói quen đọc đáp án và cách thay đổi}
+
+Các phần trước cho thấy mô hình chép số sai khi đáp án phải được đọc ra ngay sau chuỗi (R3, E4). Phần G
+hỏi hành vi đó là giới hạn năng lực hay là mặc định, và thử thay đổi nó.
+
+\subsection{G1: một câu nhắc sau chuỗi (TN15)}
+
+\paragraph{Giả thuyết.} Việc chép số sai là hành vi của lối đọc đáp án ngay sau chuỗi. Khi được nhắc tính
+lại, mô hình phát hiện được mâu thuẫn.
+
+\paragraph{Thiết kế.} GSM8K. Chọn các câu mô hình tự giải đúng, thay kết quả cuối trong chuỗi bằng số sai
+(đúng cộng hoặc trừ 1 đến 3) như ở E4. Sau chuỗi có bốn điều kiện: \texttt{readout} (đọc đáp án ngay),
+\texttt{neutral} (câu \texttt{Let me restate the result.} rồi viết tiếp tự do, đối chứng cho việc sinh thêm
+token), \texttt{wait} (\texttt{Wait, let me double-check the calculation.}), \texttt{recompute}
+(\texttt{Let me recompute each step of the calculation from the start.}). Đo tỷ lệ chép theo số sai. 200
+chuỗi mỗi mô hình (7B: 150), một seed.
+
+\begin{table}[h]
+\centering\small
+\caption{G1: tỷ lệ chép số sai (\%), chỉ sửa ở cuối chuỗi.}
+\begin{tabular}{lcccc}
+\toprule
+ & readout & neutral & wait & recompute \\
+\midrule
+Qwen2.5-0.5B & 99.0 & 95.4 & 6.2 & 17.0 \\
+Qwen2.5-1.5B & 99.5 & 99.0 & 5.5 & 23.0 \\
+Qwen2.5-3B & 92.0 & 89.5 & 54.0 & 8.0 \\
+Qwen2.5-7B & 84.7 & 77.3 & 8.7 & 10.7 \\
+Qwen3-1.7B & 100.0 & 96.5 & 1.0 & 32.0 \\
+Qwen3-4B & 88.4 & 80.4 & 5.0 & 48.7 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{cachdoc}
+\begin{itemize}[leftmargin=*,itemsep=1pt]
+\item Ngưỡng đăng ký trước đạt: ở 7B tỷ lệ chép giảm 76 điểm, ở 3B giảm 38 điểm với cụm wait; câu trung tính
+  giảm không quá 7.4 điểm, nên tác dụng đến từ nội dung câu nhắc.
+\item Giá phải trả: trên chuỗi đúng, cụm wait làm độ đúng giảm từ 96.5 xuống 81.5 (0.5B) và từ 100 xuống 88.0
+  (1.5B); từ 3B trở lên giảm không quá 2 điểm.
+\item Bất thường chưa giải thích: Qwen2.5-3B với cụm wait vẫn chép 54\%, trong khi cụm recompute chỉ 8\%.
+  Cách diễn đạt câu nhắc ảnh hưởng mạnh.
+\end{itemize}
+\end{cachdoc}
+
+\begin{ketluan}
+Mô hình có khả năng phát hiện mâu thuẫn nhưng mặc định không dùng. Kết luận ``chuỗi được đọc, không được
+suy luận'' (R3, E4) đúng cho lối đọc đáp án ngay sau chuỗi, không phải cho mọi cách dùng mô hình.
+\end{ketluan}
+
+\subsection{G2: chưng cất câu nhắc thành hành vi mặc định (TN16)}
+
+\paragraph{Giả thuyết.} Đổi được hành vi mặc định bằng fine-tuning, không cần teacher và không cần câu nhắc
+lúc suy luận.
+
+\paragraph{Thiết kế.} Mô hình tự viết chuỗi đúng cho 1000 câu GSM8K huấn luyện; mỗi chuỗi được giữ nguyên hoặc
+bị thay kết quả cuối bằng số sai. Dưới câu nhắc recompute, mô hình tự viết phần tính lại, và chỉ giữ phần
+tính lại có đáp án bằng ground truth. LoRA trên đoạn sau chuỗi (cụm nhắc, phần tính lại, đáp án), không
+huấn luyện trên chuỗi. Nhóm \texttt{dist\_intact} chỉ dùng chuỗi đúng để kiểm tra vai trò của số sai.
+Đánh giá: cho chuỗi làm tiền tố, mô hình viết tiếp tự do (không ép đọc, không câu nhắc).
+
+\begin{table}[h]
+\centering\small
+\caption{G2: trước và sau chưng cất (một seed).}
+\begin{tabular}{lccccc}
+\toprule
+ & Chép (\%) & Đúng trên chuỗi đúng & Độ đúng bài sạch & Token & Chép, dist\_intact \\
+\midrule
+Qwen2.5-1.5B trước & 99.0 & 100 & 54.0 & 109 & -- \\
+Qwen2.5-1.5B sau & 1.5 & 75.5 & 36.6 & 329 & 6.0 \\
+Qwen3-1.7B trước & 99.5 & 100 & 73.2 & 127 & -- \\
+Qwen3-1.7B sau & 12.5 & 98.5 & 68.4 & 310 & 42.0 \\
+Qwen2.5-3B trước & 91.5 & 100 & 78.0 & 140 & -- \\
+Qwen2.5-3B sau & 2.5 & 98.0 & 80.2 & 271 & 8.0 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{cachdoc}
+\begin{itemize}[leftmargin=*,itemsep=1pt]
+\item Tỷ lệ chép giảm từ 85--99\% xuống 2--13\%, đạt ngưỡng đăng ký trước (giảm ít nhất 40 điểm) ở cả ba mô hình.
+\item Ngưỡng chi phí không đạt: độ đúng bài sạch giảm 17.4 điểm (1.5B) và 4.8 điểm (Qwen3-1.7B), tăng 2.2
+  điểm (3B); token gấp 1.9--3 lần. Ở 1.5B phần tính lại của chính mô hình sai nhiều, làm hỏng cả chuỗi đúng.
+\item Nhóm chỉ dùng chuỗi đúng giảm chép gần bằng nhóm dùng cả chuỗi sai (trừ Qwen3-1.7B: 42.0 so với 12.5),
+  nên thói quen tính lại quan trọng hơn việc thấy số sai.
+\item Qwen3-4B bị dừng do hết bộ nhớ GPU; chạy lại ở Round 39.
+\end{itemize}
+\end{cachdoc}
+
+\subsection{G3: kích hoạt tính lại có điều kiện và giới hạn của nó (TN17)}
+
+\paragraph{Thiết kế.} Như G2, nhưng sau chuỗi đúng mô hình được dạy trả lời thẳng, chỉ sau chuỗi bị thay số
+sai mới tính lại: mô hình phải tự quyết định. Đo thêm tỷ lệ kích hoạt tính lại theo từng loại tiền tố và trên
+chuỗi sai tự nhiên của chính mô hình (các câu mô hình tự giải sai; chuỗi bỏ dòng đáp án cuối).
+
+\begin{table}[h]
+\centering\small
+\caption{G3: kích hoạt có điều kiện.}
+\begin{tabular}{lccccc}
+\toprule
+ & KH, chuỗi thay (\%) & KH, chuỗi đúng (\%) & Chép (\%) & Độ đúng bài sạch & Token \\
+\midrule
+Qwen2.5-1.5B (seed 1) & 99.0 & 97.5 & 2.5 & 53.6 $\to$ 41.8 & 2.6 lần \\
+Qwen2.5-3B & 91.0 & 42.5 & 10.5 & 78.0 $\to$ 79.8 & 1.46 lần \\
+Qwen3-1.7B (seed 0) & 99.5 & 0.0 & 8.0 & 73.2 $\to$ 74.0 & 1.08 lần \\
+Qwen3-1.7B (seed 1) & 99.5 & 0.0 & 5.0 & 76.2 $\to$ 72.8 & 1.01 lần \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{table}[h]
+\centering\small
+\caption{G3: chuỗi sai tự nhiên của mô hình (seed 1).}
+\begin{tabular}{lccc}
+\toprule
+ & Kích hoạt (\%) & Đúng sau khi viết tiếp (\%) & Giữ đáp án sai cũ (\%) \\
+\midrule
+Qwen3-1.7B trước & 0.0 & 1.1 & 98.9 \\
+Qwen3-1.7B sau & 3.3 & 0.0 & 93.3 \\
+Qwen2.5-1.5B trước & 0.0 & 0.8 & 97.6 \\
+Qwen2.5-1.5B sau & 97.6 & 17.9 & 30.9 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{cachdoc}
+\begin{itemize}[leftmargin=*,itemsep=1pt]
+\item Chỉ Qwen3-1.7B phân biệt được hai loại chuỗi (99.5 so với 0.0\%), lặp lại ở hai seed. Qwen2.5-1.5B tính lại
+  sau gần như mọi chuỗi; 3B phân biệt một phần (91.0 so với 42.5\%).
+\item Trên chuỗi sai tự nhiên, Qwen3-1.7B chỉ kích hoạt 3.3\% và sửa đúng 0\%. Ngưỡng đăng ký trước (kích hoạt
+  hơn trên chuỗi đúng ít nhất 0.30 và sửa đúng ít nhất 15\%) không đạt.
+\item Chênh lệch độ đúng bài sạch của Qwen3-1.7B giữa hai seed (+0.8 và $-3.4$) cho thấy nhiễu khoảng 4 điểm.
+\end{itemize}
+\end{cachdoc}
+
+\begin{ketluan}
+Mô hình học được cách nhận ra loại mâu thuẫn được chèn (kết quả không khớp phép tính trước đó), không nhận ra
+lỗi do chính nó tạo ra. Đây chưa phải phát hiện lỗi suy luận.
+\end{ketluan}
+
+\subsection{G4: can thiệp lên văn bản để kiểm tra việc trích fact (TN18)}
+
+\paragraph{Giả thuyết.} Ba can thiệp không đổi tập fact (đổi tên, đảo thứ tự câu, chèn câu trung tính) cho biết
+fact nào được đọc không đáng tin, và bỏ phiếu qua các bản này sửa được lỗi trích fact.
+
+\paragraph{Thiết kế.} CLUTRR, 60 truyện mỗi độ dài từ 2 đến 8 hop. Mô hình trích fact từ truyện gốc và từ ba
+bản can thiệp (đã ánh xạ tên về tên gốc); rule table tính đáp án. So bỏ phiếu qua can thiệp với bỏ phiếu qua
+ba lần lấy mẫu (cùng số lần trích).
+
+\begin{table}[h]
+\centering\small
+\caption{G4: độ đúng (\%) với chuỗi từ 5 hop và tỷ lệ không có đáp án của trích đơn.}
+\begin{tabular}{lcccc}
+\toprule
+ & Trích đơn & Phiếu qua can thiệp & Phiếu qua lấy mẫu & Không có đáp án \\
+\midrule
+Qwen2.5-1.5B & 5.0 & 10.4 & 8.7 & 92 \\
+Qwen2.5-3B & 13.3 & 24.6 & 23.3 & 80 \\
+Qwen2.5-7B & 24.2 & 40.0 & 31.7 & 65 \\
+Qwen3-1.7B & 19.2 & 32.5 & 23.7 & 69 \\
+Qwen3-4B & 27.9 & 41.2 & 31.2 & 56 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{cachdoc}
+\begin{itemize}[leftmargin=*,itemsep=1pt]
+\item Phát hiện lỗi không đạt: AUROC của độ bất đồng theo can thiệp dưới 0.5 ở mọi mô hình, vì lỗi chủ yếu là
+  bỏ sót fact (không tạo được đáp án) và can thiệp không làm lộ ra fact bị bỏ sót.
+\item Sửa lỗi đạt ở 3 trong 5 mô hình: bỏ phiếu qua can thiệp hơn qua lấy mẫu 8--10 điểm (7B, Qwen3-1.7B,
+  Qwen3-4B). Mỗi bản trích riêng lẻ không tốt hơn trích gốc; lợi ích đến từ việc các lần trích sai khác nhau.
+\end{itemize}
+\end{cachdoc}
+
+\begin{ketluan}
+Can thiệp là nguồn trích đa dạng hơn lấy mẫu, nhưng không phát hiện được lỗi trích. Độ đúng tuyệt đối vẫn thấp
+(10--41\%), nên trích fact vẫn là nút thắt của hướng rule table.
+\end{ketluan}
+
+\subsection{G5: trọng số loss theo bước chịu tải (TN19)}
+
+\paragraph{Giả thuyết.} Tăng trọng số loss của các bước chịu tải (nhãn dựng từ chuỗi, không cần mô hình) tốt
+hơn loss đều và tốt hơn trọng số theo leave-one-out, loại ước lượng mà các phương pháp credit assignment hiện
+nay dùng.
+
+\paragraph{Thiết kế.} GSM8K, 1000 câu huấn luyện, chuỗi đúng do mô hình tự sinh, LoRA, 500 câu kiểm thử. Sáu
+nhóm: không huấn luyện, loss đều, theo nhãn cấu trúc, theo leave-one-out, ngẫu nhiên, và nhóm đối chứng tăng
+trọng số các bước không chịu tải. Trọng số 3.
+
+\begin{table}[h]
+\centering\small
+\caption{G5: độ đúng (\%).}
+\begin{tabular}{lcc}
+\toprule
+ & Qwen2.5-1.5B & Qwen3-1.7B \\
+\midrule
+Không huấn luyện & 54.0 & 73.2 \\
+Loss đều & 53.4 & 72.8 \\
+Theo nhãn cấu trúc & 53.6 & 72.6 \\
+Theo leave-one-out & 53.8 & 71.4 \\
+Ngẫu nhiên & 54.4 & 72.0 \\
+Đối chứng ngược & 56.0 & 72.0 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Nhãn cấu trúc trừ loss đều: $+0.2$ [$-2.2$, $2.8$] và $-0.2$ [$-2.4$, $2.0$]; ngưỡng đăng ký trước (hơn ít nhất
+2 điểm) không đạt. Thiết lập không có chỗ cải thiện: fine-tune trên chuỗi tự sinh không đổi độ đúng, và 79--87\%
+bước là bước chịu tải nên nhóm cấu trúc gần giống loss đều.
+
+\begin{ketluan}
+Kết quả không có hiệu lực trong thiết lập này. Chưa phải bằng chứng chống lại credit assignment ở thiết lập
+nơi fine-tuning thật sự có lợi.
+\end{ketluan}
+
+% ==================================================================================
 \section{Những chỗ đã tự sửa trong quá trình làm}
 
 Mỗi lỗi dưới đây được ghi trong \texttt{REVIEW.md} và đã được sửa trong paper.
@@ -1587,6 +1824,9 @@ Cộng modulo 10 (E3) & Mô hình không hội tụ ở mọi ngân sách & Lo�
 Copy test 7B chỉ 10\% (E4) & Chỉ tính trên câu tự giải đúng, lệch $-12.6$ điểm & Báo cáo tỷ lệ chung 22.9\% \\
 Lợi ích abstain của F3 & Không lặp lại ở 7B và 8B & Giới hạn phát biểu ở 3B và 4B \\
 Hai lần đẩy cùng một notebook lên nhiều tài khoản Kaggle & Vòng thử lại đẩy trùng & Xóa bản trùng; về sau đẩy từng tài khoản riêng \\
+Copy test là bất lực của mô hình (R3, E4) & Một câu nhắc tính lại giảm chép từ 85--100\% xuống 1--54\% (G1) & Phát biểu lại: hành vi mặc định khi đọc đáp án ngay sau chuỗi \\
+Cơ chế kích hoạt phát hiện được mâu thuẫn (G3) & Chỉ nhận ra loại lỗi được chèn, không nhận ra lỗi tự nhiên (3.3\%) & Phát biểu giới hạn, không gọi là phát hiện lỗi suy luận \\
+Notebook Round 37 cho 3B & Dựng từ file cũ, thiếu phép đo lỗi tự nhiên; Qwen3-4B hết bộ nhớ GPU & Chạy lại ở Round 39 \\
 \bottomrule
 \end{tabularx}
 \end{table}
@@ -1611,6 +1851,8 @@ Hai lần đẩy cùng một notebook lên nhiều tài khoản Kaggle & Vòng t
   1.5B đến 8B (E1, E2). Kết luận bền khi tăng 3 lần dữ liệu huấn luyện.
 \item Sức chứa mỗi bước viết ra đo bằng fine-tuning phụ thuộc ngân sách huấn luyện (E3).
 \item Mô hình chép kết quả sai ít hơn khi lớn hơn nhưng không hết: 66\% ở 14B, 76.7\% ở 32B (E4).
+\item Việc chép số sai là hành vi mặc định khi đọc đáp án ngay sau chuỗi: một câu nhắc tính lại giảm nó từ
+  85--100\% xuống 1--54\% (G1), và tự chưng cất đưa hành vi đó thành mặc định (G2) với chi phí phụ thuộc mô hình.
 \end{enumerate}
 
 \paragraph{Chưa chứng minh được hoặc không đạt.}
@@ -1622,8 +1864,9 @@ Hai lần đẩy cùng một notebook lên nhiều tài khoản Kaggle & Vòng t
 \item Một giới hạn thật của sức chứa mỗi bước viết ra (E3): thực nghiệm dựa vào fine-tuning không quyết
   định được.
 \item Copy test trên mô hình rất lớn (GPT-5, Claude Opus) chưa chạy vì cần ngân sách API.
+\item Cơ chế kích hoạt tính lại nhận ra lỗi tự nhiên của mô hình (G3): chưa, chỉ nhận ra loại lỗi được chèn.
 \item Chưa có phương pháp nào cải thiện đầu ra mô hình ở phần chẩn đoán; đóng góp hiện tại là phép đo,
-  chẩn đoán và các kết quả âm có kiểm soát.
+  chẩn đoán, một cách đổi hành vi mặc định (G1, G2) và các kết quả âm có kiểm soát.
 \end{itemize}
 
 \section{Hạn chế}
@@ -1645,6 +1888,8 @@ Hai lần đẩy cùng một notebook lên nhiều tài khoản Kaggle & Vòng t
 \item \textbf{Số seed}: nhiều kết quả phần D--E chỉ có một seed. Nhiễu giữa các lần chạy fine-tuning khoảng
   3 đến 4 điểm; ở ranh giới sức chứa, một seed có thể sai lệch đến 0.35 (Qwen2.5-3B, bước nhảy 4: 0.57 đến
   0.91 qua 5 seed).
+\item \textbf{Loại lỗi chèn} (G1 đến G3): số sai lộ ra như một phép tính không khớp, huấn luyện và kiểm tra dùng cùng
+  một loại chèn lỗi; Qwen3-4B chưa chạy được ở G2, G3 (hết bộ nhớ GPU), kết quả đa số một seed.
 \item \textbf{Phân tích sau khi có dữ liệu}: bước nhảy hiệu dụng và đảo thứ tự ở 7B (E2) chỉ là tương quan.
 \item \textbf{Nhãn unanswerable} ở F3 dựng bằng cách bỏ đoạn văn; mô hình vẫn có thể trả lời từ kiến thức
   đã nhớ. Chưa kiểm chứng với hệ thống RAG dùng retriever thật.
@@ -1668,6 +1913,8 @@ Hai lần đẩy cùng một notebook lên nhiều tài khoản Kaggle & Vòng t
 \item \textbf{Sức chứa mỗi bước viết ra}: xác định bằng thực nghiệm không dựa vào fine-tuning liệu có giới
   hạn thật không.
 \item \textbf{RAG}: kiểm chứng F3 và F4 với retriever thật.
+\item \textbf{Lỗi tự nhiên}: huấn luyện cơ chế kích hoạt trên lỗi tự nhiên của mô hình (không chỉ lỗi chèn) để
+  kiểm tra có phát hiện được lỗi suy luận thật không.
 \item \textbf{Bài báo}: dựng bài báo thứ nhất quanh phép đo có ground truth, chẩn đoán đọc không suy luận,
   và các kết quả âm có kiểm soát; nơi nộp thực tế là Findings, COLM, TMLR hoặc workshop.
 \end{enumerate}
@@ -1698,6 +1945,10 @@ Số liệu E1 & \texttt{results/blind/}, \texttt{tools/analyze\_blind.py} \\
 Số liệu E2 & \texttt{results/compress/}, \texttt{tools/analyze\_compress.py} \\
 Số liệu E3 & \texttt{results/stride/}, \texttt{tools/analyze\_stride.py} \\
 Số liệu E4 & \texttt{results/scale/}, \texttt{tools/analyze\_selection\_gap.py} \\
+Số liệu G1 & \texttt{results/waitfix/} (\texttt{hgcd/waitfix.py}) \\
+Số liệu G2, G3 & \texttt{results/cuedistill/}, \texttt{results/cuedistill\_cond/} (\texttt{hgcd/cuedistill.py}) \\
+Số liệu G4 & \texttt{results/intercheck/} (\texttt{hgcd/intercheck.py}, \texttt{tools/analyze\_intercheck.py}) \\
+Số liệu G5 & \texttt{results/loadweight/} (\texttt{hgcd/loadweight.py}, \texttt{tools/analyze\_loadweight.py}) \\
 Nhật ký đăng ký trước các round 14 đến 32 & \texttt{REVIEW.md} \\
 Kế hoạch và định vị đóng góp & \texttt{docs/contribution\_plan.md}, \texttt{docs/related\_work\_positioning.md} \\
 Code & \texttt{hgcd/} (round 9: \texttt{hgcd/causaldec.py}; E1: \texttt{blind.py}; E2: \texttt{compress.py};
