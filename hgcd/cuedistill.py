@@ -14,7 +14,9 @@ changed by SFT instead of by a cue at inference, without a teacher and without a
 
 Arms: base (no training); base_cue (no training, the cue appended at inference: the reference of Round 33);
 dist_mix (corrupted and intact chains); dist_intact (intact chains only: tests whether exposure to wrong results matters);
-cond_mix (Round 37: recompute only after a corrupted chain, answer directly after an intact one: the model must decide).
+cond_mix (Round 37: recompute only after a corrupted chain, answer directly after an intact one: the model must decide);
+nat_cond / nat_mix (Round 40: the model's OWN wrong chains are the positives: verified recomputation after a wrong chain,
+direct answer after a right chain; nat_mix adds the planted corruptions of cond_mix).
 Evaluation on held-out test questions (the model solves them by itself): the chain is given as a prefix, the model
 continues freely (no forced readout, no cue), the last stated answer is parsed:
   copy_last / copy_all  corrupted prefix  -> follow (= planted wrong number), correct
@@ -89,6 +91,19 @@ def build_targets(lm: LM, cs: List[Dict], args, rng: random.Random):
     return keep
 
 
+def build_natural(lm: LM, items: List[Dict], args) -> List[Dict]:
+    """The model's own wrong chains with a gold-verified recomputation under the cue (positives for nat_* arms)."""
+    wc = wrong_chains(lm, items, args)
+    outs = gen(lm, [prefix(lm, c["q"], c["body"]) + CUE + "\n\n" for c in wc], args, max_new=args.max_cont, bs=args.bs)
+    keep = []
+    for c, o in zip(wc, outs):
+        a = last_answer(o)
+        if a is not None and abs(a - c["gold"]) < 1e-4 and "answer is" in o.lower():
+            keep.append(dict(c=c, body=c["body"], corrupted=True, natural=True, target=CUE + "\n\n" + o.strip()))
+    _log(f"natural wrong chains with a verified recomputation: {len(keep)} of {len(wc)}")
+    return keep
+
+
 def evaluate_copy(lm: LM, cs: List[Dict], ws: List[Optional[float]], args, cue: bool) -> List[Dict]:
     rows = []
     for mode in ["intact", "last", "all"]:
@@ -147,6 +162,7 @@ def main():
     ap.add_argument("--n_copy", type=int, default=200)
     ap.add_argument("--n_pool", type=int, default=450)
     ap.add_argument("--max_cont", type=int, default=260)
+    ap.add_argument("--n_nat", type=int, default=1500, help="extra train questions screened for natural wrong chains (nat_* arms)")
     ap.add_argument("--n_wrong_pool", type=int, default=450, help="test questions screened for the model's own wrong chains")
     ap.add_argument("--bs", type=int, default=8)
     ap.add_argument("--arms", nargs="*", default=["base", "base_cue", "dist_mix", "dist_intact"])
@@ -174,11 +190,14 @@ def main():
     used = args.n_eval + args.n_pool
     wc = wrong_chains(lm, test[used:used + args.n_wrong_pool], args)
     T = build_targets(lm, cs_train, args, rng)
-    json.dump(dict(n_train_chains=len(cs_train), n_targets=len(T), n_copy=len(cs_test)),
+    NT: List[Dict] = []
+    if any(a.startswith("nat") for a in args.arms):
+        NT = build_natural(lm, train[args.n_train:args.n_train + args.n_nat], args)
+    json.dump(dict(n_train_chains=len(cs_train), n_targets=len(T), n_copy=len(cs_test), n_natural_targets=len(NT)),
               open(f"{args.outdir}/info.json", "w"))
     rows, summ = [], []
     for arm in args.arms:
-        if arm.startswith("dist") or arm.startswith("cond"):
+        if arm.startswith("dist") or arm.startswith("cond") or arm.startswith("nat"):
             del lm
             gc.collect()
             torch.cuda.empty_cache()
@@ -189,12 +208,18 @@ def main():
             r2 = random.Random(args.seed + 7)
             r2.shuffle(corr)
             r2.shuffle(inta)
-            if arm in ("dist_mix", "cond_mix"):
+            if arm.startswith("nat"):
+                npos = len(NT)
+                rights = inta[:]        # right chains: answered directly
+                sel = NT + [rights[i % len(rights)] for i in range(npos)]
+                if arm == "nat_mix":
+                    sel += corr[:n_c] + inta[n_c:2 * n_c]
+            elif arm in ("dist_mix", "cond_mix"):
                 sel = corr[:n_c] + inta[:n_c]
             else:       # dist_intact: same number of items, intact chains only (repeated if there are too few)
                 sel = [inta[i % len(inta)] for i in range(2 * n_c)]
             data = [(prefix(lm, t["c"]["q"], t["body"]),
-                     (t["target"] if (arm != "cond_mix" or t["corrupted"])
+                     (t["target"] if (arm.startswith("dist") or t["corrupted"])
                       else f"The answer is {_fmt_gold(t['c']['gold'])}.")) for t in sel]
             info = train_sft(lm, data, args)
             _log(f"[{arm}] sft on {len(data)} items {info}")

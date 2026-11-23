@@ -767,6 +767,15 @@ NOTEBOOKS = {
     "c": {"0": [("q25-3b_n", "Qwen/Qwen2.5-3B-Instruct", "cuedistill", ("--n_train", "1000", "--bs", "6", "--arms", "base", "cond_mix"))],
           "1": [("q3-4b_n", "Qwen/Qwen3-4B", "cuedistill", ("--n_train", "1000", "--bs", "4", "--mb", "2", "--accum", "8", "--arms", "base", "cond_mix"))]},
 }""",
+    # round 40 (see REVIEW.md, pre-registered): train the trigger on the model's OWN wrong chains
+    "R40_nat_a": """{
+    "n": {"0": [("q25-1.5b", "Qwen/Qwen2.5-1.5B-Instruct", "cuedistill", ("--n_train", "1000", "--n_nat", "1500", "--bs", "8", "--arms", "base", "nat_cond", "nat_mix"))],
+          "1": [("q3-1.7b", "Qwen/Qwen3-1.7B", "cuedistill", ("--n_train", "1000", "--n_nat", "1500", "--bs", "8", "--arms", "base", "nat_cond", "nat_mix"))]},
+}""",
+    "R40_nat_b": """{
+    "n": {"0": [("q25-3b", "Qwen/Qwen2.5-3B-Instruct", "cuedistill", ("--n_train", "1000", "--n_nat", "1500", "--bs", "6", "--arms", "base", "nat_cond", "nat_mix"))],
+          "1": [("q3-4b", "Qwen/Qwen3-4B", "cuedistill", ("--n_train", "1000", "--n_nat", "1500", "--bs", "4", "--mb", "2", "--accum", "8", "--arms", "base", "nat_cond", "nat_mix"))]},
+}""",
 }
 
 
