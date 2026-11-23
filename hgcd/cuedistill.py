@@ -111,6 +111,33 @@ def evaluate_copy(lm: LM, cs: List[Dict], ws: List[Optional[float]], args, cue: 
     return rows
 
 
+def wrong_chains(lm: LM, items: List[Dict], args) -> List[Dict]:
+    """The model's own chains that end in a wrong answer (parseable body), chain kept without the final line."""
+    from .compress import split_body, is_correct as _ok
+    outs = gen(lm, [prefix(lm, it["q"], []) for it in items], args, max_new=520, bs=args.bs)
+    keep = []
+    for it, o in zip(items, outs):
+        body = split_body(o)
+        if body is not None and 1 <= len(body) <= 12 and not _ok(o, it["gold"]) and parse_answer(o) is not None:
+            keep.append(dict(it, body=body, own_answer=parse_answer(o)))
+    _log(f"natural wrong chains: {len(keep)} of {len(items)}")
+    return keep
+
+
+def evaluate_natural(lm: LM, wc: List[Dict], args) -> List[Dict]:
+    pre = [prefix(lm, c["q"], c["body"]) for c in wc]
+    outs = gen(lm, pre, args, max_new=args.max_cont, bs=args.bs)
+    rows = []
+    for c, o in zip(wc, outs):
+        a = last_answer(o)
+        rows.append(dict(mode="natural", uid=c["uid"], gold=c["gold"], wrong=c["own_answer"], ans=a,
+                         follow=float(a is not None and abs(a - c["own_answer"]) < 1e-4),
+                         correct=float(a is not None and abs(a - c["gold"]) < 1e-4),
+                         triggered=float("recompute each step" in o),
+                         gen_tokens=len(lm.tok(o, add_special_tokens=False).input_ids)))
+    return rows
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--model", required=True)
@@ -120,6 +147,7 @@ def main():
     ap.add_argument("--n_copy", type=int, default=200)
     ap.add_argument("--n_pool", type=int, default=450)
     ap.add_argument("--max_cont", type=int, default=260)
+    ap.add_argument("--n_wrong_pool", type=int, default=450, help="test questions screened for the model's own wrong chains")
     ap.add_argument("--bs", type=int, default=8)
     ap.add_argument("--arms", nargs="*", default=["base", "base_cue", "dist_mix", "dist_intact"])
     ap.add_argument("--lr", type=float, default=1e-4)
@@ -143,6 +171,8 @@ def main():
     cs_train = make_chains(lm, train[:args.n_train], args, min_steps=1, max_steps=12)
     cs_test = make_chains(lm, test[args.n_eval:args.n_eval + args.n_pool], args, min_steps=1, max_steps=12)[:args.n_copy]
     ws = [wrong_of(c["gold"], rng) for c in cs_test]
+    used = args.n_eval + args.n_pool
+    wc = wrong_chains(lm, test[used:used + args.n_wrong_pool], args)
     T = build_targets(lm, cs_train, args, rng)
     json.dump(dict(n_train_chains=len(cs_train), n_targets=len(T), n_copy=len(cs_test)),
               open(f"{args.outdir}/info.json", "w"))
@@ -169,6 +199,7 @@ def main():
             info = train_sft(lm, data, args)
             _log(f"[{arm}] sft on {len(data)} items {info}")
         r = evaluate_copy(lm, cs_test, ws, args, cue=(arm == "base_cue"))
+        r += evaluate_natural(lm, wc, args)
         for x in r:
             x["arm"] = arm
         rows += r
@@ -177,7 +208,7 @@ def main():
         clean.to_csv(f"{args.outdir}/clean_{arm}.csv", index=False)
         d = pd.DataFrame(r)
         s = dict(arm=arm, clean_acc=clean.correct.mean(), clean_tokens=clean.gen_tokens.mean())
-        for mode in ["intact", "last", "all"]:
+        for mode in ["intact", "last", "all", "natural"]:
             m = d[d["mode"] == mode]
             s[f"{mode}_follow"] = m.follow.mean()
             s[f"{mode}_correct"] = m.correct.mean()

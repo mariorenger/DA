@@ -757,6 +757,11 @@ NOTEBOOKS = {
     "c": {"0": [("q25-3b", "Qwen/Qwen2.5-3B-Instruct", "cuedistill", ("--n_train", "1000", "--bs", "6", "--arms", "base", "cond_mix"))],
           "1": [("q3-4b", "Qwen/Qwen3-4B", "cuedistill", ("--n_train", "1000", "--bs", "6", "--arms", "base", "cond_mix"))]},
 }""",
+    # round 38: replicate of Round 37 with a second seed, plus the model's own wrong chains (see REVIEW.md)
+    "R38_cond_s1": """{
+    "c": {"0": [("q25-1.5b_s1", "Qwen/Qwen2.5-1.5B-Instruct", "cuedistill", ("--n_train", "1000", "--bs", "8", "--arms", "base", "cond_mix", "--seed", "1"))],
+          "1": [("q3-1.7b_s1", "Qwen/Qwen3-1.7B", "cuedistill", ("--n_train", "1000", "--bs", "8", "--arms", "base", "cond_mix", "--seed", "1"))]},
+}""",
 }
 
 
