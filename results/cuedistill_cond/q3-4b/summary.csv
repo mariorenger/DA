@@ -1,0 +1,2 @@
+arm,clean_acc,clean_tokens,intact_follow,intact_correct,intact_trig,last_follow,last_correct,last_trig,all_follow,all_correct,all_trig
+base,0.868,114.154,0.0,1.0,0.0,0.9195979899497487,0.08040201005025126,0.0,0.9195979899497487,0.07537688442211055,0.0

@@ -762,6 +762,11 @@ NOTEBOOKS = {
     "c": {"0": [("q25-1.5b_s1", "Qwen/Qwen2.5-1.5B-Instruct", "cuedistill", ("--n_train", "1000", "--bs", "8", "--arms", "base", "cond_mix", "--seed", "1"))],
           "1": [("q3-1.7b_s1", "Qwen/Qwen3-1.7B", "cuedistill", ("--n_train", "1000", "--bs", "8", "--arms", "base", "cond_mix", "--seed", "1"))]},
 }""",
+    # round 39: Qwen2.5-3B and Qwen3-4B of Round 37 again, with the natural-error evaluation; Qwen3-4B with a smaller micro-batch (OOM before)
+    "R39_cond_c": """{
+    "c": {"0": [("q25-3b_n", "Qwen/Qwen2.5-3B-Instruct", "cuedistill", ("--n_train", "1000", "--bs", "6", "--arms", "base", "cond_mix"))],
+          "1": [("q3-4b_n", "Qwen/Qwen3-4B", "cuedistill", ("--n_train", "1000", "--bs", "4", "--mb", "2", "--accum", "8", "--arms", "base", "cond_mix"))]},
+}""",
 }
 
 
