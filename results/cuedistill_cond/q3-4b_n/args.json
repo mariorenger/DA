@@ -1,0 +1,21 @@
+{
+ "model": "Qwen/Qwen3-4B",
+ "outdir": "/kaggle/working/results/cuedistill_q3-4b_n",
+ "n_train": 1000,
+ "n_eval": 500,
+ "n_copy": 200,
+ "n_pool": 450,
+ "max_cont": 260,
+ "n_wrong_pool": 450,
+ "bs": 4,
+ "arms": [
+  "base",
+  "cond_mix"
+ ],
+ "lr": 0.0001,
+ "epochs": 2.0,
+ "mb": 2,
+ "accum": 8,
+ "seed": 0,
+ "device_map": null
+}

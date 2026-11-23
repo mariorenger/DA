@@ -1,0 +1,4 @@
+arm,clean_acc,clean_tokens,intact_follow,intact_correct,intact_trig,last_follow,last_correct,last_trig,all_follow,all_correct,all_trig,natural_follow,natural_correct,natural_trig
+base,0.732,126.978,0.0,1.0,0.0,0.995,0.005,0.0,1.0,0.0,0.0,0.9887640449438202,0.0,0.0
+nat_cond,0.734,141.456,0.0,1.0,0.0,0.98,0.02,0.0,1.0,0.0,0.0,0.9438202247191011,0.011235955056179775,0.0
+nat_mix,0.736,143.784,0.0,1.0,0.03,0.075,0.91,0.995,0.075,0.89,0.995,0.9101123595505618,0.02247191011235955,0.11235955056179775
