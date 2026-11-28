@@ -787,6 +787,20 @@ NOTEBOOKS = {
     "r": {"0": [("q25-3b", "Qwen/Qwen2.5-3B-Instruct", "ruleverify", ("--n_train", "2000", "--bs", "6"))],
           "1": [("q3-4b", "Qwen/Qwen3-4B", "ruleverify", ("--n_train", "2000", "--bs", "6"))]},
 }""",
+    # round 42 (see REVIEW.md, pre-registered): second seed for the recheck cue (Round 33) and the cue distillation (Round 36)
+    "R42_wait_s1": """{
+    "w": {"0": [("q25-0.5b_s1", "Qwen/Qwen2.5-0.5B-Instruct", "waitfix", ("--n", "200", "--n_pool", "800", "--bs", "8", "--seed", "1")),
+                ("q25-1.5b_s1", "Qwen/Qwen2.5-1.5B-Instruct", "waitfix", ("--n", "200", "--n_pool", "500", "--bs", "8", "--seed", "1")),
+                ("q25-3b_s1", "Qwen/Qwen2.5-3B-Instruct", "waitfix", ("--n", "200", "--n_pool", "400", "--bs", "6", "--seed", "1"))],
+          "1": [("q3-1.7b_s1", "Qwen/Qwen3-1.7B", "waitfix", ("--n", "200", "--n_pool", "400", "--bs", "8", "--seed", "1")),
+                ("q3-4b_s1", "Qwen/Qwen3-4B", "waitfix", ("--n", "200", "--n_pool", "300", "--bs", "6", "--seed", "1"))]},
+    "w7": {"0,1": [("q25-7b_s1", "Qwen/Qwen2.5-7B-Instruct", "waitfix",
+                    ("--n", "150", "--n_pool", "300", "--bs", "4", "--device_map", "auto", "--seed", "1"))]},
+}""",
+    "R42_cued_s1": """{
+    "d": {"0": [("q25-3b_s1", "Qwen/Qwen2.5-3B-Instruct", "cuedistill", ("--n_train", "1000", "--bs", "6", "--arms", "base", "base_cue", "dist_mix", "--seed", "1"))],
+          "1": [("q3-1.7b_s1", "Qwen/Qwen3-1.7B", "cuedistill", ("--n_train", "1000", "--bs", "8", "--arms", "base", "base_cue", "dist_mix", "--seed", "1"))]},
+}""",
 }
 
 
