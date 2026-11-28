@@ -13,7 +13,7 @@ import nbformat as nbf
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 MODULES = ["__init__", "data", "chain", "prompts", "lm", "decoding", "experiments", "metrics",
-           "report", "pipeline", "causaldec", "cftrain", "egen", "cfrl", "hall", "compress", "blind", "scalecopy", "stride", "waitfix", "loadweight", "intercheck", "cuedistill", "ruleverify"]
+           "report", "pipeline", "causaldec", "cftrain", "egen", "cfrl", "hall", "compress", "blind", "scalecopy", "stride", "waitfix", "loadweight", "intercheck", "cuedistill", "ruleverify", "propagate"]
 
 INTRO = """# Read, not reasoned? Kaggle run-all
 
@@ -72,6 +72,8 @@ def run_job(label, model, preset, extra, gpus):
                if preset.startswith("cuedistill") else
                [sys.executable, "-m", "hgcd.ruleverify", "--model", model, "--outdir", out, *extra]
                if preset.startswith("ruleverify") else
+               [sys.executable, "-m", "hgcd.propagate", "--model", model, "--outdir", out, *extra]
+               if preset.startswith("propagate") else
                [sys.executable, "-m", "hgcd.loadweight", "--model", model, "--outdir", out, *extra]
                if preset.startswith("loadweight") else
                [sys.executable, "-m", "hgcd.egen", "--model", model, "--outdir", out, *extra]
@@ -800,6 +802,15 @@ NOTEBOOKS = {
     "R42_cued_s1": """{
     "d": {"0": [("q25-3b_s1", "Qwen/Qwen2.5-3B-Instruct", "cuedistill", ("--n_train", "1000", "--bs", "6", "--arms", "base", "base_cue", "dist_mix", "--seed", "1"))],
           "1": [("q3-1.7b_s1", "Qwen/Qwen3-1.7B", "cuedistill", ("--n_train", "1000", "--bs", "8", "--arms", "base", "base_cue", "dist_mix", "--seed", "1"))]},
+}""",
+    # round 43 (see REVIEW.md, pre-registered): does the model propagate an intervention on its own reasoning state?
+    "R43_prop_a": """{
+    "p": {"0": [("q25-1.5b", "Qwen/Qwen2.5-1.5B-Instruct", "propagate", ("--bs", "16"))],
+          "1": [("q3-1.7b", "Qwen/Qwen3-1.7B", "propagate", ("--bs", "16"))]},
+}""",
+    "R43_prop_b": """{
+    "p": {"0": [("q25-3b", "Qwen/Qwen2.5-3B-Instruct", "propagate", ("--bs", "12", "--mb", "4", "--accum", "4"))],
+          "1": [("q3-4b", "Qwen/Qwen3-4B", "propagate", ("--bs", "12", "--mb", "4", "--accum", "4"))]},
 }""",
 }
 
