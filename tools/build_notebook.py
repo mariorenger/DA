@@ -13,7 +13,7 @@ import nbformat as nbf
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 MODULES = ["__init__", "data", "chain", "prompts", "lm", "decoding", "experiments", "metrics",
-           "report", "pipeline", "causaldec", "cftrain", "egen", "cfrl", "hall", "compress", "blind", "scalecopy", "stride", "waitfix", "loadweight", "intercheck", "cuedistill"]
+           "report", "pipeline", "causaldec", "cftrain", "egen", "cfrl", "hall", "compress", "blind", "scalecopy", "stride", "waitfix", "loadweight", "intercheck", "cuedistill", "ruleverify"]
 
 INTRO = """# Read, not reasoned? Kaggle run-all
 
@@ -70,6 +70,8 @@ def run_job(label, model, preset, extra, gpus):
                if preset.startswith("intercheck") else
                [sys.executable, "-m", "hgcd.cuedistill", "--model", model, "--outdir", out, *extra]
                if preset.startswith("cuedistill") else
+               [sys.executable, "-m", "hgcd.ruleverify", "--model", model, "--outdir", out, *extra]
+               if preset.startswith("ruleverify") else
                [sys.executable, "-m", "hgcd.loadweight", "--model", model, "--outdir", out, *extra]
                if preset.startswith("loadweight") else
                [sys.executable, "-m", "hgcd.egen", "--model", model, "--outdir", out, *extra]
@@ -775,6 +777,15 @@ NOTEBOOKS = {
     "R40_nat_b": """{
     "n": {"0": [("q25-3b", "Qwen/Qwen2.5-3B-Instruct", "cuedistill", ("--n_train", "1000", "--n_nat", "1500", "--bs", "6", "--arms", "base", "nat_cond", "nat_mix"))],
           "1": [("q3-4b", "Qwen/Qwen3-4B", "cuedistill", ("--n_train", "1000", "--n_nat", "1500", "--bs", "4", "--mb", "2", "--accum", "8", "--arms", "base", "nat_cond", "nat_mix"))]},
+}""",
+    # round 41 (see REVIEW.md, pre-registered): an external rule table as a step verifier of the model's own mistakes
+    "R41_rule_a": """{
+    "r": {"0": [("q25-1.5b", "Qwen/Qwen2.5-1.5B-Instruct", "ruleverify", ("--n_train", "2000", "--bs", "8"))],
+          "1": [("q3-1.7b", "Qwen/Qwen3-1.7B", "ruleverify", ("--n_train", "2000", "--bs", "8"))]},
+}""",
+    "R41_rule_b": """{
+    "r": {"0": [("q25-3b", "Qwen/Qwen2.5-3B-Instruct", "ruleverify", ("--n_train", "2000", "--bs", "6"))],
+          "1": [("q3-4b", "Qwen/Qwen3-4B", "ruleverify", ("--n_train", "2000", "--bs", "6"))]},
 }""",
 }
 
