@@ -1,0 +1,20 @@
+{
+ "model": "Qwen/Qwen2.5-1.5B-Instruct",
+ "outdir": "/kaggle/working/results/ruleverify_q25-1.5b",
+ "sets": [
+  "c6",
+  "c5"
+ ],
+ "n_train": 2000,
+ "epochs": 1.0,
+ "lr": 0.0002,
+ "mb": 2,
+ "accum": 8,
+ "bs": 8,
+ "retries": 5,
+ "sc_n": 5,
+ "small_frac": 0.05,
+ "noise_frac": 0.1,
+ "seed": 0,
+ "device_map": null
+}

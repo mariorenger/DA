@@ -81,57 +81,89 @@ def expected_running(table: Dict, prev: Optional[str], rel: Optional[str]) -> Op
     return rel if prev is None else table.get((prev, rel))
 
 
+def _line(lm: LM, prompts: List[str], args, sample: bool = False, n: int = 1) -> List[str]:
+    """One generated line per prompt (stop at the first newline).  NOTE: a stop string such as "\\nHop" cannot be used here:
+    the stopping criterion of generate() looks at the whole sequence, the prompt included, and the assembled chain ends
+    with a newline, so "\\nHop" matches after the first generated token and cuts every step after the first one (Round 41,
+    first version)."""
+    return lm.generate(prompts, max_new_tokens=60, do_sample=sample, temperature=0.7, n=n,
+                       batch_size=max(1, args.bs // 2) if sample else args.bs, stop="\n")
+
+
+def _gen_steps(lm: LM, prompts: List[str], args, sample: bool = False, n: int = 1):
+    """(hop_line, so_line, is_answer) for each prompt (and each of the n samples): hop line, then running-relation line."""
+    hops = [h.strip() for h in _line(lm, prompts, args, sample, n)]
+    rep = [p for p in prompts for _ in range(n)] if n > 1 else prompts
+    is_ans = [h.startswith("Answer") or not h.startswith("Hop") for h in hops]
+    nxt = [p + h + "\n" for p, h, a in zip(rep, hops, is_ans)]
+    sos = [x.strip() for x in _line(lm, nxt, args)]
+    return list(zip(hops, sos, is_ans))
+
+
 def decode_verified(lm: LM, exs: List[D.ClutrrExample], table: Dict, override: bool, args, vocab_l: List[str],
                     tag: str) -> Tuple[List[Optional[str]], List[Dict]]:
     n = len(exs)
     prompts = [lm.prompt(msgs_zero(STRUCT_SYSTEM, e)) for e in exs]
     chain, prev, done = [""] * n, [None] * n, [False] * n
     st = [Counter() for _ in range(n)]
-    for _ in range(max(e.k for e in exs) + 3):
+
+    def analyse(hop, so):
+        rel = None
+        t = parse_triples(hop)
+        if t and t[0][1]:
+            rel = t[0][1]
+        m = _SO.match(so)
+        run = _rel_norm(m.group(3)) if m else None
+        return rel, run
+
+    for _ in range(max(e.k for e in exs) + 2):
         idx = [i for i in range(n) if not done[i]]
         if not idx:
             break
-        outs = lm.generate([prompts[i] + chain[i] for i in idx], max_new_tokens=70, batch_size=args.bs, stop="\nHop")
+        base = [prompts[i] + chain[i] for i in idx]
+        cur = dict(zip(idx, _gen_steps(lm, base, args)))
         flagged = []
-        parsed = {}
-        for i, o in zip(idx, outs):
-            hop, rel, run, so, final = parse_step(o)
-            parsed[i] = (hop, rel, run, so, final)
-            exp = expected_running(table, prev[i], rel)
-            if hop is None or so is None:
+        for i in idx:
+            hop, so, isans = cur[i]
+            if isans or not hop.startswith("Hop") or not _SO.match(so):
                 continue
+            rel, run = analyse(hop, so)
+            exp = expected_running(table, prev[i], rel)
             if exp is not None and run != exp:
                 flagged.append(i)
                 st[i]["flagged"] += 1
         if flagged:
-            alts = lm.generate([prompts[i] + chain[i] for i in flagged], max_new_tokens=70, do_sample=True,
-                               n=args.retries, batch_size=max(1, args.bs // 2), stop="\nHop")
+            alts = _gen_steps(lm, [prompts[i] + chain[i] for i in flagged], args, sample=True, n=args.retries)
             for t, i in enumerate(flagged):
-                for o in alts[t * args.retries:(t + 1) * args.retries]:
-                    hop, rel, run, so, final = parse_step(o)
-                    exp = expected_running(table, prev[i], rel)
+                chosen = None
+                for hop, so, isans in alts[t * args.retries:(t + 1) * args.retries]:
                     st[i]["retries"] += 1
-                    if hop is not None and so is not None and (exp is None or run == exp):
-                        parsed[i] = (hop, rel, run, so, final)
+                    if isans or not hop.startswith("Hop") or not _SO.match(so):
+                        continue
+                    rel, run = analyse(hop, so)
+                    exp = expected_running(table, prev[i], rel)
+                    if exp is None or run == exp:
+                        chosen = (hop, so, isans)
                         st[i]["repaired"] += 1
                         break
-                else:
-                    if override:
-                        hop, rel, run, so, final = parsed[i]
-                        exp = expected_running(table, prev[i], rel)
-                        if exp is not None:
-                            so = re.sub(r"(['’]s\s+)[A-Za-z\- ]+?(\s*\.?\s*)$", lambda m: m.group(1) + exp + ".", so)
-                            parsed[i] = (hop, rel, exp, so, final)
-                            st[i]["overridden"] += 1
+                if chosen is not None:
+                    cur[i] = chosen
+                elif override:
+                    hop, so, isans = cur[i]
+                    rel, run = analyse(hop, so)
+                    exp = expected_running(table, prev[i], rel)
+                    if exp is not None:
+                        so = re.sub(r"(['’]s\s+)[A-Za-z\- ]+?(\s*\.?\s*)$", lambda m: m.group(1) + exp + ".", so)
+                        cur[i] = (hop, so, isans)
+                        st[i]["overridden"] += 1
         for i in idx:
-            hop, rel, run, so, final = parsed[i]
-            if hop is None or so is None:
-                done[i] = True
+            hop, so, isans = cur[i]
+            if isans or not hop.startswith("Hop") or not _SO.match(so):
+                done[i] = True          # the model wrote the answer line (or something unparsable): the chain is complete
                 continue
+            rel, run = analyse(hop, so)
             chain[i] += hop + "\n" + so + "\n"
             prev[i] = run if run is not None else prev[i]
-            if final:
-                done[i] = True
     ans = lm.generate([p + c + e.answer_prefix() for p, c, e in zip(prompts, chain, exs)], max_new_tokens=8,
                       batch_size=args.bs * 2, stop="\n")
     preds = []

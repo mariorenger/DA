@@ -812,6 +812,15 @@ NOTEBOOKS = {
     "p": {"0": [("q25-3b", "Qwen/Qwen2.5-3B-Instruct", "propagate", ("--bs", "12", "--mb", "4", "--accum", "4"))],
           "1": [("q3-4b", "Qwen/Qwen3-4B", "propagate", ("--bs", "12", "--mb", "4", "--accum", "4"))]},
 }""",
+    # round 41, second version: the step-wise decoding of the first version was broken (stop string matched the prompt tail)
+    "R41b_rule_a": """{
+    "r": {"0": [("q25-1.5b", "Qwen/Qwen2.5-1.5B-Instruct", "ruleverify", ("--n_train", "2000", "--bs", "8"))],
+          "1": [("q3-1.7b", "Qwen/Qwen3-1.7B", "ruleverify", ("--n_train", "2000", "--bs", "8"))]},
+}""",
+    "R41b_rule_b": """{
+    "r": {"0": [("q25-3b", "Qwen/Qwen2.5-3B-Instruct", "ruleverify", ("--n_train", "2000", "--bs", "6"))],
+          "1": [("q3-4b", "Qwen/Qwen3-4B", "ruleverify", ("--n_train", "2000", "--bs", "6"))]},
+}""",
 }
 
 
